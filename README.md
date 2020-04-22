@@ -47,10 +47,6 @@ Alternatively, to install Mapbox Navigation using [Carthage](https://github.com/
 
 In order to see the map or calculate a route you need your own Maptile and Direction services.
 
-## Contributing
-
-We welcome feedback, translations, and code contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for details.
-
 # License
 
 [100% MIT License](LICENSE)
