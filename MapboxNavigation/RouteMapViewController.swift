@@ -2,7 +2,6 @@ import UIKit
 import Mapbox
 import MapboxDirections
 import MapboxCoreNavigation
-import MapboxMobileEvents
 import Turf
 import AVFoundation
 
@@ -29,7 +28,6 @@ class RouteMapViewController: UIViewController {
     private struct Actions {
         static let overview: Selector = #selector(RouteMapViewController.toggleOverview(_:))
         static let mute: Selector = #selector(RouteMapViewController.toggleMute(_:))
-        static let feedback: Selector = #selector(RouteMapViewController.feedback(_:))
         static let recenter: Selector = #selector(RouteMapViewController.recenter(_:))
     }
 
@@ -134,7 +132,6 @@ class RouteMapViewController: UIViewController {
 
         navigationView.overviewButton.addTarget(self, action: Actions.overview, for: .touchUpInside)
         navigationView.muteButton.addTarget(self, action: Actions.mute, for: .touchUpInside)
-        navigationView.reportButton.addTarget(self, action: Actions.feedback, for: .touchUpInside)
         navigationView.resumeButton.addTarget(self, action: Actions.recenter, for: .touchUpInside)
         resumeNotifications()
         notifyUserAboutLowVolume()
@@ -242,16 +239,6 @@ class RouteMapViewController: UIViewController {
 
         let muted = sender.isSelected
         NavigationSettings.shared.voiceMuted = muted
-    }
-
-    @objc func feedback(_ sender: Any) {
-        showFeedback()
-    }
-
-    func showFeedback(source: FeedbackSource = .user) {
-        guard let parent = parent else { return }
-        let feedbackViewController = FeedbackViewController(eventsManager: routeController.eventsManager)
-        parent.present(feedbackViewController, animated: true, completion: nil)
     }
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -433,9 +420,7 @@ class RouteMapViewController: UIViewController {
         endOfRoute.didMove(toParentViewController: self)
 
         endOfRoute.dismissHandler = { [weak self] (stars, comment) in
-            guard let rating = self?.rating(for: stars) else { return }
-            let feedback = EndOfRouteFeedback(rating: rating, comment: comment)
-            self?.routeController.endNavigation(feedback: feedback)
+            self?.routeController.endNavigation()
             self?.delegate?.mapViewControllerDidDismiss(self!, byCanceling: false)
         }
     }
@@ -513,12 +498,6 @@ class RouteMapViewController: UIViewController {
 
         guard duration > 0.0 else { return noAnimation() }
         UIView.animate(withDuration: duration, delay: 0.0, options: [.curveLinear], animations: animate, completion: complete)
-    }
-
-    fileprivate func rating(for stars: Int) -> Int {
-        assert(stars >= 0 && stars <= 5)
-        guard stars > 0 else { return MMEEventsManager.unrated } //zero stars means this was unrated.
-        return (stars - 1) * 25
     }
 
     fileprivate func populateName(for waypoint: Waypoint, populated: @escaping (Waypoint) -> Void) {

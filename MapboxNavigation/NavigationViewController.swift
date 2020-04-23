@@ -201,7 +201,7 @@ open class NavigationViewController: UIViewController {
     @objc public var route: Route! {
         didSet {
             if routeController == nil {
-                routeController = RouteController(along: route, directions: directions, locationManager: locationManager, eventsManager: eventsManager)
+                routeController = RouteController(along: route, directions: directions, locationManager: locationManager)
                 routeController.delegate = self
             } else {
                 routeController.routeProgress = RouteProgress(route: route)
@@ -330,8 +330,7 @@ open class NavigationViewController: UIViewController {
     @objc public var annotatesSpokenInstructions = false
     
     var styleManager: StyleManager!
-
-    private var eventsManager: EventsManager!
+    
     private var locationManager: NavigationLocationManager!
     
     var currentStatusBarStyle: UIStatusBarStyle = .default {
@@ -356,20 +355,18 @@ open class NavigationViewController: UIViewController {
 
      See [Mapbox Directions](https://mapbox.github.io/mapbox-navigation-ios/directions/) for further information.
      */
-    @objc(initWithRoute:directions:styles:routeController:locationManager:voiceController:eventsManager:)
+    @objc(initWithRoute:directions:styles:routeController:locationManager:voiceController:)
     required public init(for route: Route,
                          directions: Directions = Directions.shared,
                          styles: [Style]? = [DayStyle(), NightStyle()],
                          routeController: RouteController? = nil,
                          locationManager: NavigationLocationManager? = nil,
-                         voiceController: RouteVoiceController? = nil,
-                         eventsManager: EventsManager? = nil) {
+                         voiceController: RouteVoiceController? = nil) {
         
         super.init(nibName: nil, bundle: nil)
         
-        self.eventsManager = eventsManager ?? EventsManager()
         self.locationManager = locationManager ?? NavigationLocationManager()
-        let routeController = routeController ?? RouteController(along: route, directions: directions, locationManager: self.locationManager, eventsManager: self.eventsManager)
+        let routeController = routeController ?? RouteController(along: route, directions: directions, locationManager: self.locationManager)
         self.routeController = routeController
         self.routeController.usesDefaultUserInterface = true
         self.routeController.delegate = self

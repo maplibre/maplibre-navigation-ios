@@ -115,10 +115,6 @@ class CustomViewController: UIViewController, MGLMapViewDelegate {
         mapView.recenterMap()
     }
     
-    @IBAction func showFeedback(_ sender: Any) {
-        present(feedbackViewController, animated: true, completion: nil)
-    }
-    
     func toggleStepsList() {
         if let controller = stepsViewController {
             controller.dismiss()

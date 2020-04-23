@@ -2,7 +2,6 @@ import Foundation
 import CoreLocation
 import MapboxDirections
 import Polyline
-import MapboxMobileEvents
 import Turf
 
 /**
@@ -57,27 +56,13 @@ open class RouteController: NSObject, Router {
      Details about the user’s progress along the current route, leg, and step.
      */
     @objc public var routeProgress: RouteProgress {
-        willSet {
-            // Save any progress completed up until now
-            if eventsManager.sessionState != nil {
-                eventsManager.sessionState?.totalDistanceCompleted += routeProgress.distanceTraveled
-            }
-        }
         didSet {
-            // if the user has already arrived and a new route has been set, restart the navigation session
-            if eventsManager.sessionState?.arrivalTimestamp != nil {
-                eventsManager.resetSession()
-            } else {
-                eventsManager.sessionState?.currentRoute = routeProgress.route
-            }
-
             var userInfo = [RouteControllerNotificationUserInfoKey: Any]()
             if let location = locationManager.location {
                 userInfo[.locationKey] = location
             }
             userInfo[.isProactiveKey] = didFindFasterRoute
             NotificationCenter.default.post(name: .routeControllerDidReroute, object: self, userInfo: userInfo)
-            eventsManager.reportReroute(newRoute: routeProgress.route, proactive: didFindFasterRoute)
             movementsAwayFromRoute = 0
         }
     }
@@ -89,26 +74,13 @@ open class RouteController: NSObject, Router {
     var lastLocationDate: Date?
 
     /// :nodoc: This is used internally when the navigation UI is being used
-    public var usesDefaultUserInterface = false {
-        didSet {
-            eventsManager.usesDefaultUserInterface = usesDefaultUserInterface
-        }
-    }
-    
-    public var eventsManager: EventsManager
+    public var usesDefaultUserInterface = false
 
     var hasFoundOneQualifiedLocation = false
 
     var movementsAwayFromRoute = 0
 
-    var previousArrivalWaypoint: Waypoint? {
-        didSet {
-            if oldValue != previousArrivalWaypoint {
-                eventsManager.sessionState?.arrivalTimestamp = nil
-                eventsManager.sessionState?.departureTimestamp = nil
-            }
-        }
-    }
+    var previousArrivalWaypoint: Waypoint?
 
     var userSnapToStepDistanceFromManeuver: CLLocationDistance?
     
@@ -119,18 +91,14 @@ open class RouteController: NSObject, Router {
      - parameter directions: The Directions object that created `route`.
      - parameter locationManager: The associated location manager.
      */
-    @objc(initWithRoute:directions:locationManager:eventsManager:)
-    public init(along route: Route, directions: Directions = Directions.shared, locationManager: NavigationLocationManager = NavigationLocationManager(), eventsManager: EventsManager) {
+    @objc(initWithRoute:directions:locationManager:)
+    public init(along route: Route, directions: Directions = Directions.shared, locationManager: NavigationLocationManager = NavigationLocationManager()) {
         self.directions = directions
         self.routeProgress = RouteProgress(route: route)
         self.locationManager = locationManager
         self.locationManager.activityType = route.routeOptions.activityType
-        self.eventsManager = eventsManager
-        UIDevice.current.isBatteryMonitoringEnabled = true
 
         super.init()
-        eventsManager.routeController = self
-        eventsManager.resetSession()
 
         self.locationManager.delegate = self
         resumeNotifications()
@@ -139,21 +107,10 @@ open class RouteController: NSObject, Router {
         checkForLocationUsageDescription()
         
         tunnelIntersectionManager.delegate = self
-
-        eventsManager.start()
     }
 
     deinit {
         endNavigation()
-        
-        guard let shouldDisable = delegate?.routeControllerShouldDisableBatteryMonitoring?(self) else {
-            UIDevice.current.isBatteryMonitoringEnabled = false
-            return
-        }
-        
-        if shouldDisable {
-            UIDevice.current.isBatteryMonitoringEnabled = false
-        }
     }
 
     func resumeNotifications() {
@@ -192,7 +149,7 @@ open class RouteController: NSObject, Router {
     /**
      Ends the current navigation session.
      */
-    @objc public func endNavigation(feedback: EndOfRouteFeedback? = nil) {
+    @objc public func endNavigation() {
         suspendLocationUpdates()
         suspendNotifications()
     }
@@ -293,7 +250,6 @@ extension RouteController: CLLocationManagerDelegate {
 
     @objc public func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         let filteredLocations = locations.filter {
-            eventsManager.sessionState?.pastLocations.push($0)
             return $0.isQualified
         }
 
@@ -354,7 +310,6 @@ extension RouteController: CLLocationManagerDelegate {
                 RouteControllerNotificationUserInfoKey.locationKey: self.location!, //guaranteed value
                 RouteControllerNotificationUserInfoKey.rawLocationKey: location //raw
                 ])
-                eventsManager.update(progress: routeProgress)
             
             // Check for a tunnel intersection whenever the current route step progresses.
             tunnelIntersectionManager.checkForTunnelIntersection(at: location, routeProgress: routeProgress)
@@ -497,7 +452,6 @@ extension RouteController: CLLocationManagerDelegate {
                 // If the upcoming maneuver in the new route is the same as the current upcoming maneuver, don't announce it
                 strongSelf.routeProgress = RouteProgress(route: route, legIndex: 0, spokenInstructionIndex: strongSelf.routeProgress.currentLegProgress.currentStepProgress.spokenInstructionIndex)
                 strongSelf.delegate?.routeController?(strongSelf, didRerouteAlong: route)
-                strongSelf.eventsManager.reportReroute(newRoute: route, proactive: true)
                 strongSelf.movementsAwayFromRoute = 0
                 strongSelf.didFindFasterRoute = false
             }
@@ -521,7 +475,6 @@ extension RouteController: CLLocationManagerDelegate {
         NotificationCenter.default.post(name: .routeControllerWillReroute, object: self, userInfo: [
             RouteControllerNotificationUserInfoKey.locationKey: location
         ])
-        _ = eventsManager.enqueueRerouteEvent()
 
         self.lastRerouteLocation = location
 
