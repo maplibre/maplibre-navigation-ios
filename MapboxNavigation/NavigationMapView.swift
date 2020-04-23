@@ -205,14 +205,18 @@ open class NavigationMapView: MGLMapView, UIGestureRecognizerDelegate {
         commonInit()
     }
     
-    public override init(frame: CGRect, styleURL: URL?, palette: Palette? = nil) {
-        if let palette = palette {
-            ColorManager.shared.palette = palette
-        }
-        
+    public override init(frame: CGRect, styleURL: URL?) {
         altitude = defaultAltitude
         super.init(frame: frame, styleURL: styleURL)
         commonInit()
+    }
+    
+    public convenience init(frame: CGRect, styleURL: URL?, palette: Palette? = nil) {
+        self.init(frame: frame, styleURL: styleURL)
+        
+        if let palette = palette {
+            ColorManager.shared.palette = palette
+        }
     }
     
     fileprivate func commonInit() {
