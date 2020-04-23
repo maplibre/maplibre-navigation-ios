@@ -49,5 +49,5 @@ In order to see the map or calculate a route you need your own Maptile and Direc
 
 # License
 
-Code is [licensed](LICENSE) under MIT and ISC. 
+Code is [licensed](LICENSE.md) under MIT and ISC. 
 ISC is meant to be functionally equivalent to the MIT license.
