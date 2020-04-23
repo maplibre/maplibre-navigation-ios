@@ -3,6 +3,7 @@ Partial of this code is licensed under MIT and partial is ISC.
 The MIT License (MIT)
 
 Copyright (c) 2019 Flitsmeister
+
 Copyright (c) 2016 Matthijs Hollemans and contributors
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
