@@ -49,4 +49,4 @@ In order to see the map or calculate a route you need your own Maptile and Direc
 
 # License
 
-[100% MIT License](LICENSE)
+Code is [licensed](LICENSE) under MIT and ISC. 
