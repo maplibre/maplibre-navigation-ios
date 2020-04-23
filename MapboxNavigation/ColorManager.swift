@@ -8,13 +8,13 @@
 
 import Foundation
 
-class ColorManager {
+public class ColorManager {
     static let shared = ColorManager()
     
     var palette = Palette()
 }
 
-struct Palette {
+public struct Palette {
     var tintColor = #colorLiteral(red: 0.1843137255, green: 0.4784313725, blue: 0.7764705882, alpha: 1)
     var tintStrokeColor = #colorLiteral(red: 0.1843137255, green: 0.4784313725, blue: 0.7764705882, alpha: 1)
 }
