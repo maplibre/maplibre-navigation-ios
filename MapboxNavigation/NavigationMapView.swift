@@ -212,11 +212,11 @@ open class NavigationMapView: MGLMapView, UIGestureRecognizerDelegate {
     }
     
     public convenience init(frame: CGRect, styleURL: URL?, palette: Palette? = nil) {
-        self.init(frame: frame, styleURL: styleURL)
-        
         if let palette = palette {
             ColorManager.shared.palette = palette
         }
+        
+        self.init(frame: frame, styleURL: styleURL)
     }
     
     fileprivate func commonInit() {

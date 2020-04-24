@@ -26,8 +26,8 @@ extension UIColor {
 
 extension UIColor {
     // General styling
-    fileprivate class var defaultTint: UIColor { get { return ColorManager.shared.palette.tintColor } }
-    fileprivate class var defaultTintStroke: UIColor { get { return ColorManager.shared.palette.tintStrokeColor } }
+    fileprivate class var defaultTint: UIColor { return ColorManager.shared.palette.tintColor }
+    fileprivate class var defaultTintStroke: UIColor { return ColorManager.shared.palette.tintStrokeColor }
     fileprivate class var defaultPrimaryText: UIColor { get { return #colorLiteral(red: 45.0/255.0, green: 45.0/255.0, blue: 45.0/255.0, alpha: 1) } }
     fileprivate class var defaultSecondaryText: UIColor { get { return #colorLiteral(red: 0.4509803922, green: 0.4509803922, blue: 0.4509803922, alpha: 1) } }
 }

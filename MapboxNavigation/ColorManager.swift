@@ -8,8 +8,8 @@
 
 import Foundation
 
-public class ColorManager {
-    public static let shared = ColorManager()
+class ColorManager {
+    static let shared = ColorManager()
     
     public var palette = Palette()
 }
