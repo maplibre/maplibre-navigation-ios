@@ -103,7 +103,7 @@ class ViewController: UIViewController, MGLMapViewDelegate {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        self.mapView = NavigationMapView(frame: view.bounds)
+        self.mapView = NavigationMapView(frame: view.bounds, styleURL: nil, palette: Palette())
 
         // Reset the navigation styling to the defaults if we are returning from a presentation.
         if (presentedViewController != nil) {

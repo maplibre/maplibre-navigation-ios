@@ -9,9 +9,9 @@
 import Foundation
 
 public class ColorManager {
-    static let shared = ColorManager()
+    public static let shared = ColorManager()
     
-    var palette = Palette()
+    public var palette = Palette()
 }
 
 public struct Palette {
