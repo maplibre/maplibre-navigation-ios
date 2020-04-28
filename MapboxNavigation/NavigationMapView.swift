@@ -211,6 +211,14 @@ open class NavigationMapView: MGLMapView, UIGestureRecognizerDelegate {
         commonInit()
     }
     
+    public convenience init(frame: CGRect, styleURL: URL?, palette: Palette? = nil) {
+        if let palette = palette {
+            ColorManager.shared.palette = palette
+        }
+        
+        self.init(frame: frame, styleURL: styleURL)
+    }
+    
     fileprivate func commonInit() {
         makeGestureRecognizersRespectCourseTracking()
         makeGestureRecognizersUpdateCourseView()
