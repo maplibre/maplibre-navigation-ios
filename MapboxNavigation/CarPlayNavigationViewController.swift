@@ -58,7 +58,6 @@ public class CarPlayNavigationViewController: UIViewController, MGLMapViewDelega
         self.carInterfaceController = interfaceController
         
         super.init(nibName: nil, bundle: nil)
-        carFeedbackTemplate = createFeedbackUI()
         routeController.delegate = self
     }
     
@@ -286,39 +285,6 @@ public class CarPlayNavigationViewController: UIViewController, MGLMapViewDelega
         }
         
         carSession.upcomingManeuvers = maneuvers
-    }
-    
-    func createFeedbackUI() -> CPGridTemplate {
-        let feedbackItems: [FeedbackItem] = [
-            .turnNotAllowed,
-            .closure,
-            .reportTraffic,
-            .confusingInstructions,
-            .generalMapError,
-            .badRoute
-        ]
-        
-        let feedbackButtonHandler: (_: CPGridButton) -> Void = { [weak self] (button) in
-            self?.carInterfaceController.popTemplate(animated: true)
-
-            //TODO: fix this Demeter violation with proper encapsulation
-            guard let uuid = self?.routeController.eventsManager.recordFeedback() else { return }
-            let foundItem = feedbackItems.filter { $0.image == button.image }
-            guard let feedbackItem = foundItem.first else { return }
-            self?.routeController.eventsManager.updateFeedback(uuid: uuid, type: feedbackItem.feedbackType, source: .user, description: nil)
-            
-            let dismissTitle = NSLocalizedString("CARPLAY_DISMISS", bundle: .mapboxNavigation, value: "Dismiss", comment: "Title for dismiss button")
-            let submittedTitle = NSLocalizedString("CARPLAY_SUBMITTED_FEEDBACK", bundle: .mapboxNavigation, value: "Submitted", comment: "Alert title that shows when feedback has been submitted")
-            let action = CPAlertAction(title: dismissTitle, style: .default, handler: {_ in })
-            let alert = CPNavigationAlert(titleVariants: [submittedTitle], subtitleVariants: nil, imageSet: nil, primaryAction: action, secondaryAction: nil, duration: 2.5)
-            self?.mapTemplate.present(navigationAlert: alert, animated: true)
-        }
-        
-        let buttons: [CPGridButton] = feedbackItems.map {
-            return CPGridButton(titleVariants: [$0.title.components(separatedBy: "\n").joined(separator: " ")], image: $0.image, handler: feedbackButtonHandler)
-        }
-        let gridTitle = NSLocalizedString("CARPLAY_FEEDBACK", bundle: .mapboxNavigation, value: "Feedback", comment: "Title for feedback template in CarPlay")
-        return CPGridTemplate(title: gridTitle, gridButtons: buttons)
     }
     
     func endOfRouteFeedbackTemplate() -> CPGridTemplate {
