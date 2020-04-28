@@ -3,6 +3,7 @@ import CoreLocation
 import MapboxDirections
 import Polyline
 import Turf
+import UIKit
 
 /**
  A `RouteController` tracks the user’s progress along a route, posting notifications as the user reaches significant points along the route. On every location update, the route controller evaluates the user’s location, determining whether the user remains on the route. If not, the route controller calculates a new route.
@@ -97,7 +98,8 @@ open class RouteController: NSObject, Router {
         self.routeProgress = RouteProgress(route: route)
         self.locationManager = locationManager
         self.locationManager.activityType = route.routeOptions.activityType
-
+        UIDevice.current.isBatteryMonitoringEnabled = true
+        
         super.init()
 
         self.locationManager.delegate = self
@@ -111,6 +113,15 @@ open class RouteController: NSObject, Router {
 
     deinit {
         endNavigation()
+        
+        guard let shouldDisable = delegate?.routeControllerShouldDisableBatteryMonitoring?(self) else {
+            UIDevice.current.isBatteryMonitoringEnabled = false
+            return
+        }
+        
+        if shouldDisable {
+            UIDevice.current.isBatteryMonitoringEnabled = false
+        }
     }
 
     func resumeNotifications() {
