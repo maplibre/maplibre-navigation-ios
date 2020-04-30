@@ -1,3 +1,8 @@
+<div align="center">
+  <img src="https://github.com/flitsmeister/flitsmeister-navigation-ios/blob/master/.github/splash-image-ios.png" alt="Flitsmeister Navigation iOS Splash">
+</div>
+<br>
+
 The Flitsmeister Navigation SDK for iOS is built on a fork of the [Mapbox Navigation SDK v0.21](https://github.com/flitsmeister/flitsmeister-navigation-ios/tree/v0.21.0) which is build on top of the [Mapbox Directions API](https://www.mapbox.com/directions) and contains logic needed to get timed navigation instructions.
 
 With this SDK you can implement turn by turn navigation in your own iOS app while hosting your own Map tiles and Directions API.
@@ -18,10 +23,6 @@ All issues are covered with this SDK.
 
 If you are looking to include this inside your project, you have to follow the the following steps:
 
-## CocoaPods
-
-//todo
-
 ## Carthage
 
 Alternatively, to install Mapbox Navigation using [Carthage](https://github.com/Carthage/Carthage/):
@@ -35,7 +36,6 @@ Alternatively, to install Mapbox Navigation using [Carthage](https://github.com/
 
 1. Follow the rest of [Carthage’s iOS integration instructions](https://github.com/Carthage/Carthage#if-youre-building-for-ios-tvos-or-watchos). Your application target’s Embedded Frameworks should include MapboxNavigation.framework and MapboxCoreNavigation.framework.
 
-
 # Getting Help
 
 - **Have a bug to report?** [Open an issue](https://github.com/flitsmeister/flitsmeister-navigation-ios/issues). If possible, include the version of Flitsmeister Services, a full log, and a project that shows the issue.
@@ -43,7 +43,7 @@ Alternatively, to install Mapbox Navigation using [Carthage](https://github.com/
 
 ## <a name="sample-code">Sample code
 
-//TODO
+A demo app is currently not available, so no sample code yet. Please check the Mapbox repository or documentation for examples.
 
 In order to see the map or calculate a route you need your own Maptile and Direction services.
 
