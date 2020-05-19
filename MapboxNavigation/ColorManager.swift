@@ -15,9 +15,11 @@ class ColorManager {
 }
 
 public struct Palette {
-    public var tintColor = #colorLiteral(red: 0.1843137255, green: 0.4784313725, blue: 0.7764705882, alpha: 1)
-    public var tintStrokeColor = #colorLiteral(red: 0.1843137255, green: 0.4784313725, blue: 0.7764705882, alpha: 1)
-    
+    public var routeLineColor = #colorLiteral(red: 0, green: 0.4980392157, blue: 0.9098039216, alpha: 1)
+    public var routeLineCasingColor = #colorLiteral(red: 0, green: 0.3450980392, blue: 0.6352941176, alpha: 1)
+    public var routeArrowColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
+    public var routeArrowCasingColor = #colorLiteral(red: 0, green: 0.4980392157, blue: 0.9098039216, alpha: 1)
+
     public init() {
     }
 }
