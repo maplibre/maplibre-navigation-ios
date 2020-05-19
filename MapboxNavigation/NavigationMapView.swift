@@ -76,7 +76,8 @@ open class NavigationMapView: MGLMapView, UIGestureRecognizerDelegate {
     @objc dynamic public var trafficModerateColor: UIColor = .trafficModerate
     @objc dynamic public var trafficHeavyColor: UIColor = .trafficHeavy
     @objc dynamic public var trafficSevereColor: UIColor = .trafficSevere
-    @objc dynamic public var routeCasingColor: UIColor = .defaultRouteCasing
+    @objc dynamic public var routeLineColor: UIColor = .defaultRouteLine
+    @objc dynamic public var routeLineCasingColor: UIColor = .defaultRouteLineCasing
     @objc dynamic public var routeAlternateColor: UIColor = .defaultAlternateLine
     @objc dynamic public var routeAlternateCasingColor: UIColor = .defaultAlternateLineCasing
     @objc dynamic public var maneuverArrowColor: UIColor = .defaultManeuverArrow
@@ -925,13 +926,11 @@ open class NavigationMapView: MGLMapView, UIGestureRecognizerDelegate {
         
         let line = MGLLineStyleLayer(identifier: identifier, source: source)
         line.lineWidth = NSExpression(format: "mgl_interpolate:withCurveType:parameters:stops:($zoomLevel, 'linear', nil, %@)", MBRouteLineWidthByZoomLevel)
-        line.lineOpacity = NSExpression(forConditional:
-            NSPredicate(format: "isAlternateRoute == true"),
-                                        trueExpression: NSExpression(forConstantValue: 1),
-                                        falseExpression: NSExpression(forConditional: NSPredicate(format: "isCurrentLeg == true"),
-                                                                      trueExpression: NSExpression(forConstantValue: 1),
-                                                                      falseExpression: NSExpression(forConstantValue: 0)))
-        line.lineColor = NSExpression(format: "TERNARY(isAlternateRoute == true, %@, MGL_MATCH(congestion, 'low' , %@, 'moderate', %@, 'heavy', %@, 'severe', %@, %@))", routeAlternateColor, trafficLowColor, trafficModerateColor, trafficHeavyColor, trafficSevereColor, trafficUnknownColor)
+        
+        // Line color
+        line.lineColor = NSExpression(forConstantValue: routeLineColor)
+        
+        line.lineCap = NSExpression(forConstantValue: "round")
         line.lineJoin = NSExpression(forConstantValue: "round")
         
         return line
@@ -944,16 +943,11 @@ open class NavigationMapView: MGLMapView, UIGestureRecognizerDelegate {
         // Take the default line width and make it wider for the casing
         lineCasing.lineWidth = NSExpression(format: "mgl_interpolate:withCurveType:parameters:stops:($zoomLevel, 'linear', nil, %@)", MBRouteLineWidthByZoomLevel.multiplied(by: 1.5))
         
-        lineCasing.lineColor = NSExpression(forConditional: NSPredicate(format: "isAlternateRoute == true"),
-                     trueExpression: NSExpression(forConstantValue: routeAlternateCasingColor),
-                     falseExpression: NSExpression(forConstantValue: routeCasingColor))
+        // Line border color
+        lineCasing.lineColor = NSExpression(forConstantValue: routeLineCasingColor)
         
         lineCasing.lineCap = NSExpression(forConstantValue: "round")
         lineCasing.lineJoin = NSExpression(forConstantValue: "round")
-        
-        lineCasing.lineOpacity = NSExpression(forConditional: NSPredicate(format: "isAlternateRoute == true"),
-                                            trueExpression: NSExpression(forConstantValue: 1),
-                                            falseExpression: NSExpression(forConditional: NSPredicate(format: "isCurrentLeg == true"), trueExpression: NSExpression(forConstantValue: 1), falseExpression: NSExpression(forConstantValue: 0.85)))
         
         return lineCasing
     }

@@ -3,12 +3,13 @@ import Mapbox
 
 
 extension UIColor {
-    class var defaultRouteCasing: UIColor { get { return .defaultTintStroke } }
+    class var defaultRouteLine: UIColor { ColorManager.shared.palette.routeLineColor }
+    class var defaultRouteLineCasing: UIColor { ColorManager.shared.palette.routeLineCasingColor }
     class var defaultRouteLayer: UIColor { get { return #colorLiteral(red: 0.337254902, green: 0.6588235294, blue: 0.9843137255, alpha: 1) } }
     class var defaultAlternateLine: UIColor { get { return #colorLiteral(red: 0.6, green: 0.6, blue: 0.6, alpha: 1) } }
     class var defaultAlternateLineCasing: UIColor { get { return #colorLiteral(red: 0.5019607843, green: 0.4980392157, blue: 0.5019607843, alpha: 1) } }
-    class var defaultManeuverArrowStroke: UIColor { get { return .defaultRouteLayer } }
-    class var defaultManeuverArrow: UIColor { get { return #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1) } }
+    class var defaultManeuverArrowStroke: UIColor { ColorManager.shared.palette.routeArrowCasingColor }
+    class var defaultManeuverArrow: UIColor { ColorManager.shared.palette.routeArrowColor }
     
     class var defaultTurnArrowPrimary: UIColor { get { return #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1) } }
     class var defaultTurnArrowSecondary: UIColor { get { return #colorLiteral(red: 0.6196078431, green: 0.6196078431, blue: 0.6196078431, alpha: 1) } }
@@ -26,8 +27,8 @@ extension UIColor {
 
 extension UIColor {
     // General styling
-    fileprivate class var defaultTint: UIColor { return ColorManager.shared.palette.tintColor }
-    fileprivate class var defaultTintStroke: UIColor { return ColorManager.shared.palette.tintStrokeColor }
+    fileprivate class var defaultTint: UIColor { get { return #colorLiteral(red: 0.1843137255, green: 0.4784313725, blue: 0.7764705882, alpha: 1) } }
+    fileprivate class var defaultTintStroke: UIColor { get { return #colorLiteral(red: 0.1843137255, green: 0.4784313725, blue: 0.7764705882, alpha: 1) } }
     fileprivate class var defaultPrimaryText: UIColor { get { return #colorLiteral(red: 45.0/255.0, green: 45.0/255.0, blue: 45.0/255.0, alpha: 1) } }
     fileprivate class var defaultSecondaryText: UIColor { get { return #colorLiteral(red: 0.4509803922, green: 0.4509803922, blue: 0.4509803922, alpha: 1) } }
 }
@@ -113,7 +114,8 @@ open class DayStyle: Style {
         NavigationMapView.appearance().maneuverArrowColor       = .defaultManeuverArrow
         NavigationMapView.appearance().maneuverArrowStrokeColor = .defaultManeuverArrowStroke
         NavigationMapView.appearance().routeAlternateColor      = .defaultAlternateLine
-        NavigationMapView.appearance().routeCasingColor         = .defaultRouteCasing
+        NavigationMapView.appearance().routeLineColor           = .defaultRouteLine
+        NavigationMapView.appearance().routeLineCasingColor     = .defaultRouteLineCasing
         NavigationMapView.appearance().trafficHeavyColor        = .trafficHeavy
         NavigationMapView.appearance().trafficLowColor          = .trafficLow
         NavigationMapView.appearance().trafficModerateColor     = .trafficModerate
@@ -154,7 +156,7 @@ open class DayStyle: Style {
         WayNameLabel.appearance().normalFont = UIFont.systemFont(ofSize:20, weight: .medium).adjustedFont
         WayNameLabel.appearance().normalTextColor = #colorLiteral(red: 0.968627451, green: 0.968627451, blue: 0.968627451, alpha: 1)
         WayNameView.appearance().backgroundColor = UIColor.defaultRouteLayer.withAlphaComponent(0.85)
-        WayNameView.appearance().borderColor = UIColor.defaultRouteCasing.withAlphaComponent(0.8)
+        WayNameView.appearance().borderColor = UIColor.defaultRouteLineCasing.withAlphaComponent(0.8)
     }
 }
 
