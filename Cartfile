@@ -1,4 +1,6 @@
-binary "https://www.mapbox.com/ios-sdk/Mapbox-iOS-SDK.json" ~> 5.8
+# Updating this to 5.7.0, 5.8.0 or 5.9.0 breaks FM app
+# So use downgraded version for now
+binary "https://www.mapbox.com/ios-sdk/Mapbox-iOS-SDK.json" == 5.3.0
 github "mapbox/MapboxGeocoder.swift" ~> 0.10
 github "mapbox/mapbox-events-ios" "v0.10.2"
 github "mapbox/MapboxDirections.swift" ~> 0.23.0
