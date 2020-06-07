@@ -15,15 +15,15 @@ class ConfigManager {
 }
 
 public struct MNConfig {
-    // Route line
+    // Route
     public var routeLineColor = #colorLiteral(red: 0, green: 0.4980392157, blue: 0.9098039216, alpha: 1)
     public var routeLineAlpha: Double = 1
-    public var routeLineAlternativeColor = #colorLiteral(red: 0.6, green: 0.6, blue: 0.6, alpha: 1)
-    public var routeLineAlternativeAlpha: Double = 1
-    
-    // Route line casing (border)
     public var routeLineCasingColor = #colorLiteral(red: 0, green: 0.3450980392, blue: 0.6352941176, alpha: 1)
     public var routeLineCasingAlpha: Double = 1
+    
+    // Alternative route
+    public var routeLineAlternativeColor = #colorLiteral(red: 0.6, green: 0.6, blue: 0.6, alpha: 1)
+    public var routeLineAlternativeAlpha: Double = 1
     public var routeLineCasingAlternativeColor = #colorLiteral(red: 0.5019607843, green: 0.4980392157, blue: 0.5019607843, alpha: 1)
     public var routeLineCasingAlternativeAlpha: Double = 1
     
