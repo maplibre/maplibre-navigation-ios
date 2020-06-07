@@ -933,8 +933,8 @@ open class NavigationMapView: MGLMapView, UIGestureRecognizerDelegate {
         
         line.lineOpacity = NSExpression(
             forConditional: NSPredicate(format: "isAlternateRoute == true"),
-            trueExpression: NSExpression(forConstantValue: 1),
-            falseExpression: NSExpression(forConstantValue: 1))
+            trueExpression: NSExpression(forConstantValue: ConfigManager.shared.config.routeLineAlternativeAlpha),
+            falseExpression: NSExpression(forConstantValue: ConfigManager.shared.config.routeLineAlpha))
         
         line.lineCap = NSExpression(forConstantValue: "round")
         line.lineJoin = NSExpression(forConstantValue: "round")
@@ -955,8 +955,8 @@ open class NavigationMapView: MGLMapView, UIGestureRecognizerDelegate {
         
         lineCasing.lineOpacity = NSExpression(
             forConditional: NSPredicate(format: "isAlternateRoute == true"),
-            trueExpression: NSExpression(forConstantValue: ConfigManager.shared.config.routeLineAlpha),
-            falseExpression: NSExpression(forConstantValue: 1))
+            trueExpression: NSExpression(forConstantValue: ConfigManager.shared.config.routeLineCasingAlternativeAlpha),
+            falseExpression: NSExpression(forConstantValue: ConfigManager.shared.config.routeLineAlternativeAlpha))
         
         lineCasing.lineCap = NSExpression(forConstantValue: "round")
         lineCasing.lineJoin = NSExpression(forConstantValue: "round")
