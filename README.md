@@ -31,7 +31,7 @@ Alternatively, to install Mapbox Navigation using [Carthage](https://github.com/
 
 1. Create a [Cartfile](https://github.com/Carthage/Carthage/blob/master/Documentation/Artifacts.md#github-repositories) with the following dependency:
    ```cartfile
-   github "flitsmeister/flitsmeister-navigation-ios" ~> 1.0.0
+   github "flitsmeister/flitsmeister-navigation-ios" ~> 1.0.1
    ```
 
 1. Run `carthage update --platform iOS` to build just the iOS dependencies.
