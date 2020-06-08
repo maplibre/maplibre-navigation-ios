@@ -19,7 +19,7 @@ All issues are covered with this SDK.
 
 - Removed EventManager and all its references, this manager collected telemetry data which we don't want to send
 - Updated [Mapbox SDK](https://github.com/mapbox/mapbox-gl-native-ios) from version 4.3 to 5.3
-- Added optional palette in NavigationMapView constructor to style colors (mainly to style the route polyline color)
+- Added optional config parameter in NavigationMapView constructor to customize certain properties like route line color
 
 # Getting Started
 

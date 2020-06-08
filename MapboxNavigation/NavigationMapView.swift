@@ -77,9 +77,9 @@ open class NavigationMapView: MGLMapView, UIGestureRecognizerDelegate {
     @objc dynamic public var trafficHeavyColor: UIColor = .trafficHeavy
     @objc dynamic public var trafficSevereColor: UIColor = .trafficSevere
     @objc dynamic public var routeLineColor: UIColor = .defaultRouteLine
+    @objc dynamic public var routeLineAlternativeColor: UIColor = .defaultRouteLineAlternative
     @objc dynamic public var routeLineCasingColor: UIColor = .defaultRouteLineCasing
-    @objc dynamic public var routeAlternateColor: UIColor = .defaultAlternateLine
-    @objc dynamic public var routeAlternateCasingColor: UIColor = .defaultAlternateLineCasing
+    @objc dynamic public var routeLineCasingAlternativeColor: UIColor = .defaultRouteLineCasingAlternative
     @objc dynamic public var maneuverArrowColor: UIColor = .defaultManeuverArrow
     @objc dynamic public var maneuverArrowStrokeColor: UIColor = .defaultManeuverArrowStroke
     
@@ -212,9 +212,9 @@ open class NavigationMapView: MGLMapView, UIGestureRecognizerDelegate {
         commonInit()
     }
     
-    public convenience init(frame: CGRect, styleURL: URL?, palette: Palette? = nil) {
-        if let palette = palette {
-            ColorManager.shared.palette = palette
+    public convenience init(frame: CGRect, styleURL: URL?, config: MNConfig? = nil) {
+        if let config = config {
+            ConfigManager.shared.config = config
         }
         
         self.init(frame: frame, styleURL: styleURL)
@@ -923,12 +923,18 @@ open class NavigationMapView: MGLMapView, UIGestureRecognizerDelegate {
     }
     
     func routeStyleLayer(identifier: String, source: MGLSource) -> MGLStyleLayer {
-        
         let line = MGLLineStyleLayer(identifier: identifier, source: source)
         line.lineWidth = NSExpression(format: "mgl_interpolate:withCurveType:parameters:stops:($zoomLevel, 'linear', nil, %@)", MBRouteLineWidthByZoomLevel)
         
-        // Line color
-        line.lineColor = NSExpression(forConstantValue: routeLineColor)
+        line.lineColor = NSExpression(
+            forConditional: NSPredicate(format: "isAlternateRoute == true"),
+            trueExpression: NSExpression(forConstantValue: routeLineAlternativeColor),
+            falseExpression: NSExpression(forConstantValue: routeLineColor))
+        
+        line.lineOpacity = NSExpression(
+            forConditional: NSPredicate(format: "isAlternateRoute == true"),
+            trueExpression: NSExpression(forConstantValue: ConfigManager.shared.config.routeLineAlternativeAlpha),
+            falseExpression: NSExpression(forConstantValue: ConfigManager.shared.config.routeLineAlpha))
         
         line.lineCap = NSExpression(forConstantValue: "round")
         line.lineJoin = NSExpression(forConstantValue: "round")
@@ -937,14 +943,20 @@ open class NavigationMapView: MGLMapView, UIGestureRecognizerDelegate {
     }
     
     func routeCasingStyleLayer(identifier: String, source: MGLSource) -> MGLStyleLayer {
-        
         let lineCasing = MGLLineStyleLayer(identifier: identifier, source: source)
         
         // Take the default line width and make it wider for the casing
         lineCasing.lineWidth = NSExpression(format: "mgl_interpolate:withCurveType:parameters:stops:($zoomLevel, 'linear', nil, %@)", MBRouteLineWidthByZoomLevel.multiplied(by: 1.5))
         
-        // Line border color
-        lineCasing.lineColor = NSExpression(forConstantValue: routeLineCasingColor)
+        lineCasing.lineColor = NSExpression(
+            forConditional: NSPredicate(format: "isAlternateRoute == true"),
+            trueExpression: NSExpression(forConstantValue: routeLineCasingAlternativeColor),
+            falseExpression: NSExpression(forConstantValue: routeLineCasingColor))
+        
+        lineCasing.lineOpacity = NSExpression(
+            forConditional: NSPredicate(format: "isAlternateRoute == true"),
+            trueExpression: NSExpression(forConstantValue: ConfigManager.shared.config.routeLineCasingAlternativeAlpha),
+            falseExpression: NSExpression(forConstantValue: ConfigManager.shared.config.routeLineCasingAlpha))
         
         lineCasing.lineCap = NSExpression(forConstantValue: "round")
         lineCasing.lineJoin = NSExpression(forConstantValue: "round")
