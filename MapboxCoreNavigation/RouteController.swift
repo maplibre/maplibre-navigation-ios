@@ -462,7 +462,7 @@ extension RouteController: CLLocationManagerDelegate {
                 strongSelf.didFindFasterRoute = true
                 // If the upcoming maneuver in the new route is the same as the current upcoming maneuver, don't announce it
                 strongSelf.routeProgress = RouteProgress(route: route, legIndex: 0, spokenInstructionIndex: strongSelf.routeProgress.currentLegProgress.currentStepProgress.spokenInstructionIndex)
-                strongSelf.delegate?.routeController?(strongSelf, didRerouteAlong: route)
+                strongSelf.delegate?.routeController?(strongSelf, didRerouteAlong: route, reroutingBecauseOfFasterRoute: true)
                 strongSelf.movementsAwayFromRoute = 0
                 strongSelf.didFindFasterRoute = false
             }
@@ -506,7 +506,7 @@ extension RouteController: CLLocationManagerDelegate {
 
             strongSelf.routeProgress = RouteProgress(route: route, legIndex: 0)
             strongSelf.routeProgress.currentLegProgress.stepIndex = 0
-            strongSelf.delegate?.routeController?(strongSelf, didRerouteAlong: route)
+            strongSelf.delegate?.routeController?(strongSelf, didRerouteAlong: route, reroutingBecauseOfFasterRoute: false)
         }
     }
 
