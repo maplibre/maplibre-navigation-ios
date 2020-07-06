@@ -70,6 +70,8 @@ open class RouteController: NSObject, Router {
 
     var isRerouting = false
     var lastRerouteLocation: CLLocation?
+    
+    var isFindingFasterRoute = false
 
     var routeTask: URLSessionDataTask?
     var lastLocationDate: Date?
@@ -425,6 +427,10 @@ extension RouteController: CLLocationManagerDelegate {
     }
 
     func checkForFasterRoute(from location: CLLocation) {
+        guard !isFindingFasterRoute else {
+            return
+        }
+        
         guard let currentUpcomingManeuver = routeProgress.currentLegProgress.upComingStep else {
             return
         }
@@ -439,17 +445,24 @@ extension RouteController: CLLocationManagerDelegate {
             return
         }
         let durationRemaining = routeProgress.durationRemaining
+        
+        isFindingFasterRoute = true
 
         getDirections(from: location, along: routeProgress) { [weak self] (route, error) in
             guard let strongSelf = self else {
                 return
             }
+            
+            // Every request should reset the lastLocationDate, else we spam the server by calling this method every location update.
+            // If the call fails, tough luck buddy! Then wait until the next interval before retrying
+            strongSelf.lastLocationDate = nil
+            
+            // Also only do one 'findFasterRoute' call per time
+            strongSelf.isFindingFasterRoute = false
 
             guard let route = route else {
                 return
             }
-
-            strongSelf.lastLocationDate = nil
 
             guard let firstLeg = route.legs.first, let firstStep = firstLeg.steps.first else {
                 return
