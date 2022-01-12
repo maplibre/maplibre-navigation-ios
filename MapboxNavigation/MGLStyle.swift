@@ -15,10 +15,10 @@ extension MGLStyle {
      */
     @objc public class var navigationGuidanceDayStyleURL: URL {
         get {
-            if(MGLAccountManager.hasChinaBaseURL){
-                return mapboxChinaDayStyleURL
-            }
-            return URL(string:"mapbox://styles/mapbox/navigation-guidance-day-v4")!
+//            if(MGLAccountManager.hasChinaBaseURL){
+//                return mapboxChinaDayStyleURL
+//            }
+            return URL(string: "https://config.flitsmeister.app/9.11/map-style-day.json")!
         }
     }
     
@@ -27,10 +27,10 @@ extension MGLStyle {
      */
     @objc public class var navigationGuidanceNightStyleURL: URL {
         get {
-            if(MGLAccountManager.hasChinaBaseURL){
-                return mapboxChinaDayStyleURL
-            }
-            return URL(string:"mapbox://styles/mapbox/navigation-guidance-night-v4")!
+//            if(MGLAccountManager.hasChinaBaseURL){
+//                return mapboxChinaDayStyleURL
+//            }
+            return URL(string: "https://config.flitsmeister.app/9.11/map-style-day.json")!
         }
     }
     
@@ -40,10 +40,10 @@ extension MGLStyle {
      We only have one version of navigation guidance style in China, so if you switch your endpoint to .cn, it will return the default day style.
      */
     @objc public class func navigationGuidanceDayStyleURL(version: Int) -> URL {
-        if(MGLAccountManager.hasChinaBaseURL){
-            return mapboxChinaDayStyleURL
-        }
-        return URL(string:"mapbox://styles/mapbox/navigation-guidance-day-v\(version)")!
+//        if(MGLAccountManager.hasChinaBaseURL){
+//            return mapboxChinaDayStyleURL
+//        }
+        return URL(string: "https://config.flitsmeister.app/9.11/map-style-day.json")!
     }
     
     
@@ -53,10 +53,10 @@ extension MGLStyle {
      We only have one version of navigation guidance style in China, so if you switch your endpoint to .cn, it will return the default night style.
      */
     @objc public class func navigationGuidanceNightStyleURL(version: Int) -> URL {
-        if(MGLAccountManager.hasChinaBaseURL){
-            return mapboxChinaNightStyleURL
-        }
-        return URL(string: "mapbox://styles/mapbox/navigation-guidance-night-v\(version)")!
+//        if(MGLAccountManager.hasChinaBaseURL){
+//            return mapboxChinaNightStyleURL
+//        }
+        return URL(string: "https://config.flitsmeister.app/9.11/map-style-day.json")!
     }
     
     /**
@@ -64,10 +64,10 @@ extension MGLStyle {
      */
     @objc public class var navigationPreviewDayStyleURL: URL {
         get {
-            if MGLAccountManager.hasChinaBaseURL {
-                return mapboxChinaDayStyleURL
-            }
-            return URL(string:"mapbox://styles/mapbox/navigation-preview-day-v4")!
+//            if MGLAccountManager.hasChinaBaseURL {
+//                return mapboxChinaDayStyleURL
+//            }
+            return URL(string: "https://config.flitsmeister.app/9.11/map-style-day.json")!
         }
     }
     
@@ -76,10 +76,10 @@ extension MGLStyle {
      */
     @objc public class var navigationPreviewNightStyleURL: URL {
         get {
-            if MGLAccountManager.hasChinaBaseURL {
-                return mapboxChinaDayStyleURL
-            }
-            return URL(string:"mapbox://styles/mapbox/navigation-preview-night-v4")!
+//            if MGLAccountManager.hasChinaBaseURL {
+//                return mapboxChinaDayStyleURL
+//            }
+            return URL(string: "https://config.flitsmeister.app/9.11/map-style-day.json")!
         }
     }
     
@@ -89,10 +89,10 @@ extension MGLStyle {
      We only have one version of Navigation Preview style in China, so if you switch your endpoint to .cn, it will return the default day style.
      */
     @objc public class func navigationPreviewDayStyleURL(version: Int) -> URL {
-        if MGLAccountManager.hasChinaBaseURL {
-            return mapboxChinaDayStyleURL
-        }
-        return URL(string:"mapbox://styles/mapbox/navigation-guidance-day-v\(version)")!
+//        if MGLAccountManager.hasChinaBaseURL {
+//            return mapboxChinaDayStyleURL
+//        }
+        return URL(string: "https://config.flitsmeister.app/9.11/map-style-day.json")!
     }
     
     
@@ -102,9 +102,9 @@ extension MGLStyle {
      We only have one version of Navigation Preview style in China, so if you switch your endpoint to .cn, it will return the default night style.
      */
     @objc public class func navigationPreviewNightStyleURL(version: Int) -> URL {
-        if MGLAccountManager.hasChinaBaseURL {
-            return mapboxChinaNightStyleURL
-        }
-        return URL(string: "mapbox://styles/mapbox/navigation-guidance-night-v\(version)")!
+//        if MGLAccountManager.hasChinaBaseURL {
+//            return mapboxChinaNightStyleURL
+//        }
+        return URL(string: "https://config.flitsmeister.app/9.11/map-style-day.json")!
     }
 }
