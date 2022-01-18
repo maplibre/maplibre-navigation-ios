@@ -29,6 +29,16 @@ class ViewController: UIViewController, MGLMapViewDelegate {
             }
         }
     }
+    
+    var testMapView: MGLMapView? {
+        didSet {
+            oldValue?.removeFromSuperview()
+            if let testMapView = testMapView {
+                view.insertSubview(testMapView, belowSubview: longPressHintView)
+            }
+        }
+    }
+    
     var waypoints: [Waypoint] = [] {
         didSet {
             waypoints.forEach {
@@ -103,7 +113,8 @@ class ViewController: UIViewController, MGLMapViewDelegate {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        self.mapView = NavigationMapView(frame: view.bounds, styleURL: nil)
+        //self.mapView = NavigationMapView(frame: view.bounds, styleURL: URL(string: "https://config.flitsmeister.app/9.11/map-style-day.json")!)
+        self.testMapView = MGLMapView(frame: view.bounds, styleURL: URL(string: "https://config.flitsmeister.app/9.11/map-style-day.json")!)
 
         // Reset the navigation styling to the defaults if we are returning from a presentation.
         if (presentedViewController != nil) {
