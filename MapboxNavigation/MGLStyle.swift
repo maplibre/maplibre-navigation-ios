@@ -18,7 +18,7 @@ extension MGLStyle {
 //            if(MGLAccountManager.hasChinaBaseURL){
 //                return mapboxChinaDayStyleURL
 //            }
-            return URL(string: "https://config.flitsmeister.app/9.11/map-style-day.json")!
+            return URL(string:"mapbox://styles/mapbox/navigation-guidance-day-v4")!
         }
     }
     
@@ -30,7 +30,7 @@ extension MGLStyle {
 //            if(MGLAccountManager.hasChinaBaseURL){
 //                return mapboxChinaDayStyleURL
 //            }
-            return URL(string: "https://config.flitsmeister.app/9.11/map-style-day.json")!
+            return URL(string:"mapbox://styles/mapbox/navigation-guidance-night-v4")!
         }
     }
     
@@ -43,7 +43,7 @@ extension MGLStyle {
 //        if(MGLAccountManager.hasChinaBaseURL){
 //            return mapboxChinaDayStyleURL
 //        }
-        return URL(string: "https://config.flitsmeister.app/9.11/map-style-day.json")!
+        return URL(string:"mapbox://styles/mapbox/navigation-guidance-day-v\(version)")!
     }
     
     
@@ -56,7 +56,7 @@ extension MGLStyle {
 //        if(MGLAccountManager.hasChinaBaseURL){
 //            return mapboxChinaNightStyleURL
 //        }
-        return URL(string: "https://config.flitsmeister.app/9.11/map-style-day.json")!
+        return URL(string: "mapbox://styles/mapbox/navigation-guidance-night-v\(version)")!
     }
     
     /**
@@ -67,7 +67,7 @@ extension MGLStyle {
 //            if MGLAccountManager.hasChinaBaseURL {
 //                return mapboxChinaDayStyleURL
 //            }
-            return URL(string: "https://config.flitsmeister.app/9.11/map-style-day.json")!
+            return URL(string:"mapbox://styles/mapbox/navigation-preview-day-v4")!
         }
     }
     
@@ -79,7 +79,7 @@ extension MGLStyle {
 //            if MGLAccountManager.hasChinaBaseURL {
 //                return mapboxChinaDayStyleURL
 //            }
-            return URL(string: "https://config.flitsmeister.app/9.11/map-style-day.json")!
+            return URL(string:"mapbox://styles/mapbox/navigation-preview-night-v4")!
         }
     }
     
@@ -92,7 +92,7 @@ extension MGLStyle {
 //        if MGLAccountManager.hasChinaBaseURL {
 //            return mapboxChinaDayStyleURL
 //        }
-        return URL(string: "https://config.flitsmeister.app/9.11/map-style-day.json")!
+        return URL(string:"mapbox://styles/mapbox/navigation-guidance-day-v\(version)")!
     }
     
     
@@ -105,6 +105,6 @@ extension MGLStyle {
 //        if MGLAccountManager.hasChinaBaseURL {
 //            return mapboxChinaNightStyleURL
 //        }
-        return URL(string: "https://config.flitsmeister.app/9.11/map-style-day.json")!
+        return URL(string: "mapbox://styles/mapbox/navigation-guidance-night-v\(version)")!
     }
 }
