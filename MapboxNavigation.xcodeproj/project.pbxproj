@@ -288,10 +288,8 @@
 		C5EF397520599120009A2C50 /* straight-line.json in Resources */ = {isa = PBXBuildFile; fileRef = C5EF397420599120009A2C50 /* straight-line.json */; };
 		C5F2DCA0206DBF5E002F99F6 /* Sequence.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5F2DC9F206DBF5E002F99F6 /* Sequence.swift */; };
 		C5F2DCA1206DBF5E002F99F6 /* Sequence.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5F2DC9F206DBF5E002F99F6 /* Sequence.swift */; };
-		C5F2EDC4278ED6E200830D3C /* MetalANGLE in Frameworks */ = {isa = PBXBuildFile; productRef = C5F2EDC3278ED6E200830D3C /* MetalANGLE */; };
 		C5F2EDC6278ED6E800830D3C /* MetalANGLE in Frameworks */ = {isa = PBXBuildFile; productRef = C5F2EDC5278ED6E800830D3C /* MetalANGLE */; };
 		C5F2EDC8278ED6EE00830D3C /* MetalANGLE in Frameworks */ = {isa = PBXBuildFile; productRef = C5F2EDC7278ED6EE00830D3C /* MetalANGLE */; };
-		C5F2EDCA278ED6F400830D3C /* MetalANGLE in Frameworks */ = {isa = PBXBuildFile; productRef = C5F2EDC9278ED6F400830D3C /* MetalANGLE */; };
 		C5F4D21920DC468B0059FABF /* CongestionLevel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5F4D21820DC468B0059FABF /* CongestionLevel.swift */; };
 		C5FFAC1520D96F5C009E7F98 /* CarPlayNavigationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5FFAC1420D96F5B009E7F98 /* CarPlayNavigationViewController.swift */; };
 		D72CC42C2451A2F800238549 /* ConfigManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D72CC42B2451A2F800238549 /* ConfigManager.swift */; };
@@ -853,7 +851,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C5F2EDCA278ED6F400830D3C /* MetalANGLE in Frameworks */,
 				C53352A7278DD925003DEC63 /* Mapbox in Frameworks */,
 				C538E4F0278DC97600200823 /* MapboxGeocoder.xcframework in Frameworks */,
 				C538E4F1278DC97600200823 /* Turf.xcframework in Frameworks */,
@@ -895,7 +892,6 @@
 				C538E4FB278DCD0500200823 /* MapboxMobileEvents.xcframework in Frameworks */,
 				C538E503278DCD0A00200823 /* Turf.xcframework in Frameworks */,
 				C538E4F7278DCD0200200823 /* MapboxDirections.xcframework in Frameworks */,
-				C5F2EDC4278ED6E200830D3C /* MetalANGLE in Frameworks */,
 				C538E4F9278DCD0400200823 /* MapboxGeocoder.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1503,7 +1499,6 @@
 			name = MapboxNavigation;
 			packageProductDependencies = (
 				C53352A6278DD925003DEC63 /* Mapbox */,
-				C5F2EDC9278ED6F400830D3C /* MetalANGLE */,
 			);
 			productName = MapboxNavigation;
 			productReference = 351BEBD71E5BCC28006FE110 /* MapboxNavigation.framework */;
@@ -1585,7 +1580,6 @@
 			name = "Example-Swift";
 			packageProductDependencies = (
 				C533529A278DD8ED003DEC63 /* Mapbox */,
-				C5F2EDC3278ED6E200830D3C /* MetalANGLE */,
 			);
 			productName = "Example-Swift";
 			productReference = 358D14631E5E3B7700ADE590 /* Example-Swift.app */;
@@ -3291,7 +3285,7 @@
 			repositoryURL = "https://github.com/maplibre/maplibre-gl-native-distribution";
 			requirement = {
 				kind = exactVersion;
-				version = "5.12.0-pre.1";
+				version = 5.12.2;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
@@ -3317,22 +3311,12 @@
 			package = C5335299278DD8ED003DEC63 /* XCRemoteSwiftPackageReference "maplibre-gl-native-distribution" */;
 			productName = Mapbox;
 		};
-		C5F2EDC3278ED6E200830D3C /* MetalANGLE */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = C5335299278DD8ED003DEC63 /* XCRemoteSwiftPackageReference "maplibre-gl-native-distribution" */;
-			productName = MetalANGLE;
-		};
 		C5F2EDC5278ED6E800830D3C /* MetalANGLE */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = C5335299278DD8ED003DEC63 /* XCRemoteSwiftPackageReference "maplibre-gl-native-distribution" */;
 			productName = MetalANGLE;
 		};
 		C5F2EDC7278ED6EE00830D3C /* MetalANGLE */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = C5335299278DD8ED003DEC63 /* XCRemoteSwiftPackageReference "maplibre-gl-native-distribution" */;
-			productName = MetalANGLE;
-		};
-		C5F2EDC9278ED6F400830D3C /* MetalANGLE */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = C5335299278DD8ED003DEC63 /* XCRemoteSwiftPackageReference "maplibre-gl-native-distribution" */;
 			productName = MetalANGLE;
