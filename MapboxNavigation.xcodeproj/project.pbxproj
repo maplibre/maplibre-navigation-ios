@@ -294,7 +294,6 @@
 		C5F2EDCA278ED6F400830D3C /* MetalANGLE in Frameworks */ = {isa = PBXBuildFile; productRef = C5F2EDC9278ED6F400830D3C /* MetalANGLE */; };
 		C5F4D21920DC468B0059FABF /* CongestionLevel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5F4D21820DC468B0059FABF /* CongestionLevel.swift */; };
 		C5FFAC1520D96F5C009E7F98 /* CarPlayNavigationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5FFAC1420D96F5B009E7F98 /* CarPlayNavigationViewController.swift */; };
-		CFD47D9020FD85EC00BC1E49 /* MGLAccountManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFD47D8F20FD85EC00BC1E49 /* MGLAccountManager.swift */; };
 		D72CC42C2451A2F800238549 /* ConfigManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D72CC42B2451A2F800238549 /* ConfigManager.swift */; };
 		DA23C9611F4FC05C00BA9522 /* MGLMapView+MGLNavigationAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = 35D825F91E6A2DBE0088F83B /* MGLMapView+MGLNavigationAdditions.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		DA3525702010A5210048DDFC /* Localizable.stringsdict in Resources */ = {isa = PBXBuildFile; fileRef = DA35256E2010A5200048DDFC /* Localizable.stringsdict */; };
@@ -752,7 +751,6 @@
 		C5F2DC9F206DBF5E002F99F6 /* Sequence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sequence.swift; sourceTree = "<group>"; };
 		C5F4D21820DC468B0059FABF /* CongestionLevel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CongestionLevel.swift; sourceTree = "<group>"; };
 		C5FFAC1420D96F5B009E7F98 /* CarPlayNavigationViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CarPlayNavigationViewController.swift; sourceTree = "<group>"; };
-		CFD47D8F20FD85EC00BC1E49 /* MGLAccountManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MGLAccountManager.swift; sourceTree = "<group>"; };
 		D72CC42B2451A2F800238549 /* ConfigManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigManager.swift; sourceTree = "<group>"; };
 		DA1811FD20128B0900C91918 /* he */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = he; path = he.lproj/Main.strings; sourceTree = "<group>"; };
 		DA1811FE20128B0900C91918 /* he */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = he; path = he.lproj/Navigation.strings; sourceTree = "<group>"; };
@@ -1076,7 +1074,6 @@
 				C565168A1FE1E23E00A0AD18 /* MapboxVoiceController.swift */,
 				DADAD82C20350849002E25CA /* MBRouteVoiceController.h */,
 				DADAD82D20350849002E25CA /* MBRouteVoiceController.m */,
-				CFD47D8F20FD85EC00BC1E49 /* MGLAccountManager.swift */,
 				C53208AA1E81FFB900910266 /* NavigationMapView.swift */,
 				359D1B271FFE70D30052FA42 /* NavigationView.swift */,
 				351BEBEA1E5BCC63006FE110 /* NavigationViewController.swift */,
@@ -1573,8 +1570,8 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 358D14741E5E3B7700ADE590 /* Build configuration list for PBXNativeTarget "Example-Swift" */;
 			buildPhases = (
-				358D145F1E5E3B7700ADE590 /* Sources */,
 				358D14601E5E3B7700ADE590 /* Frameworks */,
+				358D145F1E5E3B7700ADE590 /* Sources */,
 				358D14611E5E3B7700ADE590 /* Resources */,
 				354A01C41E66265100D765C2 /* Embed Frameworks */,
 				DA408F661FB3CA3C004D9661 /* Apply Mapbox Access Token */,
@@ -2107,7 +2104,6 @@
 				35ECAF2D2092275100DC3BC3 /* UIImage.swift in Sources */,
 				351BEC051E5BCC6C006FE110 /* LaneView.swift in Sources */,
 				C5A7EC5C1FD610A80008B9BA /* VisualInstructionComponent.swift in Sources */,
-				CFD47D9020FD85EC00BC1E49 /* MGLAccountManager.swift in Sources */,
 				351BEC0D1E5BCC72006FE110 /* Bundle.swift in Sources */,
 				8DF399B21FB257B30034904C /* UIGestureRecognizer.swift in Sources */,
 				35B7837E1F9547B300291F9A /* Transitioning.swift in Sources */,
