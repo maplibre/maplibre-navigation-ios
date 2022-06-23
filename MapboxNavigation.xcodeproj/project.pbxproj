@@ -179,6 +179,8 @@
 		AE997D2221137B8B00EB0AAB /* String+LocalizedConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE997D2121137B8B00EB0AAB /* String+LocalizedConstants.swift */; };
 		AEC3AC9A2106703100A26F34 /* HighwayShield.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEC3AC992106703100A26F34 /* HighwayShield.swift */; };
 		AEF2C8F22072B603007B061F /* routeWithTunnels_9thStreetDC.json in Resources */ = {isa = PBXBuildFile; fileRef = AEF2C8F12072B603007B061F /* routeWithTunnels_9thStreetDC.json */; };
+		C50611752864A8A500CA06B7 /* MetalANGLE in Frameworks */ = {isa = PBXBuildFile; productRef = C50611742864A8A500CA06B7 /* MetalANGLE */; };
+		C50611772864A8B100CA06B7 /* MetalANGLE in Frameworks */ = {isa = PBXBuildFile; productRef = C50611762864A8B100CA06B7 /* MetalANGLE */; };
 		C51511D120EAC89D00372A91 /* CPMapTemplate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C51511D020EAC89D00372A91 /* CPMapTemplate.swift */; };
 		C51DF8661F38C31C006C6A15 /* Locale.swift in Sources */ = {isa = PBXBuildFile; fileRef = C51DF8651F38C31C006C6A15 /* Locale.swift */; };
 		C51DF8671F38C337006C6A15 /* Date.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5D9800E1EFBCDAD006DBF2E /* Date.swift */; };
@@ -851,6 +853,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C50611772864A8B100CA06B7 /* MetalANGLE in Frameworks */,
 				C53352A7278DD925003DEC63 /* Mapbox in Frameworks */,
 				C538E4F0278DC97600200823 /* MapboxGeocoder.xcframework in Frameworks */,
 				C538E4F1278DC97600200823 /* Turf.xcframework in Frameworks */,
@@ -892,6 +895,7 @@
 				C538E4FB278DCD0500200823 /* MapboxMobileEvents.xcframework in Frameworks */,
 				C538E503278DCD0A00200823 /* Turf.xcframework in Frameworks */,
 				C538E4F7278DCD0200200823 /* MapboxDirections.xcframework in Frameworks */,
+				C50611752864A8A500CA06B7 /* MetalANGLE in Frameworks */,
 				C538E4F9278DCD0400200823 /* MapboxGeocoder.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1499,6 +1503,7 @@
 			name = MapboxNavigation;
 			packageProductDependencies = (
 				C53352A6278DD925003DEC63 /* Mapbox */,
+				C50611762864A8B100CA06B7 /* MetalANGLE */,
 			);
 			productName = MapboxNavigation;
 			productReference = 351BEBD71E5BCC28006FE110 /* MapboxNavigation.framework */;
@@ -1580,6 +1585,7 @@
 			name = "Example-Swift";
 			packageProductDependencies = (
 				C533529A278DD8ED003DEC63 /* Mapbox */,
+				C50611742864A8A500CA06B7 /* MetalANGLE */,
 			);
 			productName = "Example-Swift";
 			productReference = 358D14631E5E3B7700ADE590 /* Example-Swift.app */;
@@ -3285,12 +3291,22 @@
 			repositoryURL = "https://github.com/maplibre/maplibre-gl-native-distribution";
 			requirement = {
 				kind = exactVersion;
-				version = 5.12.2;
+				version = "5.12.0-pre.1";
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		C50611742864A8A500CA06B7 /* MetalANGLE */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C5335299278DD8ED003DEC63 /* XCRemoteSwiftPackageReference "maplibre-gl-native-distribution" */;
+			productName = MetalANGLE;
+		};
+		C50611762864A8B100CA06B7 /* MetalANGLE */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C5335299278DD8ED003DEC63 /* XCRemoteSwiftPackageReference "maplibre-gl-native-distribution" */;
+			productName = MetalANGLE;
+		};
 		C533529A278DD8ED003DEC63 /* Mapbox */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = C5335299278DD8ED003DEC63 /* XCRemoteSwiftPackageReference "maplibre-gl-native-distribution" */;
