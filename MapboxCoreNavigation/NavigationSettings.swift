@@ -56,7 +56,7 @@ public class NavigationSettings: NSObject {
         let properties = Mirror(reflecting: self).children
         return properties.filter({ (child) -> Bool in
             if let label = child.label {
-                return label != "properties.storage"
+                return label != "properties.storage" && label != "$__lazy_storage_$_properties" // The last is needed to fix a weird crash: https://github.com/mapbox/mapbox-navigation-ios/issues/2262
             }
             return false
         })

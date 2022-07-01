@@ -29,6 +29,7 @@ class ViewController: UIViewController, MGLMapViewDelegate {
             }
         }
     }
+    
     var waypoints: [Waypoint] = [] {
         didSet {
             waypoints.forEach {
@@ -103,7 +104,7 @@ class ViewController: UIViewController, MGLMapViewDelegate {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        self.mapView = NavigationMapView(frame: view.bounds, styleURL: nil, palette: Palette())
+        self.mapView = NavigationMapView(frame: view.bounds, styleURL: nil)
 
         // Reset the navigation styling to the defaults if we are returning from a presentation.
         if (presentedViewController != nil) {

@@ -45,7 +45,7 @@ Alternatively, to install Mapbox Navigation using [Carthage](https://github.com/
 
 ## <a name="sample-code">Sample code
 
-A demo app is currently not available, so no sample code yet. Please check the Mapbox repository or documentation for examples.
+A demo app is currently not available, so no sample code yet. Please check the Mapbox repository or documentation for examples. You can try the provided demo app, which you need to first run `carthage update --platform iOS --use-xc-frameworks` for in the root of this project.
 
 In order to see the map or calculate a route you need your own Maptile and Direction services.
 

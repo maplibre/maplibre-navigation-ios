@@ -24,16 +24,12 @@ class CustomViewController: UIViewController, MGLMapViewDelegate {
     @IBOutlet var mapView: NavigationMapView!
     @IBOutlet weak var cancelButton: UIButton!
     @IBOutlet weak var instructionsBannerView: InstructionsBannerView!
-    
-    lazy var feedbackViewController: FeedbackViewController = {
-        return FeedbackViewController(eventsManager: routeController.eventsManager)
-    }()
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
         let locationManager = simulateLocation ? SimulatedLocationManager(route: userRoute!) : NavigationLocationManager()
-        routeController = RouteController(along: userRoute!, locationManager: locationManager, eventsManager: EventsManager())
+        routeController = RouteController(along: userRoute!, locationManager: locationManager)
         
         mapView.delegate = self
         mapView.compassView.isHidden = true
