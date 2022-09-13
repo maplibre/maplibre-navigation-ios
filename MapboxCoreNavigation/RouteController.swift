@@ -491,7 +491,7 @@ extension RouteController: CLLocationManagerDelegate {
                 self.didFindFasterRoute = false
             } else if newRouteCoordinatesMatchOriginalCoordinates {
                 self.routeProgress.route.expectedTravelTime = route.expectedTravelTime
-                self.delegate?.routeController?(self, didRerouteAlong: route, reroutingBecauseOfFasterRoute: false)
+                self.delegate?.routeController?(self, didRerouteAlong: self.routeProgress.route, reroutingBecauseOfFasterRoute: false)
             }
         }
     }
