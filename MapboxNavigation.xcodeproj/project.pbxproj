@@ -27,6 +27,8 @@
 		16E4F97F205B05FE00531791 /* MapboxVoiceControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16E4F97E205B05FE00531791 /* MapboxVoiceControllerTests.swift */; };
 		16EF6C1E21193A9600AA580B /* CarPlayManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16EF6C1D21193A9600AA580B /* CarPlayManagerTests.swift */; };
 		16EF6C22211BA4B300AA580B /* CarPlayMapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16EF6C21211BA4B300AA580B /* CarPlayMapViewController.swift */; };
+		2CEB742F28D078DA007ED4A9 /* MapboxSpeech.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = C538E4D6278DC92F00200823 /* MapboxSpeech.xcframework */; };
+		2CEB743228D078E6007ED4A9 /* Solar.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = C538E4D8278DC92F00200823 /* Solar.xcframework */; };
 		35002D611E5F6ADB0090E733 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 35002D5F1E5F6ADB0090E733 /* Assets.xcassets */; };
 		35002D621E5F6ADB0090E733 /* Base.lproj in Resources */ = {isa = PBXBuildFile; fileRef = 35002D601E5F6ADB0090E733 /* Base.lproj */; };
 		35002D691E5F6B2F0090E733 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 35002D661E5F6B1B0090E733 /* Main.storyboard */; };
@@ -851,7 +853,9 @@
 			files = (
 				C53352A7278DD925003DEC63 /* Mapbox in Frameworks */,
 				C538E4F0278DC97600200823 /* MapboxGeocoder.xcframework in Frameworks */,
+				2CEB742F28D078DA007ED4A9 /* MapboxSpeech.xcframework in Frameworks */,
 				C538E4F1278DC97600200823 /* Turf.xcframework in Frameworks */,
+				2CEB743228D078E6007ED4A9 /* Solar.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
