@@ -471,6 +471,14 @@ extension RouteController: CLLocationManagerDelegate {
             let routeIsFaster = firstStep.expectedTravelTime >= RouteControllerMediumAlertInterval &&
                 currentUpcomingManeuver == firstLeg.steps[1] && route.expectedTravelTime <= 0.9 * durationRemaining
 
+            let isSameUUID = routeProgress.route.routeIdentifier == route.routeIdentifier
+            let coordinatesAreIdentical = routeProgress.route.coordinates == route.coordinates
+            let legsAreIdentical = routeProgress.route.legs == route.legs
+            
+            print("FlitsNav", "isSameUUID", isSameUUID)
+            print("FlitsNav", "coordinatesAreIdentical", coordinatesAreIdentical)
+            print("FlitsNav", "legsAreIdentical", legsAreIdentical)
+            
             if routeIsFaster {
                 strongSelf.didFindFasterRoute = true
                 // If the upcoming maneuver in the new route is the same as the current upcoming maneuver, don't announce it
