@@ -460,7 +460,10 @@ extension RouteController: CLLocationManagerDelegate {
             // Also only do one 'findFasterRoute' call per time
             self.isFindingFasterRoute = false
 
-            guard let route = route else {
+            guard
+                let route = route,
+                let routeCoordinates = route.coordinates
+            else {
                 return
             }
 
@@ -471,15 +474,13 @@ extension RouteController: CLLocationManagerDelegate {
             let routeIsFaster = firstStep.expectedTravelTime >= RouteControllerMediumAlertInterval &&
                 currentUpcomingManeuver == firstLeg.steps[1] && route.expectedTravelTime <= 0.9 * durationRemaining
 
-            let isSameUUID = self.routeProgress.route.routeIdentifier == route.routeIdentifier
             let coordinatesAreIdentical = self.routeProgress.route.coordinates == route.coordinates
-            let legsAreIdentical = self.routeProgress.route.legs == route.legs
+            print("FlitsNav", "coordinatesAreIdentical", coordinatesAreIdentical)
             
-            print("FlitsNav", "isSameUUID", isSameUUID, self.routeProgress.route.routeIdentifier, route.routeIdentifier)
-            print("FlitsNav", "coordinatesAreIdentical", coordinatesAreIdentical, self.routeProgress.route.coordinates, route.coordinates)
-            print("FlitsNav", "legsAreIdentical", legsAreIdentical, self.routeProgress.route.legs, route.legs)
+            let newRouteCoordinatesMatchOriginalCoordinates = self.routeProgress.route.coordinates?.contains { routeCoordinates.contains($0) } ?? false
+            print("FlitsNav", "newRouteCoordinatesMatchOriginalCoordinates", newRouteCoordinatesMatchOriginalCoordinates)
             
-            if routeIsFaster {
+            if routeIsFaster || newRouteCoordinatesMatchOriginalCoordinates {
                 self.didFindFasterRoute = true
                 // If the upcoming maneuver in the new route is the same as the current upcoming maneuver, don't announce it
                 self.routeProgress = RouteProgress(route: route, legIndex: 0, spokenInstructionIndex: self.routeProgress.currentLegProgress.currentStepProgress.spokenInstructionIndex)
