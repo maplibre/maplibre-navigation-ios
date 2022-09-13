@@ -441,9 +441,9 @@ extension RouteController: CLLocationManagerDelegate {
         }
 
         // Only check every so often for a faster route.
-        guard location.timestamp.timeIntervalSince(lastLocationDate) >= RouteControllerProactiveReroutingInterval else {
-            return
-        }
+//        guard location.timestamp.timeIntervalSince(lastLocationDate) >= RouteControllerProactiveReroutingInterval else {
+//            return
+//        }
         let durationRemaining = routeProgress.durationRemaining
         
         isFindingFasterRoute = true
@@ -475,9 +475,9 @@ extension RouteController: CLLocationManagerDelegate {
             let coordinatesAreIdentical = self.routeProgress.route.coordinates == route.coordinates
             let legsAreIdentical = self.routeProgress.route.legs == route.legs
             
-            print("FlitsNav", "isSameUUID", isSameUUID)
-            print("FlitsNav", "coordinatesAreIdentical", coordinatesAreIdentical)
-            print("FlitsNav", "legsAreIdentical", legsAreIdentical)
+            print("FlitsNav", "isSameUUID", isSameUUID, self.routeProgress.route.routeIdentifier, route.routeIdentifier)
+            print("FlitsNav", "coordinatesAreIdentical", coordinatesAreIdentical, self.routeProgress.route.coordinates, route.coordinates)
+            print("FlitsNav", "legsAreIdentical", legsAreIdentical, self.routeProgress.route.legs, route.legs)
             
             if routeIsFaster {
                 self.didFindFasterRoute = true
