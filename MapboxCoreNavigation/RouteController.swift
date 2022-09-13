@@ -449,7 +449,10 @@ extension RouteController: CLLocationManagerDelegate {
         isFindingFasterRoute = true
 
         getDirections(from: location, along: routeProgress) { [weak self] (route, error) in
+            print("FlitsNav", "getDirections", route)
+            
             guard let self = self else {
+                print("FlitsNav", "getDirections", "No self")
                 return
             }
             
@@ -464,10 +467,12 @@ extension RouteController: CLLocationManagerDelegate {
                 let route = route,
                 let routeCoordinates = route.coordinates
             else {
+                print("FlitsNav", "getDirections", "No route or coordinates")
                 return
             }
 
             guard let firstLeg = route.legs.first, let firstStep = firstLeg.steps.first else {
+                print("FlitsNav", "getDirections", "No leg or step")
                 return
             }
 
