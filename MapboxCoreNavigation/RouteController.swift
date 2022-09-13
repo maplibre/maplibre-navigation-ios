@@ -473,16 +473,14 @@ extension RouteController: CLLocationManagerDelegate {
 
             let routeIsFaster = firstStep.expectedTravelTime >= RouteControllerMediumAlertInterval &&
                 currentUpcomingManeuver == firstLeg.steps[1] && route.expectedTravelTime <= 0.9 * durationRemaining
-
-            let coordinatesAreIdentical = self.routeProgress.route.coordinates == route.coordinates
-            print("FlitsNav", "coordinatesAreIdentical", coordinatesAreIdentical)
             
             var newRouteCoordinatesMatchOriginalCoordinates: Bool {
-                self.routeProgress.route.coordinates?.contains { routeCoordinates.contains($0) } ?? false
+                guard let currentRouteCoordinates = self.routeProgress.route.coordinates else { return false }
+                return routeCoordinates.contains { currentRouteCoordinates.contains($0) }
             }
-            print("FlitsNav", "newRouteCoordinatesMatchOriginalCoordinates", newRouteCoordinatesMatchOriginalCoordinates)
             
             if routeIsFaster {
+                print("FlitsNav", "routeIsFaster", routeIsFaster)
                 self.didFindFasterRoute = true
                 // If the upcoming maneuver in the new route is the same as the current upcoming maneuver, don't announce it
                 self.routeProgress = RouteProgress(route: route, legIndex: 0, spokenInstructionIndex: self.routeProgress.currentLegProgress.currentStepProgress.spokenInstructionIndex)
@@ -490,6 +488,7 @@ extension RouteController: CLLocationManagerDelegate {
                 self.movementsAwayFromRoute = 0
                 self.didFindFasterRoute = false
             } else if newRouteCoordinatesMatchOriginalCoordinates {
+                print("FlitsNav", "newRouteCoordinatesMatchOriginalCoordinates", newRouteCoordinatesMatchOriginalCoordinates)
                 self.routeProgress.route.expectedTravelTime = route.expectedTravelTime
                 self.delegate?.routeController?(self, didRerouteAlong: self.routeProgress.route, reroutingBecauseOfFasterRoute: false)
             }
