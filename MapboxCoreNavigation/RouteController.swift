@@ -477,16 +477,21 @@ extension RouteController: CLLocationManagerDelegate {
             let coordinatesAreIdentical = self.routeProgress.route.coordinates == route.coordinates
             print("FlitsNav", "coordinatesAreIdentical", coordinatesAreIdentical)
             
-            let newRouteCoordinatesMatchOriginalCoordinates = self.routeProgress.route.coordinates?.contains { routeCoordinates.contains($0) } ?? false
+            var newRouteCoordinatesMatchOriginalCoordinates: Bool {
+                self.routeProgress.route.coordinates?.contains { routeCoordinates.contains($0) } ?? false
+            }
             print("FlitsNav", "newRouteCoordinatesMatchOriginalCoordinates", newRouteCoordinatesMatchOriginalCoordinates)
             
-            if routeIsFaster || newRouteCoordinatesMatchOriginalCoordinates {
+            if routeIsFaster {
                 self.didFindFasterRoute = true
                 // If the upcoming maneuver in the new route is the same as the current upcoming maneuver, don't announce it
                 self.routeProgress = RouteProgress(route: route, legIndex: 0, spokenInstructionIndex: self.routeProgress.currentLegProgress.currentStepProgress.spokenInstructionIndex)
                 self.delegate?.routeController?(self, didRerouteAlong: route, reroutingBecauseOfFasterRoute: true)
                 self.movementsAwayFromRoute = 0
                 self.didFindFasterRoute = false
+            } else if newRouteCoordinatesMatchOriginalCoordinates {
+                self.routeProgress.route.expectedTravelTime = route.expectedTravelTime
+                self.delegate?.routeController?(self, didRerouteAlong: route, reroutingBecauseOfFasterRoute: false)
             }
         }
     }
