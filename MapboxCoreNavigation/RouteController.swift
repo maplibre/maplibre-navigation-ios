@@ -449,16 +449,16 @@ extension RouteController: CLLocationManagerDelegate {
         isFindingFasterRoute = true
 
         getDirections(from: location, along: routeProgress) { [weak self] (route, error) in
-            guard let strongSelf = self else {
+            guard let self = self else {
                 return
             }
             
             // Every request should reset the lastLocationDate, else we spam the server by calling this method every location update.
             // If the call fails, tough luck buddy! Then wait until the next interval before retrying
-            strongSelf.lastLocationDate = nil
+            self.lastLocationDate = nil
             
             // Also only do one 'findFasterRoute' call per time
-            strongSelf.isFindingFasterRoute = false
+            self.isFindingFasterRoute = false
 
             guard let route = route else {
                 return
@@ -471,21 +471,21 @@ extension RouteController: CLLocationManagerDelegate {
             let routeIsFaster = firstStep.expectedTravelTime >= RouteControllerMediumAlertInterval &&
                 currentUpcomingManeuver == firstLeg.steps[1] && route.expectedTravelTime <= 0.9 * durationRemaining
 
-            let isSameUUID = routeProgress.route.routeIdentifier == route.routeIdentifier
-            let coordinatesAreIdentical = routeProgress.route.coordinates == route.coordinates
-            let legsAreIdentical = routeProgress.route.legs == route.legs
+            let isSameUUID = self.routeProgress.route.routeIdentifier == route.routeIdentifier
+            let coordinatesAreIdentical = self.routeProgress.route.coordinates == route.coordinates
+            let legsAreIdentical = self.routeProgress.route.legs == route.legs
             
             print("FlitsNav", "isSameUUID", isSameUUID)
             print("FlitsNav", "coordinatesAreIdentical", coordinatesAreIdentical)
             print("FlitsNav", "legsAreIdentical", legsAreIdentical)
             
             if routeIsFaster {
-                strongSelf.didFindFasterRoute = true
+                self.didFindFasterRoute = true
                 // If the upcoming maneuver in the new route is the same as the current upcoming maneuver, don't announce it
-                strongSelf.routeProgress = RouteProgress(route: route, legIndex: 0, spokenInstructionIndex: strongSelf.routeProgress.currentLegProgress.currentStepProgress.spokenInstructionIndex)
-                strongSelf.delegate?.routeController?(strongSelf, didRerouteAlong: route, reroutingBecauseOfFasterRoute: true)
-                strongSelf.movementsAwayFromRoute = 0
-                strongSelf.didFindFasterRoute = false
+                self.routeProgress = RouteProgress(route: route, legIndex: 0, spokenInstructionIndex: self.routeProgress.currentLegProgress.currentStepProgress.spokenInstructionIndex)
+                self.delegate?.routeController?(self, didRerouteAlong: route, reroutingBecauseOfFasterRoute: true)
+                self.movementsAwayFromRoute = 0
+                self.didFindFasterRoute = false
             }
         }
     }
