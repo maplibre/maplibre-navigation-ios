@@ -484,6 +484,8 @@ extension RouteController: CLLocationManagerDelegate {
                 return routeCoordinates.contains { currentRouteCoordinates.contains($0) }
             }
             
+            print("FlitsNav", "newRouteCoordinatesMatchOriginalCoordinates", newRouteCoordinatesMatchOriginalCoordinates)
+            
             if routeIsFaster {
                 print("FlitsNav", "routeIsFaster", routeIsFaster)
                 self.didFindFasterRoute = true
@@ -493,7 +495,6 @@ extension RouteController: CLLocationManagerDelegate {
                 self.movementsAwayFromRoute = 0
                 self.didFindFasterRoute = false
             } else if newRouteCoordinatesMatchOriginalCoordinates {
-                print("FlitsNav", "newRouteCoordinatesMatchOriginalCoordinates", newRouteCoordinatesMatchOriginalCoordinates)
                 self.routeProgress.route.expectedTravelTime = route.expectedTravelTime
                 self.delegate?.routeController?(self, didRerouteAlong: self.routeProgress.route, reroutingBecauseOfFasterRoute: false)
             }
