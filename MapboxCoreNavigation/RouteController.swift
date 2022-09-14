@@ -486,6 +486,16 @@ extension RouteController: CLLocationManagerDelegate {
             
             print("FlitsNav", "newRouteCoordinatesMatchOriginalCoordinates", newRouteCoordinatesMatchOriginalCoordinates)
             
+            var newRouteCoordinatesMatchOriginalCoordinatesNinetyPercent: Bool {
+                guard let currentRouteCoordinates = self.routeProgress.route.coordinates else { return false }
+                let matchCount = Double(routeCoordinates.filter { currentRouteCoordinates.contains($0) }.count)
+                let matchFactor = 1.0 / Double(routeCoordinates.count) * matchCount
+                print("FlitsNav", "matchFactor", matchFactor)
+                return matchFactor >= 0.9
+            }
+            
+            print("FlitsNav", "newRouteCoordinatesMatchOriginalCoordinatesNinetyPercent", newRouteCoordinatesMatchOriginalCoordinatesNinetyPercent)
+            
             if routeIsFaster {
                 print("FlitsNav", "routeIsFaster", routeIsFaster)
                 self.didFindFasterRoute = true
@@ -495,8 +505,8 @@ extension RouteController: CLLocationManagerDelegate {
                 self.movementsAwayFromRoute = 0
                 self.didFindFasterRoute = false
             } else if newRouteCoordinatesMatchOriginalCoordinates {
-                self.routeProgress.route.expectedTravelTime = route.expectedTravelTime
-                self.delegate?.routeController?(self, didRerouteAlong: self.routeProgress.route, reroutingBecauseOfFasterRoute: false)
+                self.routeProgress = RouteProgress(route: route, legIndex: 0, spokenInstructionIndex: self.routeProgress.currentLegProgress.currentStepProgress.spokenInstructionIndex)
+                self.delegate?.routeController?(self, didRerouteAlong: route, reroutingBecauseOfFasterRoute: false)
             }
         }
     }
