@@ -520,6 +520,7 @@ extension RouteController: CLLocationManagerDelegate {
                 self.didFindFasterRoute = false
             } else if isExpectedTravelTimeChangedSignificantly, let route = newRouteMatchingAtLeast90Percent {
                 if Self.isMegaFileActive {
+                    print("FlitsNav", "isMegaFileActive")
                     route.expectedTravelTime = route.expectedTravelTime + 60 * 10
                 }
                 self.routeProgress = RouteProgress(route: route, legIndex: 0, spokenInstructionIndex: self.routeProgress.currentLegProgress.currentStepProgress.spokenInstructionIndex)
