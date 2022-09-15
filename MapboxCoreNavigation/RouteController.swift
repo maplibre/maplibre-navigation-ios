@@ -485,11 +485,15 @@ extension RouteController: CLLocationManagerDelegate {
                     print("FlitsNav", "currentRouteCoordinates nil")
                     return false
                 }
-                let matchCount = Double(routeCoordinates.filter { currentRouteCoordinates.contains($0) }.count)
-                let matchFactor = 1.0 / Double(routeCoordinates.count) * matchCount
-                print("FlitsNav", "matchFactor", matchFactor, routeCoordinates.count, currentRouteCoordinates.count, matchCount)
+                
+                let routeCoordinatesStrings = routeCoordinates.map { String(format: "%.4f,%.4f", $0.latitude, $0.longitude) }
+                let currentRouteCoordinatesStrings = currentRouteCoordinates.map { String(format: "%.4f,%.4f", $0.latitude, $0.longitude) }
+                
+                let matchCount = Double(routeCoordinatesStrings.filter { currentRouteCoordinatesStrings.contains($0) }.count)
+                let matchFactor = 1.0 / Double(routeCoordinatesStrings.count) * matchCount
+                print("FlitsNav", "matchFactor", matchFactor, routeCoordinatesStrings.count, currentRouteCoordinatesStrings.count, matchCount)
                 if matchFactor == 0 {
-                    print("FlitsNav", "matchFactor zero", routeCoordinates, currentRouteCoordinates)
+                    print("FlitsNav", "matchFactor zero", routeCoordinatesStrings, currentRouteCoordinatesStrings)
                 }
                 return matchFactor >= 0.9
             }
