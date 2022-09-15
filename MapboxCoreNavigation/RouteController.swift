@@ -342,11 +342,12 @@ extension RouteController: CLLocationManagerDelegate {
 
         // Check for faster route given users current location
         guard reroutesProactively else { return }
+        
         // Only check for faster alternatives if the user has plenty of time left on the route.
-        guard routeProgress.durationRemaining > 600 else { return }
         // If the user is approaching a maneuver, don't check for a faster alternatives
-        guard routeProgress.currentLegProgress.currentStepProgress.durationRemaining > RouteControllerMediumAlertInterval else { return }
-        checkForFasterRoute(from: location)
+        let isRerouteAllowed = routeProgress.durationRemaining > 600 && routeProgress.currentLegProgress.currentStepProgress.durationRemaining > RouteControllerMediumAlertInterval
+        
+        checkForFasterRoute(from: location, isRerouteAllowed: isRerouteAllowed)
     }
         
     func updateIntersectionIndex(for currentStepProgress: RouteStepProgress) {
@@ -426,7 +427,7 @@ extension RouteController: CLLocationManagerDelegate {
         return false
     }
 
-    func checkForFasterRoute(from location: CLLocation) {
+    func checkForFasterRoute(from location: CLLocation, isRerouteAllowed: Bool) {
         guard !isFindingFasterRoute else {
             return
         }
@@ -496,7 +497,7 @@ extension RouteController: CLLocationManagerDelegate {
             
             print("FlitsNav", "newRouteCoordinatesMatchOriginalCoordinatesNinetyPercent", newRouteCoordinatesMatchOriginalCoordinatesNinetyPercent)
             
-            if routeIsFaster {
+            if isRerouteAllowed && routeIsFaster {
                 print("FlitsNav", "routeIsFaster", routeIsFaster)
                 self.didFindFasterRoute = true
                 // If the upcoming maneuver in the new route is the same as the current upcoming maneuver, don't announce it
