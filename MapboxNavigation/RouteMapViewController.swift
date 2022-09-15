@@ -111,7 +111,6 @@ class RouteMapViewController: UIViewController {
         self.routeController = routeController
         self.delegate = delegate
         automaticallyAdjustsScrollViewInsets = false
-        
     }
 
 
