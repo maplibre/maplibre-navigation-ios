@@ -449,7 +449,7 @@ extension RouteController: CLLocationManagerDelegate {
         
         isFindingFasterRoute = true
 
-        getDirections(from: location, along: routeProgress) { [weak self] (route, error) in
+        getDirections(from: location, along: routeProgress) { [weak self] mostSimilarRoute, routes, error in
             guard let self = self else { return }
             
             // Every request should reset the lastLocationDate, else we spam the server by calling this method every location update.
@@ -459,10 +459,7 @@ extension RouteController: CLLocationManagerDelegate {
             // Also only do one 'findFasterRoute' call per time
             self.isFindingFasterRoute = false
 
-            guard
-                let route = route,
-                let routeCoordinates = route.coordinates
-            else {
+            guard let route = mostSimilarRoute else {
                 return
             }
 
@@ -470,26 +467,45 @@ extension RouteController: CLLocationManagerDelegate {
                 return
             }
 
-            let routeIsFaster = firstStep.expectedTravelTime >= RouteControllerMediumAlertInterval &&
-                currentUpcomingManeuver == firstLeg.steps[1] && route.expectedTravelTime <= 0.9 * durationRemaining
+            let routeIsFaster = firstStep.expectedTravelTime >= RouteControllerMediumAlertInterval && currentUpcomingManeuver == firstLeg.steps[1] && route.expectedTravelTime <= 0.9 * durationRemaining
             
-            var newRouteCoordinatesMatchOriginalCoordinatesNinetyPercent: Bool {
-                guard let currentRouteCoordinates = self.routeProgress.route.coordinates else { return false }
+            var newRouteMatchingAtLeast90Percent: Route? {
+                guard
+                    let currentRouteCoordinates = self.routeProgress.route.coordinates,
+                    let routes = routes,
+                    let routeCoordinates = mostSimilarRoute?.coordinates
+                else { return nil }
                 
-                let routeCoordinatesStrings = routeCoordinates.map { String(format: "%.4f,%.4f", $0.latitude, $0.longitude) }
                 let currentRouteCoordinatesStrings = currentRouteCoordinates.map { String(format: "%.4f,%.4f", $0.latitude, $0.longitude) }
                 
-                let matchCount = Double(routeCoordinatesStrings.filter { currentRouteCoordinatesStrings.contains($0) }.count)
-                let matchFactor = 1.0 / Double(routeCoordinatesStrings.count) * matchCount
-                print("FlitsNav", "matchFactor", matchFactor, routeCoordinatesStrings.count, currentRouteCoordinatesStrings.count, matchCount)
-                return matchFactor >= 0.9
+                let bestMatch = routes.map { route -> (route: Route, matchFactor: Double) in
+                    let routeCoordinatesStrings = routeCoordinates.map { String(format: "%.4f,%.4f", $0.latitude, $0.longitude) }
+                    let matchCount = Double(routeCoordinatesStrings.filter { currentRouteCoordinatesStrings.contains($0) }.count)
+                    let matchFactor = 1.0 / Double(routeCoordinatesStrings.count) * matchCount
+                    print("FlitsNav", "matchFactor", matchFactor, routeCoordinatesStrings.count, currentRouteCoordinatesStrings.count, matchCount)
+                    return (route, matchFactor)
+                }
+                    .sorted { $0.matchFactor > $1.matchFactor }
+                    .first
+                
+                guard let bestMatch = bestMatch else {
+                    print("FlitsNav", "No bestMatch")
+                    return nil
+                }
+                
+                print("FlitsNav", "bestMatch", bestMatch)
+                
+                if bestMatch.matchFactor >= 0.9 {
+                    return bestMatch.route
+                }
+                return nil
             }
             
             var isExpectedTravelTimeChanged: Bool {
                 self.routeProgress.route.expectedTravelTime != route.expectedTravelTime
             }
             
-            print("FlitsNav", "newRouteCoordinatesMatchOriginalCoordinatesNinetyPercent", newRouteCoordinatesMatchOriginalCoordinatesNinetyPercent)
+            print("FlitsNav", "newRouteMatchingAtLeast90Percent", newRouteMatchingAtLeast90Percent)
             print("FlitsNav", "isExpectedTravelTimeChanged", isExpectedTravelTimeChanged, self.routeProgress.route.expectedTravelTime, route.expectedTravelTime)
             
             if isRerouteAllowed && routeIsFaster {
@@ -500,7 +516,7 @@ extension RouteController: CLLocationManagerDelegate {
                 self.delegate?.routeController?(self, didRerouteAlong: route, reroutingBecauseOfFasterRoute: true)
                 self.movementsAwayFromRoute = 0
                 self.didFindFasterRoute = false
-            } else if isExpectedTravelTimeChanged && newRouteCoordinatesMatchOriginalCoordinatesNinetyPercent {
+            } else if isExpectedTravelTimeChanged, let route = newRouteMatchingAtLeast90Percent {
                 self.routeProgress = RouteProgress(route: route, legIndex: 0, spokenInstructionIndex: self.routeProgress.currentLegProgress.currentStepProgress.spokenInstructionIndex)
                 self.delegate?.routeController?(self, didRerouteAlong: route, reroutingBecauseOfFasterRoute: false)
             }
@@ -527,7 +543,7 @@ extension RouteController: CLLocationManagerDelegate {
 
         self.lastRerouteLocation = location
 
-        getDirections(from: location, along: progress) { [weak self] (route, error) in
+        getDirections(from: location, along: progress) { [weak self] (route, _, error) in
             guard let strongSelf = self else {
                 return
             }
@@ -575,27 +591,26 @@ extension RouteController: CLLocationManagerDelegate {
         }
     }
 
-    func getDirections(from location: CLLocation, along progress: RouteProgress, completion: @escaping (_ route: Route?, _ error: Error?)->Void) {
+    func getDirections(from location: CLLocation, along progress: RouteProgress, completion: @escaping (_ mostSimilarRoute: Route?, _ routes: [Route]?, _ error: Error?)->Void) {
         routeTask?.cancel()
         let options = progress.reroutingOptions(with: location)
 
         self.lastRerouteLocation = location
 
-        let complete = { [weak self] (route: Route?, error: NSError?) in
+        let complete = { [weak self] (mostSimilarRoute: Route?, routes: [Route]?, error: NSError?) in
             self?.isRerouting = false
-            completion(route, error)
+            completion(mostSimilarRoute, routes, error)
         }
         
         routeTask = directions.calculate(options) {(waypoints, potentialRoutes, potentialError) in
 
             guard let routes = potentialRoutes else {
-                return complete(nil, potentialError)
+                return complete(nil, nil, potentialError)
             }
             
             let mostSimilar = routes.mostSimilar(to: progress.route)
             
-            return complete(mostSimilar ?? routes.first, potentialError)
-            
+            return complete(mostSimilar ?? routes.first, routes, potentialError)
         }
     }
 
