@@ -608,6 +608,8 @@ extension RouteController: CLLocationManagerDelegate {
                 return complete(nil, nil, potentialError)
             }
             
+            print("FlitsNav", "potentialRoutes", routes.map { $0.coordinates?.count ?? -1 })
+            
             let mostSimilar = routes.mostSimilar(to: progress.route)
             
             return complete(mostSimilar ?? routes.first, routes, potentialError)
