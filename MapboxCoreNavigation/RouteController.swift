@@ -487,7 +487,10 @@ extension RouteController: CLLocationManagerDelegate {
                 }
                 let matchCount = Double(routeCoordinates.filter { currentRouteCoordinates.contains($0) }.count)
                 let matchFactor = 1.0 / Double(routeCoordinates.count) * matchCount
-                print("FlitsNav", "matchFactor", matchFactor, routeCoordinates.count, matchCount)
+                print("FlitsNav", "matchFactor", matchFactor, routeCoordinates.count, currentRouteCoordinates.count, matchCount)
+                if matchFactor == 0 {
+                    print("FlitsNav", "matchFactor zero", routeCoordinates, currentRouteCoordinates)
+                }
                 return matchFactor >= 0.9
             }
             
@@ -498,9 +501,8 @@ extension RouteController: CLLocationManagerDelegate {
             print("FlitsNav", "newRouteCoordinatesMatchOriginalCoordinatesNinetyPercent", newRouteCoordinatesMatchOriginalCoordinatesNinetyPercent)
             print("FlitsNav", "isExpectedTravelTimeChanged", isExpectedTravelTimeChanged, self.routeProgress.route.expectedTravelTime, route.expectedTravelTime)
             
-            print("FlitsNav", "routeIsFaster", routeIsFaster, "isRerouteAllowed", isRerouteAllowed)
-            
             if isRerouteAllowed && routeIsFaster {
+                print("FlitsNav", "routeIsFaster && isRerouteAllowed")
                 self.didFindFasterRoute = true
                 // If the upcoming maneuver in the new route is the same as the current upcoming maneuver, don't announce it
                 self.routeProgress = RouteProgress(route: route, legIndex: 0, spokenInstructionIndex: self.routeProgress.currentLegProgress.currentStepProgress.spokenInstructionIndex)
