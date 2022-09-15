@@ -450,12 +450,7 @@ extension RouteController: CLLocationManagerDelegate {
         isFindingFasterRoute = true
 
         getDirections(from: location, along: routeProgress) { [weak self] (route, error) in
-            print("FlitsNav", "getDirections")
-            
-            guard let self = self else {
-                print("FlitsNav", "getDirections", "No self")
-                return
-            }
+            guard let self = self else { return }
             
             // Every request should reset the lastLocationDate, else we spam the server by calling this method every location update.
             // If the call fails, tough luck buddy! Then wait until the next interval before retrying
