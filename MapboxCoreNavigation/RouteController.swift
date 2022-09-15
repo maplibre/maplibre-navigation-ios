@@ -427,6 +427,8 @@ extension RouteController: CLLocationManagerDelegate {
         return false
     }
 
+    static var isMegaFileActive = false
+    
     func checkForFasterRoute(from location: CLLocation, isRerouteAllowed: Bool) {
         guard !isFindingFasterRoute else {
             return
@@ -517,6 +519,9 @@ extension RouteController: CLLocationManagerDelegate {
                 self.movementsAwayFromRoute = 0
                 self.didFindFasterRoute = false
             } else if isExpectedTravelTimeChangedSignificantly, let route = newRouteMatchingAtLeast90Percent {
+                if Self.isMegaFileActive {
+                    route.expectedTravelTime = route.expectedTravelTime + 60 * 10
+                }
                 self.routeProgress = RouteProgress(route: route, legIndex: 0, spokenInstructionIndex: self.routeProgress.currentLegProgress.currentStepProgress.spokenInstructionIndex)
                 self.delegate?.routeController?(self, didRerouteAlong: route, reroutingBecauseOfFasterRoute: false, isExpectedTravelTimeUpdate: true)
             }
