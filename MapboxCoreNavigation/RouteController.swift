@@ -468,12 +468,10 @@ extension RouteController: CLLocationManagerDelegate {
                 let route = route,
                 let routeCoordinates = route.coordinates
             else {
-                print("FlitsNav", "getDirections", "No route or coordinates")
                 return
             }
 
             guard let firstLeg = route.legs.first, let firstStep = firstLeg.steps.first else {
-                print("FlitsNav", "getDirections", "No leg or step")
                 return
             }
 
@@ -481,10 +479,7 @@ extension RouteController: CLLocationManagerDelegate {
                 currentUpcomingManeuver == firstLeg.steps[1] && route.expectedTravelTime <= 0.9 * durationRemaining
             
             var newRouteCoordinatesMatchOriginalCoordinatesNinetyPercent: Bool {
-                guard let currentRouteCoordinates = self.routeProgress.route.coordinates else {
-                    print("FlitsNav", "currentRouteCoordinates nil")
-                    return false
-                }
+                guard let currentRouteCoordinates = self.routeProgress.route.coordinates else { return false }
                 
                 let routeCoordinatesStrings = routeCoordinates.map { String(format: "%.4f,%.4f", $0.latitude, $0.longitude) }
                 let currentRouteCoordinatesStrings = currentRouteCoordinates.map { String(format: "%.4f,%.4f", $0.latitude, $0.longitude) }
@@ -492,9 +487,6 @@ extension RouteController: CLLocationManagerDelegate {
                 let matchCount = Double(routeCoordinatesStrings.filter { currentRouteCoordinatesStrings.contains($0) }.count)
                 let matchFactor = 1.0 / Double(routeCoordinatesStrings.count) * matchCount
                 print("FlitsNav", "matchFactor", matchFactor, routeCoordinatesStrings.count, currentRouteCoordinatesStrings.count, matchCount)
-                if matchFactor == 0 {
-                    print("FlitsNav", "matchFactor zero", routeCoordinatesStrings, currentRouteCoordinatesStrings)
-                }
                 return matchFactor >= 0.9
             }
             

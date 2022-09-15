@@ -1,6 +1,6 @@
 github "Quick/Quick" "v2.2.1"
 github "ceeK/Solar" "2.2.0"
-github "flitsmeister/mapbox-directions-swift" "0bc2de6af643867ae3dd7335f585a78568d078d2"
+github "mapbox/MapboxDirections.swift" "v0.23.0"
 github "mapbox/MapboxGeocoder.swift" "v0.10.2"
 github "mapbox/mapbox-events-ios" "v0.10.2"
 github "mapbox/mapbox-voice-swift" "v0.0.2"
