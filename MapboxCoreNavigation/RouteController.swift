@@ -512,12 +512,12 @@ extension RouteController: CLLocationManagerDelegate {
                 print("FlitsNav", "routeIsFaster && isRerouteAllowed")
                 self.didFindFasterRoute = true
                 // If the upcoming maneuver in the new route is the same as the current upcoming maneuver, don't announce it
-                self.routeProgress = RouteProgress(route: route, legIndex: 0, spokenInstructionIndex: 0)
+                self.routeProgress = RouteProgress(route: route, legIndex: 0, spokenInstructionIndex: self.routeProgress.currentLegProgress.currentStepProgress.spokenInstructionIndex)
                 self.delegate?.routeController?(self, didRerouteAlong: route, reroutingBecauseOfFasterRoute: true)
                 self.movementsAwayFromRoute = 0
                 self.didFindFasterRoute = false
             } else if isExpectedTravelTimeChanged, let route = newRouteMatchingAtLeast90Percent {
-                self.routeProgress = RouteProgress(route: route, legIndex: 0, spokenInstructionIndex: 0)
+                self.routeProgress = RouteProgress(route: route, legIndex: 0, spokenInstructionIndex: self.routeProgress.currentLegProgress.currentStepProgress.spokenInstructionIndex)
                 self.delegate?.routeController?(self, didRerouteAlong: route, reroutingBecauseOfFasterRoute: false)
             }
         }
