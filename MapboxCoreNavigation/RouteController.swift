@@ -481,10 +481,13 @@ extension RouteController: CLLocationManagerDelegate {
                 currentUpcomingManeuver == firstLeg.steps[1] && route.expectedTravelTime <= 0.9 * durationRemaining
             
             var newRouteCoordinatesMatchOriginalCoordinatesNinetyPercent: Bool {
-                guard let currentRouteCoordinates = self.routeProgress.route.coordinates else { return false }
+                guard let currentRouteCoordinates = self.routeProgress.route.coordinates else {
+                    print("FlitsNav", "currentRouteCoordinates nil")
+                    return false
+                }
                 let matchCount = Double(routeCoordinates.filter { currentRouteCoordinates.contains($0) }.count)
                 let matchFactor = 1.0 / Double(routeCoordinates.count) * matchCount
-                print("FlitsNav", "matchFactor", matchFactor)
+                print("FlitsNav", "matchFactor", matchFactor, routeCoordinates.count, matchCount)
                 return matchFactor >= 0.9
             }
             
@@ -493,7 +496,7 @@ extension RouteController: CLLocationManagerDelegate {
             }
             
             print("FlitsNav", "newRouteCoordinatesMatchOriginalCoordinatesNinetyPercent", newRouteCoordinatesMatchOriginalCoordinatesNinetyPercent)
-            print("FlitsNav", "isExpectedTravelTimeChanged", isExpectedTravelTimeChanged)
+            print("FlitsNav", "isExpectedTravelTimeChanged", isExpectedTravelTimeChanged, self.routeProgress.route.expectedTravelTime, route.expectedTravelTime)
             
             print("FlitsNav", "routeIsFaster", routeIsFaster, "isRerouteAllowed", isRerouteAllowed)
             
