@@ -450,7 +450,7 @@ extension RouteController: CLLocationManagerDelegate {
         isFindingFasterRoute = true
 
         getDirections(from: location, along: routeProgress) { [weak self] (route, error) in
-            print("FlitsNav", "getDirections", route)
+            print("FlitsNav", "getDirections")
             
             guard let self = self else {
                 print("FlitsNav", "getDirections", "No self")
@@ -480,13 +480,6 @@ extension RouteController: CLLocationManagerDelegate {
             let routeIsFaster = firstStep.expectedTravelTime >= RouteControllerMediumAlertInterval &&
                 currentUpcomingManeuver == firstLeg.steps[1] && route.expectedTravelTime <= 0.9 * durationRemaining
             
-            var newRouteCoordinatesMatchOriginalCoordinates: Bool {
-                guard let currentRouteCoordinates = self.routeProgress.route.coordinates else { return false }
-                return routeCoordinates.contains { currentRouteCoordinates.contains($0) }
-            }
-            
-            print("FlitsNav", "newRouteCoordinatesMatchOriginalCoordinates", newRouteCoordinatesMatchOriginalCoordinates)
-            
             var newRouteCoordinatesMatchOriginalCoordinatesNinetyPercent: Bool {
                 guard let currentRouteCoordinates = self.routeProgress.route.coordinates else { return false }
                 let matchCount = Double(routeCoordinates.filter { currentRouteCoordinates.contains($0) }.count)
@@ -495,17 +488,23 @@ extension RouteController: CLLocationManagerDelegate {
                 return matchFactor >= 0.9
             }
             
+            var isExpectedTravelTimeChanged: Bool {
+                self.routeProgress.route.expectedTravelTime != route.expectedTravelTime
+            }
+            
             print("FlitsNav", "newRouteCoordinatesMatchOriginalCoordinatesNinetyPercent", newRouteCoordinatesMatchOriginalCoordinatesNinetyPercent)
+            print("FlitsNav", "isExpectedTravelTimeChanged", isExpectedTravelTimeChanged)
+            
+            print("FlitsNav", "routeIsFaster", routeIsFaster, "isRerouteAllowed", isRerouteAllowed)
             
             if isRerouteAllowed && routeIsFaster {
-                print("FlitsNav", "routeIsFaster", routeIsFaster)
                 self.didFindFasterRoute = true
                 // If the upcoming maneuver in the new route is the same as the current upcoming maneuver, don't announce it
                 self.routeProgress = RouteProgress(route: route, legIndex: 0, spokenInstructionIndex: self.routeProgress.currentLegProgress.currentStepProgress.spokenInstructionIndex)
                 self.delegate?.routeController?(self, didRerouteAlong: route, reroutingBecauseOfFasterRoute: true)
                 self.movementsAwayFromRoute = 0
                 self.didFindFasterRoute = false
-            } else if newRouteCoordinatesMatchOriginalCoordinates {
+            } else if isExpectedTravelTimeChanged && newRouteCoordinatesMatchOriginalCoordinatesNinetyPercent {
                 self.routeProgress = RouteProgress(route: route, legIndex: 0, spokenInstructionIndex: self.routeProgress.currentLegProgress.currentStepProgress.spokenInstructionIndex)
                 self.delegate?.routeController?(self, didRerouteAlong: route, reroutingBecauseOfFasterRoute: false)
             }
