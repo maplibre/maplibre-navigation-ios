@@ -501,12 +501,12 @@ extension RouteController: CLLocationManagerDelegate {
                 return nil
             }
             
-            var isExpectedTravelTimeChanged: Bool {
-                self.routeProgress.route.expectedTravelTime != route.expectedTravelTime
+            var isExpectedTravelTimeChangedSignificantly: Bool {
+                abs(self.routeProgress.route.expectedTravelTime - route.expectedTravelTime) > 30
             }
             
             print("FlitsNav", "newRouteMatchingAtLeast90Percent", newRouteMatchingAtLeast90Percent)
-            print("FlitsNav", "isExpectedTravelTimeChanged", isExpectedTravelTimeChanged, self.routeProgress.route.expectedTravelTime, route.expectedTravelTime)
+            print("FlitsNav", "isExpectedTravelTimeChangedSignificantly", isExpectedTravelTimeChangedSignificantly, self.routeProgress.route.expectedTravelTime, route.expectedTravelTime, abs(self.routeProgress.route.expectedTravelTime - route.expectedTravelTime))
             
             if isRerouteAllowed && routeIsFaster {
                 print("FlitsNav", "routeIsFaster && isRerouteAllowed")
@@ -516,7 +516,7 @@ extension RouteController: CLLocationManagerDelegate {
                 self.delegate?.routeController?(self, didRerouteAlong: route, reroutingBecauseOfFasterRoute: true)
                 self.movementsAwayFromRoute = 0
                 self.didFindFasterRoute = false
-            } else if isExpectedTravelTimeChanged, let route = newRouteMatchingAtLeast90Percent {
+            } else if isExpectedTravelTimeChangedSignificantly, let route = newRouteMatchingAtLeast90Percent {
                 self.routeProgress = RouteProgress(route: route, legIndex: 0, spokenInstructionIndex: self.routeProgress.currentLegProgress.currentStepProgress.spokenInstructionIndex)
                 self.delegate?.routeController?(self, didRerouteAlong: route, reroutingBecauseOfFasterRoute: false)
             }
