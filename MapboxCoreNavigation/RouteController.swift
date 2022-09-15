@@ -472,13 +472,13 @@ extension RouteController: CLLocationManagerDelegate {
             var newRouteMatchingAtLeast90Percent: Route? {
                 guard
                     let currentRouteCoordinates = self.routeProgress.route.coordinates,
-                    let routes = routes,
-                    let routeCoordinates = mostSimilarRoute?.coordinates
+                    let routes = routes
                 else { return nil }
                 
                 let currentRouteCoordinatesStrings = currentRouteCoordinates.map { String(format: "%.4f,%.4f", $0.latitude, $0.longitude) }
                 
-                let bestMatch = routes.map { route -> (route: Route, matchFactor: Double) in
+                let bestMatch = routes.compactMap { route -> (route: Route, matchFactor: Double)? in
+                    guard let routeCoordinates = route.coordinates else { return nil }
                     let routeCoordinatesStrings = routeCoordinates.map { String(format: "%.4f,%.4f", $0.latitude, $0.longitude) }
                     let matchCount = Double(routeCoordinatesStrings.filter { currentRouteCoordinatesStrings.contains($0) }.count)
                     let matchFactor = 1.0 / Double(routeCoordinatesStrings.count) * matchCount
