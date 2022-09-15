@@ -5,7 +5,7 @@ import CoreLocation
  The `TunnelIntersectionManagerDelegate` protocol provides methods for responding to events where a user enters or exits a tunnel.
  */
 @objc(MBTunnelIntersectionManagerDelegate)
-public protocol TunnelIntersectionManagerDelegate: class {
+public protocol TunnelIntersectionManagerDelegate: AnyObject {
     
     /**
      Called immediately when the location manager detects a user will enter a tunnel.

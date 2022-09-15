@@ -11,7 +11,7 @@ open class StepsBackgroundView: UIView { }
 /**
  `StepsViewControllerDelegate` provides methods for user interactions in a `StepsViewController`.
  */
-@objc public protocol StepsViewControllerDelegate: class {
+@objc public protocol StepsViewControllerDelegate: AnyObject {
 
     /**
      Called when the user selects a step in a `StepsViewController`.
@@ -220,9 +220,9 @@ public class StepsViewController: UIViewController {
      */
     public func dismiss(completion: CompletionHandler? = nil) {
         slideUpAnimation {
-            self.willMove(toParentViewController: nil)
+            self.willMove(toParent: nil)
             self.view.removeFromSuperview()
-            self.removeFromParentViewController()
+            self.removeFromParent()
             completion?()
         }
     }
@@ -320,7 +320,7 @@ open class StepTableViewCell: UITableViewCell {
     weak var instructionsView: StepInstructionsView!
     weak var separatorView: SeparatorView!
 
-    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         commonInit()
     }
@@ -365,7 +365,7 @@ open class StepTableViewCell: UITableViewCell {
 extension Array where Element == RouteStep {
 
     fileprivate func stepBefore(_ step: RouteStep) -> RouteStep? {
-        guard let index = self.index(of: step) else {
+        guard let index = self.firstIndex(of: step) else {
             return nil
         }
 

@@ -66,7 +66,7 @@ extension Array where Element == RecentItem {
     }
     
     mutating func remove(_ recentItem: RecentItem) {
-        if let index = index(of: recentItem) {
+        if let index = firstIndex(of: recentItem) {
             remove(at: index)
         }
     }

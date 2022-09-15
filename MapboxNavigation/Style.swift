@@ -338,7 +338,7 @@ open class DistanceLabel: StylableLabel {
         emphasizedDistanceString.enumerateAttribute(.quantity, in: wholeRange, options: .longestEffectiveRangeNotRequired) { (value, range, stop) in
             let foregroundColor: UIColor
             let font: UIFont
-            if let _ = emphasizedDistanceString.attribute(NSAttributedStringKey.quantity, at: range.location, effectiveRange: nil) {
+            if let _ = emphasizedDistanceString.attribute(NSAttributedString.Key.quantity, at: range.location, effectiveRange: nil) {
                 foregroundColor = valueTextColor
                 font = valueFont
                 hasQuantity = true
@@ -522,6 +522,8 @@ public class ProgressBar: UIView {
                 origin = .zero
             case .rightToLeft:
                 origin = CGPoint(x: superview.bounds.width * (1 - progress), y: 0)
+            @unknown default:
+                fatalError("Unknown userInterfaceLayoutDirection")
             }
             bar.frame = CGRect(origin: origin, size: CGSize(width: superview.bounds.width * progress, height: bounds.height))
         }

@@ -20,7 +20,7 @@ extension NSAttributedString {
                 phoneticString.append(NSAttributedString(string: " "))
             }
             phoneticString.append(NSAttributedString(string: word, attributes: [
-                NSAttributedStringKey(rawValue: AVSpeechSynthesisIPANotationAttribute): phoneticWord
+                NSAttributedString.Key(rawValue: AVSpeechSynthesisIPANotationAttribute): phoneticWord
             ]))
         }
         return phoneticString
@@ -159,19 +159,19 @@ open class RouteVoiceController: NSObject, AVSpeechSynthesizerDelegate {
     }
     
     func duckAudio() throws {
-        let categoryOptions: AVAudioSessionCategoryOptions = [.duckOthers, .interruptSpokenAudioAndMixWithOthers]
-        try AVAudioSession.sharedInstance().setMode(AVAudioSessionModeSpokenAudio)
-        try AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryPlayback, with: categoryOptions)
+        let categoryOptions: AVAudioSession.CategoryOptions = [.duckOthers, .interruptSpokenAudioAndMixWithOthers]
+        try AVAudioSession.sharedInstance().setMode(AVAudioSession.Mode.spokenAudio)
+        try AVAudioSession.sharedInstance().setCategory(AVAudioSession.Category.playback, options: categoryOptions)
         try AVAudioSession.sharedInstance().setActive(true)
     }
     
     func mixAudio() throws {
-        try AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryAmbient)
+        try AVAudioSession.sharedInstance().setCategory(AVAudioSession.Category.ambient)
         try AVAudioSession.sharedInstance().setActive(true)
     }
     
     func unDuckAudio() throws {
-        try AVAudioSession.sharedInstance().setActive(false, with: [.notifyOthersOnDeactivation])
+        try AVAudioSession.sharedInstance().setActive(false, options: [.notifyOthersOnDeactivation])
     }
     
     @objc open func didPassSpokenInstructionPoint(notification: NSNotification) {

@@ -1,7 +1,7 @@
 import UIKit
 import MapboxDirections
 
-protocol InstructionPresenterDataSource: class {
+protocol InstructionPresenterDataSource: AnyObject {
     var availableBounds: (() -> CGRect)! { get }
     var font: UIFont! { get }
     var textColor: UIColor! { get }
@@ -182,7 +182,7 @@ class InstructionPresenter {
         return true
     }
 
-    private func attributes(for dataSource: InstructionPresenterDataSource) -> [NSAttributedStringKey: Any] {
+    private func attributes(for dataSource: InstructionPresenterDataSource) -> [NSAttributedString.Key: Any] {
         return [.font: dataSource.font as Any, .foregroundColor: dataSource.textColor as Any]
     }
 
@@ -329,7 +329,7 @@ fileprivate struct IndexedVisualInstructionComponent {
 
 extension Array where Element == VisualInstructionComponent {
     fileprivate func component(before component: VisualInstructionComponent) -> VisualInstructionComponent? {
-        guard let index = self.index(of: component) else {
+        guard let index = self.firstIndex(of: component) else {
             return nil
         }
         if index > 0 {
@@ -339,7 +339,7 @@ extension Array where Element == VisualInstructionComponent {
     }
     
     fileprivate func component(after component: VisualInstructionComponent) -> VisualInstructionComponent? {
-        guard let index = self.index(of: component) else {
+        guard let index = self.firstIndex(of: component) else {
             return nil
         }
         if index+1 < self.endIndex {

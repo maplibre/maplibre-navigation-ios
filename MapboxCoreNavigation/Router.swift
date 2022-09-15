@@ -2,7 +2,7 @@ import Foundation
 import CoreLocation
 import MapboxDirections
 
-@objc public protocol Router: class, CLLocationManagerDelegate {
+@objc public protocol Router: AnyObject, CLLocationManagerDelegate {
     @objc var locationManager: NavigationLocationManager! { get }
     
     var usesDefaultUserInterface: Bool { get }
