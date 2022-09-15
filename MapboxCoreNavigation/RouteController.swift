@@ -469,13 +469,21 @@ extension RouteController: CLLocationManagerDelegate {
                 return
             }
 
+            print("FlitsNav", "isMegaFileActive", Self.isMegaFileActive)
+            
             let routeIsFaster = firstStep.expectedTravelTime >= RouteControllerMediumAlertInterval && currentUpcomingManeuver == firstLeg.steps[1] && route.expectedTravelTime <= 0.9 * durationRemaining
             
-            var newRouteMatchingAtLeast90Percent: Route? {
+            lazy var newRouteMatchingAtLeast90Percent: Route? = {
                 guard
                     let currentRouteCoordinates = self.routeProgress.route.coordinates,
-                    let routes = routes
+                    var routes = routes
                 else { return nil }
+                
+                routes = routes.map {
+                    let copy = $0
+                    copy.expectedTravelTime = copy.expectedTravelTime + 60 * 10
+                    return copy
+                }
                 
                 let currentRouteCoordinatesStrings = currentRouteCoordinates.map { String(format: "%.4f,%.4f", $0.latitude, $0.longitude) }
                 
@@ -501,7 +509,7 @@ extension RouteController: CLLocationManagerDelegate {
                     return bestMatch.route
                 }
                 return nil
-            }
+            }()
             
             var isExpectedTravelTimeChangedSignificantly: Bool {
                 abs(self.routeProgress.route.expectedTravelTime - route.expectedTravelTime) > 30
@@ -519,10 +527,6 @@ extension RouteController: CLLocationManagerDelegate {
                 self.movementsAwayFromRoute = 0
                 self.didFindFasterRoute = false
             } else if isExpectedTravelTimeChangedSignificantly, let route = newRouteMatchingAtLeast90Percent {
-                if Self.isMegaFileActive {
-                    print("FlitsNav", "isMegaFileActive")
-                    route.expectedTravelTime = route.expectedTravelTime + 60 * 10
-                }
                 self.routeProgress = RouteProgress(route: route, legIndex: 0, spokenInstructionIndex: self.routeProgress.currentLegProgress.currentStepProgress.spokenInstructionIndex)
                 self.delegate?.routeController?(self, didRerouteAlong: route, reroutingBecauseOfFasterRoute: false, isExpectedTravelTimeUpdate: true)
             }
