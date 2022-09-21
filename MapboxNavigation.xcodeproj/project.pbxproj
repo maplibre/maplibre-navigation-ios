@@ -303,6 +303,7 @@
 		DADAD82E20350849002E25CA /* MBRouteVoiceController.h in Headers */ = {isa = PBXBuildFile; fileRef = DADAD82C20350849002E25CA /* MBRouteVoiceController.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		DADAD82F20350849002E25CA /* MBRouteVoiceController.m in Sources */ = {isa = PBXBuildFile; fileRef = DADAD82D20350849002E25CA /* MBRouteVoiceController.m */; };
 		DAFA92071F01735000A7FB09 /* DistanceFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 351BEC0B1E5BCC72006FE110 /* DistanceFormatter.swift */; };
+		F1D8FD2F28DB0A67006626A1 /* _TestPath.gpx in Resources */ = {isa = PBXBuildFile; fileRef = F1D8FD2E28DB0A67006626A1 /* _TestPath.gpx */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -844,6 +845,7 @@
 		DAFEB36D2093A11F00A86A83 /* ko */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ko; path = ko.lproj/Localizable.strings; sourceTree = "<group>"; };
 		DAFEB36E2093A3E000A86A83 /* ko */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ko; path = ko.lproj/Localizable.strings; sourceTree = "<group>"; };
 		DAFEB36F2093A3EF00A86A83 /* ko */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = ko; path = Resources/ko.lproj/Localizable.stringsdict; sourceTree = "<group>"; };
+		F1D8FD2E28DB0A67006626A1 /* _TestPath.gpx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = _TestPath.gpx; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1007,8 +1009,8 @@
 			children = (
 				DACCD9CD1F1FE05C00BB09A1 /* Example-Swift-BridgingHeader.h */,
 				355D20DB1EF30A6D0012B1E0 /* tunnel.route */,
-				354D9F871EF2FE900006FAA8 /* tunnel.json */,
 				35002D661E5F6B1B0090E733 /* Main.storyboard */,
+				354D9F871EF2FE900006FAA8 /* tunnel.json */,
 				35002D5F1E5F6ADB0090E733 /* Assets.xcassets */,
 				35002D601E5F6ADB0090E733 /* Base.lproj */,
 				35002D5D1E5F6ABB0090E733 /* Info.plist */,
@@ -1193,6 +1195,7 @@
 				6441B1691EFC64E50076499F /* WaypointConfirmationViewController.swift */,
 				C51FC31620F689F800400CE7 /* CustomStyles.swift */,
 				3577B877214FF35800094294 /* FavoritesList.swift */,
+				F1D8FD2E28DB0A67006626A1 /* _TestPath.gpx */,
 			);
 			name = Swift;
 			path = Examples/Swift;
@@ -1857,6 +1860,7 @@
 			files = (
 				C57AD98A20EAA39A0087B24B /* Entitlements.plist in Resources */,
 				35002D691E5F6B2F0090E733 /* Main.storyboard in Resources */,
+				F1D8FD2F28DB0A67006626A1 /* _TestPath.gpx in Resources */,
 				354D9F891EF2FE900006FAA8 /* tunnel.json in Resources */,
 				35002D611E5F6ADB0090E733 /* Assets.xcassets in Resources */,
 				35002D621E5F6ADB0090E733 /* Base.lproj in Resources */,
