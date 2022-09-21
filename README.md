@@ -26,35 +26,35 @@ All issues are covered with this SDK.
 If you are looking to include this inside your project, you have to follow the the following steps:
 
 1. Install Carthage
-  - Open terminal
-  - [optional] On M1 Mac change terminal to bash: `chsh -s /bin/bash`
-  - [Install Homebrew](https://brew.sh/): `/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"`
-  - [Install Carthage](https://formulae.brew.sh/formula/carthage): `brew install carthage`
+   - Open terminal
+   - [optional] On M1 Mac change terminal to bash: `chsh -s /bin/bash`
+   - [Install Homebrew](https://brew.sh/): `/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"`
+   - [Install Carthage](https://formulae.brew.sh/formula/carthage): `brew install carthage`
 1. Create a new XCode project
 1. Create Cartfile
-  - Open terminal
-  - Change location to root of XCode project: `cd path/to/Project`
-  - Create the Cartfile: `touch Cartfile`
-  - New file will be added: `Cartfile`
+   - Open terminal
+   - Change location to root of XCode project: `cd path/to/Project`
+    - Create the Cartfile: `touch Cartfile`
+   - New file will be added: `Cartfile`
 1. Add dependencies to Cartfile
-  ```
-  binary "https://www.mapbox.com/ios-sdk/Mapbox-iOS-SDK.json" == 5.3.0
-  github "flitsmeister/flitsmeister-navigation-ios" ~> 1.0.3
-  ```
+   ```
+   binary "https://www.mapbox.com/ios-sdk/Mapbox-iOS-SDK.json" == 5.3.0
+   github "flitsmeister/flitsmeister-navigation-ios" ~> 1.0.3
+   ```
 1. Build the frameworks
-  - Open terminal
-  - Change location to root of XCode project: `cd path/to/Project`
-  - Run: `carthage bootstrap --platform iOS --use-xcframeworks`
-  - New files will be added
-    - Cartfile.resolved = Indicates which frameworks have been fetched/built
-    - Carthage folder = Contains all builded frameworks
+   - Open terminal
+   - Change location to root of XCode project: `cd path/to/Project`
+   - Run: `carthage bootstrap --platform iOS --use-xcframeworks`
+   - New files will be added
+     - Cartfile.resolved = Indicates which frameworks have been fetched/built
+     - Carthage folder = Contains all builded frameworks
 1. Drag frameworks into project: `TARGETS -> General -> Frameworks, Libraries..`
-  - Mapbox.framework
-  - All xcframeworks
+   - Mapbox.framework
+   - All xcframeworks
 1. Add properties to `Info.plist`
-  - MGLMapboxAccessToken / String / Leave empty = Ensures that the SDK doesn't crash
-  - MGLMapboxAPIBaseURL / String / Add url = Url that is being used to GET the navigation JSON
-  - NSLocationWhenInUseUsageDescription / String / Add a description = Needed for the location permission
+   - MGLMapboxAccessToken / String / Leave empty = Ensures that the SDK doesn't crash
+   - MGLMapboxAPIBaseURL / String / Add url = Url that is being used to GET the navigation JSON
+   - NSLocationWhenInUseUsageDescription / String / Add a description = Needed for the location permission
 1. [optional] When app is not running on simulator on M1 Mac: Add `arm64` to `PROJECT -> <Project naam> -> Build Settings -> Excluded Architecture Only`
 1. Use the sample code as inspiration
 
