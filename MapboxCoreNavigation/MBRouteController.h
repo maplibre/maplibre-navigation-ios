@@ -7,7 +7,7 @@
  
  :nodoc:
  */
-extern const NSNotificationName MBRouteControllerProgressDidChangeNotification;
+extern const NSNotificationName _Null_unspecified MBRouteControllerProgressDidChangeNotification;
 
 /**
  Posted after the user diverges from the expected route, just before `MBRouteController` attempts to calculate a new route.
@@ -16,7 +16,7 @@ extern const NSNotificationName MBRouteControllerProgressDidChangeNotification;
  
  :nodoc:
  */
-extern const NSNotificationName MBRouteControllerWillRerouteNotification;
+extern const NSNotificationName _Null_unspecified MBRouteControllerWillRerouteNotification;
 
 /**
  Posted when `MBRouteController` obtains a new route in response to the user diverging from a previous route.
@@ -25,7 +25,7 @@ extern const NSNotificationName MBRouteControllerWillRerouteNotification;
  
  :nodoc:
  */
-extern const NSNotificationName MBRouteControllerDidRerouteNotification;
+extern const NSNotificationName _Null_unspecified MBRouteControllerDidRerouteNotification;
 
 /**
  Posted when `MBRouteController` fails to reroute the user after the user diverges from the expected route.
@@ -34,7 +34,7 @@ extern const NSNotificationName MBRouteControllerDidRerouteNotification;
  
  :nodoc:
  */
-extern const NSNotificationName MBRouteControllerDidFailToRerouteNotification;
+extern const NSNotificationName _Null_unspecified MBRouteControllerDidFailToRerouteNotification;
 
 /**
  Posted when `MBRouteController` detects that the user has passed an ideal point for saying an instruction aloud.
@@ -43,9 +43,9 @@ extern const NSNotificationName MBRouteControllerDidFailToRerouteNotification;
  
  :nodoc:
  */
-extern const NSNotificationName MBRouteControllerDidPassSpokenInstructionPointNotification;
+extern const NSNotificationName _Null_unspecified MBRouteControllerDidPassSpokenInstructionPointNotification;
 
-extern const NSNotificationName MBRouteControllerDidPassVisualInstructionPointNotification;
+extern const NSNotificationName _Null_unspecified MBRouteControllerDidPassVisualInstructionPointNotification;
 
 /**
  Keys in the user info dictionaries of various notifications posted by instances of `MBRouteController`.
@@ -57,27 +57,27 @@ typedef NSString *MBRouteControllerNotificationUserInfoKey NS_EXTENSIBLE_STRING_
 /**
  A key in the user info dictionary of a `Notification.Name.MBRouteControllerProgressDidChange` or `Notification.Name.RouteControllerDidPassSpokenInstructionPoint` notification. The corresponding value is a `RouteProgress` object representing the current route progress.
  */
-extern const MBRouteControllerNotificationUserInfoKey MBRouteControllerRouteProgressKey;
+extern const MBRouteControllerNotificationUserInfoKey _Null_unspecified MBRouteControllerRouteProgressKey;
 
 /**
  A key in the user info dictionary of a `Notification.Name.MBRouteControllerProgressDidChange` or `Notification.Name.RouteControllerWillReroute` notification. The corresponding value is a `CLLocation` object representing the current idealized user location.
  */
-extern const MBRouteControllerNotificationUserInfoKey MBRouteControllerLocationKey;
+extern const MBRouteControllerNotificationUserInfoKey _Null_unspecified MBRouteControllerLocationKey;
 
 /**
  A key in the user info dictionary of a `Notification.Name.MBRouteControllerProgressDidChange` or `Notification.Name.RouteControllerWillReroute` notification. The corresponding value is a `CLLocation` object representing the current raw user location.
  */
-extern const MBRouteControllerNotificationUserInfoKey MBRouteControllerRawLocationKey;
+extern const MBRouteControllerNotificationUserInfoKey _Null_unspecified MBRouteControllerRawLocationKey;
 
 /**
  A key in the user info dictionary of a `Notification.Name.RouteControllerDidFailToReroute` notification. The corresponding value is an `NSError` object indicating why `RouteController` was unable to calculate a new route.
  */
-extern const MBRouteControllerNotificationUserInfoKey MBRouteControllerRoutingErrorKey;
+extern const MBRouteControllerNotificationUserInfoKey _Null_unspecified MBRouteControllerRoutingErrorKey;
 
 /**
  A key in the user info dictionary of a `Notification.Name.RouteControllerDidReroute` notification. The corresponding value is an `NSNumber` instance containing a Boolean value indicating whether `RouteController` proactively rerouted the user onto a faster route.
  */
-extern const MBRouteControllerNotificationUserInfoKey MBRouteControllerIsProactiveKey;
+extern const MBRouteControllerNotificationUserInfoKey _Null_unspecified MBRouteControllerIsProactiveKey;
 
 @interface NSString (MD5)
 - (NSString * _Nonnull)md5;

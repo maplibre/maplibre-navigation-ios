@@ -209,7 +209,7 @@ class RippleLayer: CAReplicatorLayer {
         let group = CAAnimationGroup()
         group.duration = duration
         group.repeatCount = self.repeatCount
-        group.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionDefault)
+        group.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.default)
         
         let scaleAnimation = CABasicAnimation(keyPath: "transform.scale.xy")
         scaleAnimation.fromValue = 0.0

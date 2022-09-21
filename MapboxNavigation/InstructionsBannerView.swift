@@ -6,7 +6,7 @@ import MapboxDirections
  `InstructionsBannerViewDelegate` provides methods for reacting to user interactions in `InstructionsBannerView`.
  */
 @objc(MBInstructionsBannerViewDelegate)
-public protocol InstructionsBannerViewDelegate: class {
+public protocol InstructionsBannerViewDelegate: AnyObject {
     
     /**
      Called when the user taps the `InstructionsBannerView`.

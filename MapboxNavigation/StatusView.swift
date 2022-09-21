@@ -3,7 +3,7 @@ import UIKit
 /**
  A protocol for listening in on changed mades made to a `StatusView`.
  */
-@objc public protocol StatusViewDelegate: class {
+@objc public protocol StatusViewDelegate: AnyObject {
     /**
      Indicates a value in the status view has changed by the user interacting with it.
      */
@@ -39,7 +39,7 @@ public class StatusView: UIView {
     }
     
     func commonInit() {
-        let activityIndicatorView = UIActivityIndicatorView(activityIndicatorStyle: .white)
+        let activityIndicatorView = UIActivityIndicatorView(style: .white)
         activityIndicatorView.translatesAutoresizingMaskIntoConstraints = false
         addSubview(activityIndicatorView)
         self.activityIndicatorView = activityIndicatorView
@@ -96,6 +96,8 @@ public class StatusView: UIView {
                 incrementer = location.x > bounds.midX ? 0.1 : -0.1
             case .rightToLeft:
                 incrementer = location.x < bounds.midX ? 0.1 : -0.1
+            @unknown default:
+                fatalError("Unknown userInterfaceLayoutDirection")
             }
             value = min(max(value + incrementer, 0), 1)
         }

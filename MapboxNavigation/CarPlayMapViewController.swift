@@ -29,7 +29,7 @@ class CarPlayMapViewController: UIViewController, MGLMapViewDelegate {
                 return
             }
             
-            strongSelf.mapView.setUserTrackingMode(.followWithCourse, animated: true)
+            strongSelf.mapView.setUserTrackingMode(.followWithCourse, animated: true, completionHandler: nil)
             button.isHidden = true
         }
         
@@ -55,7 +55,7 @@ class CarPlayMapViewController: UIViewController, MGLMapViewDelegate {
         styleManager.styles = [DayStyle(), NightStyle()]
         
         resetCamera(animated: false, altitude: CarPlayMapViewController.defaultAltitude)
-        mapView.setUserTrackingMode(.followWithCourse, animated: true)
+        mapView.setUserTrackingMode(.followWithCourse, animated: true, completionHandler: nil)
     }
     
     public func zoomInButton() -> CPMapButton {
@@ -102,7 +102,7 @@ class CarPlayMapViewController: UIViewController, MGLMapViewDelegate {
     }
     
     override func viewSafeAreaInsetsDidChange() {
-        mapView.setContentInset(mapView.safeArea, animated: false)
+        mapView.setContentInset(mapView.safeArea, animated: false, completionHandler: nil)
         
         guard isOverviewingRoutes else {
             super.viewSafeAreaInsetsDidChange()

@@ -82,7 +82,7 @@ class ViewController: UIViewController, MGLMapViewDelegate {
         let custom: ActionHandler = {_ in self.startCustomNavigation() }
         let styled: ActionHandler = {_ in self.startStyledNavigation() }
         
-        let actionPayloads: [(String, UIAlertActionStyle, ActionHandler?)] = [
+        let actionPayloads: [(String, UIAlertAction.Style, ActionHandler?)] = [
             ("Default UI", .default, basic),
             ("DayStyle UI", .default, day),
             ("NightStyle UI", .default, night),
@@ -298,7 +298,7 @@ extension ViewController: NavigationMapViewDelegate {
 
     func navigationMapView(_ mapView: NavigationMapView, didSelect route: Route) {
         guard let routes = routes else { return }
-        guard let index = routes.index(where: { $0 == route }) else { return }
+        guard let index = routes.firstIndex(where: { $0 == route }) else { return }
         self.routes!.remove(at: index)
         self.routes!.insert(route, at: 0)
     }

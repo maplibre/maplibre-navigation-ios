@@ -349,7 +349,7 @@ extension CarPlayManager: CPInterfaceControllerDelegate {
             let mapView = carPlayMapViewController.mapView
             mapView.removeRoutes()
             mapView.removeWaypoints()
-            mapView.setUserTrackingMode(.followWithCourse, animated: true)
+            mapView.setUserTrackingMode(.followWithCourse, animated: true, completionHandler: nil)
         }
     }
     public func templateWillDisappear(_ template: CPTemplate, animated: Bool) {
@@ -635,7 +635,7 @@ extension CarPlayManager: CPMapTemplateDelegate {
             return
         }
         
-        mapView.setContentInset(mapView.safeArea, animated: false) //make sure this is always up to date in-case safe area changes during gesture
+        mapView.setContentInset(mapView.safeArea, animated: false, completionHandler: nil) //make sure this is always up to date in-case safe area changes during gesture
         updatePan(by: translation, mapTemplate: mapTemplate, animated: false)
 
         
@@ -657,7 +657,7 @@ extension CarPlayManager: CPMapTemplateDelegate {
 
     func coordinate(of offset: CGPoint, in mapView: NavigationMapView) -> CLLocationCoordinate2D {
         
-        let contentFrame = UIEdgeInsetsInsetRect(mapView.bounds, mapView.safeArea)
+        let contentFrame = mapView.bounds.inset(by: mapView.safeArea)
         let centerPoint = CGPoint(x: contentFrame.midX, y: contentFrame.midY)
         let endCameraPoint = CGPoint(x: centerPoint.x - offset.x, y: centerPoint.y - offset.y)
 
@@ -671,7 +671,7 @@ extension CarPlayManager: CPMapTemplateDelegate {
 
         // Determine the screen distance to pan by based on the distance from the visual center to the closest side.
         let mapView = carPlayMapViewController.mapView
-        let contentFrame = UIEdgeInsetsInsetRect(mapView.bounds, mapView.safeArea)
+        let contentFrame = mapView.bounds.inset(by: mapView.safeArea)
         let increment = min(mapView.bounds.width, mapView.bounds.height) / 2.0
         
         // Calculate the distance in physical units from the visual center to where it would be after panning downwards.

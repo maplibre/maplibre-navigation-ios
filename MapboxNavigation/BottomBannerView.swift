@@ -2,7 +2,7 @@ import UIKit
 import MapboxCoreNavigation
 import MapboxDirections
 
-protocol BottomBannerViewDelegate: class {
+protocol BottomBannerViewDelegate: AnyObject {
     func didCancel()
 }
 

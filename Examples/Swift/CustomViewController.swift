@@ -120,7 +120,7 @@ class CustomViewController: UIViewController, MGLMapViewDelegate {
             
             let controller = StepsViewController(routeProgress: routeController.routeProgress)
             controller.delegate = self
-            addChildViewController(controller)
+            addChild(controller)
             view.addSubview(controller.view)
             
             controller.view.topAnchor.constraint(equalTo: instructionsBannerView.bottomAnchor).isActive = true
@@ -128,7 +128,7 @@ class CustomViewController: UIViewController, MGLMapViewDelegate {
             controller.view.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
             controller.view.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
             
-            controller.didMove(toParentViewController: self)
+            controller.didMove(toParent: self)
             controller.dropDownAnimation()
             
             stepsViewController = controller

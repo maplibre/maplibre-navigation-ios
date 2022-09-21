@@ -30,7 +30,7 @@ extension UIWindow {
             return vc
         } else if let vc = rootViewController?.presentedViewController as? T {
             return vc
-        } else if let vc = rootViewController?.childViewControllers {
+        } else if let vc = rootViewController?.children {
             return vc.lazy.compactMap { $0 as? T }.first
         }
         

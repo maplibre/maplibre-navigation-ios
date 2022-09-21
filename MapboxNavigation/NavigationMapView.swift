@@ -135,7 +135,7 @@ open class NavigationMapView: MGLMapView, UIGestureRecognizerDelegate {
             return anchorPoint
         }
         
-        let contentFrame = UIEdgeInsetsInsetRect(bounds, safeArea)
+        let contentFrame = bounds.inset(by: safeArea)
         let courseViewWidth = userCourseView?.frame.width ?? 0
         let courseViewHeight = userCourseView?.frame.height ?? 0
         let edgePadding = UIEdgeInsets(top: (50 + courseViewHeight / 2),
@@ -345,7 +345,7 @@ open class NavigationMapView: MGLMapView, UIGestureRecognizerDelegate {
             let point = userAnchorPoint
             let padding = UIEdgeInsets(top: point.y, left: point.x, bottom: bounds.height - point.y, right: bounds.width - point.x)
             let newCamera = camera ?? MGLMapCamera(lookingAtCenter: location.coordinate, fromDistance: altitude, pitch: 45, heading: location.course)
-            let function: CAMediaTimingFunction? = animated ? CAMediaTimingFunction(name: kCAMediaTimingFunctionLinear) : nil
+            let function: CAMediaTimingFunction? = animated ? CAMediaTimingFunction(name: CAMediaTimingFunctionName.linear) : nil
             setCamera(newCamera, withDuration: duration, animationTimingFunction: function, edgePadding: padding, completionHandler: nil)
         }
         if !tracksUserCourse || userAnchorPoint != userCourseView?.center ?? userAnchorPoint {
@@ -440,7 +440,7 @@ open class NavigationMapView: MGLMapView, UIGestureRecognizerDelegate {
     func fit(to route: Route, facing direction:CLLocationDirection = 0, padding: UIEdgeInsets = NavigationMapView.defaultPadding, animated: Bool = false) {
         guard let coords = route.coordinates, !coords.isEmpty else { return }
       
-        setUserTrackingMode(.none, animated: false)
+        setUserTrackingMode(.none, animated: false, completionHandler: nil)
         let line = MGLPolyline(coordinates: coords, count: UInt(coords.count))
         let camera = cameraThatFitsShape(line, direction: direction, edgePadding: padding)
         
@@ -1110,7 +1110,7 @@ open class NavigationMapView: MGLMapView, UIGestureRecognizerDelegate {
  The `NavigationMapViewDelegate` provides methods for configuring the NavigationMapView, as well as responding to events triggered by the NavigationMapView.
  */
 @objc(MBNavigationMapViewDelegate)
-public protocol NavigationMapViewDelegate: class {
+public protocol NavigationMapViewDelegate: AnyObject {
     /**
      Asks the receiver to return an MGLStyleLayer for routes, given an identifier and source.
      This method is invoked when the map view loads and any time routes are added.
@@ -1230,7 +1230,7 @@ public protocol NavigationMapViewDelegate: class {
  The `NavigationMapViewCourseTrackingDelegate` provides methods for responding to the `NavigationMapView` starting or stopping course tracking.
  */
 @objc(MBNavigationMapViewCourseTrackingDelegate)
-public protocol NavigationMapViewCourseTrackingDelegate: class {
+public protocol NavigationMapViewCourseTrackingDelegate: AnyObject {
     /**
      Tells the receiver that the map is now tracking the user course.
      - seealso: NavigationMapView.tracksUserCourse
