@@ -469,7 +469,7 @@ extension RouteController: CLLocationManagerDelegate {
                 return
             }
 
-            print("FlitsNav", "isMegaFileActive", Self.isMegaFileActive)
+            print("§ FlitsNav", "isMegaFileActive", Self.isMegaFileActive)
             
             let routeIsFaster = firstStep.expectedTravelTime >= RouteControllerMediumAlertInterval && currentUpcomingManeuver == firstLeg.steps[1] && route.expectedTravelTime <= 0.9 * durationRemaining
             
