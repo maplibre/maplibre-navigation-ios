@@ -444,9 +444,9 @@ extension RouteController: CLLocationManagerDelegate {
         }
 
         // Only check every so often for a faster route.
-        guard location.timestamp.timeIntervalSince(lastLocationDate) >= RouteControllerProactiveReroutingInterval else {
-            return
-        }
+//        guard location.timestamp.timeIntervalSince(lastLocationDate) >= RouteControllerProactiveReroutingInterval else {
+//            return
+//        }
         let durationRemaining = routeProgress.durationRemaining
         
         isFindingFasterRoute = true
