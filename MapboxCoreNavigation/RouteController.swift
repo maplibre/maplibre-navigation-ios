@@ -512,14 +512,19 @@ extension RouteController: CLLocationManagerDelegate {
             }()
             
             
+            var newRoute = route
+            if let slowerRoute = newRouteMatchingAtLeast90Percent {
+                newRoute = slowerRoute
+            }
+            
             // Is de eta wel veranderd?
             // Wat is het probleem met nieuwe oute activeren.
             var isExpectedTravelTimeChangedSignificantly: Bool {
-                abs(self.routeProgress.route.expectedTravelTime - route.expectedTravelTime) > 30
+                abs(self.routeProgress.route.expectedTravelTime - newRoute.expectedTravelTime) > 30
             }
             
             print("FlitsNav", "newRouteMatchingAtLeast90Percent", newRouteMatchingAtLeast90Percent)
-            print("FlitsNav", "isExpectedTravelTimeChangedSignificantly", isExpectedTravelTimeChangedSignificantly, self.routeProgress.route.expectedTravelTime, route.expectedTravelTime, abs(self.routeProgress.route.expectedTravelTime - route.expectedTravelTime))
+            print("FlitsNav", "isExpectedTravelTimeChangedSignificantly", isExpectedTravelTimeChangedSignificantly, self.routeProgress.route.expectedTravelTime, newRoute.expectedTravelTime, abs(self.routeProgress.route.expectedTravelTime - newRoute.expectedTravelTime))
             
             if isRerouteAllowed && routeIsFaster {
                 print("FlitsNav", "routeIsFaster && isRerouteAllowed")
