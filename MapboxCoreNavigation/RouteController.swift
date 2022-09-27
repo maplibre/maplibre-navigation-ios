@@ -517,6 +517,7 @@ extension RouteController: CLLocationManagerDelegate {
             var newRoute = route
             if let slowerRoute = newRouteMatchingAtLeast90Percent {
                 newRoute = slowerRoute
+                print("eta", slowerRoute.expectedTravelTime)
             }
             
             // Is de eta wel veranderd?
@@ -536,6 +537,7 @@ extension RouteController: CLLocationManagerDelegate {
                 self.delegate?.routeController?(self, didRerouteAlong: route, reroutingBecauseOfFasterRoute: true, isExpectedTravelTimeUpdate: false)
                 self.didFindFasterRoute = false // Wat doet dit?
             } else if isExpectedTravelTimeChangedSignificantly, let route = newRouteMatchingAtLeast90Percent {
+                print("Set the new route", route.expectedTravelTime)
                 self.routeProgress = RouteProgress(route: route, legIndex: 0, spokenInstructionIndex: self.routeProgress.currentLegProgress.currentStepProgress.spokenInstructionIndex)
                 self.delegate?.routeController?(self, didRerouteAlong: route, reroutingBecauseOfFasterRoute: false, isExpectedTravelTimeUpdate: true)
             }
