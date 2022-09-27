@@ -483,6 +483,9 @@ extension RouteController: CLLocationManagerDelegate {
                     let copy = $0
                     print("pre expectedTravelTime", copy.expectedTravelTime)
                     copy.expectedTravelTime = copy.expectedTravelTime + (Self.isMegaFileActive ? 1000 : 0)
+                    copy.legs = copy.legs.forEach {
+                        $0.expectedTravelTime += 1000
+                    }
                     print("post expectedTravelTime", copy.expectedTravelTime)
                     return copy
                 }
@@ -540,6 +543,7 @@ extension RouteController: CLLocationManagerDelegate {
                 print("Set the new route", route.expectedTravelTime)
                 self.routeProgress = RouteProgress(route: route, legIndex: 0, spokenInstructionIndex: self.routeProgress.currentLegProgress.currentStepProgress.spokenInstructionIndex)
                 self.delegate?.routeController?(self, didRerouteAlong: route, reroutingBecauseOfFasterRoute: false, isExpectedTravelTimeUpdate: true)
+//                self.routeProgress.durationRemaining = 10000
             }
         }
     }
