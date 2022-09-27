@@ -481,7 +481,9 @@ extension RouteController: CLLocationManagerDelegate {
                 
                 routes = routes.map {
                     let copy = $0
-                    copy.expectedTravelTime = copy.expectedTravelTime + (Self.isMegaFileActive ? 60 * 10 : 0)
+                    print("pre expectedTravelTime", copy.expectedTravelTime)
+                    copy.expectedTravelTime = copy.expectedTravelTime + (Self.isMegaFileActive ? 1000 : 0)
+                    print("post expectedTravelTime", copy.expectedTravelTime)
                     return copy
                 }
                 
