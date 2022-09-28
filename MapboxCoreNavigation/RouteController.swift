@@ -513,6 +513,8 @@ extension RouteController: CLLocationManagerDelegate {
                 
                 // Check if the time difference is more than 30 seconds.
                 let isExpectedTravelTimeChangedSignificantly = abs(self.routeProgress.durationRemaining - route.expectedTravelTime) > 30
+                print("Duration remaining", self.routeProgress.durationRemaining)
+                print("Expected travel time", route.expectedTravelTime)
                     
                 if isExpectedTravelTimeChangedSignificantly {
                     self.routeProgress.durationRemaining
