@@ -498,7 +498,7 @@ extension RouteController: CLLocationManagerDelegate {
             
             // Only check for faster alternatives if the user has plenty of time left on the route.
             // If the user is approaching a maneuver, don't check for a faster alternatives
-            let isRerouteAllowed = routeProgress.durationRemaining > 600 && routeProgress.currentLegProgress.currentStepProgress.durationRemaining > RouteControllerMediumAlertInterval
+            let isRerouteAllowed = self.routeProgress.durationRemaining > 600 && self.routeProgress.currentLegProgress.currentStepProgress.durationRemaining > RouteControllerMediumAlertInterval
             
             if isRerouteAllowed && routeIsFaster {
                 print("FlitsNav", "routeIsFaster && isRerouteAllowed")
