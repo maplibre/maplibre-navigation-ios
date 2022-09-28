@@ -447,6 +447,7 @@ extension RouteController: CLLocationManagerDelegate {
 //        guard location.timestamp.timeIntervalSince(lastLocationDate) >= RouteControllerProactiveReroutingInterval else {
 //            return
 //        }
+        
         let durationRemaining = routeProgress.durationRemaining
         
         isFindingFasterRoute = true
@@ -460,16 +461,14 @@ extension RouteController: CLLocationManagerDelegate {
             
             // Also only do one 'findFasterRoute' call per time
             self.isFindingFasterRoute = false
-
+            
             guard let route = mostSimilarRoute else {
                 return
             }
-
+            
             guard let firstLeg = route.legs.first, let firstStep = firstLeg.steps.first else {
                 return
             }
-
-            print("§ FlitsNav", "isMegaFileActive", Self.isMegaFileActive)
             
             let routeIsFaster = firstStep.expectedTravelTime >= RouteControllerMediumAlertInterval && currentUpcomingManeuver == firstLeg.steps[1] && route.expectedTravelTime <= 0.9 * durationRemaining
             
@@ -492,7 +491,6 @@ extension RouteController: CLLocationManagerDelegate {
                     let routeCoordinatesStrings = routeCoordinates.map { String(format: "%.4f,%.4f", $0.latitude, $0.longitude) }
                     let matchCount = Double(routeCoordinatesStrings.filter { currentRouteCoordinatesStrings.contains($0) }.count)
                     let matchFactor = 1.0 / Double(routeCoordinatesStrings.count) * matchCount
-                    print("FlitsNav", "matchFactor", matchFactor, routeCoordinatesStrings.count, currentRouteCoordinatesStrings.count, matchCount)
                     return (route, matchFactor)
                 }
                     .filter { $0.matchFactor >= 0.9 }
@@ -501,23 +499,7 @@ extension RouteController: CLLocationManagerDelegate {
                 
                 return bestMatch?.route
             }()
-            
-            
-            var newRoute = route
-            if let slowerRoute = newRouteMatchingAtLeast90Percent {
-                newRoute = slowerRoute
-                print("eta", slowerRoute.expectedTravelTime)
-            }
-            
-            // Is de eta wel veranderd?
-            // Wat is het probleem met nieuwe oute activeren.
-            var isExpectedTravelTimeChangedSignificantly: Bool {
-                abs(self.routeProgress.route.expectedTravelTime - newRoute.expectedTravelTime) > 30
-            }
-            
-            print("FlitsNav", "newRouteMatchingAtLeast90Percent", newRouteMatchingAtLeast90Percent)
-            print("FlitsNav", "isExpectedTravelTimeChangedSignificantly", isExpectedTravelTimeChangedSignificantly, self.routeProgress.route.expectedTravelTime, newRoute.expectedTravelTime, abs(self.routeProgress.route.expectedTravelTime - newRoute.expectedTravelTime))
-            
+           
             if isRerouteAllowed && routeIsFaster {
                 print("FlitsNav", "routeIsFaster && isRerouteAllowed")
                 self.didFindFasterRoute = true
@@ -525,11 +507,14 @@ extension RouteController: CLLocationManagerDelegate {
                 self.routeProgress = RouteProgress(route: route, legIndex: 0, spokenInstructionIndex: self.routeProgress.currentLegProgress.currentStepProgress.spokenInstructionIndex)
                 self.delegate?.routeController?(self, didRerouteAlong: route, reroutingBecauseOfFasterRoute: true, isExpectedTravelTimeUpdate: false)
                 self.didFindFasterRoute = false // Wat doet dit?
-            } else if isExpectedTravelTimeChangedSignificantly, let route = newRouteMatchingAtLeast90Percent {
-                print("Set the new route", route.expectedTravelTime)
-                self.routeProgress = RouteProgress(route: route, legIndex: 0, spokenInstructionIndex: self.routeProgress.currentLegProgress.currentStepProgress.spokenInstructionIndex)
-                self.delegate?.routeController?(self, didRerouteAlong: route, reroutingBecauseOfFasterRoute: false, isExpectedTravelTimeUpdate: true)
-//                self.routeProgress.durationRemaining = 10000
+            } else let route = newRouteMatchingAtLeast90Percent {
+                // Check if the time has changed more than 30 seconds.
+                var isExpectedTravelTimeChangedSignificantly: Bool = abs(self.routeProgress.route.expectedTravelTime - newRoute.expectedTravelTime) > 30
+                
+                if isExpectedTravelTimeChangedSignificantly {
+                    self.routeProgress = RouteProgress(route: route, legIndex: 0, spokenInstructionIndex: self.routeProgress.currentLegProgress.currentStepProgress.spokenInstructionIndex)
+                    self.delegate?.routeController?(self, didRerouteAlong: route, reroutingBecauseOfFasterRoute: false, isExpectedTravelTimeUpdate: true)
+                }
             }
         }
     }
