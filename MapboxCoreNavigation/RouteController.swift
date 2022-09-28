@@ -507,14 +507,15 @@ extension RouteController: CLLocationManagerDelegate {
                 // If the upcoming maneuver in the new route is the same as the current upcoming maneuver, don't announce it
                 self.routeProgress = RouteProgress(route: route, legIndex: 0, spokenInstructionIndex: self.routeProgress.currentLegProgress.currentStepProgress.spokenInstructionIndex)
                 self.delegate?.routeController?(self, didRerouteAlong: route, reroutingBecauseOfFasterRoute: true, isExpectedTravelTimeUpdate: false)
-                self.didFindFasterRoute = false // Wat doet dit?
+                self.didFindFasterRoute = false
             } else if let route = newRouteMatchingAtLeast90Percent {
                 print("Set the new route", route.expectedTravelTime)
                 
-                var isExpectedTravelTimeChangedSignificantly: Bool {
-                    abs(self.routeProgress.route.expectedTravelTime - route.expectedTravelTime) > 30
-                }
+                // Check if the time difference is more than 30 seconds.
+                let isExpectedTravelTimeChangedSignificantly = abs(self.routeProgress.durationRemaining - route.expectedTravelTime) > 30
+                    
                 if isExpectedTravelTimeChangedSignificantly {
+                    self.routeProgress.durationRemaining
                     self.routeProgress = RouteProgress(route: route, legIndex: 0, spokenInstructionIndex: self.routeProgress.currentLegProgress.currentStepProgress.spokenInstructionIndex)
                     self.delegate?.routeController?(self, didRerouteAlong: route, reroutingBecauseOfFasterRoute: false, isExpectedTravelTimeUpdate: true)
                 }
