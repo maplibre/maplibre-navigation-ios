@@ -503,10 +503,7 @@ extension RouteController: CLLocationManagerDelegate {
                     return nil
                 }
                 
-                if bestMatch.matchFactor >= 0.9 {
-                    return bestMatch.route
-                }
-                return nil
+                 return bestMatch
             }()
             
             
