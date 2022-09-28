@@ -498,11 +498,14 @@ extension RouteController: CLLocationManagerDelegate {
                     .sorted { $0.matchFactor > $1.matchFactor }
                     .first
                 
-                if let bestMatch = bestMatch, bestMatch.matchFactor >= 0.9 else {
-                    return bestMatch
-                } else {
+                guard let bestMatch = bestMatch else {
                     return nil
                 }
+                
+                if bestMatch.matchFactor >= 0.9 {
+                    return bestMatch.route
+                }
+                return nil
             }()
             
             
