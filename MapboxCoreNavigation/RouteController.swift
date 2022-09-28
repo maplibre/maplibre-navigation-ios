@@ -481,12 +481,7 @@ extension RouteController: CLLocationManagerDelegate {
                 
                 routes = routes.map {
                     let copy = $0
-                    print("pre expectedTravelTime", copy.expectedTravelTime)
                     copy.expectedTravelTime = copy.expectedTravelTime + (Self.isMegaFileActive ? 1000 : 0)
-                    copy.legs = copy.legs.map {
-                        $0.expectedTravelTime += 100
-                    }
-                    print("post expectedTravelTime", copy.expectedTravelTime)
                     return copy
                 }
                 
@@ -503,17 +498,12 @@ extension RouteController: CLLocationManagerDelegate {
                     .sorted { $0.matchFactor > $1.matchFactor }
                     .first
                 
-                guard let bestMatch = bestMatch else {
-                    print("FlitsNav", "No bestMatch")
-                    return nil
-                }
+                guard
+                    let bestMatch = bestMatch,
+                    bestMatch.matchFactor >= 0.9
+                else { return nil }
                 
-                print("FlitsNav", "bestMatch", bestMatch)
-                
-                if bestMatch.matchFactor >= 0.9 {
-                    return bestMatch.route
-                }
-                return nil
+                return bestMatch
             }()
             
             
