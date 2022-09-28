@@ -425,7 +425,7 @@ extension RouteController: CLLocationManagerDelegate {
 
     public static var isMegaFileActive = false
     
-    func checkForNewRoute(from location: CLLocation, isRerouteAllowed: Bool) {
+    func checkForNewRoute(from location: CLLocation) {
         guard !isFindingFasterRoute else {
             return
         }
