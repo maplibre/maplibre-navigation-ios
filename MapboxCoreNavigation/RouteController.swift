@@ -499,7 +499,7 @@ extension RouteController: CLLocationManagerDelegate {
                     .first
                 
                 guard
-                    let bestMatch = bestMatch, bestMatch.matchFactor >= 0.9 else {
+                    let bestMatch = bestMatch, bestMatch?.matchFactor >= 0.9 else {
                     return nil
                 }
                 
