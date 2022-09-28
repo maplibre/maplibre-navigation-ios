@@ -482,11 +482,7 @@ extension RouteController: CLLocationManagerDelegate {
                 routes = routes.map {
                     let copy = $0
                     print("pre expectedTravelTime", copy.expectedTravelTime)
-                    let addedTime = Self.isMegaFileActive ? 1000 : 0
-                    copy.expectedTravelTime = copy.expectedTravelTime + addedTime
-//                    copy.legs.forEach {
-//                        $0.expectedTravelTime += addedTime
-//                    }
+                    copy.expectedTravelTime = copy.expectedTravelTime + (Self.isMegaFileActive ? 1000 : 0)
                     print("post expectedTravelTime", copy.expectedTravelTime)
                     return copy
                 }
@@ -539,7 +535,7 @@ extension RouteController: CLLocationManagerDelegate {
                 // If the upcoming maneuver in the new route is the same as the current upcoming maneuver, don't announce it
                 self.routeProgress = RouteProgress(route: route, legIndex: 0, spokenInstructionIndex: self.routeProgress.currentLegProgress.currentStepProgress.spokenInstructionIndex)
                 self.delegate?.routeController?(self, didRerouteAlong: route, reroutingBecauseOfFasterRoute: true, isExpectedTravelTimeUpdate: false)
-                self.didFindFasterRoute = false
+                self.didFindFasterRoute = false // Wat doet dit?
             } else if isExpectedTravelTimeChangedSignificantly, let route = newRouteMatchingAtLeast90Percent {
                 print("Set the new route", route.expectedTravelTime)
                 self.routeProgress = RouteProgress(route: route, legIndex: 0, spokenInstructionIndex: self.routeProgress.currentLegProgress.currentStepProgress.spokenInstructionIndex)
