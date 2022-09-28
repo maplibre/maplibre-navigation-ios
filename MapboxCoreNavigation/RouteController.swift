@@ -447,6 +447,7 @@ extension RouteController: CLLocationManagerDelegate {
 //        guard location.timestamp.timeIntervalSince(lastLocationDate) >= RouteControllerProactiveReroutingInterval else {
 //            return
 //        }
+        
         let durationRemaining = routeProgress.durationRemaining
         
         isFindingFasterRoute = true
@@ -468,62 +469,14 @@ extension RouteController: CLLocationManagerDelegate {
             guard let firstLeg = route.legs.first, let firstStep = firstLeg.steps.first else {
                 return
             }
-
-            print("§ FlitsNav", "isMegaFileActive", Self.isMegaFileActive)
             
             let routeIsFaster = firstStep.expectedTravelTime >= RouteControllerMediumAlertInterval && currentUpcomingManeuver == firstLeg.steps[1] && route.expectedTravelTime <= 0.9 * durationRemaining
             
-            lazy var newRouteMatchingAtLeast90Percent: Route? = {
-                guard
-                    let currentRouteCoordinates = self.routeProgress.route.coordinates,
-                    var routes = routes
-                else { return nil }
-                
-                routes = routes.map {
-                    let copy = $0
-                    print("pre expectedTravelTime", copy.expectedTravelTime)
-                    let addedTime = Self.isMegaFileActive ? 1000 : 0
-                    copy.expectedTravelTime = copy.expectedTravelTime + addedTime
-                    copy.legs.map {
-                        let copy = $0
-                        copy.expectedTravelTime += copy.expectedTravelTime + addedTime
-                        return copy
-                    }
-                    print("post expectedTravelTime", copy.expectedTravelTime)
-                    return copy
-                }
-                
-                let currentRouteCoordinatesStrings = currentRouteCoordinates.map { String(format: "%.4f,%.4f", $0.latitude, $0.longitude) }
-                
-                let bestMatch = routes.compactMap { route -> (route: Route, matchFactor: Double)? in
-                    guard let routeCoordinates = route.coordinates else { return nil }
-                    let routeCoordinatesStrings = routeCoordinates.map { String(format: "%.4f,%.4f", $0.latitude, $0.longitude) }
-                    let matchCount = Double(routeCoordinatesStrings.filter { currentRouteCoordinatesStrings.contains($0) }.count)
-                    let matchFactor = 1.0 / Double(routeCoordinatesStrings.count) * matchCount
-                    print("FlitsNav", "matchFactor", matchFactor, routeCoordinatesStrings.count, currentRouteCoordinatesStrings.count, matchCount)
-                    return (route, matchFactor)
-                }
-                    .sorted { $0.matchFactor > $1.matchFactor }
-                    .first
-                
-                guard let bestMatch = bestMatch else {
-                    print("FlitsNav", "No bestMatch")
-                    return nil
-                }
-                
-                print("FlitsNav", "bestMatch", bestMatch)
-                
-                if bestMatch.matchFactor >= 0.9 {
-                    return bestMatch.route
-                }
-                return nil
-            }()
-            
+            lazy var newRouteMatchingAtLeast90Percent = filterSimilarRoute(currentRoute: self.routeProgress.route, newRoutes: routes)
             
             var newRoute = route
             if let slowerRoute = newRouteMatchingAtLeast90Percent {
                 newRoute = slowerRoute
-                print("eta", slowerRoute.expectedTravelTime)
             }
             
             // Is de eta wel veranderd?
@@ -531,9 +484,6 @@ extension RouteController: CLLocationManagerDelegate {
             var isExpectedTravelTimeChangedSignificantly: Bool {
                 abs(self.routeProgress.route.expectedTravelTime - newRoute.expectedTravelTime) > 30
             }
-            
-            print("FlitsNav", "newRouteMatchingAtLeast90Percent", newRouteMatchingAtLeast90Percent)
-            print("FlitsNav", "isExpectedTravelTimeChangedSignificantly", isExpectedTravelTimeChangedSignificantly, self.routeProgress.route.expectedTravelTime, newRoute.expectedTravelTime, abs(self.routeProgress.route.expectedTravelTime - newRoute.expectedTravelTime))
             
             if isRerouteAllowed && routeIsFaster {
                 print("FlitsNav", "routeIsFaster && isRerouteAllowed")
@@ -546,9 +496,41 @@ extension RouteController: CLLocationManagerDelegate {
                 print("Set the new route", route.expectedTravelTime)
                 self.routeProgress = RouteProgress(route: route, legIndex: 0, spokenInstructionIndex: self.routeProgress.currentLegProgress.currentStepProgress.spokenInstructionIndex)
                 self.delegate?.routeController?(self, didRerouteAlong: route, reroutingBecauseOfFasterRoute: false, isExpectedTravelTimeUpdate: true)
-//                self.routeProgress.durationRemaining = 10000
             }
         }
+    }
+    
+    private func filterSimilarRoute(currentRoute: Route, newRoutes: [Route]) -> Route? {
+        guard
+            let currentRouteCoordinates = currentRoute.coordinates,
+            var routes = newRoutes
+        else { return nil }
+        
+        routes = routes.map {
+            let copy = $0
+            let addedTime = Self.isMegaFileActive ? 1000 : 0
+            copy.expectedTravelTime = copy.expectedTravelTime + addedTime
+            return copy
+        }
+        
+        let currentRouteCoordinatesStrings = currentRouteCoordinates.map { String(format: "%.4f,%.4f", $0.latitude, $0.longitude) }
+        
+        let bestMatch = routes.compactMap { route -> (route: Route, matchFactor: Double)? in
+            guard let routeCoordinates = route.coordinates else { return nil }
+            let routeCoordinatesStrings = routeCoordinates.map { String(format: "%.4f,%.4f", $0.latitude, $0.longitude) }
+            let matchCount = Double(routeCoordinatesStrings.filter { currentRouteCoordinatesStrings.contains($0) }.count)
+            let matchFactor = 1.0 / Double(routeCoordinatesStrings.count) * matchCount
+            return (route, matchFactor)
+        }
+            .sorted { $0.matchFactor > $1.matchFactor }
+            .first
+        
+        guard
+            let bestMatch = bestMatch,
+            bestMatch.matchFactor >= 0.9
+        else { return nil }
+        
+        return bestMatch
     }
 
     func reroute(from location: CLLocation, along progress: RouteProgress) {
