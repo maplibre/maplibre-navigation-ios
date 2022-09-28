@@ -495,19 +495,11 @@ extension RouteController: CLLocationManagerDelegate {
                     print("FlitsNav", "matchFactor", matchFactor, routeCoordinatesStrings.count, currentRouteCoordinatesStrings.count, matchCount)
                     return (route, matchFactor)
                 }
-                    .sorted { $0.matchFactor > $1.matchFactor }
                     .filter { $0.matchFactor >= 0.9 }
+                    .sorted { $0.matchFactor > $1.matchFactor }
                     .first
                 
-                guard let bestMatch = bestMatch else {
-                    return nil
-                }
-                
-                if bestMatch.matchFactor >= 0.9 {
-                    return bestMatch.route
-                }
-                
-                return bestMatch.route
+                return bestMatch?.route
             }()
             
             
