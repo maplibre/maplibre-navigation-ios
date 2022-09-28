@@ -509,7 +509,7 @@ extension RouteController: CLLocationManagerDelegate {
                 self.didFindFasterRoute = false // Wat doet dit?
             } else let route = newRouteMatchingAtLeast90Percent {
                 // Check if the time has changed more than 30 seconds.
-                var isExpectedTravelTimeChangedSignificantly: Bool = abs(self.routeProgress.route.expectedTravelTime - newRoute.expectedTravelTime) > 30
+                var isExpectedTravelTimeChangedSignificantly: Bool = abs(self.routeProgress.route.expectedTravelTime - route.expectedTravelTime) > 30
                 
                 if isExpectedTravelTimeChangedSignificantly {
                     self.routeProgress = RouteProgress(route: route, legIndex: 0, spokenInstructionIndex: self.routeProgress.currentLegProgress.currentStepProgress.spokenInstructionIndex)
