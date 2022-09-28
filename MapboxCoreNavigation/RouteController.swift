@@ -343,11 +343,7 @@ extension RouteController: CLLocationManagerDelegate {
         // Check for faster route given users current location
         guard reroutesProactively else { return }
         
-        // Only check for faster alternatives if the user has plenty of time left on the route.
-        // If the user is approaching a maneuver, don't check for a faster alternatives
-        let isRerouteAllowed = routeProgress.durationRemaining > 600 && routeProgress.currentLegProgress.currentStepProgress.durationRemaining > RouteControllerMediumAlertInterval
-        
-        checkForFasterRoute(from: location, isRerouteAllowed: isRerouteAllowed)
+        checkForNewRoute(from: location)
     }
         
     func updateIntersectionIndex(for currentStepProgress: RouteStepProgress) {
@@ -429,7 +425,7 @@ extension RouteController: CLLocationManagerDelegate {
 
     public static var isMegaFileActive = false
     
-    func checkForFasterRoute(from location: CLLocation, isRerouteAllowed: Bool) {
+    func checkForNewRoute(from location: CLLocation, isRerouteAllowed: Bool) {
         guard !isFindingFasterRoute else {
             return
         }
@@ -500,6 +496,9 @@ extension RouteController: CLLocationManagerDelegate {
                 return bestMatch?.route
             }()
             
+            // Only check for faster alternatives if the user has plenty of time left on the route.
+            // If the user is approaching a maneuver, don't check for a faster alternatives
+            let isRerouteAllowed = routeProgress.durationRemaining > 600 && routeProgress.currentLegProgress.currentStepProgress.durationRemaining > RouteControllerMediumAlertInterval
             
             if isRerouteAllowed && routeIsFaster {
                 print("FlitsNav", "routeIsFaster && isRerouteAllowed")
