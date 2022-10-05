@@ -39,7 +39,7 @@ If you are looking to include this inside your project, you have to follow the t
 1. Add dependencies to Cartfile
    ```
    binary "https://www.mapbox.com/ios-sdk/Mapbox-iOS-SDK.json" == 5.3.0
-   github "flitsmeister/flitsmeister-navigation-ios" ~> 1.0.3
+   github "flitsmeister/flitsmeister-navigation-ios" ~> 1.0.6
    ```
 1. Build the frameworks
    - Open terminal
