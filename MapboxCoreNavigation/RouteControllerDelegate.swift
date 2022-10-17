@@ -50,11 +50,10 @@ public protocol RouteControllerDelegate: class {
      
      - parameter routeController: The route controller that has calculated a new route.
      - parameter route: The new route.
-     - parameter reroutingBecauseOfFasterRoute: If the reroute is because a faster route was found.
-     - parameter isExpectedTravelTimeUpdate: If the reroute is because an updated expectedTravelTime.
+     - parameter reason: Describes the reason of the reroute. Could be due to a faster route / updating ETA or when the user diverted from the suggested route
      */
-    @objc(routeController:didRerouteAlongRoute:reroutingBecauseOfFasterRoute:isExpectedTravelTimeUpdate:)
-    optional func routeController(_ routeController: RouteController, didRerouteAlong route: Route, reroutingBecauseOfFasterRoute: Bool, isExpectedTravelTimeUpdate: Bool)
+    @objc(routeController:didRerouteAlongRoute:reason:)
+    optional func routeController(_ routeController: RouteController, didRerouteAlong route: Route, reason: RouteController.RerouteReason)
     
     /**
      Called when the route controller fails to receive a new route.
