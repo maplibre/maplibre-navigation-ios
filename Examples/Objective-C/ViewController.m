@@ -127,8 +127,7 @@
                                                                                         styles:nil
                                                                                routeController:nil
                                                                                locationManager:locationManager
-                                                                               voiceController:nil
-                                                                                 eventsManager:nil];
+                                                                               voiceController:nil];
     [self presentViewController:controller animated:YES completion:nil];
     
     // Suspend notifications and let `MBNavigationViewController` handle all progress and voice updates.
