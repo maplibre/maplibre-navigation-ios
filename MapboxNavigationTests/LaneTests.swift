@@ -22,7 +22,7 @@ class LaneTests: FBSnapshotTestCase {
         agnosticOptions = [.OS, .device]
 
         route.accessToken = bogusToken
-        routeController = RouteController(along: route, directions: directions, eventsManager: TestNavigationEventsManager())
+        routeController = RouteController(along: route, directions: directions)
 
         steps = routeController.routeProgress.currentLeg.steps
         routeProgress = routeController.routeProgress

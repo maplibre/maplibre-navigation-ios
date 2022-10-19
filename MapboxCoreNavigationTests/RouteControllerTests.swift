@@ -324,7 +324,7 @@ class RouteControllerTests: XCTestCase {
         XCTAssertNil(subject, "Expected LocationManager's Delegate to be nil after RouteController Deinit")
     }
     
-    lazy var nijmegenVeenendaalArnhemRoute = {
+    lazy var nijmegenArnhemVeenendaal = {
         let waypoint1 = Waypoint(coordinate: CLLocationCoordinate2D(latitude: 51.83116792, longitude: 5.83897820))
         let waypoint2 = Waypoint(coordinate: CLLocationCoordinate2D(latitude: 52.03920380, longitude: 5.55133121))
         let route = Route(json: Fixture.JSONFromFileNamed(name: "Nijmegen-Arnhem-Veenendaal"), waypoints: [waypoint1, waypoint2], options: NavigationRouteOptions(waypoints: [waypoint1, waypoint2]))
@@ -332,7 +332,23 @@ class RouteControllerTests: XCTestCase {
         return route
     }()
     
+    lazy var nijmegenBemmelVeenendaal = {
+        let waypoint1 = Waypoint(coordinate: CLLocationCoordinate2D(latitude: 51.83116792, longitude: 5.83897820))
+        let waypoint2 = Waypoint(coordinate: CLLocationCoordinate2D(latitude: 52.03920380, longitude: 5.55133121))
+        let route = Route(json: Fixture.JSONFromFileNamed(name: "Nijmegen-Bemmel-Veenendaal"), waypoints: [waypoint1, waypoint2], options: NavigationRouteOptions(waypoints: [waypoint1, waypoint2]))
+        route.accessToken = Constants.accessToken
+        return route
+    }()
+
     func testRouteControllerMatchPercentage() {
-        let firstRoute = nijmegenVeenendaalArnhemRoute
+        // These routes differ around 40%
+        let arnhemRoute = nijmegenArnhemVeenendaal
+        let bemmelRoute = nijmegenBemmelVeenendaal
+        
+        if let matchPercentage = RouteController.matchPercentage(between: arnhemRoute, and: bemmelRoute) {
+            XCTAssertEqual(matchPercentage, 0.5886, accuracy: 0.01)
+        } else {
+            XCTFail("Should get a match percentage")
+        }
     }
 }

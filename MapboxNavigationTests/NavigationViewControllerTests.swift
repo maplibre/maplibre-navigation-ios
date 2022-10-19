@@ -18,8 +18,7 @@ class NavigationViewControllerTests: XCTestCase {
         let voice = FakeVoiceController()
         let nav = NavigationViewController(for: initialRoute,
                                            directions: Directions(accessToken: "garbage", host: nil),
-                                           voiceController: voice,
-                                           eventsManager: TestNavigationEventsManager())
+                                           voiceController: voice)
         
         nav.delegate = self
         
@@ -90,7 +89,7 @@ class NavigationViewControllerTests: XCTestCase {
     }
     
     func testNavigationShouldNotCallStyleManagerDidRefreshAppearanceMoreThanOnceWithOneStyle() {
-        let navigationViewController = NavigationViewController(for: initialRoute, styles: [DayStyle()], voiceController: FakeVoiceController(), eventsManager: TestNavigationEventsManager())
+        let navigationViewController = NavigationViewController(for: initialRoute, styles: [DayStyle()], voiceController: FakeVoiceController())
         let routeController = navigationViewController.routeController!
         navigationViewController.styleManager.delegate = self
         
@@ -106,7 +105,7 @@ class NavigationViewControllerTests: XCTestCase {
     
     // If tunnel flags are enabled and we need to switch styles, we should not force refresh the map style because we have only 1 style.
     func testNavigationShouldNotCallStyleManagerDidRefreshAppearanceWhenOnlyOneStyle() {
-        let navigationViewController = NavigationViewController(for: initialRoute, styles: [NightStyle()], voiceController: FakeVoiceController(), eventsManager: TestNavigationEventsManager())
+        let navigationViewController = NavigationViewController(for: initialRoute, styles: [NightStyle()], voiceController: FakeVoiceController())
         let routeController = navigationViewController.routeController!
         navigationViewController.styleManager.delegate = self
         
@@ -121,7 +120,7 @@ class NavigationViewControllerTests: XCTestCase {
     }
     
     func testNavigationShouldNotCallStyleManagerDidRefreshAppearanceMoreThanOnceWithTwoStyles() {
-        let navigationViewController = NavigationViewController(for: initialRoute, styles: [DayStyle(), NightStyle()], voiceController: FakeVoiceController(), eventsManager: TestNavigationEventsManager())
+        let navigationViewController = NavigationViewController(for: initialRoute, styles: [DayStyle(), NightStyle()], voiceController: FakeVoiceController())
         let routeController = navigationViewController.routeController!
         navigationViewController.styleManager.delegate = self
         
@@ -260,12 +259,12 @@ class NavigationViewControllerTestable: NavigationViewController {
                   locationManager: NavigationLocationManager? = NavigationLocationManager(),
                   styleLoaded: XCTestExpectation) {
         styleLoadedExpectation = styleLoaded
-        super.init(for: route, directions: directions,styles: styles, locationManager: locationManager, voiceController: FakeVoiceController(), eventsManager: TestNavigationEventsManager())
+        super.init(for: route, directions: directions,styles: styles, locationManager: locationManager, voiceController: FakeVoiceController())
     }
     
-@objc(initWithRoute:directions:styles:routeController:locationManager:voiceController:eventsManager:)
-    required init(for route: Route, directions: Directions, styles: [Style]?, routeController: RouteController?, locationManager: NavigationLocationManager?, voiceController: RouteVoiceController?, eventsManager: EventsManager?) {
-    fatalError("init(for:directions:styles:routeController:locationManager:voiceController:eventsManager:) is not supported in this testing subclass.")
+@objc(initWithRoute:directions:styles:routeController:locationManager:voiceController:)
+    required init(for route: Route, directions: Directions, styles: [Style]?, routeController: RouteController?, locationManager: NavigationLocationManager?, voiceController: RouteVoiceController?) {
+        fatalError("init(for:directions:styles:routeController:locationManager:voiceController:) is not supported in this testing subclass.")
     }
 
     func mapView(_ mapView: MGLMapView, didFinishLoading style: MGLStyle) {
@@ -275,7 +274,7 @@ class NavigationViewControllerTestable: NavigationViewController {
     required init?(coder aDecoder: NSCoder) {
         fatalError("This initalizer is not supported in this testing subclass.")
     }
-
+    
 }
 
 class TestableDayStyle: DayStyle {
