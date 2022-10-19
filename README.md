@@ -3,7 +3,7 @@
 </div>
 <br>
 
-The Flitsmeister Navigation SDK for iOS is built on a fork of the [Mapbox Navigation SDK v0.21](https://github.com/flitsmeister/flitsmeister-navigation-ios/tree/v0.21.0) which is build on top of the [Mapbox Directions API](https://www.mapbox.com/directions) and contains logic needed to get timed navigation instructions.
+The Flitsmeister Navigation SDK for iOS is built on a fork of the [Mapbox Navigation SDK v0.21](https://github.com/flitsmeister/flitsmeister-navigation-ios/tree/v0.21.0) which is build on top of the [Mapbox Directions API](https://www.mapbox.com/directions) (v0.23.0) and contains logic needed to get timed navigation instructions.
 
 With this SDK you can implement turn by turn navigation in your own iOS app while hosting your own Map tiles and Directions API.
 
@@ -18,7 +18,7 @@ All issues are covered with this SDK.
 # What have we changed
 
 - Removed EventManager and all its references, this manager collected telemetry data which we don't want to send
-- Updated [Mapbox SDK](https://github.com/mapbox/mapbox-gl-native-ios) from version 4.3 to 5.3
+- Transitioned from the [Mapbox SDK](https://github.com/mapbox/mapbox-gl-native-ios) (version 4.3) to [Maplibre Maps SDK](https://github.com/maplibre/maplibre-gl-native) (version 5.12.2)
 - Added optional config parameter in NavigationMapView constructor to customize certain properties like route line color
 
 # Getting Started
@@ -36,9 +36,9 @@ If you are looking to include this inside your project, you have to follow the t
    - Change location to root of XCode project: `cd path/to/Project`
     - Create the Cartfile: `touch Cartfile`
    - New file will be added: `Cartfile`
+1. Add Maplibre Maps SPM (Swift Package Manager) depedency by going to your app's project file -> Package Dependencies -> Press the '+' -> https://github.com/maplibre/maplibre-gl-native-distribution -> 'Exact' 5.12.2 
 1. Add dependencies to Cartfile
    ```
-   binary "https://www.mapbox.com/ios-sdk/Mapbox-iOS-SDK.json" == 5.3.0
    github "flitsmeister/flitsmeister-navigation-ios" ~> 1.0.6
    ```
 1. Build the frameworks
@@ -49,13 +49,12 @@ If you are looking to include this inside your project, you have to follow the t
      - Cartfile.resolved = Indicates which frameworks have been fetched/built
      - Carthage folder = Contains all builded frameworks
 1. Drag frameworks into project: `TARGETS -> General -> Frameworks, Libraries..`
-   - Mapbox.framework
    - All xcframeworks
 1. Add properties to `Info.plist`
    - MGLMapboxAccessToken / String / Leave empty = Ensures that the SDK doesn't crash
    - MGLMapboxAPIBaseURL / String / Add url = Url that is being used to GET the navigation JSON
    - NSLocationWhenInUseUsageDescription / String / Add a description = Needed for the location permission
-1. [optional] When app is not running on simulator on M1 Mac: Add `arm64` to `PROJECT -> <Project naam> -> Build Settings -> Excluded Architecture Only`
+1. [optional] When app is running on device and you're having problems: Add `arm64` to `PROJECT -> <Project naam> -> Build Settings -> Excluded Architecture Only`
 1. Use the sample code as inspiration
 
 # Getting Help
@@ -65,7 +64,7 @@ If you are looking to include this inside your project, you have to follow the t
 
 ## <a name="sample-code">Sample code
 
-A demo app is currently not available. Please check the Mapbox repository or documentation for examples. You can try the provided demo app, which you need to first run `carthage update --platform iOS --use-xc-frameworks` for in the root of this project.
+A demo app is currently not available. Please check the Mapbox repository or documentation for examples, especially on the forked version. You can try the provided demo app, which you need to first run `carthage update --platform iOS --use-xc-frameworks` for in the root of this project.
 
 In order to see the map or calculate a route you need your own Maptile and Direction services.
 
@@ -90,7 +89,7 @@ class ViewController: UIViewController {
         let navigationView = NavigationMapView(
             frame: .zero,
             // Tile loading can take a while
-            styleURL: URL(string: "..."), // TODO: Add style url
+            styleURL: URL(string: "your style URL here"),
             config: MNConfig())
         self.navigationView = navigationView
         view.addSubview(navigationView)
@@ -100,7 +99,6 @@ class ViewController: UIViewController {
         navigationView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         navigationView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
         
-        // Note: For FM lat/lngs are reversed here
         let waypoints = [
             CLLocation(latitude: 52.032407, longitude: 5.580310),
             CLLocation(latitude: 51.768686, longitude: 4.6827956)
@@ -111,6 +109,10 @@ class ViewController: UIViewController {
         options.distanceMeasurementSystem = .metric
         options.attributeOptions = []
         
+        print("[\(type(of:self))] Calculating routes with URL: \(Directions.shared.url(forCalculating: options))")
+        
+        /// URL is based on the base URL in the Info.plist called `MGLMapboxAPIBaseURL`
+        /// - Note: Your routing provider could be strict about the user-agent of this app before allowing the call to work
         Directions.shared.calculate(options) { (waypoints, routes, error) in
             guard let route = routes?.first else { return }
             
