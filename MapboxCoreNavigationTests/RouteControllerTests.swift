@@ -324,6 +324,7 @@ class RouteControllerTests: XCTestCase {
         XCTAssertNil(subject, "Expected LocationManager's Delegate to be nil after RouteController Deinit")
     }
     
+    // MARK: - Matching route geometries
     lazy var nijmegenArnhemVeenendaal = {
         let waypoint1 = Waypoint(coordinate: CLLocationCoordinate2D(latitude: 51.83116792, longitude: 5.83897820))
         let waypoint2 = Waypoint(coordinate: CLLocationCoordinate2D(latitude: 52.03920380, longitude: 5.55133121))
@@ -471,5 +472,144 @@ class RouteControllerTests: XCTestCase {
             XCTAssertEqual(bestMatch.matchPercentage, 90.3, accuracy: 0.1)
             XCTFail("Shouldn't get a match above 90%")
         }
+    }
+    
+    // MARK: - Applying faster/slower route
+    func testApplyingFasterRoute() {
+        let routeController = dependencies.routeController
+        let oldRouteProgress = routeController.routeProgress
+        
+        // Starting with route 'A12-To-Veenendaal-Normal'
+        routeController.routeProgress = .init(
+            route: a12ToVeenendaalNormal,
+            legIndex: 0,
+            spokenInstructionIndex: 0
+        )
+        
+        // Try to apply slightly faster route 'A12-To-Veenendaal-Slight-Difference'
+        routeController.applyNewRerouteIfNeeded(
+            mostSimilarRoute: a12ToVeenendaalSlightDifference,
+            allRoutes: [a12ToVeenendaalSlightDifference],
+            currentUpcomingManeuver: routeController.routeProgress.currentLegProgress.upComingStep!,
+            durationRemaining: routeController.routeProgress.durationRemaining
+        )
+        
+        // Should be applied
+        XCTAssertEqual(
+            routeController.routeProgress.durationRemaining,
+            RouteProgress(
+                route: a12ToVeenendaalSlightDifference,
+                legIndex: 0,
+                spokenInstructionIndex: 0).durationRemaining
+        )
+        
+        // Reset routeProgress
+        routeController.routeProgress = oldRouteProgress
+    }
+    
+    func testNotApplyingSlowerRoute() {
+        let routeController = dependencies.routeController
+        let oldRouteProgress = routeController.routeProgress
+        
+        // Starting with route 'A12-To-Veenendaal-Normal'
+        routeController.routeProgress = .init(
+            route: a12ToVeenendaalNormal,
+            legIndex: 0,
+            spokenInstructionIndex: 0
+        )
+        
+        // Try to apply slower route 'A12-To-Veenendaal-Slight-Difference'
+        routeController.applyNewRerouteIfNeeded(
+            mostSimilarRoute: a12ToVeenendaalNormal,
+            allRoutes: [a12ToVeenendaalBiggerDetour],
+            currentUpcomingManeuver: routeController.routeProgress.currentLegProgress.upComingStep!,
+            durationRemaining: routeController.routeProgress.durationRemaining
+        )
+        
+        // Shouldn't be applied as slower route isn't 90%+ match
+        XCTAssertNotEqual(
+            routeController.routeProgress.durationRemaining,
+            RouteProgress(
+                route: a12ToVeenendaalBiggerDetour,
+                legIndex: 0,
+                spokenInstructionIndex: 0).durationRemaining
+        )
+        
+        // Reset routeProgress
+        routeController.routeProgress = oldRouteProgress
+    }
+    
+    // Same exact JSON as a12ToVeenendaalNormal, but with one of the steps increased in 'duration' with 500 secs simulating a traffic jam
+    // Makes checking 'durationRemaining' work, as that is a sum of all step's 'duration' in a leg
+    lazy var a12ToVeenendaalNormalWithTraffic = {
+        let waypoint1 = Waypoint(coordinate: CLLocationCoordinate2D(latitude: 52.02224357, longitude: 5.78149084))
+        let waypoint2 = Waypoint(coordinate: CLLocationCoordinate2D(latitude: 52.03924958, longitude: 5.55054131))
+        let route = Route(json: Fixture.JSONFromFileNamed(name: "A12-To-Veenendaal-Normal-With-Big-Trafficjam"), waypoints: [waypoint1, waypoint2], options: NavigationRouteOptions(waypoints: [waypoint1, waypoint2]))
+        route.accessToken = Constants.accessToken
+        return route
+    }()
+    
+    func testApplyingSlowerRoute() {
+        let routeController = dependencies.routeController
+        let oldRouteProgress = routeController.routeProgress
+        
+        // Starting with route 'A12-To-Veenendaal-Normal'
+        routeController.routeProgress = .init(
+            route: a12ToVeenendaalNormal,
+            legIndex: 0,
+            spokenInstructionIndex: 0
+        )
+        
+        // Try to apply slower route 'A12-To-Veenendaal-Normal-With-Big-Trafficjam'
+        routeController.applyNewRerouteIfNeeded(
+            mostSimilarRoute: a12ToVeenendaalNormal,
+            allRoutes: [a12ToVeenendaalNormalWithTraffic],
+            currentUpcomingManeuver: routeController.routeProgress.currentLegProgress.upComingStep!,
+            durationRemaining: routeController.routeProgress.durationRemaining
+        )
+        
+        // Should be applied as we match criteria and route is just slower
+        XCTAssertEqual(
+            routeController.routeProgress.durationRemaining,
+            RouteProgress(
+                route: a12ToVeenendaalNormalWithTraffic,
+                legIndex: 0,
+                spokenInstructionIndex: 0).durationRemaining
+        )
+        
+        // Reset routeProgress
+        routeController.routeProgress = oldRouteProgress
+    }
+    
+    func testApplyingBestMatch() {
+        let routeController = dependencies.routeController
+        let oldRouteProgress = routeController.routeProgress
+        
+        // Starting with route 'A12-To-Veenendaal-Normal'
+        routeController.routeProgress = .init(
+            route: a12ToVeenendaalNormal,
+            legIndex: 0,
+            spokenInstructionIndex: 0
+        )
+        
+        // Try to apply slower route 'A12-To-Veenendaal-Normal-With-Big-Trafficjam' or faster route 'A12-To-Veenendaal-Slight-Difference'
+        routeController.applyNewRerouteIfNeeded(
+            mostSimilarRoute: a12ToVeenendaalNormal,
+            allRoutes: [a12ToVeenendaalNormalWithTraffic, a12ToVeenendaalSlightDifference],
+            currentUpcomingManeuver: routeController.routeProgress.currentLegProgress.upComingStep!,
+            durationRemaining: routeController.routeProgress.durationRemaining
+        )
+        
+        // Slower one should be applied as it has a better match on geometry and the first route we get isn't faster
+        XCTAssertEqual(
+            routeController.routeProgress.durationRemaining,
+            RouteProgress(
+                route: a12ToVeenendaalNormalWithTraffic,
+                legIndex: 0,
+                spokenInstructionIndex: 0).durationRemaining
+        )
+        
+        // Reset routeProgress
+        routeController.routeProgress = oldRouteProgress
     }
 }

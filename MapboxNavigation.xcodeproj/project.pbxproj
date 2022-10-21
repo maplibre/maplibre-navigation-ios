@@ -299,6 +299,7 @@
 		C5E8FA3429028F6600A1D10A /* A12-To-Veenendaal-Normal.json in Resources */ = {isa = PBXBuildFile; fileRef = C5E8FA3329028F6600A1D10A /* A12-To-Veenendaal-Normal.json */; };
 		C5E8FA3629028FA400A1D10A /* A12-To-Veenendaal-Slight-Difference.json in Resources */ = {isa = PBXBuildFile; fileRef = C5E8FA3529028FA400A1D10A /* A12-To-Veenendaal-Slight-Difference.json */; };
 		C5E8FA382902952100A1D10A /* A12-To-Veenendaal-Bigger-Detour.json in Resources */ = {isa = PBXBuildFile; fileRef = C5E8FA372902952100A1D10A /* A12-To-Veenendaal-Bigger-Detour.json */; };
+		C5E8FA3A2902E35800A1D10A /* A12-To-Veenendaal-Normal-With-Big-Trafficjam.json in Resources */ = {isa = PBXBuildFile; fileRef = C5E8FA392902E35800A1D10A /* A12-To-Veenendaal-Normal-With-Big-Trafficjam.json */; };
 		C5EF397520599120009A2C50 /* straight-line.json in Resources */ = {isa = PBXBuildFile; fileRef = C5EF397420599120009A2C50 /* straight-line.json */; };
 		C5F2DCA0206DBF5E002F99F6 /* Sequence.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5F2DC9F206DBF5E002F99F6 /* Sequence.swift */; };
 		C5F2DCA1206DBF5E002F99F6 /* Sequence.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5F2DC9F206DBF5E002F99F6 /* Sequence.swift */; };
@@ -762,6 +763,7 @@
 		C5E8FA3329028F6600A1D10A /* A12-To-Veenendaal-Normal.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "A12-To-Veenendaal-Normal.json"; sourceTree = "<group>"; };
 		C5E8FA3529028FA400A1D10A /* A12-To-Veenendaal-Slight-Difference.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "A12-To-Veenendaal-Slight-Difference.json"; sourceTree = "<group>"; };
 		C5E8FA372902952100A1D10A /* A12-To-Veenendaal-Bigger-Detour.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "A12-To-Veenendaal-Bigger-Detour.json"; sourceTree = "<group>"; };
+		C5E8FA392902E35800A1D10A /* A12-To-Veenendaal-Normal-With-Big-Trafficjam.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "A12-To-Veenendaal-Normal-With-Big-Trafficjam.json"; sourceTree = "<group>"; };
 		C5EF397420599120009A2C50 /* straight-line.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "straight-line.json"; sourceTree = "<group>"; };
 		C5F2DC9F206DBF5E002F99F6 /* Sequence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sequence.swift; sourceTree = "<group>"; };
 		C5F4D21820DC468B0059FABF /* CongestionLevel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CongestionLevel.swift; sourceTree = "<group>"; };
@@ -1365,6 +1367,7 @@
 				C5E8FA3329028F6600A1D10A /* A12-To-Veenendaal-Normal.json */,
 				C5E8FA3529028FA400A1D10A /* A12-To-Veenendaal-Slight-Difference.json */,
 				C5E8FA372902952100A1D10A /* A12-To-Veenendaal-Bigger-Detour.json */,
+				C5E8FA392902E35800A1D10A /* A12-To-Veenendaal-Normal-With-Big-Trafficjam.json */,
 			);
 			name = Fixtures;
 			sourceTree = "<group>";
@@ -1944,6 +1947,7 @@
 			files = (
 				C54658B629000EFA00C068EA /* Nijmegen-Arnhem-Veenendaal.json in Resources */,
 				C5387A9D1F8FDB13000D2E93 /* routeWithInstructions.json in Resources */,
+				C5E8FA3A2902E35800A1D10A /* A12-To-Veenendaal-Normal-With-Big-Trafficjam.json in Resources */,
 				C54658B429000A8300C068EA /* Nijmegen-Bemmel-Veenendaal.json in Resources */,
 				C5EF397520599120009A2C50 /* straight-line.json in Resources */,
 				C5E8FA3629028FA400A1D10A /* A12-To-Veenendaal-Slight-Difference.json in Resources */,

@@ -475,50 +475,78 @@ extension RouteController: CLLocationManagerDelegate {
             
             // Also only do one 'findFasterRoute' call per time
             self.isFindingFasterRoute = false
-
-            guard let route = mostSimilarRoute else {
-                return
-            }
-
-            guard let firstLeg = route.legs.first, let firstStep = firstLeg.steps.first else {
+            
+                
+            guard let route = mostSimilarRoute, let routes = routes else {
                 return
             }
             
-            // Check if the new route is faster by comparing the ETA to the current ETA. Should be 10% faster or more
-            let routeIsFaster = firstStep.expectedTravelTime >= RouteControllerMediumAlertInterval && currentUpcomingManeuver == firstLeg.steps[1] && route.expectedTravelTime <= 0.9 * durationRemaining
+            self.applyNewRerouteIfNeeded(mostSimilarRoute: route, allRoutes: routes, currentUpcomingManeuver: currentUpcomingManeuver, durationRemaining: durationRemaining)
+        }
+    }
+    
+    func applyNewRerouteIfNeeded(mostSimilarRoute: Route, allRoutes: [Route], currentUpcomingManeuver: RouteStep, durationRemaining: TimeInterval) {
+        guard let firstLeg = mostSimilarRoute.legs.first, let firstStep = firstLeg.steps.first else {
+            return
+        }
+        
+        // Current and First step of old and new route should be significant enough of a maneuver before applying a faster route, so we don't apply the route just before a maneuver will occur
+        let significantFirstStep = firstStep.expectedTravelTime >= RouteControllerMediumAlertInterval && routeProgress.currentLegProgress.currentStepProgress.durationRemaining > RouteControllerMediumAlertInterval
+        
+        // Current maneuver should correspond to the next maneuver in the new route
+        let sameUpcomingManeuver = currentUpcomingManeuver == firstLeg.steps[1]
+        
+        // Check if the new route is faster by comparing the ETA to the current ETA. Should be 10% faster or more
+        let routeIsFaster = mostSimilarRoute.expectedTravelTime <= 0.9 * durationRemaining
+        
+        // Only check for alternatives if the user has plenty of time left on the route (10min+)
+        let userHasEnoughTimeOnRoute = self.routeProgress.durationRemaining > 600
+        
+        // TODO: Remove debug statements
+        print("[RouteController] Significant first step: \(significantFirstStep), Same upcoming maneuver: \(sameUpcomingManeuver), Route is faster: \(routeIsFaster), User has enough time left (10min+): \(userHasEnoughTimeOnRoute)")
+        
+        // Check if we should apply faster route
+        let shouldApplyFasterRoute = significantFirstStep && sameUpcomingManeuver && routeIsFaster && userHasEnoughTimeOnRoute
+        
+        // Check if we should apply slower route
+        let shouldApplySlowerRoute = significantFirstStep && sameUpcomingManeuver && userHasEnoughTimeOnRoute
+        
+        if shouldApplyFasterRoute {
+            // TODO: Remove debug statements
+            print("[RouteController] Found faster route")
+            
+            // Need to set this for notifications being sent
+            didFindFasterRoute = true
+            
+            // If the upcoming maneuver in the new route is the same as the current upcoming maneuver, don't announce it again, just set new progress
+            routeProgress = RouteProgress(route: mostSimilarRoute, legIndex: 0, spokenInstructionIndex: routeProgress.currentLegProgress.currentStepProgress.spokenInstructionIndex)
+            
+            // Let delegate know
+            delegate?.routeController?(self, didRerouteAlong: mostSimilarRoute, reason: .fasterRoute)
+            
+            // Reset flag for notification
+            didFindFasterRoute = false
+        }
+        
+        // If route is not faster, but matches criteria and we get a match that is similar enough (so we don't apply a route alternative that the user doesn't want), we will apply the route too
+        else if shouldApplySlowerRoute, let matchingRoute = Self.bestMatch(for: self.routeProgress.route, and: allRoutes) {
+            // Check if the time difference is more than 30 seconds between best match and current ETA for extra measure
+            let isExpectedTravelTimeChangedSignificantly = abs(routeProgress.durationRemaining - matchingRoute.route.expectedTravelTime) > 30
             
             // TODO: Remove debug statements
-            print("[RouteController] Route is faster: \(routeIsFaster)")
-            
-            // Only check for faster alternatives if the user has plenty of time left on the route.
-            // If the user is approaching a manoeuvre, don't check for a faster alternatives
-            let isRerouteAllowedForFasterRoutes = self.routeProgress.durationRemaining > 600 && self.routeProgress.currentLegProgress.currentStepProgress.durationRemaining > RouteControllerMediumAlertInterval
-            
-            if isRerouteAllowedForFasterRoutes && routeIsFaster {
-                // TODO: Remove debug statements
-                print("[RouteController] Found faster route")
+            print("[RouteController] Found matching route \(matchingRoute.matchPercentage)%, updating ETA...")
+            print("[RouteController] Duration remaining CURRENT: \(routeProgress.durationRemaining)")
+            print("[RouteController] Expected travel time: \(matchingRoute.route.expectedTravelTime)")
                 
-                self.didFindFasterRoute = true
-                // If the upcoming maneuver in the new route is the same as the current upcoming maneuver, don't announce it, just set new progress
-                self.routeProgress = RouteProgress(route: route, legIndex: 0, spokenInstructionIndex: self.routeProgress.currentLegProgress.currentStepProgress.spokenInstructionIndex)
-                self.delegate?.routeController?(self, didRerouteAlong: route, reason: .fasterRoute)
-                self.didFindFasterRoute = false
-            } else if let routes = routes, let matchingRoute = Self.bestMatch(for: self.routeProgress.route, and: routes) {
-                // Check if the time difference is more than 30 seconds for extra measure
-                let isExpectedTravelTimeChangedSignificantly = abs(self.routeProgress.durationRemaining - matchingRoute.route.expectedTravelTime) > 30
-                
+            if isExpectedTravelTimeChangedSignificantly {
                 // TODO: Remove debug statements
-                print("[RouteController] Found matching route \(matchingRoute.matchPercentage)%, updating ETA...")
-                print("[RouteController] Duration remaining CURRENT: \(self.routeProgress.durationRemaining)")
-                print("[RouteController] Expected travel time: \(matchingRoute.route.expectedTravelTime)")
-                    
-                if isExpectedTravelTimeChangedSignificantly {
-                    // TODO: Remove debug statements
-                    print("[RouteController] Set the new route")
-                    
-                    self.routeProgress = RouteProgress(route: matchingRoute.route, legIndex: 0, spokenInstructionIndex: self.routeProgress.currentLegProgress.currentStepProgress.spokenInstructionIndex)
-                    self.delegate?.routeController?(self, didRerouteAlong: matchingRoute.route, reason: .ETAUpdate)
-                }
+                print("[RouteController] Set the new route")
+                
+                // Don't announce new route
+                routeProgress = RouteProgress(route: matchingRoute.route, legIndex: 0, spokenInstructionIndex: routeProgress.currentLegProgress.currentStepProgress.spokenInstructionIndex)
+                
+                // Inform delegate
+                delegate?.routeController?(self, didRerouteAlong: matchingRoute.route, reason: .ETAUpdate)
             }
         }
     }
