@@ -292,6 +292,13 @@
 		C5D9800F1EFBCDAD006DBF2E /* Date.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5D9800E1EFBCDAD006DBF2E /* Date.swift */; };
 		C5DE4B6220F6B6B3007AFBE6 /* CustomStyles.swift in Sources */ = {isa = PBXBuildFile; fileRef = C51FC31620F689F800400CE7 /* CustomStyles.swift */; };
 		C5E7A31C1F4F6828001CB015 /* NavigationRouteOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5E7A31B1F4F6828001CB015 /* NavigationRouteOptions.swift */; };
+		C5E8FA2C2901493F00A1D10A /* routeWithInstructions.json in Resources */ = {isa = PBXBuildFile; fileRef = C5387A9C1F8FDB13000D2E93 /* routeWithInstructions.json */; };
+		C5E8FA2E29027D0A00A1D10A /* Nijmegen-Bemmel-Veenendaal2.json in Resources */ = {isa = PBXBuildFile; fileRef = C5E8FA2D29027D0700A1D10A /* Nijmegen-Bemmel-Veenendaal2.json */; };
+		C5E8FA3029028AB100A1D10A /* Wolfheze-Veenendaal-Normal.json in Resources */ = {isa = PBXBuildFile; fileRef = C5E8FA2F29028AA700A1D10A /* Wolfheze-Veenendaal-Normal.json */; };
+		C5E8FA3229028B0E00A1D10A /* Wolfheze-Veenendaal-Small-Detour-At-End.json in Resources */ = {isa = PBXBuildFile; fileRef = C5E8FA3129028B0E00A1D10A /* Wolfheze-Veenendaal-Small-Detour-At-End.json */; };
+		C5E8FA3429028F6600A1D10A /* A12-To-Veenendaal-Normal.json in Resources */ = {isa = PBXBuildFile; fileRef = C5E8FA3329028F6600A1D10A /* A12-To-Veenendaal-Normal.json */; };
+		C5E8FA3629028FA400A1D10A /* A12-To-Veenendaal-Slight-Difference.json in Resources */ = {isa = PBXBuildFile; fileRef = C5E8FA3529028FA400A1D10A /* A12-To-Veenendaal-Slight-Difference.json */; };
+		C5E8FA382902952100A1D10A /* A12-To-Veenendaal-Bigger-Detour.json in Resources */ = {isa = PBXBuildFile; fileRef = C5E8FA372902952100A1D10A /* A12-To-Veenendaal-Bigger-Detour.json */; };
 		C5EF397520599120009A2C50 /* straight-line.json in Resources */ = {isa = PBXBuildFile; fileRef = C5EF397420599120009A2C50 /* straight-line.json */; };
 		C5F2DCA0206DBF5E002F99F6 /* Sequence.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5F2DC9F206DBF5E002F99F6 /* Sequence.swift */; };
 		C5F2DCA1206DBF5E002F99F6 /* Sequence.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5F2DC9F206DBF5E002F99F6 /* Sequence.swift */; };
@@ -749,6 +756,12 @@
 		C5D9800C1EFA8BA9006DBF2E /* CustomViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomViewController.swift; sourceTree = "<group>"; };
 		C5D9800E1EFBCDAD006DBF2E /* Date.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Date.swift; sourceTree = "<group>"; };
 		C5E7A31B1F4F6828001CB015 /* NavigationRouteOptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationRouteOptions.swift; sourceTree = "<group>"; };
+		C5E8FA2D29027D0700A1D10A /* Nijmegen-Bemmel-Veenendaal2.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "Nijmegen-Bemmel-Veenendaal2.json"; sourceTree = "<group>"; };
+		C5E8FA2F29028AA700A1D10A /* Wolfheze-Veenendaal-Normal.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "Wolfheze-Veenendaal-Normal.json"; sourceTree = "<group>"; };
+		C5E8FA3129028B0E00A1D10A /* Wolfheze-Veenendaal-Small-Detour-At-End.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "Wolfheze-Veenendaal-Small-Detour-At-End.json"; sourceTree = "<group>"; };
+		C5E8FA3329028F6600A1D10A /* A12-To-Veenendaal-Normal.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "A12-To-Veenendaal-Normal.json"; sourceTree = "<group>"; };
+		C5E8FA3529028FA400A1D10A /* A12-To-Veenendaal-Slight-Difference.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "A12-To-Veenendaal-Slight-Difference.json"; sourceTree = "<group>"; };
+		C5E8FA372902952100A1D10A /* A12-To-Veenendaal-Bigger-Detour.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "A12-To-Veenendaal-Bigger-Detour.json"; sourceTree = "<group>"; };
 		C5EF397420599120009A2C50 /* straight-line.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "straight-line.json"; sourceTree = "<group>"; };
 		C5F2DC9F206DBF5E002F99F6 /* Sequence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sequence.swift; sourceTree = "<group>"; };
 		C5F4D21820DC468B0059FABF /* CongestionLevel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CongestionLevel.swift; sourceTree = "<group>"; };
@@ -1346,6 +1359,12 @@
 				C5A60ECA20A241B600C21178 /* md5_crazy_strings.txt */,
 				C56967AB28FD9146008304BF /* Nijmegen-Bemmel-Veenendaal.json */,
 				C54658B529000D5D00C068EA /* Nijmegen-Arnhem-Veenendaal.json */,
+				C5E8FA2D29027D0700A1D10A /* Nijmegen-Bemmel-Veenendaal2.json */,
+				C5E8FA2F29028AA700A1D10A /* Wolfheze-Veenendaal-Normal.json */,
+				C5E8FA3129028B0E00A1D10A /* Wolfheze-Veenendaal-Small-Detour-At-End.json */,
+				C5E8FA3329028F6600A1D10A /* A12-To-Veenendaal-Normal.json */,
+				C5E8FA3529028FA400A1D10A /* A12-To-Veenendaal-Slight-Difference.json */,
+				C5E8FA372902952100A1D10A /* A12-To-Veenendaal-Bigger-Detour.json */,
 			);
 			name = Fixtures;
 			sourceTree = "<group>";
@@ -1842,6 +1861,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C5E8FA2C2901493F00A1D10A /* routeWithInstructions.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1926,10 +1946,16 @@
 				C5387A9D1F8FDB13000D2E93 /* routeWithInstructions.json in Resources */,
 				C54658B429000A8300C068EA /* Nijmegen-Bemmel-Veenendaal.json in Resources */,
 				C5EF397520599120009A2C50 /* straight-line.json in Resources */,
+				C5E8FA3629028FA400A1D10A /* A12-To-Veenendaal-Slight-Difference.json in Resources */,
+				C5E8FA2E29027D0A00A1D10A /* Nijmegen-Bemmel-Veenendaal2.json in Resources */,
+				C5E8FA3429028F6600A1D10A /* A12-To-Veenendaal-Normal.json in Resources */,
 				C5A60ECD20A25DA100C21178 /* md5_crazy_strings.txt in Resources */,
 				DAB2CCE71DF7AFDF001B2FE1 /* dc-line.geojson in Resources */,
+				C5E8FA3229028B0E00A1D10A /* Wolfheze-Veenendaal-Small-Detour-At-End.json in Resources */,
 				AEF2C8F22072B603007B061F /* routeWithTunnels_9thStreetDC.json in Resources */,
 				35718BE71EF3194200AFA3D1 /* tunnel.json in Resources */,
+				C5E8FA3029028AB100A1D10A /* Wolfheze-Veenendaal-Normal.json in Resources */,
+				C5E8FA382902952100A1D10A /* A12-To-Veenendaal-Bigger-Detour.json in Resources */,
 				C52D09CE1DEF5E5100BE3C5C /* route.json in Resources */,
 				35718BE81EF3194500AFA3D1 /* tunnel.route in Resources */,
 			);

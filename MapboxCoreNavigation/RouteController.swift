@@ -508,7 +508,7 @@ extension RouteController: CLLocationManagerDelegate {
                 let isExpectedTravelTimeChangedSignificantly = abs(self.routeProgress.durationRemaining - matchingRoute.route.expectedTravelTime) > 30
                 
                 // TODO: Remove debug statements
-                print("[RouteController] Found matching route \(matchingRoute.matchFactor)%, updating ETA...")
+                print("[RouteController] Found matching route \(matchingRoute.matchPercentage)%, updating ETA...")
                 print("[RouteController] Duration remaining CURRENT: \(self.routeProgress.durationRemaining)")
                 print("[RouteController] Expected travel time: \(matchingRoute.route.expectedTravelTime)")
                     
@@ -736,6 +736,11 @@ extension RouteController: CLLocationManagerDelegate {
         }
     }
     
+    /// Calculates a match percentage between the geometry of a route and another route. Uses exact coordinate checking (using 4 decimals) for performance reasons, so it assumes the geometry is stable between routes.
+    /// - Parameters:
+    ///   - route: First route to compare
+    ///   - route2: Second route to compare
+    /// - Returns: A percentage of the match. Can return `nil` if one of the route's geometry cannot be found.
     static func matchPercentage(between route: Route, and route2: Route) -> Double? {
         guard let currentRouteCoordinates = route.coordinates else { return nil }
         guard let otherRouteCoordinates = route2.coordinates else { return nil }
@@ -748,18 +753,23 @@ extension RouteController: CLLocationManagerDelegate {
         let matchCount = Double(otherRouteCoordinatesString.filter { currentRouteCoordinatesStrings.contains($0) }.count)
         
         // Make it a percentage
-        let matchFactor = 1.0 / Double(otherRouteCoordinatesString.count) * matchCount
+        let matchPercentage = 100.0 / Double(otherRouteCoordinatesString.count) * matchCount
         
-        return matchFactor
+        return matchPercentage
     }
     
-    static func bestMatch(for route: Route, and routes: [Route]) -> (route: Route, matchFactor: Double)? {
-        let bestMatch = routes.compactMap { route -> (route: Route, matchFactor: Double)? in
-            guard let matchPercentage = matchPercentage(between: route, and: route) else { return nil }
-            return (route, matchPercentage)
+    /// Checks for a best match to a route within an array of routes. It is a match when the route's geometry is 90% or higher.
+    /// - Parameters:
+    ///   - route: Route to compare to the others
+    ///   - routes: The other routes to compare to
+    /// - Returns: The best matched route with the highest match factor above 90% and the match percentage.
+    static func bestMatch(for route: Route, and routes: [Route]) -> (route: Route, matchPercentage: Double)? {
+        let bestMatch = routes.compactMap { newRoute -> (route: Route, matchPercentage: Double)? in
+            guard let matchPercentage = matchPercentage(between: route, and: newRoute) else { return nil }
+            return (newRoute, matchPercentage)
         }
-        .filter { $0.matchFactor >= 0.9 }
-        .sorted { $0.matchFactor > $1.matchFactor }
+        .filter { $0.matchPercentage >= 90.0 }
+        .sorted { $0.matchPercentage > $1.matchPercentage }
         .first
         
         return bestMatch

@@ -183,7 +183,7 @@ class NavigationViewControllerTests: XCTestCase {
         navigationViewController.route = initialRoute
 
         runUntil({
-            return !navigationViewController.mapView!.annotations!.isEmpty
+            return !(navigationViewController.mapView!.annotations?.isEmpty ?? true)
         })
         
         guard let annotations = navigationViewController.mapView?.annotations else { return XCTFail("Annotations not found.")}

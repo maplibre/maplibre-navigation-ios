@@ -231,7 +231,7 @@ class RouteControllerTests: XCTestCase {
         directionsClientSpy.fireLastCalculateCompletion(with: nil, routes: [alternateRoute], error: nil)
 
         // MARK: It tells the delegate & posts a didReroute notification
-        XCTAssertTrue(delegate.recentMessages.contains("routeController(_:didRerouteAlong:)"))
+        XCTAssertTrue(delegate.recentMessages.contains("routeController(_:didRerouteAlong:reason:)"))
         wait(for: [didRerouteNotificationExpectation], timeout: 0.1)
 
         // MARK: On the next call to `locationManager(_, didUpdateLocations:)`
@@ -339,16 +339,137 @@ class RouteControllerTests: XCTestCase {
         route.accessToken = Constants.accessToken
         return route
     }()
+    
+    // Same route, routed on a different day
+    lazy var nijmegenBemmelVeenendaal2 = {
+        let waypoint1 = Waypoint(coordinate: CLLocationCoordinate2D(latitude: 51.83116792, longitude: 5.83897820))
+        let waypoint2 = Waypoint(coordinate: CLLocationCoordinate2D(latitude: 52.03920380, longitude: 5.55133121))
+        let route = Route(json: Fixture.JSONFromFileNamed(name: "Nijmegen-Bemmel-Veenendaal2"), waypoints: [waypoint1, waypoint2], options: NavigationRouteOptions(waypoints: [waypoint1, waypoint2]))
+        route.accessToken = Constants.accessToken
+        return route
+    }()
+    
+    lazy var wolfhezeVeenendaalNormal = {
+        let waypoint1 = Waypoint(coordinate: CLLocationCoordinate2D(latitude: 51.99711882858318, longitude: 5.7932572786103265))
+        let waypoint2 = Waypoint(coordinate: CLLocationCoordinate2D(latitude: 52.0392038, longitude: 5.55133121))
+        let route = Route(json: Fixture.JSONFromFileNamed(name: "Wolfheze-Veenendaal-Normal"), waypoints: [waypoint1, waypoint2], options: NavigationRouteOptions(waypoints: [waypoint1, waypoint2]))
+        route.accessToken = Constants.accessToken
+        return route
+    }()
+    
+    lazy var wolfhezeVeenendaalSmallDetourAtEnd = {
+        let waypoint1 = Waypoint(coordinate: CLLocationCoordinate2D(latitude: 51.99711882858318, longitude: 5.7932572786103265))
+        let waypoint2 = Waypoint(coordinate: CLLocationCoordinate2D(latitude: 52.04451273, longitude: 5.57902714))
+        let waypoint3 = Waypoint(coordinate: CLLocationCoordinate2D(latitude: 52.0392038, longitude: 5.55133121))
+        let route = Route(json: Fixture.JSONFromFileNamed(name: "Wolfheze-Veenendaal-Small-Detour-At-End"), waypoints: [waypoint1, waypoint2, waypoint3], options: NavigationRouteOptions(waypoints: [waypoint1, waypoint2, waypoint3]))
+        route.accessToken = Constants.accessToken
+        return route
+    }()
+    
+    lazy var a12ToVeenendaalNormal = {
+        let waypoint1 = Waypoint(coordinate: CLLocationCoordinate2D(latitude: 52.02224357, longitude: 5.78149084))
+        let waypoint2 = Waypoint(coordinate: CLLocationCoordinate2D(latitude: 52.03924958, longitude: 5.55054131))
+        let route = Route(json: Fixture.JSONFromFileNamed(name: "A12-To-Veenendaal-Normal"), waypoints: [waypoint1, waypoint2], options: NavigationRouteOptions(waypoints: [waypoint1, waypoint2]))
+        route.accessToken = Constants.accessToken
+        return route
+    }()
+    
+    lazy var a12ToVeenendaalSlightDifference = {
+        let waypoint1 = Waypoint(coordinate: CLLocationCoordinate2D(latitude: 52.02224357, longitude: 5.78149084))
+        let waypoint2 = Waypoint(coordinate: CLLocationCoordinate2D(latitude: 52.03917716, longitude: 5.55201356))
+        let waypoint3 = Waypoint(coordinate: CLLocationCoordinate2D(latitude: 52.03924958, longitude: 5.55054131))
+        let route = Route(json: Fixture.JSONFromFileNamed(name: "A12-To-Veenendaal-Slight-Difference"), waypoints: [waypoint1, waypoint2, waypoint3], options: NavigationRouteOptions(waypoints: [waypoint1, waypoint2, waypoint3]))
+        route.accessToken = Constants.accessToken
+        return route
+    }()
+    
+    lazy var a12ToVeenendaalBiggerDetour = {
+        let waypoint1 = Waypoint(coordinate: CLLocationCoordinate2D(latitude: 52.02224357, longitude: 5.78149084))
+        let waypoint2 = Waypoint(coordinate: CLLocationCoordinate2D(latitude: 52.04520875, longitude: 5.5748937))
+        let waypoint3 = Waypoint(coordinate: CLLocationCoordinate2D(latitude: 52.03924958, longitude: 5.55054131))
+        let route = Route(json: Fixture.JSONFromFileNamed(name: "A12-To-Veenendaal-Bigger-Detour"), waypoints: [waypoint1, waypoint2, waypoint3], options: NavigationRouteOptions(waypoints: [waypoint1, waypoint2, waypoint3]))
+        route.accessToken = Constants.accessToken
+        return route
+    }()
 
     func testRouteControllerMatchPercentage() {
         // These routes differ around 40%
-        let arnhemRoute = nijmegenArnhemVeenendaal
-        let bemmelRoute = nijmegenBemmelVeenendaal
-        
-        if let matchPercentage = RouteController.matchPercentage(between: arnhemRoute, and: bemmelRoute) {
-            XCTAssertEqual(matchPercentage, 0.5886, accuracy: 0.01)
+        if let matchPercentage = RouteController.matchPercentage(between: nijmegenArnhemVeenendaal, and: nijmegenBemmelVeenendaal) {
+            XCTAssertEqual(matchPercentage, 58.86, accuracy: 1.0)
         } else {
             XCTFail("Should get a match percentage")
+        }
+        
+        // Check for the exact same route for 100%
+        if let matchPercentage = RouteController.matchPercentage(between: nijmegenArnhemVeenendaal, and: nijmegenArnhemVeenendaal) {
+            XCTAssertEqual(matchPercentage, 100.0)
+        } else {
+            XCTFail("Should get a match percentage")
+        }
+        
+        // Check same route, but calculated a day later (to account for stability of coordinate geometry of router)
+        if let matchPercentage = RouteController.matchPercentage(between: nijmegenBemmelVeenendaal, and: nijmegenBemmelVeenendaal2) {
+            XCTAssertEqual(matchPercentage, 100.0)
+        } else {
+            XCTFail("Should get a match percentage")
+        }
+        
+        // Check a route to a small detour at the end, should match at 2/3
+        if let matchPercentage = RouteController.matchPercentage(between: wolfhezeVeenendaalNormal, and: wolfhezeVeenendaalSmallDetourAtEnd) {
+            XCTAssertEqual(matchPercentage, 66.6, accuracy: 0.1)
+        } else {
+            XCTFail("Should get a match percentage")
+        }
+        
+        // Check a route with a very slight difference, should match at more than 90%
+        if let matchPercentage = RouteController.matchPercentage(between: a12ToVeenendaalNormal, and: a12ToVeenendaalSlightDifference) {
+            XCTAssertEqual(matchPercentage, 90.3, accuracy: 0.1)
+        } else {
+            XCTFail("Should get a match percentage")
+        }
+        
+        // Check a route with a bigger detour, should match at
+        if let matchPercentage = RouteController.matchPercentage(between: a12ToVeenendaalNormal, and: a12ToVeenendaalBiggerDetour) {
+            XCTAssertEqual(matchPercentage, 53.8, accuracy: 0.1)
+        } else {
+            XCTFail("Should get a match percentage")
+        }
+    }
+    
+    func testRouteControllerBestMatch() {
+        // Shuffle the array to prove the order is unimportant
+        let firstRoutes = [a12ToVeenendaalNormal, a12ToVeenendaalSlightDifference, a12ToVeenendaalBiggerDetour].shuffled()
+        
+        // Match a route to the same destination to the following variants:
+        // - Same route -> 100% match
+        // - Slight difference -> 90.3%
+        // - Bigger detour -> 53%
+        // --> Same route match is correct
+        if let bestMatch = RouteController.bestMatch(for: a12ToVeenendaalNormal, and: firstRoutes) {
+            XCTAssertEqual(bestMatch.route, a12ToVeenendaalNormal)
+            XCTAssertEqual(bestMatch.matchPercentage, 100.0)
+        } else {
+            XCTFail("Should get a match above 90%")
+        }
+        
+        // Match a route to the same destination to the following variants:
+        // - Slight difference -> 90.3%
+        // - Bigger detour -> 53%
+        // --> Slight difference route match is correct
+        let secondRoutes = [a12ToVeenendaalSlightDifference, a12ToVeenendaalBiggerDetour].shuffled()
+        if let bestMatch = RouteController.bestMatch(for: a12ToVeenendaalNormal, and: secondRoutes) {
+            XCTAssertEqual(bestMatch.route, a12ToVeenendaalSlightDifference)
+            XCTAssertEqual(bestMatch.matchPercentage, 90.3, accuracy: 0.1)
+        } else {
+            XCTFail("Should get a match above 90%")
+        }
+        
+        // Match a route to the same destination to the following variant:
+        // - Bigger detour -> 53%
+        // --> No match, as it's below 90%
+        if let bestMatch = RouteController.bestMatch(for: a12ToVeenendaalNormal, and: [a12ToVeenendaalBiggerDetour]) {
+            XCTAssertEqual(bestMatch.matchPercentage, 90.3, accuracy: 0.1)
+            XCTFail("Shouldn't get a match above 90%")
         }
     }
 }

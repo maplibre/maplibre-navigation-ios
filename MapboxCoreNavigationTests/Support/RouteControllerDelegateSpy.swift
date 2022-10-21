@@ -22,8 +22,8 @@ class RouteControllerDelegateSpy: RouteControllerDelegate {
         recentMessages.append(#function)
         return true
     }
-
-    internal func routeController(_ routeController: RouteController, didRerouteAlong route: Route) {
+    
+    internal func routeController(_ routeController: RouteController, didRerouteAlong route: Route, reason: RouteController.RerouteReason) {
         recentMessages.append(#function)
     }
 
