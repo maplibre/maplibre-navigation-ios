@@ -17,7 +17,7 @@ open class RouteController: NSObject, Router {
     /**
      The number of seconds between attempts to automatically calculate a more optimal route while traveling.
      */
-    public static var RouteControllerProactiveReroutingInterval: TimeInterval = 120
+    public var routeControllerProactiveReroutingInterval: TimeInterval = 120
 
     /**
      The route controller’s delegate.
@@ -45,7 +45,7 @@ open class RouteController: NSObject, Router {
     @objc public var isDeadReckoningEnabled = false
 
     /**
-     If true, the `RouteController` attempts to calculate a more optimal route for the user on an interval defined by `RouteControllerProactiveReroutingInterval`.
+     If true, the `RouteController` attempts to calculate a more optimal route for the user on an interval defined by `routeControllerProactiveReroutingInterval`.
      */
     @objc public var reroutesProactively = false
 
@@ -93,7 +93,7 @@ open class RouteController: NSObject, Router {
     var userSnapToStepDistanceFromManeuver: CLLocationDistance?
     
     /// Describes a reason for rerouting and applying a new route
-    @objc public enum RerouteReason: Int {
+    @objc public enum RerouteReason: Int, CustomStringConvertible {
         /// When we check for a faster route we can also reroute the user when we just want to update the ETA. For example when the user is driving on a route where a Trafficjam appears, it should update the ETA
         case ETAUpdate
         
@@ -102,6 +102,18 @@ open class RouteController: NSObject, Router {
         
         /// When the route is faster than the current route, we can also reroute the user
         case fasterRoute
+        
+        // Needed to expose real case name to Swift when using @obj-c enum
+        public var description: String {
+            switch self {
+            case .ETAUpdate:
+                return "ETAUpdate"
+            case .fasterRoute:
+                return "fasterRoute"
+            case .divertedFromRoute:
+                return "divertedFromRoute"
+            }
+        }
     }
     
     /**
@@ -455,7 +467,7 @@ extension RouteController: CLLocationManagerDelegate {
         }
 
         // Only check every so often for a faster route.
-        guard location.timestamp.timeIntervalSince(lastLocationDate) >= Self.RouteControllerProactiveReroutingInterval else {
+        guard location.timestamp.timeIntervalSince(lastLocationDate) >= routeControllerProactiveReroutingInterval else {
             return
         }
         
