@@ -1,5 +1,12 @@
 # Changes to the Mapbox Navigation SDK for iOS
 
+## v1.0.6 (October 5, 2022)
+
+* Changed Swift version from 4 to 5
+* Fixed some warnings
+* Updated `Getting Started` in README
+* Added `Sample Code` in README
+
 ## v0.21.0 (September 17, 2018)
 
 ### User interface

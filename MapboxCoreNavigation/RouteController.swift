@@ -182,7 +182,7 @@ open class RouteController: NSObject, Router {
     }
 
     func resumeNotifications() {
-        NotificationCenter.default.addObserver(self, selector: #selector(applicationWillTerminate(_:)), name: .UIApplicationWillTerminate, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(applicationWillTerminate(_:)), name: UIApplication.willTerminateNotification, object: nil)
     }
 
     func suspendNotifications() {
@@ -403,7 +403,7 @@ extension RouteController: CLLocationManagerDelegate {
         
     func updateIntersectionIndex(for currentStepProgress: RouteStepProgress) {
         guard let intersectionDistances = currentStepProgress.intersectionDistances else { return }
-        let upcomingIntersectionIndex = intersectionDistances.index { $0 > currentStepProgress.distanceTraveled } ?? intersectionDistances.endIndex
+        let upcomingIntersectionIndex = intersectionDistances.firstIndex { $0 > currentStepProgress.distanceTraveled } ?? intersectionDistances.endIndex
         currentStepProgress.intersectionIndex = upcomingIntersectionIndex > 0 ? intersectionDistances.index(before: upcomingIntersectionIndex) : 0
     }
 

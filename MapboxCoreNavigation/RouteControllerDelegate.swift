@@ -7,7 +7,7 @@ import MapboxDirections
  The `RouteControllerDelegate` protocol provides methods for responding to significant events during the user’s traversal of a route monitored by a `RouteController`.
  */
 @objc(MBRouteControllerDelegate)
-public protocol RouteControllerDelegate: class {
+public protocol RouteControllerDelegate: AnyObject {
     /**
      Returns whether the route controller should be allowed to calculate a new route.
      

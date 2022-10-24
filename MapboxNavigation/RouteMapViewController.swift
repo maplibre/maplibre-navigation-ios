@@ -183,8 +183,8 @@ class RouteMapViewController: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(willReroute(notification:)), name: .routeControllerWillReroute, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(didReroute(notification:)), name: .routeControllerDidReroute, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(rerouteDidFail(notification:)), name: .routeControllerDidFailToReroute, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(applicationWillEnterForeground(notification:)), name: .UIApplicationWillEnterForeground, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(removeTimer), name: .UIApplicationDidEnterBackground, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(applicationWillEnterForeground(notification:)), name: UIApplication.willEnterForegroundNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(removeTimer), name: UIApplication.didEnterBackgroundNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(updateInstructionsBanner(notification:)), name: .routeControllerDidPassVisualInstructionPoint, object: routeController)
         subscribeToKeyboardNotifications()
     }
@@ -193,8 +193,8 @@ class RouteMapViewController: UIViewController {
         NotificationCenter.default.removeObserver(self, name: .routeControllerWillReroute, object: nil)
         NotificationCenter.default.removeObserver(self, name: .routeControllerDidReroute, object: nil)
         NotificationCenter.default.removeObserver(self, name: .routeControllerDidFailToReroute, object: nil)
-        NotificationCenter.default.removeObserver(self, name: .UIApplicationWillEnterForeground, object: nil)
-        NotificationCenter.default.removeObserver(self, name: .UIApplicationDidEnterBackground, object: nil)
+        NotificationCenter.default.removeObserver(self, name: UIApplication.willEnterForegroundNotification, object: nil)
+        NotificationCenter.default.removeObserver(self, name: UIApplication.didEnterBackgroundNotification, object: nil)
         NotificationCenter.default.removeObserver(self, name: .routeControllerDidPassVisualInstructionPoint, object: nil)
         unsubscribeFromKeyboardNotifications()
     }
@@ -248,7 +248,7 @@ class RouteMapViewController: UIViewController {
 
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        mapView.setContentInset(contentInsets, animated: true)
+        mapView.setContentInset(contentInsets, animated: true, completionHandler: nil)
         mapView.setNeedsUpdateConstraints()
     }
 
@@ -414,10 +414,10 @@ class RouteMapViewController: UIViewController {
 
     func embedEndOfRoute() {
         let endOfRoute = endOfRouteViewController
-        addChildViewController(endOfRoute)
+        addChild(endOfRoute)
         navigationView.endOfRouteView = endOfRoute.view
         navigationView.constrainEndOfRoute()
-        endOfRoute.didMove(toParentViewController: self)
+        endOfRoute.didMove(toParent: self)
 
         endOfRoute.dismissHandler = { [weak self] (stars, comment) in
             self?.routeController.endNavigation()
@@ -427,8 +427,8 @@ class RouteMapViewController: UIViewController {
 
     func unembedEndOfRoute() {
         let endOfRoute = endOfRouteViewController
-        endOfRoute.willMove(toParentViewController: nil)
-        endOfRoute.removeFromParentViewController()
+        endOfRoute.willMove(toParent: nil)
+        endOfRoute.removeFromParent()
     }
 
     func showEndOfRoute(duration: TimeInterval = 1.0, completion: ((Bool) -> Void)? = nil) {
@@ -585,7 +585,7 @@ extension RouteMapViewController: NavigationViewDelegate {
         } else {
             let controller = StepsViewController(routeProgress: routeController.routeProgress)
             controller.delegate = self
-            addChildViewController(controller)
+            addChild(controller)
             view.insertSubview(controller.view, belowSubview: navigationView.instructionsBannerContentView)
 
             controller.view.topAnchor.constraint(equalTo: navigationView.instructionsBannerContentView.bottomAnchor).isActive = true
@@ -593,7 +593,7 @@ extension RouteMapViewController: NavigationViewDelegate {
             controller.view.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
             controller.view.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
 
-            controller.didMove(toParentViewController: self)
+            controller.didMove(toParent: self)
             controller.dropDownAnimation()
 
             stepsViewController = controller
@@ -909,22 +909,22 @@ extension RouteMapViewController: StepsViewControllerDelegate {
 
 extension RouteMapViewController {
     fileprivate func subscribeToKeyboardNotifications() {
-        NotificationCenter.default.addObserver(self, selector: #selector(RouteMapViewController.keyboardWillShow(notification:)), name:.UIKeyboardWillShow, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(RouteMapViewController.keyboardWillHide(notification:)), name:.UIKeyboardWillHide, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(RouteMapViewController.keyboardWillShow(notification:)), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(RouteMapViewController.keyboardWillHide(notification:)), name: UIResponder.keyboardWillHideNotification, object: nil)
 
     }
     fileprivate func unsubscribeFromKeyboardNotifications() {
-        NotificationCenter.default.removeObserver(self, name: .UIKeyboardWillShow, object: nil)
-        NotificationCenter.default.removeObserver(self, name: .UIKeyboardWillHide, object: nil)
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
     }
     @objc fileprivate func keyboardWillShow(notification: NSNotification) {
         guard navigationView.endOfRouteView != nil else { return }
         guard let userInfo = notification.userInfo else { return }
-        guard let curveValue = userInfo[UIKeyboardAnimationCurveUserInfoKey] as? Int else { return }
-        guard let duration = userInfo[UIKeyboardAnimationDurationUserInfoKey] as? Double else { return }
-        guard let keyBoardRect = userInfo[UIKeyboardFrameEndUserInfoKey] as? CGRect else { return }
+        guard let curveValue = userInfo[UIResponder.keyboardAnimationCurveUserInfoKey] as? Int else { return }
+        guard let duration = userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? Double else { return }
+        guard let keyBoardRect = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect else { return }
 
-        let curve = UIViewAnimationCurve(rawValue: curveValue) ?? UIViewAnimationCurve.easeIn
+        let curve = UIView.AnimationCurve(rawValue: curveValue) ?? UIView.AnimationCurve.easeIn
         let options = (duration: duration, curve: curve)
         let keyboardHeight = keyBoardRect.size.height
 
@@ -934,16 +934,16 @@ extension RouteMapViewController {
             navigationView.endOfRouteShowConstraint?.constant = -1 * keyboardHeight
         }
 
-        let opts = UIViewAnimationOptions(curve: options.curve)
+        let opts = UIView.AnimationOptions(curve: options.curve)
         UIView.animate(withDuration: options.duration, delay: 0, options: opts, animations: view.layoutIfNeeded, completion: nil)
     }
 
     @objc fileprivate func keyboardWillHide(notification: NSNotification) {
         guard navigationView.endOfRouteView != nil else { return }
         guard let userInfo = notification.userInfo else { return }
-        let curve = UIViewAnimationCurve(rawValue: userInfo[UIKeyboardAnimationCurveUserInfoKey] as! Int)
-        let options = (duration: userInfo[UIKeyboardAnimationDurationUserInfoKey] as! Double,
-                       curve: UIViewAnimationOptions(curve: curve!))
+        let curve = UIView.AnimationCurve(rawValue: userInfo[UIResponder.keyboardAnimationCurveUserInfoKey] as! Int)
+        let options = (duration: userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as! Double,
+                       curve: UIView.AnimationOptions(curve: curve!))
 
         navigationView.endOfRouteShowConstraint?.constant = 0
 
@@ -951,8 +951,8 @@ extension RouteMapViewController {
     }
 }
 
-fileprivate extension UIViewAnimationOptions {
-    init(curve: UIViewAnimationCurve) {
+fileprivate extension UIView.AnimationOptions {
+    init(curve: UIView.AnimationCurve) {
         switch curve {
         case .easeIn:
             self = .curveEaseIn
@@ -962,6 +962,8 @@ fileprivate extension UIViewAnimationOptions {
             self = .curveEaseInOut
         case .linear:
             self = .curveLinear
+        @unknown default:
+            fatalError("Unknown curve")
         }
     }
 }

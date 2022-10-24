@@ -53,6 +53,8 @@ extension CLLocationDistance {
             return yards
         case .mile:
             return miles
+        @unknown default:
+            fatalError("Unknown unit")
         }
     }
 }
@@ -83,6 +85,8 @@ struct RoundingTable {
                 return Measurement(value: distance.yards, unit: .yards)
             case .mile:
                 return Measurement(value: distance.miles, unit: .miles)
+            @unknown default:
+                fatalError("Unknown unit")
             }
         }
         
@@ -114,8 +118,8 @@ struct RoundingTable {
     }
 }
 
-extension NSAttributedStringKey {
-    public static let quantity = NSAttributedStringKey(rawValue: "MBQuantity")
+extension NSAttributedString.Key {
+    public static let quantity = NSAttributedString.Key(rawValue: "MBQuantity")
 }
 
 /// Provides appropriately formatted, localized descriptions of linear distances.
@@ -224,7 +228,7 @@ open class DistanceFormatter: LengthFormatter {
      
      `NSAttributedStringKey.quantity` is applied to the numeric quantity.
      */
-    @objc open override func attributedString(for obj: Any, withDefaultAttributes attrs: [NSAttributedStringKey : Any]? = nil) -> NSAttributedString? {
+    @objc open override func attributedString(for obj: Any, withDefaultAttributes attrs: [NSAttributedString.Key : Any]? = nil) -> NSAttributedString? {
         guard let distance = obj as? CLLocationDistance else {
             return nil
         }
