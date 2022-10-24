@@ -328,7 +328,9 @@ class RouteControllerTests: XCTestCase {
     lazy var nijmegenArnhemVeenendaal = {
         let waypoint1 = Waypoint(coordinate: CLLocationCoordinate2D(latitude: 51.83116792, longitude: 5.83897820))
         let waypoint2 = Waypoint(coordinate: CLLocationCoordinate2D(latitude: 52.03920380, longitude: 5.55133121))
-        let route = Route(json: Fixture.JSONFromFileNamed(name: "Nijmegen-Arnhem-Veenendaal"), waypoints: [waypoint1, waypoint2], options: NavigationRouteOptions(waypoints: [waypoint1, waypoint2]))
+        let options = NavigationRouteOptions(waypoints: [waypoint1, waypoint2])
+        options.shapeFormat = .polyline6
+        let route = Route(json: Fixture.JSONFromFileNamed(name: "Nijmegen-Arnhem-Veenendaal"), waypoints: [waypoint1, waypoint2], options: options)
         route.accessToken = Constants.accessToken
         return route
     }()
@@ -336,7 +338,9 @@ class RouteControllerTests: XCTestCase {
     lazy var nijmegenBemmelVeenendaal = {
         let waypoint1 = Waypoint(coordinate: CLLocationCoordinate2D(latitude: 51.83116792, longitude: 5.83897820))
         let waypoint2 = Waypoint(coordinate: CLLocationCoordinate2D(latitude: 52.03920380, longitude: 5.55133121))
-        let route = Route(json: Fixture.JSONFromFileNamed(name: "Nijmegen-Bemmel-Veenendaal"), waypoints: [waypoint1, waypoint2], options: NavigationRouteOptions(waypoints: [waypoint1, waypoint2]))
+        let options = NavigationRouteOptions(waypoints: [waypoint1, waypoint2])
+        options.shapeFormat = .polyline6
+        let route = Route(json: Fixture.JSONFromFileNamed(name: "Nijmegen-Bemmel-Veenendaal"), waypoints: [waypoint1, waypoint2], options: options)
         route.accessToken = Constants.accessToken
         return route
     }()
@@ -345,7 +349,9 @@ class RouteControllerTests: XCTestCase {
     lazy var nijmegenBemmelVeenendaal2 = {
         let waypoint1 = Waypoint(coordinate: CLLocationCoordinate2D(latitude: 51.83116792, longitude: 5.83897820))
         let waypoint2 = Waypoint(coordinate: CLLocationCoordinate2D(latitude: 52.03920380, longitude: 5.55133121))
-        let route = Route(json: Fixture.JSONFromFileNamed(name: "Nijmegen-Bemmel-Veenendaal2"), waypoints: [waypoint1, waypoint2], options: NavigationRouteOptions(waypoints: [waypoint1, waypoint2]))
+        let options = NavigationRouteOptions(waypoints: [waypoint1, waypoint2])
+        options.shapeFormat = .polyline6
+        let route = Route(json: Fixture.JSONFromFileNamed(name: "Nijmegen-Bemmel-Veenendaal2"), waypoints: [waypoint1, waypoint2], options: options)
         route.accessToken = Constants.accessToken
         return route
     }()
@@ -353,7 +359,9 @@ class RouteControllerTests: XCTestCase {
     lazy var wolfhezeVeenendaalNormal = {
         let waypoint1 = Waypoint(coordinate: CLLocationCoordinate2D(latitude: 51.99711882858318, longitude: 5.7932572786103265))
         let waypoint2 = Waypoint(coordinate: CLLocationCoordinate2D(latitude: 52.0392038, longitude: 5.55133121))
-        let route = Route(json: Fixture.JSONFromFileNamed(name: "Wolfheze-Veenendaal-Normal"), waypoints: [waypoint1, waypoint2], options: NavigationRouteOptions(waypoints: [waypoint1, waypoint2]))
+        let options = NavigationRouteOptions(waypoints: [waypoint1, waypoint2])
+        options.shapeFormat = .polyline6
+        let route = Route(json: Fixture.JSONFromFileNamed(name: "Wolfheze-Veenendaal-Normal"), waypoints: [waypoint1, waypoint2], options: options)
         route.accessToken = Constants.accessToken
         return route
     }()
@@ -362,7 +370,9 @@ class RouteControllerTests: XCTestCase {
         let waypoint1 = Waypoint(coordinate: CLLocationCoordinate2D(latitude: 51.99711882858318, longitude: 5.7932572786103265))
         let waypoint2 = Waypoint(coordinate: CLLocationCoordinate2D(latitude: 52.04451273, longitude: 5.57902714))
         let waypoint3 = Waypoint(coordinate: CLLocationCoordinate2D(latitude: 52.0392038, longitude: 5.55133121))
-        let route = Route(json: Fixture.JSONFromFileNamed(name: "Wolfheze-Veenendaal-Small-Detour-At-End"), waypoints: [waypoint1, waypoint2, waypoint3], options: NavigationRouteOptions(waypoints: [waypoint1, waypoint2, waypoint3]))
+        let options = NavigationRouteOptions(waypoints: [waypoint1, waypoint2])
+        options.shapeFormat = .polyline6
+        let route = Route(json: Fixture.JSONFromFileNamed(name: "Wolfheze-Veenendaal-Small-Detour-At-End"), waypoints: [waypoint1, waypoint2, waypoint3], options: options)
         route.accessToken = Constants.accessToken
         return route
     }()
@@ -370,7 +380,9 @@ class RouteControllerTests: XCTestCase {
     lazy var a12ToVeenendaalNormal = {
         let waypoint1 = Waypoint(coordinate: CLLocationCoordinate2D(latitude: 52.02224357, longitude: 5.78149084))
         let waypoint2 = Waypoint(coordinate: CLLocationCoordinate2D(latitude: 52.03924958, longitude: 5.55054131))
-        let route = Route(json: Fixture.JSONFromFileNamed(name: "A12-To-Veenendaal-Normal"), waypoints: [waypoint1, waypoint2], options: NavigationRouteOptions(waypoints: [waypoint1, waypoint2]))
+        let options = NavigationRouteOptions(waypoints: [waypoint1, waypoint2])
+        options.shapeFormat = .polyline6
+        let route = Route(json: Fixture.JSONFromFileNamed(name: "A12-To-Veenendaal-Normal"), waypoints: [waypoint1, waypoint2], options: options)
         route.accessToken = Constants.accessToken
         return route
     }()
@@ -379,7 +391,9 @@ class RouteControllerTests: XCTestCase {
         let waypoint1 = Waypoint(coordinate: CLLocationCoordinate2D(latitude: 52.02224357, longitude: 5.78149084))
         let waypoint2 = Waypoint(coordinate: CLLocationCoordinate2D(latitude: 52.03917716, longitude: 5.55201356))
         let waypoint3 = Waypoint(coordinate: CLLocationCoordinate2D(latitude: 52.03924958, longitude: 5.55054131))
-        let route = Route(json: Fixture.JSONFromFileNamed(name: "A12-To-Veenendaal-Slight-Difference"), waypoints: [waypoint1, waypoint2, waypoint3], options: NavigationRouteOptions(waypoints: [waypoint1, waypoint2, waypoint3]))
+        let options = NavigationRouteOptions(waypoints: [waypoint1, waypoint2, waypoint3])
+        options.shapeFormat = .polyline6
+        let route = Route(json: Fixture.JSONFromFileNamed(name: "A12-To-Veenendaal-Slight-Difference"), waypoints: [waypoint1, waypoint2, waypoint3], options: options)
         route.accessToken = Constants.accessToken
         return route
     }()
@@ -388,7 +402,9 @@ class RouteControllerTests: XCTestCase {
         let waypoint1 = Waypoint(coordinate: CLLocationCoordinate2D(latitude: 52.02224357, longitude: 5.78149084))
         let waypoint2 = Waypoint(coordinate: CLLocationCoordinate2D(latitude: 52.04520875, longitude: 5.5748937))
         let waypoint3 = Waypoint(coordinate: CLLocationCoordinate2D(latitude: 52.03924958, longitude: 5.55054131))
-        let route = Route(json: Fixture.JSONFromFileNamed(name: "A12-To-Veenendaal-Bigger-Detour"), waypoints: [waypoint1, waypoint2, waypoint3], options: NavigationRouteOptions(waypoints: [waypoint1, waypoint2, waypoint3]))
+        let options = NavigationRouteOptions(waypoints: [waypoint1, waypoint2, waypoint3])
+        options.shapeFormat = .polyline6
+        let route = Route(json: Fixture.JSONFromFileNamed(name: "A12-To-Veenendaal-Bigger-Detour"), waypoints: [waypoint1, waypoint2, waypoint3], options: options)
         route.accessToken = Constants.accessToken
         return route
     }()
@@ -417,21 +433,28 @@ class RouteControllerTests: XCTestCase {
         
         // Check a route to a small detour at the end, should match at 2/3
         if let matchPercentage = RouteController.matchPercentage(between: wolfhezeVeenendaalNormal, and: wolfhezeVeenendaalSmallDetourAtEnd) {
-            XCTAssertEqual(matchPercentage, 66.6, accuracy: 0.1)
+            XCTAssertEqual(matchPercentage, 67.0, accuracy: 0.1)
         } else {
             XCTFail("Should get a match percentage")
         }
         
         // Check a route with a very slight difference, should match at more than 90%
         if let matchPercentage = RouteController.matchPercentage(between: a12ToVeenendaalNormal, and: a12ToVeenendaalSlightDifference) {
-            XCTAssertEqual(matchPercentage, 90.3, accuracy: 0.1)
+            XCTAssertEqual(matchPercentage, 91.5, accuracy: 0.1)
         } else {
             XCTFail("Should get a match percentage")
         }
         
-        // Check a route with a bigger detour, should match at
+        // Check a route with a bigger detour, should match at 54%
         if let matchPercentage = RouteController.matchPercentage(between: a12ToVeenendaalNormal, and: a12ToVeenendaalBiggerDetour) {
-            XCTAssertEqual(matchPercentage, 53.8, accuracy: 0.1)
+            XCTAssertEqual(matchPercentage, 54.3, accuracy: 0.1)
+        } else {
+            XCTFail("Should get a match percentage")
+        }
+        
+        // Check a route with just the duration increased, should match at 100%
+        if let matchPercentage = RouteController.matchPercentage(between: a12ToVeenendaalNormal, and: a12ToVeenendaalNormalWithTraffic) {
+            XCTAssertEqual(matchPercentage, 100.0)
         } else {
             XCTFail("Should get a match percentage")
         }
@@ -460,7 +483,7 @@ class RouteControllerTests: XCTestCase {
         let secondRoutes = [a12ToVeenendaalSlightDifference, a12ToVeenendaalBiggerDetour].shuffled()
         if let bestMatch = RouteController.bestMatch(for: a12ToVeenendaalNormal, and: secondRoutes) {
             XCTAssertEqual(bestMatch.route, a12ToVeenendaalSlightDifference)
-            XCTAssertEqual(bestMatch.matchPercentage, 90.3, accuracy: 0.1)
+            XCTAssertEqual(bestMatch.matchPercentage, 91.5, accuracy: 0.1)
         } else {
             XCTFail("Should get a match above 90%")
         }
@@ -520,7 +543,7 @@ class RouteControllerTests: XCTestCase {
         
         // Try to apply slower route 'A12-To-Veenendaal-Slight-Difference'
         routeController.applyNewRerouteIfNeeded(
-            mostSimilarRoute: a12ToVeenendaalNormal,
+            mostSimilarRoute: a12ToVeenendaalBiggerDetour,
             allRoutes: [a12ToVeenendaalBiggerDetour],
             currentUpcomingManeuver: routeController.routeProgress.currentLegProgress.upComingStep!,
             durationRemaining: routeController.routeProgress.durationRemaining
@@ -544,7 +567,9 @@ class RouteControllerTests: XCTestCase {
     lazy var a12ToVeenendaalNormalWithTraffic = {
         let waypoint1 = Waypoint(coordinate: CLLocationCoordinate2D(latitude: 52.02224357, longitude: 5.78149084))
         let waypoint2 = Waypoint(coordinate: CLLocationCoordinate2D(latitude: 52.03924958, longitude: 5.55054131))
-        let route = Route(json: Fixture.JSONFromFileNamed(name: "A12-To-Veenendaal-Normal-With-Big-Trafficjam"), waypoints: [waypoint1, waypoint2], options: NavigationRouteOptions(waypoints: [waypoint1, waypoint2]))
+        let options = NavigationRouteOptions(waypoints: [waypoint1, waypoint2])
+        options.shapeFormat = .polyline6
+        let route = Route(json: Fixture.JSONFromFileNamed(name: "A12-To-Veenendaal-Normal-With-Big-Trafficjam"), waypoints: [waypoint1, waypoint2], options: options)
         route.accessToken = Constants.accessToken
         return route
     }()
@@ -562,7 +587,7 @@ class RouteControllerTests: XCTestCase {
         
         // Try to apply slower route 'A12-To-Veenendaal-Normal-With-Big-Trafficjam'
         routeController.applyNewRerouteIfNeeded(
-            mostSimilarRoute: a12ToVeenendaalNormal,
+            mostSimilarRoute: a12ToVeenendaalNormalWithTraffic,
             allRoutes: [a12ToVeenendaalNormalWithTraffic],
             currentUpcomingManeuver: routeController.routeProgress.currentLegProgress.upComingStep!,
             durationRemaining: routeController.routeProgress.durationRemaining
@@ -594,7 +619,7 @@ class RouteControllerTests: XCTestCase {
         
         // Try to apply slower route 'A12-To-Veenendaal-Normal-With-Big-Trafficjam' or faster route 'A12-To-Veenendaal-Slight-Difference'
         routeController.applyNewRerouteIfNeeded(
-            mostSimilarRoute: a12ToVeenendaalNormal,
+            mostSimilarRoute: a12ToVeenendaalSlightDifference,
             allRoutes: [a12ToVeenendaalNormalWithTraffic, a12ToVeenendaalSlightDifference],
             currentUpcomingManeuver: routeController.routeProgress.currentLegProgress.upComingStep!,
             durationRemaining: routeController.routeProgress.durationRemaining

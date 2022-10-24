@@ -81,8 +81,10 @@ open class RouteController: NSObject, Router {
     private lazy var a12ToVeenendaalNormalWithTraffic = {
         let waypoint1 = Waypoint(coordinate: CLLocationCoordinate2D(latitude: 52.02224357, longitude: 5.78149084))
         let waypoint2 = Waypoint(coordinate: CLLocationCoordinate2D(latitude: 52.03924958, longitude: 5.55054131))
-        let route = Route(json: Fixture.JSONFromFileNamed(name: "A12-To-Veenendaal-Normal-With-Big-Trafficjam"), waypoints: [waypoint1, waypoint2], options: NavigationRouteOptions(waypoints: [waypoint1, waypoint2]))
-        route.accessToken = ""
+        let options = NavigationRouteOptions(waypoints: [waypoint1, waypoint2])
+        options.shapeFormat = .polyline6
+        let route = Route(json: Fixture.JSONFromFileNamed(name: "A12-To-Veenendaal-Normal-With-Big-Trafficjam"), waypoints: [waypoint1, waypoint2], options: options)
+        route.accessToken = "nonsense"
         return route
     }()
     
@@ -90,8 +92,10 @@ open class RouteController: NSObject, Router {
     private lazy var a12ToVeenendaalNormal = {
         let waypoint1 = Waypoint(coordinate: CLLocationCoordinate2D(latitude: 52.02224357, longitude: 5.78149084))
         let waypoint2 = Waypoint(coordinate: CLLocationCoordinate2D(latitude: 52.03924958, longitude: 5.55054131))
-        let route = Route(json: Fixture.JSONFromFileNamed(name: "A12-To-Veenendaal-Normal"), waypoints: [waypoint1, waypoint2], options: NavigationRouteOptions(waypoints: [waypoint1, waypoint2]))
-        route.accessToken = ""
+        let options = NavigationRouteOptions(waypoints: [waypoint1, waypoint2])
+        options.shapeFormat = .polyline6
+        let route = Route(json: Fixture.JSONFromFileNamed(name: "A12-To-Veenendaal-Normal"), waypoints: [waypoint1, waypoint2], options: options)
+        route.accessToken = "nonsense"
         return route
     }()
 
