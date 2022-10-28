@@ -20,7 +20,8 @@ open class RouteController: NSObject, Router {
     public var routeControllerProactiveReroutingInterval: TimeInterval = 120
     
     /// With this property you can enable test-routes to be returned when rerouting for an ETA update. It will randomly choose a route between two that differ a lot by ETA when rerouting
-    // TODO: Remove this testing boolean?
+    /// These will only get returned when that route is _slower_ than the current route, as that forces an ETA update reroute.
+    /// To pass the rerouting checks, simulate or drive a route from coordinate `52.02224357,5.78149084` to `52.03924958,5.55054131`
     public var shouldReturnTestingETAUpdateReroutes: Bool = false
 
     /**
@@ -76,28 +77,6 @@ open class RouteController: NSObject, Router {
             movementsAwayFromRoute = 0
         }
     }
-    
-    // TODO: Remove testing Route for debug
-    private lazy var a12ToVeenendaalNormalWithTraffic = {
-        let waypoint1 = Waypoint(coordinate: CLLocationCoordinate2D(latitude: 52.02224357, longitude: 5.78149084))
-        let waypoint2 = Waypoint(coordinate: CLLocationCoordinate2D(latitude: 52.03924958, longitude: 5.55054131))
-        let options = NavigationRouteOptions(waypoints: [waypoint1, waypoint2])
-        options.shapeFormat = .polyline6
-        let route = Route(json: Fixture.JSONFromFileNamed(name: "A12-To-Veenendaal-Normal-With-Big-Trafficjam"), waypoints: [waypoint1, waypoint2], options: options)
-        route.accessToken = "nonsense"
-        return route
-    }()
-    
-    // TODO: Remove testing Route for debug
-    private lazy var a12ToVeenendaalNormal = {
-        let waypoint1 = Waypoint(coordinate: CLLocationCoordinate2D(latitude: 52.02224357, longitude: 5.78149084))
-        let waypoint2 = Waypoint(coordinate: CLLocationCoordinate2D(latitude: 52.03924958, longitude: 5.55054131))
-        let options = NavigationRouteOptions(waypoints: [waypoint1, waypoint2])
-        options.shapeFormat = .polyline6
-        let route = Route(json: Fixture.JSONFromFileNamed(name: "A12-To-Veenendaal-Normal"), waypoints: [waypoint1, waypoint2], options: options)
-        route.accessToken = "nonsense"
-        return route
-    }()
 
     var isRerouting = false
     var lastRerouteLocation: CLLocation?
@@ -281,8 +260,30 @@ open class RouteController: NSObject, Router {
         }
         return RouteControllerMaximumDistanceBeforeRecalculating
     }
+    
+    // MARK: - Pre-defined routes for testing
+    private lazy var testA12ToVeenendaalNormalWithTraffic = {
+        Route(
+            jsonFileName: "A12-To-Veenendaal-Normal-With-Big-Trafficjam",
+            waypoints: [
+                CLLocationCoordinate2D(latitude: 52.02224357, longitude: 5.78149084),
+                CLLocationCoordinate2D(latitude: 52.03924958, longitude: 5.55054131)
+            ]
+        )
+    }()
+    
+    private lazy var testA12ToVeenendaalNormal = {
+        Route(
+            jsonFileName: "A12-To-Veenendaal-Normal",
+            waypoints: [
+                CLLocationCoordinate2D(latitude: 52.02224357, longitude: 5.78149084),
+                CLLocationCoordinate2D(latitude: 52.03924958, longitude: 5.55054131)
+            ]
+        )
+    }()
 }
 
+// MARK: - CLLocationManagerDelegate
 extension RouteController: CLLocationManagerDelegate {
 
     @objc func interpolateLocation() {
@@ -501,7 +502,6 @@ extension RouteController: CLLocationManagerDelegate {
         
         isFindingFasterRoute = true
         
-        // TODO: Remove debug statements
         print("[RouteController] Checking for faster/updated route...")
 
         getDirections(from: location, along: routeProgress) { [weak self] mostSimilarRoute, routes, error in
@@ -540,8 +540,7 @@ extension RouteController: CLLocationManagerDelegate {
         // Only check for alternatives if the user has plenty of time left on the route (10min+)
         let userHasEnoughTimeOnRoute = self.routeProgress.durationRemaining > 600
         
-        // TODO: Remove debug statements
-        print("[RouteController] Significant first step: \(significantFirstStep), Same upcoming maneuver: \(sameUpcomingManeuver), Route is faster: \(routeIsFaster), User has enough time left (10min+): \(userHasEnoughTimeOnRoute)")
+        print("[RouteController] applyNewRerouteIfNeeded called -> Significant first step: \(significantFirstStep), Same upcoming maneuver: \(sameUpcomingManeuver), Route is faster: \(routeIsFaster), User has enough time left (10min+): \(userHasEnoughTimeOnRoute)")
         
         // Check if we should apply faster route
         let shouldApplyFasterRoute = significantFirstStep && sameUpcomingManeuver && routeIsFaster && userHasEnoughTimeOnRoute
@@ -550,7 +549,6 @@ extension RouteController: CLLocationManagerDelegate {
         let shouldApplySlowerRoute = significantFirstStep && sameUpcomingManeuver && userHasEnoughTimeOnRoute
         
         if shouldApplyFasterRoute {
-            // TODO: Remove debug statements
             print("[RouteController] Found faster route")
             
             // Need to set this for notifications being sent
@@ -570,30 +568,22 @@ extension RouteController: CLLocationManagerDelegate {
         else if shouldApplySlowerRoute, let matchingRoute = Self.bestMatch(for: self.routeProgress.route, and: allRoutes) {
             // Check if the time difference is more than 30 seconds between best match and current ETA for extra measure
             let isExpectedTravelTimeChangedSignificantly = abs(routeProgress.durationRemaining - matchingRoute.route.expectedTravelTime) > 30
+            print("[RouteController] New ETA differs more than 30s from current ETA: \(isExpectedTravelTimeChangedSignificantly)")
             
-            // TODO: Remove debug statements
-            print("[RouteController] Found matching route \(matchingRoute.matchPercentage)%, updating ETA...")
-            print("[RouteController] Duration remaining CURRENT: \(routeProgress.durationRemaining)")
-            print("[RouteController] Expected travel time: \(matchingRoute.route.expectedTravelTime)")
+            var routeToApply = matchingRoute.route
             
-            // TODO: Remove this testing boolean?
+            // When testing flag is flipped, return instead one of the testing routes
             if shouldReturnTestingETAUpdateReroutes {
                 let rightOrLeft = Bool.random()
-                let testingRoute = rightOrLeft ? a12ToVeenendaalNormal : a12ToVeenendaalNormalWithTraffic
-                
+                routeToApply = rightOrLeft ? testA12ToVeenendaalNormal : testA12ToVeenendaalNormalWithTraffic
                 print("[RouteController] Set the new testing-route")
-                
-                // Don't announce new route
-                routeProgress = RouteProgress(route: testingRoute, legIndex: 0, spokenInstructionIndex: routeProgress.currentLegProgress.currentStepProgress.spokenInstructionIndex)
-                
-                // Inform delegate
-                delegate?.routeController?(self, didRerouteAlong: testingRoute, reason: .ETAUpdate)
-                
-                return
             }
                 
-            if isExpectedTravelTimeChangedSignificantly {
-                // TODO: Remove debug statements
+            if isExpectedTravelTimeChangedSignificantly || shouldReturnTestingETAUpdateReroutes {
+                // Set new route and inform delegates
+                print("[RouteController] Found matching route \(matchingRoute.matchPercentage)%, updating ETA...")
+                print("[RouteController] Duration remaining CURRENT: \(routeProgress.durationRemaining)")
+                print("[RouteController] Expected travel time: \(matchingRoute.route.expectedTravelTime)")
                 print("[RouteController] Set the new route")
                 
                 // Don't announce new route
@@ -856,8 +846,10 @@ extension RouteController: CLLocationManagerDelegate {
         
         return bestMatch
     }
+    
 }
 
+// MARK: - TunnelIntersectionManagerDelegate
 extension RouteController: TunnelIntersectionManagerDelegate {
     public func tunnelIntersectionManager(_ manager: TunnelIntersectionManager, willEnableAnimationAt location: CLLocation) {
         tunnelIntersectionManager.enableTunnelAnimation(routeController: self, routeProgress: routeProgress)
@@ -868,31 +860,4 @@ extension RouteController: TunnelIntersectionManagerDelegate {
     }
 }
 
-// TODO: Remove, for testing only
-@objc(MBFixture)
-class Fixture: NSObject {
-    @objc class func stringFromFileNamed(name: String) -> String {
-        guard let path = Bundle(for: self).path(forResource: name, ofType: "json") ?? Bundle(for: self).path(forResource: name, ofType: "geojson") else {
-            return ""
-        }
-        do {
-            return try String(contentsOfFile: path, encoding: .utf8)
-        } catch {
-            return ""
-        }
-    }
-    
-    @objc class func JSONFromFileNamed(name: String) -> [String: Any] {
-        guard let path = Bundle(for: self).path(forResource: name, ofType: "json") ?? Bundle(for: self).path(forResource: name, ofType: "geojson") else {
-            return [:]
-        }
-        guard let data = NSData(contentsOfFile: path) else {
-            return [:]
-        }
-        do {
-            return try JSONSerialization.jsonObject(with: data as Data, options: []) as! [String: AnyObject]
-        } catch {
-            return [:]
-        }
-    }
-}
+

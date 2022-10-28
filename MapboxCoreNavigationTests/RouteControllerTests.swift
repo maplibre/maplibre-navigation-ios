@@ -6,13 +6,18 @@ import MapboxMobileEvents
 
 fileprivate let mbTestHeading: CLLocationDirection = 50
 
+extension Bundle {
+    class var testingBundle: Bundle {
+        get { return Bundle(for: RouteControllerTests.self) }
+    }
+}
+
 class RouteControllerTests: XCTestCase {
 
     struct Constants {
         static let jsonRoute = (response["routes"] as! [AnyObject]).first as! [String: Any]
         static let accessToken = "nonsense"
     }
-
     let directionsClientSpy = DirectionsSpy(accessToken: "garbage", host: nil)
     let delegate = RouteControllerDelegateSpy()
 
@@ -326,87 +331,95 @@ class RouteControllerTests: XCTestCase {
     
     // MARK: - Matching route geometries
     lazy var nijmegenArnhemVeenendaal = {
-        let waypoint1 = Waypoint(coordinate: CLLocationCoordinate2D(latitude: 51.83116792, longitude: 5.83897820))
-        let waypoint2 = Waypoint(coordinate: CLLocationCoordinate2D(latitude: 52.03920380, longitude: 5.55133121))
-        let options = NavigationRouteOptions(waypoints: [waypoint1, waypoint2])
-        options.shapeFormat = .polyline6
-        let route = Route(json: Fixture.JSONFromFileNamed(name: "Nijmegen-Arnhem-Veenendaal"), waypoints: [waypoint1, waypoint2], options: options)
-        route.accessToken = Constants.accessToken
-        return route
+        Route(
+            jsonFileName: "Nijmegen-Arnhem-Veenendaal",
+            waypoints: [
+                CLLocationCoordinate2D(latitude: 51.83116792, longitude: 5.83897820),
+                CLLocationCoordinate2D(latitude: 52.03920380, longitude: 5.55133121)
+            ],
+            bundle: .testingBundle
+        )
     }()
     
     lazy var nijmegenBemmelVeenendaal = {
-        let waypoint1 = Waypoint(coordinate: CLLocationCoordinate2D(latitude: 51.83116792, longitude: 5.83897820))
-        let waypoint2 = Waypoint(coordinate: CLLocationCoordinate2D(latitude: 52.03920380, longitude: 5.55133121))
-        let options = NavigationRouteOptions(waypoints: [waypoint1, waypoint2])
-        options.shapeFormat = .polyline6
-        let route = Route(json: Fixture.JSONFromFileNamed(name: "Nijmegen-Bemmel-Veenendaal"), waypoints: [waypoint1, waypoint2], options: options)
-        route.accessToken = Constants.accessToken
-        return route
+        Route(
+            jsonFileName: "Nijmegen-Bemmel-Veenendaal",
+            waypoints: [
+                CLLocationCoordinate2D(latitude: 51.83116792, longitude: 5.83897820),
+                CLLocationCoordinate2D(latitude: 52.03920380, longitude: 5.55133121)
+            ],
+            bundle: .testingBundle
+        )
     }()
     
     // Same route, routed on a different day
     lazy var nijmegenBemmelVeenendaal2 = {
-        let waypoint1 = Waypoint(coordinate: CLLocationCoordinate2D(latitude: 51.83116792, longitude: 5.83897820))
-        let waypoint2 = Waypoint(coordinate: CLLocationCoordinate2D(latitude: 52.03920380, longitude: 5.55133121))
-        let options = NavigationRouteOptions(waypoints: [waypoint1, waypoint2])
-        options.shapeFormat = .polyline6
-        let route = Route(json: Fixture.JSONFromFileNamed(name: "Nijmegen-Bemmel-Veenendaal2"), waypoints: [waypoint1, waypoint2], options: options)
-        route.accessToken = Constants.accessToken
-        return route
+        Route(
+            jsonFileName: "Nijmegen-Bemmel-Veenendaal2",
+            waypoints: [
+                CLLocationCoordinate2D(latitude: 51.83116792, longitude: 5.83897820),
+                CLLocationCoordinate2D(latitude: 52.03920380, longitude: 5.55133121)
+            ],
+            bundle: .testingBundle
+        )
     }()
     
     lazy var wolfhezeVeenendaalNormal = {
-        let waypoint1 = Waypoint(coordinate: CLLocationCoordinate2D(latitude: 51.99711882858318, longitude: 5.7932572786103265))
-        let waypoint2 = Waypoint(coordinate: CLLocationCoordinate2D(latitude: 52.0392038, longitude: 5.55133121))
-        let options = NavigationRouteOptions(waypoints: [waypoint1, waypoint2])
-        options.shapeFormat = .polyline6
-        let route = Route(json: Fixture.JSONFromFileNamed(name: "Wolfheze-Veenendaal-Normal"), waypoints: [waypoint1, waypoint2], options: options)
-        route.accessToken = Constants.accessToken
-        return route
+        Route(
+            jsonFileName: "Wolfheze-Veenendaal-Normal",
+            waypoints: [
+                CLLocationCoordinate2D(latitude: 51.99711882858318, longitude: 5.7932572786103265),
+                CLLocationCoordinate2D(latitude: 52.0392038, longitude: 5.55133121)
+            ],
+            bundle: .testingBundle
+        )
     }()
     
     lazy var wolfhezeVeenendaalSmallDetourAtEnd = {
-        let waypoint1 = Waypoint(coordinate: CLLocationCoordinate2D(latitude: 51.99711882858318, longitude: 5.7932572786103265))
-        let waypoint2 = Waypoint(coordinate: CLLocationCoordinate2D(latitude: 52.04451273, longitude: 5.57902714))
-        let waypoint3 = Waypoint(coordinate: CLLocationCoordinate2D(latitude: 52.0392038, longitude: 5.55133121))
-        let options = NavigationRouteOptions(waypoints: [waypoint1, waypoint2])
-        options.shapeFormat = .polyline6
-        let route = Route(json: Fixture.JSONFromFileNamed(name: "Wolfheze-Veenendaal-Small-Detour-At-End"), waypoints: [waypoint1, waypoint2, waypoint3], options: options)
-        route.accessToken = Constants.accessToken
-        return route
+        Route(
+            jsonFileName: "Wolfheze-Veenendaal-Small-Detour-At-End",
+            waypoints: [
+                CLLocationCoordinate2D(latitude: 51.99711882858318, longitude: 5.7932572786103265),
+                CLLocationCoordinate2D(latitude: 52.04451273, longitude: 5.57902714),
+                CLLocationCoordinate2D(latitude: 52.0392038, longitude: 5.55133121)
+            ],
+            bundle: .testingBundle
+        )
     }()
     
     lazy var a12ToVeenendaalNormal = {
-        let waypoint1 = Waypoint(coordinate: CLLocationCoordinate2D(latitude: 52.02224357, longitude: 5.78149084))
-        let waypoint2 = Waypoint(coordinate: CLLocationCoordinate2D(latitude: 52.03924958, longitude: 5.55054131))
-        let options = NavigationRouteOptions(waypoints: [waypoint1, waypoint2])
-        options.shapeFormat = .polyline6
-        let route = Route(json: Fixture.JSONFromFileNamed(name: "A12-To-Veenendaal-Normal"), waypoints: [waypoint1, waypoint2], options: options)
-        route.accessToken = Constants.accessToken
-        return route
+        Route(
+            jsonFileName: "A12-To-Veenendaal-Normal",
+            waypoints: [
+                CLLocationCoordinate2D(latitude: 52.02224357, longitude: 5.78149084),
+                CLLocationCoordinate2D(latitude: 52.03924958, longitude: 5.55054131)
+            ],
+            bundle: .testingBundle
+        )
     }()
     
     lazy var a12ToVeenendaalSlightDifference = {
-        let waypoint1 = Waypoint(coordinate: CLLocationCoordinate2D(latitude: 52.02224357, longitude: 5.78149084))
-        let waypoint2 = Waypoint(coordinate: CLLocationCoordinate2D(latitude: 52.03917716, longitude: 5.55201356))
-        let waypoint3 = Waypoint(coordinate: CLLocationCoordinate2D(latitude: 52.03924958, longitude: 5.55054131))
-        let options = NavigationRouteOptions(waypoints: [waypoint1, waypoint2, waypoint3])
-        options.shapeFormat = .polyline6
-        let route = Route(json: Fixture.JSONFromFileNamed(name: "A12-To-Veenendaal-Slight-Difference"), waypoints: [waypoint1, waypoint2, waypoint3], options: options)
-        route.accessToken = Constants.accessToken
-        return route
+        Route(
+            jsonFileName: "A12-To-Veenendaal-Slight-Difference",
+            waypoints: [
+                CLLocationCoordinate2D(latitude: 52.02224357, longitude: 5.78149084),
+                CLLocationCoordinate2D(latitude: 52.03917716, longitude: 5.55201356),
+                CLLocationCoordinate2D(latitude: 52.03924958, longitude: 5.55054131)
+            ],
+            bundle: .testingBundle
+        )
     }()
     
     lazy var a12ToVeenendaalBiggerDetour = {
-        let waypoint1 = Waypoint(coordinate: CLLocationCoordinate2D(latitude: 52.02224357, longitude: 5.78149084))
-        let waypoint2 = Waypoint(coordinate: CLLocationCoordinate2D(latitude: 52.04520875, longitude: 5.5748937))
-        let waypoint3 = Waypoint(coordinate: CLLocationCoordinate2D(latitude: 52.03924958, longitude: 5.55054131))
-        let options = NavigationRouteOptions(waypoints: [waypoint1, waypoint2, waypoint3])
-        options.shapeFormat = .polyline6
-        let route = Route(json: Fixture.JSONFromFileNamed(name: "A12-To-Veenendaal-Bigger-Detour"), waypoints: [waypoint1, waypoint2, waypoint3], options: options)
-        route.accessToken = Constants.accessToken
-        return route
+        Route(
+            jsonFileName: "A12-To-Veenendaal-Bigger-Detour",
+            waypoints: [
+                CLLocationCoordinate2D(latitude: 52.02224357, longitude: 5.78149084),
+                CLLocationCoordinate2D(latitude: 52.04520875, longitude: 5.5748937),
+                CLLocationCoordinate2D(latitude: 52.03924958, longitude: 5.55054131)
+            ],
+            bundle: .testingBundle
+        )
     }()
 
     func testRouteControllerMatchPercentage() {
@@ -565,13 +578,14 @@ class RouteControllerTests: XCTestCase {
     // Same exact JSON as a12ToVeenendaalNormal, but with one of the steps increased in 'duration' with 500 secs simulating a traffic jam
     // Makes checking 'durationRemaining' work, as that is a sum of all step's 'duration' in a leg
     lazy var a12ToVeenendaalNormalWithTraffic = {
-        let waypoint1 = Waypoint(coordinate: CLLocationCoordinate2D(latitude: 52.02224357, longitude: 5.78149084))
-        let waypoint2 = Waypoint(coordinate: CLLocationCoordinate2D(latitude: 52.03924958, longitude: 5.55054131))
-        let options = NavigationRouteOptions(waypoints: [waypoint1, waypoint2])
-        options.shapeFormat = .polyline6
-        let route = Route(json: Fixture.JSONFromFileNamed(name: "A12-To-Veenendaal-Normal-With-Big-Trafficjam"), waypoints: [waypoint1, waypoint2], options: options)
-        route.accessToken = Constants.accessToken
-        return route
+        Route(
+            jsonFileName: "A12-To-Veenendaal-Normal-With-Big-Trafficjam",
+            waypoints: [
+                CLLocationCoordinate2D(latitude: 52.02224357, longitude: 5.78149084),
+                CLLocationCoordinate2D(latitude: 52.03924958, longitude: 5.55054131)
+            ],
+            bundle: .testingBundle
+        )
     }()
     
     func testApplyingSlowerRoute() {
