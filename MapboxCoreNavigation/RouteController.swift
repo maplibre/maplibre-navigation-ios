@@ -401,6 +401,12 @@ extension RouteController: CLLocationManagerDelegate {
         // Check for faster route given users current location
         guard reroutesProactively else { return }
         
+        // Only check for faster routes or ETA updates if the user has plenty of time left on the route (10+min)
+        guard routeProgress.durationRemaining > 600 else { return }
+        
+        // If the user is approaching a maneuver (within 70secs of the maneuver), don't check for a faster routes or ETA updates
+        guard routeProgress.currentLegProgress.currentStepProgress.durationRemaining > RouteControllerMediumAlertInterval else { return }
+        
         checkForNewRoute(from: location)
     }
         
@@ -578,7 +584,7 @@ extension RouteController: CLLocationManagerDelegate {
             if shouldReturnTestingETAUpdateReroutes {
                 let rightOrLeft = Bool.random()
                 routeToApply = rightOrLeft ? testA12ToVeenendaalNormal : testA12ToVeenendaalNormalWithTraffic
-                print("[RouteController] Set the new testing-route")
+                print("[RouteController] Testing route: ON")
             }
                 
             if isExpectedTravelTimeChangedSignificantly || shouldReturnTestingETAUpdateReroutes {
@@ -589,10 +595,10 @@ extension RouteController: CLLocationManagerDelegate {
                 print("[RouteController] Set the new route")
                 
                 // Don't announce new route
-                routeProgress = RouteProgress(route: matchingRoute.route, legIndex: 0, spokenInstructionIndex: routeProgress.currentLegProgress.currentStepProgress.spokenInstructionIndex)
+                routeProgress = RouteProgress(route: routeToApply, legIndex: 0, spokenInstructionIndex: routeProgress.currentLegProgress.currentStepProgress.spokenInstructionIndex)
                 
                 // Inform delegate
-                delegate?.routeController?(self, didRerouteAlong: matchingRoute.route, reason: .ETAUpdate)
+                delegate?.routeController?(self, didRerouteAlong: routeToApply, reason: .ETAUpdate)
             }
         }
     }
