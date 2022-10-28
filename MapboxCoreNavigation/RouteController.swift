@@ -268,7 +268,8 @@ open class RouteController: NSObject, Router {
             waypoints: [
                 CLLocationCoordinate2D(latitude: 52.02224357, longitude: 5.78149084),
                 CLLocationCoordinate2D(latitude: 52.03924958, longitude: 5.55054131)
-            ]
+            ],
+            bundle: .mapboxCoreNavigation
         )
     }()
     
@@ -278,7 +279,8 @@ open class RouteController: NSObject, Router {
             waypoints: [
                 CLLocationCoordinate2D(latitude: 52.02224357, longitude: 5.78149084),
                 CLLocationCoordinate2D(latitude: 52.03924958, longitude: 5.55054131)
-            ]
+            ],
+            bundle: .mapboxCoreNavigation
         )
     }()
 }
