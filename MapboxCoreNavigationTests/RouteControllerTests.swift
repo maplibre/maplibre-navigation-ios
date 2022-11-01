@@ -6,23 +6,25 @@ import MapboxMobileEvents
 
 fileprivate let mbTestHeading: CLLocationDirection = 50
 
+extension Bundle {
+    class var testingBundle: Bundle {
+        get { return Bundle(for: RouteControllerTests.self) }
+    }
+}
+
 class RouteControllerTests: XCTestCase {
 
     struct Constants {
         static let jsonRoute = (response["routes"] as! [AnyObject]).first as! [String: Any]
         static let accessToken = "nonsense"
     }
-
-    let eventsManagerSpy = MMEEventsManagerSpy()
     let directionsClientSpy = DirectionsSpy(accessToken: "garbage", host: nil)
     let delegate = RouteControllerDelegateSpy()
 
     typealias RouteLocations = (firstLocation: CLLocation, penultimateLocation: CLLocation, lastLocation: CLLocation)
 
     lazy var dependencies: (routeController: RouteController, routeLocations: RouteLocations) = {
-        let eventsManager = EventsManager(accessToken: initialRoute.accessToken)
-        eventsManager.manager = eventsManagerSpy
-        let routeController = RouteController(along: initialRoute, directions: directionsClientSpy, locationManager: NavigationLocationManager(), eventsManager: eventsManager)
+        let routeController = RouteController(along: initialRoute, directions: directionsClientSpy, locationManager: NavigationLocationManager())
         routeController.delegate = delegate
 
         let legProgress: RouteLegProgress = routeController.routeProgress.currentLegProgress
@@ -61,7 +63,6 @@ class RouteControllerTests: XCTestCase {
     override func setUp() {
         super.setUp()
 
-        eventsManagerSpy.reset()
         directionsClientSpy.reset()
         delegate.reset()
     }
@@ -167,7 +168,7 @@ class RouteControllerTests: XCTestCase {
         let route = Route(json: jsonRoute, waypoints: [waypoint1, waypoint2], options: NavigationRouteOptions(waypoints: [waypoint1, waypoint2]))
 
         route.accessToken = "foo"
-        let navigation = RouteController(along: route, directions: directions, eventsManager: TestNavigationEventsManager())
+        let navigation = RouteController(along: route, directions: directions)
         let firstCoord = navigation.routeProgress.currentLegProgress.nearbyCoordinates.first!
         let firstLocation = CLLocation(latitude: firstCoord.latitude, longitude: firstCoord.longitude)
         let coordNearStart = Polyline(navigation.routeProgress.currentLegProgress.nearbyCoordinates).coordinateFromStart(distance: 10)!
@@ -205,20 +206,9 @@ class RouteControllerTests: XCTestCase {
 
     // MARK: - Events & Delegation
 
-    func testTurnstileEventSentUponInitialization() {
-        // MARK: it sends a turnstile event upon initialization
-        let eventsManager = EventsManager(accessToken: initialRoute.accessToken)
-        eventsManager.manager = eventsManagerSpy
-        let _ = RouteController(along: initialRoute, directions: directionsClientSpy, locationManager: NavigationLocationManager(), eventsManager: eventsManager)
-
-        XCTAssertTrue(eventsManagerSpy.hasFlushedEvent(with: MMEEventTypeAppUserTurnstile))
-    }
-
     func testReroutingFromALocationSendsEvents() {
         let routeController = dependencies.routeController
         let testLocation = dependencies.routeLocations.firstLocation
-
-        routeController.eventsManager.delaysEventFlushing = false
 
         let willRerouteNotificationExpectation = expectation(forNotification: .routeControllerWillReroute, object: routeController) { (notification) -> Bool in
             let fromLocation = notification.userInfo![RouteControllerNotificationUserInfoKey.locationKey] as? CLLocation
@@ -236,7 +226,7 @@ class RouteControllerTests: XCTestCase {
         }
 
         // MARK: When told to re-route from location -- `reroute(from:)`
-        routeController.reroute(from: testLocation, along: routeController.routeProgress)
+        routeController.rerouteForDiversion(from: testLocation, along: routeController.routeProgress)
 
         // MARK: it tells the delegate & posts a willReroute notification
         XCTAssertTrue(delegate.recentMessages.contains("routeController(_:willRerouteFrom:)"))
@@ -246,7 +236,7 @@ class RouteControllerTests: XCTestCase {
         directionsClientSpy.fireLastCalculateCompletion(with: nil, routes: [alternateRoute], error: nil)
 
         // MARK: It tells the delegate & posts a didReroute notification
-        XCTAssertTrue(delegate.recentMessages.contains("routeController(_:didRerouteAlong:)"))
+        XCTAssertTrue(delegate.recentMessages.contains("routeController(_:didRerouteAlong:reason:)"))
         wait(for: [didRerouteNotificationExpectation], timeout: 0.1)
 
         // MARK: On the next call to `locationManager(_, didUpdateLocations:)`
@@ -255,13 +245,6 @@ class RouteControllerTests: XCTestCase {
         // MARK: It tells the delegate & posts a routeProgressDidChange notification
         XCTAssertTrue(delegate.recentMessages.contains("routeController(_:didUpdate:)"))
         wait(for: [routeProgressDidChangeNotificationExpectation], timeout: 0.1)
-
-        // MARK: It enqueues and flushes a NavigationRerouteEvent
-        let expectedEventName = MMEEventTypeNavigationReroute
-        XCTAssertTrue(eventsManagerSpy.hasEnqueuedEvent(with: expectedEventName))
-        XCTAssertTrue(eventsManagerSpy.hasFlushedEvent(with: expectedEventName))
-        XCTAssertEqual(eventsManagerSpy.enqueuedEventCount(with: expectedEventName), 1)
-        XCTAssertEqual(eventsManagerSpy.flushedEventCount(with: expectedEventName), 1)
     }
 
     func testGeneratingAnArrivalEvent() {
@@ -272,10 +255,6 @@ class RouteControllerTests: XCTestCase {
 
         // MARK: When navigation begins with a location update
         routeController.locationManager(routeController.locationManager, didUpdateLocations: [firstLocation])
-
-        // MARK: It queues and flushes a Depart event
-        XCTAssertTrue(eventsManagerSpy.hasFlushedEvent(with: MMEEventTypeNavigationDepart))
-        // TODO: should there be a delegate message here as well?
 
         // MARK: When at a valid location just before the last location (should this really be necessary?)
         routeController.locationManager(routeController.locationManager, didUpdateLocations: [penultimateLocation])
@@ -289,11 +268,6 @@ class RouteControllerTests: XCTestCase {
 
         // MARK: It tells the delegate that the user did arrive
         XCTAssertTrue(delegate.recentMessages.contains("routeController(_:didArriveAt:)"))
-
-        // MARK: It enqueues and flushes an arrival event
-        let expectedEventName = MMEEventTypeNavigationArrive
-        XCTAssertTrue(eventsManagerSpy.hasEnqueuedEvent(with: expectedEventName))
-        XCTAssertTrue(eventsManagerSpy.hasFlushedEvent(with: expectedEventName))
     }
     
     func testNoReroutesAfterArriving() {
@@ -304,10 +278,6 @@ class RouteControllerTests: XCTestCase {
 
         // MARK: When navigation begins with a location update
         routeController.locationManager(routeController.locationManager, didUpdateLocations: [firstLocation])
-        
-        // MARK: It queues and flushes a Depart event
-        XCTAssertTrue(eventsManagerSpy.hasFlushedEvent(with: MMEEventTypeNavigationDepart))
-        // TODO: should there be a delegate message here as well?
         
         // MARK: When at a valid location just before the last location (should this really be necessary?)
         routeController.locationManager(routeController.locationManager, didUpdateLocations: [penultimateLocation])
@@ -331,11 +301,6 @@ class RouteControllerTests: XCTestCase {
         
         // We should not reroute here because the user has arrived.
         XCTAssertFalse(delegate.recentMessages.contains("routeController(_:didRerouteAlong:)"))
-        
-        // MARK: It enqueues and flushes an arrival event
-        let expectedEventName = MMEEventTypeNavigationArrive
-        XCTAssertTrue(eventsManagerSpy.hasEnqueuedEvent(with: expectedEventName))
-        XCTAssertTrue(eventsManagerSpy.hasFlushedEvent(with: expectedEventName))
     }
 
 
@@ -345,11 +310,8 @@ class RouteControllerTests: XCTestCase {
         
         autoreleasepool {
             let locationManager = NavigationLocationManager()
-            let eventsManager = EventsManager(accessToken: initialRoute.accessToken)
-            eventsManager.manager = eventsManagerSpy
-            let routeController: RouteController? = RouteController(along: initialRoute, directions: directionsClientSpy, locationManager: locationManager, eventsManager: eventsManager)
+            let routeController: RouteController? = RouteController(along: initialRoute, directions: directionsClientSpy, locationManager: locationManager)
             subject = routeController
-            eventsManager.routeController = routeController
         }
 
         XCTAssertNil(subject, "Expected RouteController not to live beyond autorelease pool")
@@ -360,12 +322,342 @@ class RouteControllerTests: XCTestCase {
         weak var subject: CLLocationManagerDelegate? = nil
         autoreleasepool {
             let locationManager = NavigationLocationManager()
-            let eventsManager = EventsManager(accessToken: initialRoute.accessToken)
-            eventsManager.manager = eventsManagerSpy
-            _ = RouteController(along: initialRoute, directions: directionsClientSpy, locationManager: locationManager, eventsManager: eventsManager)
+            _ = RouteController(along: initialRoute, directions: directionsClientSpy, locationManager: locationManager)
             subject = locationManager.delegate
         }
         
         XCTAssertNil(subject, "Expected LocationManager's Delegate to be nil after RouteController Deinit")
+    }
+    
+    // MARK: - Matching route geometries
+    lazy var nijmegenArnhemVeenendaal = {
+        Route(
+            jsonFileName: "Nijmegen-Arnhem-Veenendaal",
+            waypoints: [
+                CLLocationCoordinate2D(latitude: 51.83116792, longitude: 5.83897820),
+                CLLocationCoordinate2D(latitude: 52.03920380, longitude: 5.55133121)
+            ],
+            bundle: .testingBundle,
+            accessToken: Constants.accessToken
+        )
+    }()
+    
+    lazy var nijmegenBemmelVeenendaal = {
+        Route(
+            jsonFileName: "Nijmegen-Bemmel-Veenendaal",
+            waypoints: [
+                CLLocationCoordinate2D(latitude: 51.83116792, longitude: 5.83897820),
+                CLLocationCoordinate2D(latitude: 52.03920380, longitude: 5.55133121)
+            ],
+            bundle: .testingBundle,
+            accessToken: Constants.accessToken
+        )
+    }()
+    
+    // Same route, routed on a different day
+    lazy var nijmegenBemmelVeenendaal2 = {
+        Route(
+            jsonFileName: "Nijmegen-Bemmel-Veenendaal2",
+            waypoints: [
+                CLLocationCoordinate2D(latitude: 51.83116792, longitude: 5.83897820),
+                CLLocationCoordinate2D(latitude: 52.03920380, longitude: 5.55133121)
+            ],
+            bundle: .testingBundle,
+            accessToken: Constants.accessToken
+        )
+    }()
+    
+    lazy var wolfhezeVeenendaalNormal = {
+        Route(
+            jsonFileName: "Wolfheze-Veenendaal-Normal",
+            waypoints: [
+                CLLocationCoordinate2D(latitude: 51.99711882858318, longitude: 5.7932572786103265),
+                CLLocationCoordinate2D(latitude: 52.0392038, longitude: 5.55133121)
+            ],
+            bundle: .testingBundle,
+            accessToken: Constants.accessToken
+        )
+    }()
+    
+    lazy var wolfhezeVeenendaalSmallDetourAtEnd = {
+        Route(
+            jsonFileName: "Wolfheze-Veenendaal-Small-Detour-At-End",
+            waypoints: [
+                CLLocationCoordinate2D(latitude: 51.99711882858318, longitude: 5.7932572786103265),
+                CLLocationCoordinate2D(latitude: 52.04451273, longitude: 5.57902714),
+                CLLocationCoordinate2D(latitude: 52.0392038, longitude: 5.55133121)
+            ],
+            bundle: .testingBundle,
+            accessToken: Constants.accessToken
+        )
+    }()
+    
+    lazy var a12ToVeenendaalNormal = {
+        Route(
+            jsonFileName: "A12-To-Veenendaal-Normal",
+            waypoints: [
+                CLLocationCoordinate2D(latitude: 52.02224357, longitude: 5.78149084),
+                CLLocationCoordinate2D(latitude: 52.03924958, longitude: 5.55054131)
+            ],
+            bundle: .testingBundle,
+            accessToken: Constants.accessToken
+        )
+    }()
+    
+    lazy var a12ToVeenendaalSlightDifference = {
+        Route(
+            jsonFileName: "A12-To-Veenendaal-Slight-Difference",
+            waypoints: [
+                CLLocationCoordinate2D(latitude: 52.02224357, longitude: 5.78149084),
+                CLLocationCoordinate2D(latitude: 52.03917716, longitude: 5.55201356),
+                CLLocationCoordinate2D(latitude: 52.03924958, longitude: 5.55054131)
+            ],
+            bundle: .testingBundle,
+            accessToken: Constants.accessToken
+        )
+    }()
+    
+    lazy var a12ToVeenendaalBiggerDetour = {
+        Route(
+            jsonFileName: "A12-To-Veenendaal-Bigger-Detour",
+            waypoints: [
+                CLLocationCoordinate2D(latitude: 52.02224357, longitude: 5.78149084),
+                CLLocationCoordinate2D(latitude: 52.04520875, longitude: 5.5748937),
+                CLLocationCoordinate2D(latitude: 52.03924958, longitude: 5.55054131)
+            ],
+            bundle: .testingBundle,
+            accessToken: Constants.accessToken
+        )
+    }()
+
+    func testRouteControllerMatchPercentage() {
+        // These routes differ around 40%
+        if let matchPercentage = RouteController.matchPercentage(between: nijmegenArnhemVeenendaal, and: nijmegenBemmelVeenendaal) {
+            XCTAssertEqual(matchPercentage, 58.86, accuracy: 1.0)
+        } else {
+            XCTFail("Should get a match percentage")
+        }
+        
+        // Check for the exact same route for 100%
+        if let matchPercentage = RouteController.matchPercentage(between: nijmegenArnhemVeenendaal, and: nijmegenArnhemVeenendaal) {
+            XCTAssertEqual(matchPercentage, 100.0)
+        } else {
+            XCTFail("Should get a match percentage")
+        }
+        
+        // Check same route, but calculated a day later (to account for stability of coordinate geometry of router)
+        if let matchPercentage = RouteController.matchPercentage(between: nijmegenBemmelVeenendaal, and: nijmegenBemmelVeenendaal2) {
+            XCTAssertEqual(matchPercentage, 100.0)
+        } else {
+            XCTFail("Should get a match percentage")
+        }
+        
+        // Check a route to a small detour at the end, should match at 2/3
+        if let matchPercentage = RouteController.matchPercentage(between: wolfhezeVeenendaalNormal, and: wolfhezeVeenendaalSmallDetourAtEnd) {
+            XCTAssertEqual(matchPercentage, 67.0, accuracy: 0.1)
+        } else {
+            XCTFail("Should get a match percentage")
+        }
+        
+        // Check a route with a very slight difference, should match at more than 90%
+        if let matchPercentage = RouteController.matchPercentage(between: a12ToVeenendaalNormal, and: a12ToVeenendaalSlightDifference) {
+            XCTAssertEqual(matchPercentage, 91.5, accuracy: 0.1)
+        } else {
+            XCTFail("Should get a match percentage")
+        }
+        
+        // Check a route with a bigger detour, should match at 54%
+        if let matchPercentage = RouteController.matchPercentage(between: a12ToVeenendaalNormal, and: a12ToVeenendaalBiggerDetour) {
+            XCTAssertEqual(matchPercentage, 54.3, accuracy: 0.1)
+        } else {
+            XCTFail("Should get a match percentage")
+        }
+        
+        // Check a route with just the duration increased, should match at 100%
+        if let matchPercentage = RouteController.matchPercentage(between: a12ToVeenendaalNormal, and: a12ToVeenendaalNormalWithTraffic) {
+            XCTAssertEqual(matchPercentage, 100.0)
+        } else {
+            XCTFail("Should get a match percentage")
+        }
+    }
+    
+    func testRouteControllerBestMatch() {
+        // Shuffle the array to prove the order is unimportant
+        let firstRoutes = [a12ToVeenendaalNormal, a12ToVeenendaalSlightDifference, a12ToVeenendaalBiggerDetour].shuffled()
+        
+        // Match a route to the same destination to the following variants:
+        // - Same route -> 100% match
+        // - Slight difference -> 90.3%
+        // - Bigger detour -> 53%
+        // --> Same route match is correct
+        if let bestMatch = RouteController.bestMatch(for: a12ToVeenendaalNormal, and: firstRoutes) {
+            XCTAssertEqual(bestMatch.route, a12ToVeenendaalNormal)
+            XCTAssertEqual(bestMatch.matchPercentage, 100.0)
+        } else {
+            XCTFail("Should get a match above 90%")
+        }
+        
+        // Match a route to the same destination to the following variants:
+        // - Slight difference -> 90.3%
+        // - Bigger detour -> 53%
+        // --> Slight difference route match is correct
+        let secondRoutes = [a12ToVeenendaalSlightDifference, a12ToVeenendaalBiggerDetour].shuffled()
+        if let bestMatch = RouteController.bestMatch(for: a12ToVeenendaalNormal, and: secondRoutes) {
+            XCTAssertEqual(bestMatch.route, a12ToVeenendaalSlightDifference)
+            XCTAssertEqual(bestMatch.matchPercentage, 91.5, accuracy: 0.1)
+        } else {
+            XCTFail("Should get a match above 90%")
+        }
+        
+        // Match a route to the same destination to the following variant:
+        // - Bigger detour -> 53%
+        // --> No match, as it's below 90%
+        if let bestMatch = RouteController.bestMatch(for: a12ToVeenendaalNormal, and: [a12ToVeenendaalBiggerDetour]) {
+            XCTAssertEqual(bestMatch.matchPercentage, 90.3, accuracy: 0.1)
+            XCTFail("Shouldn't get a match above 90%")
+        }
+    }
+    
+    // MARK: - Applying faster/slower route
+    func testApplyingFasterRoute() {
+        let routeController = dependencies.routeController
+        let oldRouteProgress = routeController.routeProgress
+        
+        // Starting with route 'A12-To-Veenendaal-Normal'
+        routeController.routeProgress = .init(
+            route: a12ToVeenendaalNormal,
+            legIndex: 0,
+            spokenInstructionIndex: 0
+        )
+        
+        // Try to apply slightly faster route 'A12-To-Veenendaal-Slight-Difference'
+        routeController.applyNewRerouteIfNeeded(
+            mostSimilarRoute: a12ToVeenendaalSlightDifference,
+            allRoutes: [a12ToVeenendaalSlightDifference],
+            currentUpcomingManeuver: routeController.routeProgress.currentLegProgress.upComingStep!,
+            durationRemaining: routeController.routeProgress.durationRemaining
+        )
+        
+        // Should be applied
+        XCTAssertEqual(
+            routeController.routeProgress.durationRemaining,
+            RouteProgress(
+                route: a12ToVeenendaalSlightDifference,
+                legIndex: 0,
+                spokenInstructionIndex: 0).durationRemaining
+        )
+        
+        // Reset routeProgress
+        routeController.routeProgress = oldRouteProgress
+    }
+    
+    func testNotApplyingSlowerRoute() {
+        let routeController = dependencies.routeController
+        let oldRouteProgress = routeController.routeProgress
+        
+        // Starting with route 'A12-To-Veenendaal-Normal'
+        routeController.routeProgress = .init(
+            route: a12ToVeenendaalNormal,
+            legIndex: 0,
+            spokenInstructionIndex: 0
+        )
+        
+        // Try to apply slower route 'A12-To-Veenendaal-Slight-Difference'
+        routeController.applyNewRerouteIfNeeded(
+            mostSimilarRoute: a12ToVeenendaalBiggerDetour,
+            allRoutes: [a12ToVeenendaalBiggerDetour],
+            currentUpcomingManeuver: routeController.routeProgress.currentLegProgress.upComingStep!,
+            durationRemaining: routeController.routeProgress.durationRemaining
+        )
+        
+        // Shouldn't be applied as slower route isn't 90%+ match
+        XCTAssertNotEqual(
+            routeController.routeProgress.durationRemaining,
+            RouteProgress(
+                route: a12ToVeenendaalBiggerDetour,
+                legIndex: 0,
+                spokenInstructionIndex: 0).durationRemaining
+        )
+        
+        // Reset routeProgress
+        routeController.routeProgress = oldRouteProgress
+    }
+    
+    // Same exact JSON as a12ToVeenendaalNormal, but with one of the steps increased in 'duration' with 500 secs simulating a traffic jam
+    // Makes checking 'durationRemaining' work, as that is a sum of all step's 'duration' in a leg
+    lazy var a12ToVeenendaalNormalWithTraffic = {
+        Route(
+            jsonFileName: "A12-To-Veenendaal-Normal-With-Big-Trafficjam",
+            waypoints: [
+                CLLocationCoordinate2D(latitude: 52.02224357, longitude: 5.78149084),
+                CLLocationCoordinate2D(latitude: 52.03924958, longitude: 5.55054131)
+            ],
+            bundle: .testingBundle,
+            accessToken: Constants.accessToken
+        )
+    }()
+    
+    func testApplyingSlowerRoute() {
+        let routeController = dependencies.routeController
+        let oldRouteProgress = routeController.routeProgress
+        
+        // Starting with route 'A12-To-Veenendaal-Normal'
+        routeController.routeProgress = .init(
+            route: a12ToVeenendaalNormal,
+            legIndex: 0,
+            spokenInstructionIndex: 0
+        )
+        
+        // Try to apply slower route 'A12-To-Veenendaal-Normal-With-Big-Trafficjam'
+        routeController.applyNewRerouteIfNeeded(
+            mostSimilarRoute: a12ToVeenendaalNormalWithTraffic,
+            allRoutes: [a12ToVeenendaalNormalWithTraffic],
+            currentUpcomingManeuver: routeController.routeProgress.currentLegProgress.upComingStep!,
+            durationRemaining: routeController.routeProgress.durationRemaining
+        )
+        
+        // Should be applied as we match criteria and route is just slower
+        XCTAssertEqual(
+            routeController.routeProgress.durationRemaining,
+            RouteProgress(
+                route: a12ToVeenendaalNormalWithTraffic,
+                legIndex: 0,
+                spokenInstructionIndex: 0).durationRemaining
+        )
+        
+        // Reset routeProgress
+        routeController.routeProgress = oldRouteProgress
+    }
+    
+    func testApplyingBestMatch() {
+        let routeController = dependencies.routeController
+        let oldRouteProgress = routeController.routeProgress
+        
+        // Starting with route 'A12-To-Veenendaal-Normal'
+        routeController.routeProgress = .init(
+            route: a12ToVeenendaalNormal,
+            legIndex: 0,
+            spokenInstructionIndex: 0
+        )
+        
+        // Try to apply slower route 'A12-To-Veenendaal-Normal-With-Big-Trafficjam' or faster route 'A12-To-Veenendaal-Slight-Difference'
+        routeController.applyNewRerouteIfNeeded(
+            mostSimilarRoute: a12ToVeenendaalSlightDifference,
+            allRoutes: [a12ToVeenendaalNormalWithTraffic, a12ToVeenendaalSlightDifference],
+            currentUpcomingManeuver: routeController.routeProgress.currentLegProgress.upComingStep!,
+            durationRemaining: routeController.routeProgress.durationRemaining
+        )
+        
+        // Slower one should be applied as it has a better match on geometry and the first route we get isn't faster
+        XCTAssertEqual(
+            routeController.routeProgress.durationRemaining,
+            RouteProgress(
+                route: a12ToVeenendaalNormalWithTraffic,
+                legIndex: 0,
+                spokenInstructionIndex: 0).durationRemaining
+        )
+        
+        // Reset routeProgress
+        routeController.routeProgress = oldRouteProgress
     }
 }

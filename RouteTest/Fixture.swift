@@ -3,15 +3,15 @@ import MapboxDirections
 import MapboxCoreNavigation
 
 class Fixture {
-    internal class func JSONFromFileNamed(name: String) -> [String: Any] {
-        guard let path = Bundle(for: self).path(forResource: name, ofType: "json") else {
+    class func JSONFromFileNamed(name: String, bundle: Bundle = .main) -> [String: Any] {
+        guard let path = bundle.path(forResource: name, ofType: "json") ?? bundle.path(forResource: name, ofType: "geojson") else {
             return [:]
         }
-        guard let data = NSData(contentsOfFile: path) as Data? else {
+        guard let data = NSData(contentsOfFile: path) else {
             return [:]
         }
         do {
-            return try JSONSerialization.jsonObject(with: data, options: []) as! [String: Any]
+            return try JSONSerialization.jsonObject(with: data as Data, options: []) as! [String: AnyObject]
         } catch {
             return [:]
         }

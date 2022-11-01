@@ -94,7 +94,7 @@ class DataCacheTests: XCTestCase {
     func testClearingMemoryCacheOnMemoryWarning() {
         storeDataInMemory()
 
-        NotificationCenter.default.post(name: .UIApplicationDidReceiveMemoryWarning, object: nil)
+        NotificationCenter.default.post(name: UIApplication.didReceiveMemoryWarningNotification, object: nil)
 
         XCTAssertNil(cache.data(forKey: dataKey))
     }
@@ -104,7 +104,7 @@ class DataCacheTests: XCTestCase {
         tempCache?.clearMemory()
         tempCache = nil
 
-        NotificationCenter.default.post(name: .UIApplicationDidReceiveMemoryWarning, object: nil)
+        NotificationCenter.default.post(name: UIApplication.didReceiveMemoryWarningNotification, object: nil)
     }
     
     func testCacheKeyForKey() {

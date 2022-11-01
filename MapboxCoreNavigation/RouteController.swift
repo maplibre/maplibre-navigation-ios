@@ -13,6 +13,19 @@ import UIKit
  */
 @objc(MBRouteController)
 open class RouteController: NSObject, Router {
+    
+    /**
+     The number of seconds between attempts to automatically calculate a more optimal route while traveling.
+     */
+    public var routeControllerProactiveReroutingInterval: TimeInterval = 120
+    
+    /// With this property you can enable test-routes to be returned when rerouting for an ETA update. It will randomly choose a route between two that differ a lot by ETA when rerouting
+    /// These will only get returned when that route is _slower_ than the current route, as that forces an ETA update reroute.
+    /// To pass the rerouting checks, simulate or drive a route from coordinate `52.02224357,5.78149084` to `52.03924958,5.55054131`
+    public var shouldReturnTestingETAUpdateReroutes = false
+    
+    /// Determines if we should check for a faster/more updated route in the last 10 minutes of the user's route. By default, we don't check this before doing the reroute call.
+    public var shouldCheckForRerouteInLastMinutes = false
 
     /**
      The route controller’s delegate.
@@ -40,7 +53,7 @@ open class RouteController: NSObject, Router {
     @objc public var isDeadReckoningEnabled = false
 
     /**
-     If true, the `RouteController` attempts to calculate a more optimal route for the user on an interval defined by `RouteControllerProactiveReroutingInterval`.
+     If true, the `RouteController` attempts to calculate a more optimal route for the user on an interval defined by `routeControllerProactiveReroutingInterval`.
      */
     @objc public var reroutesProactively = false
 
@@ -86,6 +99,30 @@ open class RouteController: NSObject, Router {
     var previousArrivalWaypoint: Waypoint?
 
     var userSnapToStepDistanceFromManeuver: CLLocationDistance?
+    
+    /// Describes a reason for rerouting and applying a new route
+    @objc public enum RerouteReason: Int, CustomStringConvertible {
+        /// When we check for a faster route we can also reroute the user when we just want to update the ETA. For example when the user is driving on a route where a Trafficjam appears, it should update the ETA
+        case ETAUpdate
+        
+        /// When the user diverts from the route, we reroute to take the new diversion into account
+        case divertedFromRoute
+        
+        /// When the route is faster than the current route, we can also reroute the user
+        case fasterRoute
+        
+        // Needed to expose real case name to Swift when using @obj-c enum
+        public var description: String {
+            switch self {
+            case .ETAUpdate:
+                return "ETAUpdate"
+            case .fasterRoute:
+                return "fasterRoute"
+            case .divertedFromRoute:
+                return "divertedFromRoute"
+            }
+        }
+    }
     
     /**
      Intializes a new `RouteController`.
@@ -226,8 +263,34 @@ open class RouteController: NSObject, Router {
         }
         return RouteControllerMaximumDistanceBeforeRecalculating
     }
+    
+    // MARK: - Pre-defined routes for testing
+    private lazy var testA12ToVeenendaalNormalWithTraffic = {
+        Route(
+            jsonFileName: "A12-To-Veenendaal-Normal-With-Big-Trafficjam",
+            waypoints: [
+                CLLocationCoordinate2D(latitude: 52.02224357, longitude: 5.78149084),
+                CLLocationCoordinate2D(latitude: 52.03924958, longitude: 5.55054131)
+            ],
+            bundle: .mapboxCoreNavigation,
+            accessToken: "nonsense"
+        )
+    }()
+    
+    private lazy var testA12ToVeenendaalNormal = {
+        Route(
+            jsonFileName: "A12-To-Veenendaal-Normal",
+            waypoints: [
+                CLLocationCoordinate2D(latitude: 52.02224357, longitude: 5.78149084),
+                CLLocationCoordinate2D(latitude: 52.03924958, longitude: 5.55054131)
+            ],
+            bundle: .mapboxCoreNavigation,
+            accessToken: "nonsense"
+        )
+    }()
 }
 
+// MARK: - CLLocationManagerDelegate
 extension RouteController: CLLocationManagerDelegate {
 
     @objc func interpolateLocation() {
@@ -334,7 +397,7 @@ extension RouteController: CLLocationManagerDelegate {
         updateVisualInstructionProgress()
 
         guard userIsOnRoute(location) || !(delegate?.routeController?(self, shouldRerouteFrom: location) ?? true) else {
-            reroute(from: location, along: routeProgress)
+            rerouteForDiversion(from: location, along: routeProgress)
             return
         }
 
@@ -342,11 +405,15 @@ extension RouteController: CLLocationManagerDelegate {
 
         // Check for faster route given users current location
         guard reroutesProactively else { return }
-        // Only check for faster alternatives if the user has plenty of time left on the route.
-        guard routeProgress.durationRemaining > 600 else { return }
-        // If the user is approaching a maneuver, don't check for a faster alternatives
+        
+        // Only check for faster routes or ETA updates if the user has plenty of time left on the route (10+min)
+        // Except when configured in the SDK that we may
+        guard routeProgress.durationRemaining > 600 || !shouldCheckForRerouteInLastMinutes else { return }
+        
+        // If the user is approaching a maneuver (within 70secs of the maneuver), don't check for a faster routes or ETA updates
         guard routeProgress.currentLegProgress.currentStepProgress.durationRemaining > RouteControllerMediumAlertInterval else { return }
-        checkForFasterRoute(from: location)
+        
+        checkForNewRoute(from: location)
     }
         
     func updateIntersectionIndex(for currentStepProgress: RouteStepProgress) {
@@ -425,8 +492,8 @@ extension RouteController: CLLocationManagerDelegate {
 
         return false
     }
-
-    func checkForFasterRoute(from location: CLLocation) {
+    
+    func checkForNewRoute(from location: CLLocation) {
         guard !isFindingFasterRoute else {
             return
         }
@@ -441,48 +508,109 @@ extension RouteController: CLLocationManagerDelegate {
         }
 
         // Only check every so often for a faster route.
-        guard location.timestamp.timeIntervalSince(lastLocationDate) >= RouteControllerProactiveReroutingInterval else {
+        guard location.timestamp.timeIntervalSince(lastLocationDate) >= routeControllerProactiveReroutingInterval else {
             return
         }
+        
         let durationRemaining = routeProgress.durationRemaining
         
         isFindingFasterRoute = true
+        
+        print("[RouteController] Checking for faster/updated route...")
 
-        getDirections(from: location, along: routeProgress) { [weak self] (route, error) in
-            guard let strongSelf = self else {
-                return
-            }
+        getDirections(from: location, along: routeProgress) { [weak self] mostSimilarRoute, routes, error in
+            guard let self = self else { return }
             
             // Every request should reset the lastLocationDate, else we spam the server by calling this method every location update.
             // If the call fails, tough luck buddy! Then wait until the next interval before retrying
-            strongSelf.lastLocationDate = nil
+            self.lastLocationDate = nil
             
             // Also only do one 'findFasterRoute' call per time
-            strongSelf.isFindingFasterRoute = false
-
-            guard let route = route else {
+            self.isFindingFasterRoute = false
+            
+                
+            guard let route = mostSimilarRoute, let routes = routes else {
                 return
             }
-
-            guard let firstLeg = route.legs.first, let firstStep = firstLeg.steps.first else {
-                return
+            
+            self.applyNewRerouteIfNeeded(mostSimilarRoute: route, allRoutes: routes, currentUpcomingManeuver: currentUpcomingManeuver, durationRemaining: durationRemaining)
+        }
+    }
+    
+    func applyNewRerouteIfNeeded(mostSimilarRoute: Route, allRoutes: [Route], currentUpcomingManeuver: RouteStep, durationRemaining: TimeInterval) {
+        guard let firstLeg = mostSimilarRoute.legs.first, let firstStep = firstLeg.steps.first else {
+            return
+        }
+        
+        // Current and First step of old and new route should be significant enough of a maneuver before applying a faster route, so we don't apply the route just before a maneuver will occur
+        let isFirstStepSignificant = firstStep.expectedTravelTime >= RouteControllerMediumAlertInterval && routeProgress.currentLegProgress.currentStepProgress.durationRemaining > RouteControllerMediumAlertInterval
+        
+        // Current maneuver should correspond to the next maneuver in the new route
+        let hasSameUpcomingManeuver = firstLeg.steps.indices.contains(1) ? currentUpcomingManeuver == firstLeg.steps[1] : false
+        
+        // Check if the new route is faster by comparing the ETA to the current ETA. Should be 10% faster or more
+        let isRouteFaster = mostSimilarRoute.expectedTravelTime <= 0.9 * durationRemaining
+        
+        // Only check for alternatives if the user has plenty of time left on the route (10min+)
+        let userHasEnoughTimeOnRoute = self.routeProgress.durationRemaining > 600
+        
+        print("[RouteController] applyNewRerouteIfNeeded called -> Significant first step: \(isFirstStepSignificant), Same upcoming maneuver: \(hasSameUpcomingManeuver), Route is faster: \(isRouteFaster)")
+        
+        // Check if we should apply faster route
+        let shouldApplyFasterRoute = isFirstStepSignificant && hasSameUpcomingManeuver && isRouteFaster && userHasEnoughTimeOnRoute
+        
+        // Check if we should apply slower route
+        let shouldApplySlowerRoute = isFirstStepSignificant && hasSameUpcomingManeuver
+        
+        if shouldApplyFasterRoute {
+            print("[RouteController] Found faster route")
+            
+            // Need to set this for notifications being sent
+            didFindFasterRoute = true
+            
+            // If the upcoming maneuver in the new route is the same as the current upcoming maneuver, don't announce it again, just set new progress
+            routeProgress = RouteProgress(route: mostSimilarRoute, legIndex: 0, spokenInstructionIndex: routeProgress.currentLegProgress.currentStepProgress.spokenInstructionIndex)
+            
+            // Let delegate know
+            delegate?.routeController?(self, didRerouteAlong: mostSimilarRoute, reason: .fasterRoute)
+            
+            // Reset flag for notification
+            didFindFasterRoute = false
+        }
+        
+        // If route is not faster, but matches criteria and we get a match that is similar enough (so we don't apply a route alternative that the user doesn't want), we will apply the route too
+        else if shouldApplySlowerRoute, let matchingRoute = Self.bestMatch(for: self.routeProgress.route, and: allRoutes) {
+            // Check if the time difference is more than 30 seconds between best match and current ETA for extra measure
+            let isExpectedTravelTimeChangedSignificantly = abs(routeProgress.durationRemaining - matchingRoute.route.expectedTravelTime) > 30
+            print("[RouteController] New ETA differs more than 30s from current ETA: \(isExpectedTravelTimeChangedSignificantly)")
+            
+            var routeToApply = matchingRoute.route
+            
+            // When testing flag is flipped, return instead one of the testing routes
+            if shouldReturnTestingETAUpdateReroutes {
+                let rightOrLeft = Bool.random()
+                routeToApply = rightOrLeft ? testA12ToVeenendaalNormal : testA12ToVeenendaalNormalWithTraffic
+                print("[RouteController] Testing route: ON")
             }
-
-            let routeIsFaster = firstStep.expectedTravelTime >= RouteControllerMediumAlertInterval &&
-                currentUpcomingManeuver == firstLeg.steps[1] && route.expectedTravelTime <= 0.9 * durationRemaining
-
-            if routeIsFaster {
-                strongSelf.didFindFasterRoute = true
-                // If the upcoming maneuver in the new route is the same as the current upcoming maneuver, don't announce it
-                strongSelf.routeProgress = RouteProgress(route: route, legIndex: 0, spokenInstructionIndex: strongSelf.routeProgress.currentLegProgress.currentStepProgress.spokenInstructionIndex)
-                strongSelf.delegate?.routeController?(strongSelf, didRerouteAlong: route, reroutingBecauseOfFasterRoute: true)
-                strongSelf.movementsAwayFromRoute = 0
-                strongSelf.didFindFasterRoute = false
+                
+            if isExpectedTravelTimeChangedSignificantly || shouldReturnTestingETAUpdateReroutes {
+                // Set new route and inform delegates
+                print("[RouteController] Found matching route \(matchingRoute.matchPercentage)%, updating ETA...")
+                print("[RouteController] Duration remaining CURRENT: \(routeProgress.durationRemaining)")
+                print("[RouteController] Expected travel time: \(matchingRoute.route.expectedTravelTime)")
+                print("[RouteController] Set the new route")
+                
+                // Don't announce new route
+                routeProgress = RouteProgress(route: routeToApply, legIndex: 0, spokenInstructionIndex: routeProgress.currentLegProgress.currentStepProgress.spokenInstructionIndex)
+                
+                // Inform delegate
+                delegate?.routeController?(self, didRerouteAlong: routeToApply, reason: .ETAUpdate)
             }
         }
     }
 
-    func reroute(from location: CLLocation, along progress: RouteProgress) {
+    /// Reroutes the user when the user isn't on the route anymore
+    func rerouteForDiversion(from location: CLLocation, along progress: RouteProgress) {
         if let lastRerouteLocation = lastRerouteLocation {
             guard location.distance(from: lastRerouteLocation) >= RouteControllerMaximumDistanceBeforeRecalculating else {
                 return
@@ -502,7 +630,7 @@ extension RouteController: CLLocationManagerDelegate {
 
         self.lastRerouteLocation = location
 
-        getDirections(from: location, along: progress) { [weak self] (route, error) in
+        getDirections(from: location, along: progress) { [weak self] (route, _, error) in
             guard let strongSelf = self else {
                 return
             }
@@ -519,7 +647,7 @@ extension RouteController: CLLocationManagerDelegate {
 
             strongSelf.routeProgress = RouteProgress(route: route, legIndex: 0)
             strongSelf.routeProgress.currentLegProgress.stepIndex = 0
-            strongSelf.delegate?.routeController?(strongSelf, didRerouteAlong: route, reroutingBecauseOfFasterRoute: false)
+            strongSelf.delegate?.routeController?(strongSelf, didRerouteAlong: route, reason: .divertedFromRoute)
         }
     }
 
@@ -550,27 +678,26 @@ extension RouteController: CLLocationManagerDelegate {
         }
     }
 
-    func getDirections(from location: CLLocation, along progress: RouteProgress, completion: @escaping (_ route: Route?, _ error: Error?)->Void) {
+    func getDirections(from location: CLLocation, along progress: RouteProgress, completion: @escaping (_ mostSimilarRoute: Route?, _ routes: [Route]?, _ error: Error?)->Void) {
         routeTask?.cancel()
         let options = progress.reroutingOptions(with: location)
 
         self.lastRerouteLocation = location
 
-        let complete = { [weak self] (route: Route?, error: NSError?) in
+        let complete = { [weak self] (mostSimilarRoute: Route?, routes: [Route]?, error: NSError?) in
             self?.isRerouting = false
-            completion(route, error)
+            completion(mostSimilarRoute, routes, error)
         }
         
         routeTask = directions.calculate(options) {(waypoints, potentialRoutes, potentialError) in
 
             guard let routes = potentialRoutes else {
-                return complete(nil, potentialError)
+                return complete(nil, nil, potentialError)
             }
             
+            // Checks by comparing leg `name` properties and see if the edit distance is within threshold
             let mostSimilar = routes.mostSimilar(to: progress.route)
-            
-            return complete(mostSimilar ?? routes.first, potentialError)
-            
+            return complete(mostSimilar ?? routes.first, routes, potentialError)
         }
     }
 
@@ -694,8 +821,49 @@ extension RouteController: CLLocationManagerDelegate {
             routeProgress.currentLegProgress.currentStepProgress.intersectionDistances = distances
         }
     }
+    
+    /// Calculates a match percentage between the geometry of a route and another route. Uses exact coordinate checking (using 4 decimals) for performance reasons, so it assumes the geometry is stable between routes.
+    /// - Parameters:
+    ///   - route: First route to compare
+    ///   - route2: Second route to compare
+    /// - Returns: A percentage of the match. Can return `nil` if one of the route's geometry cannot be found.
+    static func matchPercentage(between route: Route, and route2: Route) -> Double? {
+        guard let currentRouteCoordinates = route.coordinates else { return nil }
+        guard let otherRouteCoordinates = route2.coordinates else { return nil }
+        
+        // Convert to strings, only taking 4 decimals
+        let currentRouteCoordinatesStrings = currentRouteCoordinates.map { String(format: "%.4f,%.4f", $0.latitude, $0.longitude) }
+        let otherRouteCoordinatesString = otherRouteCoordinates.map { String(format: "%.4f,%.4f", $0.latitude, $0.longitude) }
+        
+        // Check how many coords match
+        let matchCount = Double(otherRouteCoordinatesString.filter { currentRouteCoordinatesStrings.contains($0) }.count)
+        
+        // Make it a percentage
+        let matchPercentage = 100.0 / Double(otherRouteCoordinatesString.count) * matchCount
+        
+        return matchPercentage
+    }
+    
+    /// Checks for a best match to a route within an array of routes. It is a match when the route's geometry is 90% or higher.
+    /// - Parameters:
+    ///   - route: Route to compare to the others
+    ///   - routes: The other routes to compare to
+    /// - Returns: The best matched route with the highest match factor above 90% and the match percentage.
+    static func bestMatch(for route: Route, and routes: [Route]) -> (route: Route, matchPercentage: Double)? {
+        let bestMatch = routes.compactMap { newRoute -> (route: Route, matchPercentage: Double)? in
+            guard let matchPercentage = matchPercentage(between: route, and: newRoute) else { return nil }
+            return (newRoute, matchPercentage)
+        }
+        .filter { $0.matchPercentage >= 90.0 }
+        .sorted { $0.matchPercentage > $1.matchPercentage }
+        .first
+        
+        return bestMatch
+    }
+    
 }
 
+// MARK: - TunnelIntersectionManagerDelegate
 extension RouteController: TunnelIntersectionManagerDelegate {
     public func tunnelIntersectionManager(_ manager: TunnelIntersectionManager, willEnableAnimationAt location: CLLocation) {
         tunnelIntersectionManager.enableTunnelAnimation(routeController: self, routeProgress: routeProgress)
@@ -705,3 +873,5 @@ extension RouteController: TunnelIntersectionManagerDelegate {
         tunnelIntersectionManager.suspendTunnelAnimation(at: location, routeController: self)
     }
 }
+
+

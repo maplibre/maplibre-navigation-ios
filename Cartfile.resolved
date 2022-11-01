@@ -1,4 +1,5 @@
-github "Quick/Quick" "v2.2.1"
+github "Quick/Nimble" "v9.2.1"
+github "Quick/Quick" "v3.1.2"
 github "ceeK/Solar" "2.2.0"
 github "mapbox/MapboxDirections.swift" "v0.23.0"
 github "mapbox/MapboxGeocoder.swift" "v0.10.2"
