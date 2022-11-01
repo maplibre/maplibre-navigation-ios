@@ -337,7 +337,8 @@ class RouteControllerTests: XCTestCase {
                 CLLocationCoordinate2D(latitude: 51.83116792, longitude: 5.83897820),
                 CLLocationCoordinate2D(latitude: 52.03920380, longitude: 5.55133121)
             ],
-            bundle: .testingBundle
+            bundle: .testingBundle,
+            accessToken: Constants.accessToken
         )
     }()
     
@@ -348,7 +349,8 @@ class RouteControllerTests: XCTestCase {
                 CLLocationCoordinate2D(latitude: 51.83116792, longitude: 5.83897820),
                 CLLocationCoordinate2D(latitude: 52.03920380, longitude: 5.55133121)
             ],
-            bundle: .testingBundle
+            bundle: .testingBundle,
+            accessToken: Constants.accessToken
         )
     }()
     
@@ -360,7 +362,8 @@ class RouteControllerTests: XCTestCase {
                 CLLocationCoordinate2D(latitude: 51.83116792, longitude: 5.83897820),
                 CLLocationCoordinate2D(latitude: 52.03920380, longitude: 5.55133121)
             ],
-            bundle: .testingBundle
+            bundle: .testingBundle,
+            accessToken: Constants.accessToken
         )
     }()
     
@@ -371,7 +374,8 @@ class RouteControllerTests: XCTestCase {
                 CLLocationCoordinate2D(latitude: 51.99711882858318, longitude: 5.7932572786103265),
                 CLLocationCoordinate2D(latitude: 52.0392038, longitude: 5.55133121)
             ],
-            bundle: .testingBundle
+            bundle: .testingBundle,
+            accessToken: Constants.accessToken
         )
     }()
     
@@ -383,7 +387,8 @@ class RouteControllerTests: XCTestCase {
                 CLLocationCoordinate2D(latitude: 52.04451273, longitude: 5.57902714),
                 CLLocationCoordinate2D(latitude: 52.0392038, longitude: 5.55133121)
             ],
-            bundle: .testingBundle
+            bundle: .testingBundle,
+            accessToken: Constants.accessToken
         )
     }()
     
@@ -394,7 +399,8 @@ class RouteControllerTests: XCTestCase {
                 CLLocationCoordinate2D(latitude: 52.02224357, longitude: 5.78149084),
                 CLLocationCoordinate2D(latitude: 52.03924958, longitude: 5.55054131)
             ],
-            bundle: .testingBundle
+            bundle: .testingBundle,
+            accessToken: Constants.accessToken
         )
     }()
     
@@ -406,7 +412,8 @@ class RouteControllerTests: XCTestCase {
                 CLLocationCoordinate2D(latitude: 52.03917716, longitude: 5.55201356),
                 CLLocationCoordinate2D(latitude: 52.03924958, longitude: 5.55054131)
             ],
-            bundle: .testingBundle
+            bundle: .testingBundle,
+            accessToken: Constants.accessToken
         )
     }()
     
@@ -418,7 +425,8 @@ class RouteControllerTests: XCTestCase {
                 CLLocationCoordinate2D(latitude: 52.04520875, longitude: 5.5748937),
                 CLLocationCoordinate2D(latitude: 52.03924958, longitude: 5.55054131)
             ],
-            bundle: .testingBundle
+            bundle: .testingBundle,
+            accessToken: Constants.accessToken
         )
     }()
 
@@ -584,7 +592,8 @@ class RouteControllerTests: XCTestCase {
                 CLLocationCoordinate2D(latitude: 52.02224357, longitude: 5.78149084),
                 CLLocationCoordinate2D(latitude: 52.03924958, longitude: 5.55054131)
             ],
-            bundle: .testingBundle
+            bundle: .testingBundle,
+            accessToken: Constants.accessToken
         )
     }()
     

@@ -22,7 +22,10 @@ open class RouteController: NSObject, Router {
     /// With this property you can enable test-routes to be returned when rerouting for an ETA update. It will randomly choose a route between two that differ a lot by ETA when rerouting
     /// These will only get returned when that route is _slower_ than the current route, as that forces an ETA update reroute.
     /// To pass the rerouting checks, simulate or drive a route from coordinate `52.02224357,5.78149084` to `52.03924958,5.55054131`
-    public var shouldReturnTestingETAUpdateReroutes: Bool = false
+    public var shouldReturnTestingETAUpdateReroutes = false
+    
+    /// Determines if we should check for a faster/more updated route in the last 10 minutes of the user's route. By default, we don't check this before doing the reroute call.
+    public var shouldCheckForRerouteInLastMinutes = false
 
     /**
      The route controller’s delegate.
@@ -269,7 +272,8 @@ open class RouteController: NSObject, Router {
                 CLLocationCoordinate2D(latitude: 52.02224357, longitude: 5.78149084),
                 CLLocationCoordinate2D(latitude: 52.03924958, longitude: 5.55054131)
             ],
-            bundle: .mapboxCoreNavigation
+            bundle: .mapboxCoreNavigation,
+            accessToken: "nonsense"
         )
     }()
     
@@ -280,7 +284,8 @@ open class RouteController: NSObject, Router {
                 CLLocationCoordinate2D(latitude: 52.02224357, longitude: 5.78149084),
                 CLLocationCoordinate2D(latitude: 52.03924958, longitude: 5.55054131)
             ],
-            bundle: .mapboxCoreNavigation
+            bundle: .mapboxCoreNavigation,
+            accessToken: "nonsense"
         )
     }()
 }
@@ -402,7 +407,8 @@ extension RouteController: CLLocationManagerDelegate {
         guard reroutesProactively else { return }
         
         // Only check for faster routes or ETA updates if the user has plenty of time left on the route (10+min)
-        guard routeProgress.durationRemaining > 600 else { return }
+        // Except when configured in the SDK that we may
+        guard routeProgress.durationRemaining > 600 || !shouldCheckForRerouteInLastMinutes else { return }
         
         // If the user is approaching a maneuver (within 70secs of the maneuver), don't check for a faster routes or ETA updates
         guard routeProgress.currentLegProgress.currentStepProgress.durationRemaining > RouteControllerMediumAlertInterval else { return }
@@ -537,24 +543,24 @@ extension RouteController: CLLocationManagerDelegate {
         }
         
         // Current and First step of old and new route should be significant enough of a maneuver before applying a faster route, so we don't apply the route just before a maneuver will occur
-        let significantFirstStep = firstStep.expectedTravelTime >= RouteControllerMediumAlertInterval && routeProgress.currentLegProgress.currentStepProgress.durationRemaining > RouteControllerMediumAlertInterval
+        let isFirstStepSignificant = firstStep.expectedTravelTime >= RouteControllerMediumAlertInterval && routeProgress.currentLegProgress.currentStepProgress.durationRemaining > RouteControllerMediumAlertInterval
         
         // Current maneuver should correspond to the next maneuver in the new route
-        let sameUpcomingManeuver = currentUpcomingManeuver == firstLeg.steps[1]
+        let hasSameUpcomingManeuver = firstLeg.steps.indices.contains(1) ? currentUpcomingManeuver == firstLeg.steps[1] : false
         
         // Check if the new route is faster by comparing the ETA to the current ETA. Should be 10% faster or more
-        let routeIsFaster = mostSimilarRoute.expectedTravelTime <= 0.9 * durationRemaining
+        let isRouteFaster = mostSimilarRoute.expectedTravelTime <= 0.9 * durationRemaining
         
         // Only check for alternatives if the user has plenty of time left on the route (10min+)
         let userHasEnoughTimeOnRoute = self.routeProgress.durationRemaining > 600
         
-        print("[RouteController] applyNewRerouteIfNeeded called -> Significant first step: \(significantFirstStep), Same upcoming maneuver: \(sameUpcomingManeuver), Route is faster: \(routeIsFaster), User has enough time left (10min+): \(userHasEnoughTimeOnRoute)")
+        print("[RouteController] applyNewRerouteIfNeeded called -> Significant first step: \(isFirstStepSignificant), Same upcoming maneuver: \(hasSameUpcomingManeuver), Route is faster: \(isRouteFaster)")
         
         // Check if we should apply faster route
-        let shouldApplyFasterRoute = significantFirstStep && sameUpcomingManeuver && routeIsFaster && userHasEnoughTimeOnRoute
+        let shouldApplyFasterRoute = isFirstStepSignificant && hasSameUpcomingManeuver && isRouteFaster && userHasEnoughTimeOnRoute
         
         // Check if we should apply slower route
-        let shouldApplySlowerRoute = significantFirstStep && sameUpcomingManeuver && userHasEnoughTimeOnRoute
+        let shouldApplySlowerRoute = isFirstStepSignificant && hasSameUpcomingManeuver
         
         if shouldApplyFasterRoute {
             print("[RouteController] Found faster route")
