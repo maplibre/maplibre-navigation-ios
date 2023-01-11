@@ -14,7 +14,7 @@ class NavigationViewControllerTests: XCTestCase {
     var updatedStyleNumberOfTimes = 0
     
     lazy var dependencies: (navigationViewController: NavigationViewController, startLocation: CLLocation, poi: [CLLocation], endLocation: CLLocation, voice: RouteVoiceController) = {
-       
+    
         let voice = FakeVoiceController()
         let nav = NavigationViewController(for: initialRoute,
                                            directions: Directions(accessToken: "garbage", host: nil),

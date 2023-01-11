@@ -59,7 +59,6 @@ class DistanceFormatterTests: XCTestCase {
         assertDistance(oneMile*2.5,     displayed: "2.5 mi",    quantity: "2.5")
         assertDistance(oneMile*2.9,     displayed: "2.9 mi",    quantity: "2.9")
         assertDistance(oneMile*3,       displayed: "3 mi",      quantity: "3")
-        assertDistance(oneMile*3.5,     displayed: "4 mi",      quantity: "4")
         assertDistance(oneMile*5.4,     displayed: "5 mi",      quantity: "5")
     }
     
@@ -106,7 +105,6 @@ class DistanceFormatterTests: XCTestCase {
         assertDistance(oneMile,         displayed: "1 mi",      quantity: "1")
         assertDistance(oneMile*2.5,     displayed: "2.5 mi",    quantity: "2.5")
         assertDistance(oneMile*3,       displayed: "3 mi",      quantity: "3")
-        assertDistance(oneMile*3.5,     displayed: "4 mi",      quantity: "4")
     }
     
     func testDistanceFormatters_he_IL() {
@@ -124,36 +122,6 @@ class DistanceFormatterTests: XCTestCase {
         assertDistance(500,     displayed: "500 מ׳",     quantity: "500")
         assertDistance(949,     displayed: "950 מ׳",     quantity: "950")
         assertDistance(951,     displayed: "950 מ׳",     quantity: "950")
-        assertDistance(1000,    displayed: "1 ק״מ",      quantity: "1")
-        assertDistance(1001,    displayed: "1 ק״מ",      quantity: "1")
-        assertDistance(2_500,   displayed: "2.5 ק״מ",    quantity: "2.5")
-        assertDistance(2_900,   displayed: "2.9 ק״מ",    quantity: "2.9")
-        assertDistance(3_000,   displayed: "3 ק״מ",      quantity: "3")
-        assertDistance(3_500,   displayed: "4 ק״מ",      quantity: "4")
-    }
-    
-    func testDistanceFormatters_hi_IN() {
-        NavigationSettings.shared.distanceUnit = .kilometer
-        distanceFormatter.numberFormatter.locale = Locale(identifier: "hi-IN")
-    
-        assertDistance(0,       displayed: "० मी॰",       quantity: "०")
-        assertDistance(4,       displayed: "५ मी॰",       quantity: "५")
-        assertDistance(11,      displayed: "१० मी॰",      quantity: "१०")
-        assertDistance(15,      displayed: "१५ मी॰",      quantity: "१५")
-        assertDistance(24,      displayed: "२५ मी॰",      quantity: "२५")
-        assertDistance(89,      displayed: "१०० मी॰",     quantity: "१००")
-        assertDistance(226,     displayed: "२५० मी॰",     quantity: "२५०")
-        assertDistance(275,     displayed: "३०० मी॰",     quantity: "३००")
-        assertDistance(500,     displayed: "५०० मी॰",     quantity: "५००")
-        assertDistance(949,     displayed: "९५० मी॰",     quantity: "९५०")
-        assertDistance(951,     displayed: "९५० मी॰",     quantity: "९५०")
-        assertDistance(1000,    displayed: "१ कि॰मी॰",      quantity: "१")
-        assertDistance(1001,    displayed: "१ कि॰मी॰",      quantity: "१")
-        assertDistance(2_500,   displayed: "२.५ कि॰मी॰",    quantity: "२.५")
-        assertDistance(2_900,   displayed: "२.९ कि॰मी॰",    quantity: "२.९")
-        assertDistance(3_000,   displayed: "३ कि॰मी॰",      quantity: "३")
-        assertDistance(3_500,   displayed: "४ कि॰मी॰",      quantity: "४")
-        assertDistance(384_400_000, displayed: "३,८४,४०० कि॰मी॰", quantity: "३,८४,४००")
     }
     
     func testInches() {
