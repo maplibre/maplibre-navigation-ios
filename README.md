@@ -1,6 +1,6 @@
-[![MapLibre Logo](https://github.com/flitsmeister/maplibre-navigation-ios/blob/main/.github/splash-image-ios.png?raw=true)](https://maplibre.org)
+[![MapLibre Logo](https://github.com/maplibre/maplibre-navigation-ios/blob/main/.github/splash-image-ios.png?raw=true)](https://maplibre.org)
 
-The Maplibre Navigation SDK for iOS is built on a fork of the [Mapbox Navigation SDK v0.21](https://github.com/flitsmeister/maplibre-navigation-ios/tree/v0.21.0) which is build on top of the [Mapbox Directions API](https://www.mapbox.com/directions) (v0.23.0) and contains logic needed to get timed navigation instructions.
+The Maplibre Navigation SDK for iOS is built on a fork of the [Mapbox Navigation SDK v0.21](https://github.com/maplibre/maplibre-navigation-ios/tree/v0.21.0) which is build on top of the [Mapbox Directions API](https://www.mapbox.com/directions) (v0.23.0) and contains logic needed to get timed navigation instructions.
 
 With this SDK you can implement turn by turn navigation in your own iOS app while hosting your own Map tiles and Directions API.
 
@@ -36,7 +36,7 @@ If you are looking to include this inside your project, you have to follow the t
 1. Add Maplibre Maps SPM (Swift Package Manager) depedency by going to your app's project file -> Package Dependencies -> Press the '+' -> https://github.com/maplibre/maplibre-gl-native-distribution -> 'Exact' 5.12.2 
 1. Add dependencies to Cartfile
    ```
-   github "flitsmeister/maplibre-navigation-ios" ~> 1.0.6
+   github "maplibre/maplibre-navigation-ios" ~> 1.0.6
    ```
 1. Build the frameworks
    - Open terminal
@@ -56,8 +56,8 @@ If you are looking to include this inside your project, you have to follow the t
 
 # Getting Help
 
-- **Have a bug to report?** [Open an issue](https://github.com/flitsmeister/maplibre-navigation-ios/issues). If possible, include the version of Maplibre Services, a full log, and a project that shows the issue.
-- **Have a feature request?** [Open an issue](https://github.com/flitsmeister/maplibre-navigation-ios/issues/new). Tell us what the feature should do and why you want the feature.
+- **Have a bug to report?** [Open an issue](https://github.com/maplibre/maplibre-navigation-ios/issues). If possible, include the version of Maplibre Services, a full log, and a project that shows the issue.
+- **Have a feature request?** [Open an issue](https://github.com/maplibre/maplibre-navigation-ios/issues/new). Tell us what the feature should do and why you want the feature.
 
 ## <a name="sample-code">Sample code
 
