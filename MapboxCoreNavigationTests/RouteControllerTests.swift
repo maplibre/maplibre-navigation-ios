@@ -1,7 +1,6 @@
 import XCTest
 import MapboxDirections
 import Turf
-import MapboxMobileEvents
 @testable import MapboxCoreNavigation
 
 fileprivate let mbTestHeading: CLLocationDirection = 50
@@ -151,7 +150,7 @@ class RouteControllerTests: XCTestCase {
         navigation.locationManager(navigation.locationManager, didUpdateLocations: [firstLocation])
         XCTAssertEqual(navigation.location!.coordinate, firstLocation.coordinate, "Check snapped location is working")
 
-        let futureCoord = Polyline(navigation.routeProgress.currentLegProgress.nearbyCoordinates).coordinateFromStart(distance: 100)!
+        let futureCoord = LineString(navigation.routeProgress.currentLegProgress.nearbyCoordinates).coordinateFromStart(distance: 100)!
         let futureInaccurateLocation = CLLocation(coordinate: futureCoord, altitude: 0, horizontalAccuracy: 1, verticalAccuracy: 200, course: 0, speed: 5, timestamp: Date())
 
         navigation.locationManager(navigation.locationManager, didUpdateLocations: [futureInaccurateLocation])
@@ -171,7 +170,7 @@ class RouteControllerTests: XCTestCase {
         let navigation = RouteController(along: route, directions: directions)
         let firstCoord = navigation.routeProgress.currentLegProgress.nearbyCoordinates.first!
         let firstLocation = CLLocation(latitude: firstCoord.latitude, longitude: firstCoord.longitude)
-        let coordNearStart = Polyline(navigation.routeProgress.currentLegProgress.nearbyCoordinates).coordinateFromStart(distance: 10)!
+        let coordNearStart = LineString(navigation.routeProgress.currentLegProgress.nearbyCoordinates).coordinateFromStart(distance: 10)!
 
         navigation.locationManager(navigation.locationManager, didUpdateLocations: [firstLocation])
 
