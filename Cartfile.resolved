@@ -1,5 +1,5 @@
-github "Quick/Nimble" "v9.2.1"
-github "Quick/Quick" "v3.1.2"
+github "Quick/Nimble" "v12.0.0"
+github "Quick/Quick" "v6.1.0"
 github "ceeK/Solar" "3.0.1"
 github "flitsmeister/Mapbox-directions-swift" "e5740b887bd9d2eab1b5b62d65217683db6915cb"
 github "mapbox/MapboxGeocoder.swift" "v0.15.0"
