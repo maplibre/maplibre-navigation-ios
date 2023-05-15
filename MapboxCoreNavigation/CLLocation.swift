@@ -63,7 +63,7 @@ extension CLLocation {
      Returns a Boolean value indicating whether the receiver is within a given distance of a route step.
      */
     func isWithin(_ maximumDistance: CLLocationDistance, of routeStep: RouteStep) -> Bool {
-        guard let closestCoordinate = Polyline(routeStep.coordinates!).closestCoordinate(to: coordinate) else {
+        guard let closestCoordinate = LineString(routeStep.coordinates!).closestCoordinate(to: coordinate) else {
             return false
         }
         return closestCoordinate.distance < maximumDistance
@@ -74,7 +74,7 @@ extension CLLocation {
     func snapped(to legProgress: RouteLegProgress) -> CLLocation? {
         let coords = coordinates(for: legProgress)
         
-        guard let closest = Polyline(coords).closestCoordinate(to: coordinate) else { return nil }
+        guard let closest = LineString(coords).closestCoordinate(to: coordinate) else { return nil }
         guard let calculatedCourseForLocationOnStep = interpolatedCourse(along: coords) else { return nil }
         
         let userCourse = calculatedCourseForLocationOnStep
@@ -122,17 +122,17 @@ extension CLLocation {
      Given a location and a series of coordinates, compute what the course should be for a the location.
      */
     func interpolatedCourse(along coordinates: [CLLocationCoordinate2D]) -> CLLocationDirection? {
-        let nearByPolyline = Polyline(coordinates)
+        let nearByPolyline = LineString(coordinates)
         
         guard let closest = nearByPolyline.closestCoordinate(to: coordinate) else { return nil }
         
-        let slicedLineBehind = Polyline(coordinates.reversed()).sliced(from: closest.coordinate, to: coordinates.reversed().last)
+        let slicedLineBehind = LineString(coordinates.reversed()).sliced(from: closest.coordinate, to: coordinates.reversed().last)
         let slicedLineInFront = nearByPolyline.sliced(from: closest.coordinate, to: coordinates.last)
         let userDistanceBuffer: CLLocationDistance = max(speed * RouteControllerDeadReckoningTimeInterval / 2, RouteControllerUserLocationSnappingDistance / 2)
         
-        guard let pointBehind = slicedLineBehind.coordinateFromStart(distance: userDistanceBuffer) else { return nil }
+        guard let pointBehind = slicedLineBehind?.coordinateFromStart(distance: userDistanceBuffer) else { return nil }
         guard let pointBehindClosest = nearByPolyline.closestCoordinate(to: pointBehind) else { return nil }
-        guard let pointAhead = slicedLineInFront.coordinateFromStart(distance: userDistanceBuffer) else { return nil }
+        guard let pointAhead = slicedLineInFront?.coordinateFromStart(distance: userDistanceBuffer) else { return nil }
         guard let pointAheadClosest = nearByPolyline.closestCoordinate(to: pointAhead) else { return nil }
         
         // Get direction of these points
