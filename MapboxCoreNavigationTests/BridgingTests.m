@@ -1,6 +1,5 @@
 #import <XCTest/XCTest.h>
 #import "MapboxCoreNavigationTests-Swift.h"
-@import Mapbox;
 @import MapboxCoreNavigation;
 @import MapboxDirections;
 

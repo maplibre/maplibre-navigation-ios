@@ -189,7 +189,7 @@ extension TunnelIntersectionManagerTests {
                                intersection: Intersection,
                                    distance: CLLocationDistance? = 200) -> CLLocation {
         
-        let polyline = Polyline(routeController.routeProgress.currentLegProgress.currentStep.coordinates!)
+        let polyline = LineString(routeController.routeProgress.currentLegProgress.currentStep.coordinates!)
         let newLocation = CLLocationCoordinate2D(latitude: coordinate.latitude,
                                                 longitude: coordinate.longitude).coordinate(
                                                        at: distance!,

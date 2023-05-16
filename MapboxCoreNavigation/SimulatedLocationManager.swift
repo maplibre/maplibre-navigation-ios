@@ -1,6 +1,7 @@
 import Foundation
 import MapboxDirections
 import Turf
+import Polyline
 
 fileprivate let maximumSpeed: CLLocationSpeed = 30 // ~108 kmh
 fileprivate let minimumSpeed: CLLocationSpeed = 6 // ~21 kmh
@@ -140,7 +141,7 @@ open class SimulatedLocationManager: NavigationLocationManager {
     @objc fileprivate func tick() {
         NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(tick), object: nil)
         
-        let polyline = Polyline(routeLine)
+        let polyline = LineString(routeLine)
         
         guard let newCoordinate = polyline.coordinateFromStart(distance: currentDistance) else {
             return
@@ -154,12 +155,12 @@ open class SimulatedLocationManager: NavigationLocationManager {
         let distanceToClosest = closestLocation.distance(from: CLLocation(newCoordinate))
         
         let distance = min(max(distanceToClosest, 10), safeDistance)
-        let coordinatesNearby = polyline.trimmed(from: newCoordinate, distance: 100).coordinates
+        let coordinatesNearby = polyline.trimmed(from: newCoordinate, distance: 100)?.coordinates
         
         // Simulate speed based on expected segment travel time
         if let expectedSegmentTravelTimes = routeProgress?.currentLeg.expectedSegmentTravelTimes,
             let coordinates = routeProgress?.route.coordinates,
-            let closestCoordinateOnRoute = Polyline(routeProgress!.route.coordinates!).closestCoordinate(to: newCoordinate),
+            let closestCoordinateOnRoute = LineString(routeProgress!.route.coordinates!).closestCoordinate(to: newCoordinate),
             let nextCoordinateOnRoute = coordinates.after(element: coordinates[closestCoordinateOnRoute.index]),
             let time = expectedSegmentTravelTimes.optional[closestCoordinateOnRoute.index] {
             let distance = coordinates[closestCoordinateOnRoute.index].distance(to: nextCoordinateOnRoute)
