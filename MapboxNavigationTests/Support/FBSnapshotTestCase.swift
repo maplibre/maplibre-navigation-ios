@@ -3,9 +3,9 @@ import FBSnapshotTestCase
 
 @nonobjc extension FBSnapshotTestCase {
     func verify(_ view: UIView) {
-        FBSnapshotVerifyView(view, suffixes: ["_64"])
+        snapshotVerifyViewOrLayer(view, identifier: nil, suffixes: ["_64"], overallTolerance: 1.0, defaultReferenceDirectory: nil, defaultImageDiffDirectory: nil)
     }
     func verify(_ layer: CALayer) {
-        FBSnapshotVerifyLayer(layer, suffixes: ["_64"])
+        snapshotVerifyViewOrLayer(layer, identifier: nil, suffixes: ["_64"], overallTolerance: 1.0, defaultReferenceDirectory: nil, defaultImageDiffDirectory: nil)
     }
 }
