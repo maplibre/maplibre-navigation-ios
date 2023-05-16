@@ -824,7 +824,7 @@ extension RouteController: CLLocationManagerDelegate {
                 return
             }
             
-            let distances: [CLLocationDistance] = mappedIntersectionDistances
+            let distances: [CLLocationDistance] = mappedIntersectionDistances.compactMap { $0 }
             
             routeProgress.currentLegProgress.currentStepProgress.intersectionDistances = distances
         }

@@ -1,7 +1,7 @@
 github "Quick/Nimble" "v12.0.0"
 github "Quick/Quick" "v6.1.0"
 github "ceeK/Solar" "3.0.1"
-github "flitsmeister/Mapbox-directions-swift" "e5740b887bd9d2eab1b5b62d65217683db6915cb"
+github "flitsmeister/Mapbox-directions-swift" "v0.23.1"
 github "mapbox/MapboxGeocoder.swift" "v0.15.0"
 github "mapbox/mapbox-speech-swift" "v2.1.1"
 github "mapbox/turf-swift" "v2.6.1"
