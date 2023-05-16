@@ -1,5 +1,4 @@
 github "mapbox/MapboxGeocoder.swift" ~> 0.15
-# github "mapbox/mapbox-events-ios" "v0.10.2"
 github "flitsmeister/Mapbox-directions-swift" "main"
 github "mapbox/turf-swift" "v2.6.1"
 github "ceeK/Solar" ~> 3.0.1
