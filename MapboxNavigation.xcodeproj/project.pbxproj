@@ -197,8 +197,6 @@
 		C538E4F8278DCD0200200823 /* MapboxDirections.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C538E4D9278DC92F00200823 /* MapboxDirections.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		C538E4F9278DCD0400200823 /* MapboxGeocoder.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = C538E4D7278DC92F00200823 /* MapboxGeocoder.xcframework */; };
 		C538E4FA278DCD0400200823 /* MapboxGeocoder.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C538E4D7278DC92F00200823 /* MapboxGeocoder.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		C538E4FB278DCD0500200823 /* MapboxMobileEvents.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = C538E4F3278DCCA900200823 /* MapboxMobileEvents.xcframework */; };
-		C538E4FC278DCD0500200823 /* MapboxMobileEvents.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C538E4F3278DCCA900200823 /* MapboxMobileEvents.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		C538E4FD278DCD0700200823 /* MapboxSpeech.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = C538E4D6278DC92F00200823 /* MapboxSpeech.xcframework */; };
 		C538E4FE278DCD0700200823 /* MapboxSpeech.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C538E4D6278DC92F00200823 /* MapboxSpeech.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		C538E4FF278DCD0800200823 /* Polyline.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = C538E4D5278DC92F00200823 /* Polyline.xcframework */; };
@@ -211,8 +209,6 @@
 		C538E506278DCD0E00200823 /* MapboxDirections.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C538E4D9278DC92F00200823 /* MapboxDirections.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		C538E507278DCD0F00200823 /* MapboxGeocoder.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = C538E4D7278DC92F00200823 /* MapboxGeocoder.xcframework */; };
 		C538E508278DCD0F00200823 /* MapboxGeocoder.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C538E4D7278DC92F00200823 /* MapboxGeocoder.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		C538E509278DCD1100200823 /* MapboxMobileEvents.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = C538E4F3278DCCA900200823 /* MapboxMobileEvents.xcframework */; };
-		C538E50A278DCD1100200823 /* MapboxMobileEvents.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C538E4F3278DCCA900200823 /* MapboxMobileEvents.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		C538E50B278DCD1A00200823 /* MapboxSpeech.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = C538E4D6278DC92F00200823 /* MapboxSpeech.xcframework */; };
 		C538E50C278DCD1A00200823 /* MapboxSpeech.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C538E4D6278DC92F00200823 /* MapboxSpeech.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		C538E50D278DCD1C00200823 /* Polyline.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = C538E4D5278DC92F00200823 /* Polyline.xcframework */; };
@@ -225,8 +221,6 @@
 		C538E514278DCD2400200823 /* MapboxDirections.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C538E4D9278DC92F00200823 /* MapboxDirections.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		C538E515278DCD2500200823 /* MapboxGeocoder.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = C538E4D7278DC92F00200823 /* MapboxGeocoder.xcframework */; };
 		C538E516278DCD2500200823 /* MapboxGeocoder.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C538E4D7278DC92F00200823 /* MapboxGeocoder.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		C538E517278DCD2600200823 /* MapboxMobileEvents.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = C538E4F3278DCCA900200823 /* MapboxMobileEvents.xcframework */; };
-		C538E518278DCD2600200823 /* MapboxMobileEvents.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C538E4F3278DCCA900200823 /* MapboxMobileEvents.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		C538E519278DCD2700200823 /* MapboxSpeech.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = C538E4D6278DC92F00200823 /* MapboxSpeech.xcframework */; };
 		C538E51A278DCD2700200823 /* MapboxSpeech.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C538E4D6278DC92F00200823 /* MapboxSpeech.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		C538E51B278DCD2900200823 /* Polyline.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = C538E4D5278DC92F00200823 /* Polyline.xcframework */; };
@@ -452,7 +446,6 @@
 				35D4282B1FA0DF1D00176028 /* MapboxNavigation.framework in Embed Frameworks */,
 				C538E4F8278DCD0200200823 /* MapboxDirections.xcframework in Embed Frameworks */,
 				C538E4FA278DCD0400200823 /* MapboxGeocoder.xcframework in Embed Frameworks */,
-				C538E4FC278DCD0500200823 /* MapboxMobileEvents.xcframework in Embed Frameworks */,
 				C538E4FE278DCD0700200823 /* MapboxSpeech.xcframework in Embed Frameworks */,
 				C538E504278DCD0B00200823 /* Turf.xcframework in Embed Frameworks */,
 				C538E500278DCD0800200823 /* Polyline.xcframework in Embed Frameworks */,
@@ -471,7 +464,6 @@
 				354A01DE1E6626EA00D765C2 /* MapboxNavigation.framework in Embed Frameworks */,
 				C538E508278DCD0F00200823 /* MapboxGeocoder.xcframework in Embed Frameworks */,
 				C538E506278DCD0E00200823 /* MapboxDirections.xcframework in Embed Frameworks */,
-				C538E50A278DCD1100200823 /* MapboxMobileEvents.xcframework in Embed Frameworks */,
 				C538E50C278DCD1A00200823 /* MapboxSpeech.xcframework in Embed Frameworks */,
 				C538E512278DCD1F00200823 /* Turf.xcframework in Embed Frameworks */,
 				C538E50E278DCD1C00200823 /* Polyline.xcframework in Embed Frameworks */,
@@ -490,7 +482,6 @@
 				C53F2EFF20EBC95600D9798F /* MapboxNavigation.framework in Embed Frameworks */,
 				C538E514278DCD2400200823 /* MapboxDirections.xcframework in Embed Frameworks */,
 				C538E516278DCD2500200823 /* MapboxGeocoder.xcframework in Embed Frameworks */,
-				C538E518278DCD2600200823 /* MapboxMobileEvents.xcframework in Embed Frameworks */,
 				C538E51A278DCD2700200823 /* MapboxSpeech.xcframework in Embed Frameworks */,
 				C538E520278DCD2B00200823 /* Turf.xcframework in Embed Frameworks */,
 				C538E51C278DCD2900200823 /* Polyline.xcframework in Embed Frameworks */,
@@ -911,7 +902,6 @@
 				C538E4FD278DCD0700200823 /* MapboxSpeech.xcframework in Frameworks */,
 				35E9B0AD1F9E0F8F00BF84AB /* MapboxNavigation.framework in Frameworks */,
 				C538E4FF278DCD0800200823 /* Polyline.xcframework in Frameworks */,
-				C538E4FB278DCD0500200823 /* MapboxMobileEvents.xcframework in Frameworks */,
 				C538E503278DCD0A00200823 /* Turf.xcframework in Frameworks */,
 				C538E4F7278DCD0200200823 /* MapboxDirections.xcframework in Frameworks */,
 				C538E4F9278DCD0400200823 /* MapboxGeocoder.xcframework in Frameworks */,
@@ -929,7 +919,6 @@
 				C538E50B278DCD1A00200823 /* MapboxSpeech.xcframework in Frameworks */,
 				C533529F278DD90B003DEC63 /* Mapbox in Frameworks */,
 				C538E507278DCD0F00200823 /* MapboxGeocoder.xcframework in Frameworks */,
-				C538E509278DCD1100200823 /* MapboxMobileEvents.xcframework in Frameworks */,
 				C538E511278DCD1F00200823 /* Turf.xcframework in Frameworks */,
 				C538E50F278DCD1E00200823 /* Solar.xcframework in Frameworks */,
 			);
@@ -965,7 +954,6 @@
 				C538E519278DCD2700200823 /* MapboxSpeech.xcframework in Frameworks */,
 				C53F2EEA20EBC95600D9798F /* MapboxNavigation.framework in Frameworks */,
 				C538E51B278DCD2900200823 /* Polyline.xcframework in Frameworks */,
-				C538E517278DCD2600200823 /* MapboxMobileEvents.xcframework in Frameworks */,
 				C538E51F278DCD2B00200823 /* Turf.xcframework in Frameworks */,
 				C538E513278DCD2400200823 /* MapboxDirections.xcframework in Frameworks */,
 				C538E515278DCD2500200823 /* MapboxGeocoder.xcframework in Frameworks */,
