@@ -816,9 +816,16 @@ extension RouteController: CLLocationManagerDelegate {
 
     func updateIntersectionDistances() {
         if let coordinates = routeProgress.currentLegProgress.currentStep.coordinates, let intersections = routeProgress.currentLegProgress.currentStep.intersections {
+            
             let polyline = LineString(coordinates)
-            // TODO KAPIE: Is dit legit?
-            let distances: [CLLocationDistance] = intersections.compactMap { polyline.distance(from: coordinates.first, to: $0.location) }
+            
+            let mappedIntersectionDistances = intersections.map { polyline.distance(from: coordinates.first, to: $0.location) }
+            guard !mappedIntersectionDistances.contains(nil) else {
+                return
+            }
+            
+            let distances: [CLLocationDistance] = mappedIntersectionDistances
+            
             routeProgress.currentLegProgress.currentStepProgress.intersectionDistances = distances
         }
     }
