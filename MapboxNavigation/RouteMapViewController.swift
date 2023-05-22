@@ -460,8 +460,8 @@ class RouteMapViewController: UIViewController {
         guard let height = navigationView.endOfRouteHeightConstraint?.constant else { return }
         let insets = UIEdgeInsets(top: navigationView.instructionsBannerView.bounds.height, left: 20, bottom: height + 20, right: 20)
 
-        if let coordinates = routeController.routeProgress.route.coordinates, let userLocation = routeController?.locationManager.location?.coordinate,
-           let slicedLine = LineString(coordinates).sliced(from: userLocation)?.coordinates {
+        if let coordinates = routeController.routeProgress.route.coordinates, let userLocation = routeController?.locationManager.location?.coordinate {
+            let slicedLine = LineString(coordinates).sliced(from: userLocation).coordinates 
             let line = MGLPolyline(coordinates: slicedLine, count: UInt(slicedLine.count))
 
             let camera = navigationView.mapView.cameraThatFitsShape(line, direction: navigationView.mapView.camera.heading, edgePadding: insets)
@@ -731,9 +731,9 @@ extension RouteMapViewController: NavigationViewDelegate {
                 let slicedLine = LineString(stepCoordinates).sliced(from: closestCoordinate)
 
                 let lookAheadDistance: CLLocationDistance = 10
-                guard let pointAheadFeature = featurePolyline.sliced(from: closestCoordinate)?.coordinateFromStart(distance: lookAheadDistance) else { continue }
-                guard let pointAheadUser = slicedLine?.coordinateFromStart(distance: lookAheadDistance) else { continue }
-                guard let reversedPoint = LineString(featureCoordinates.reversed()).sliced(from: closestCoordinate)?.coordinateFromStart(distance: lookAheadDistance) else { continue }
+                guard let pointAheadFeature = featurePolyline.sliced(from: closestCoordinate).coordinateFromStart(distance: lookAheadDistance) else { continue }
+                guard let pointAheadUser = slicedLine.coordinateFromStart(distance: lookAheadDistance) else { continue }
+                guard let reversedPoint = LineString(featureCoordinates.reversed()).sliced(from: closestCoordinate).coordinateFromStart(distance: lookAheadDistance) else { continue }
 
                 let distanceBetweenPointsAhead = pointAheadFeature.distance(to: pointAheadUser)
                 let distanceBetweenReversedPoint = reversedPoint.distance(to: pointAheadUser)

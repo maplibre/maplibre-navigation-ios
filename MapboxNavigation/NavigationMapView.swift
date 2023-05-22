@@ -598,7 +598,8 @@ open class NavigationMapView: MGLMapView, UIGestureRecognizerDelegate {
         
         let shaftLength = max(min(30 * metersPerPoint(atLatitude: maneuverCoordinate.latitude), 30), 10)
         let polyline = LineString(routeCoordinates)
-        guard let first = polyline.trimmed(from: maneuverCoordinate, distance: -shaftLength)?.coordinates.reversed(), let second = polyline.trimmed(from: maneuverCoordinate, distance: shaftLength)?.coordinates.suffix(from: 1) else { return }
+        let first = polyline.trimmed(from: maneuverCoordinate, distance: -shaftLength).coordinates.reversed()
+        let second = polyline.trimmed(from: maneuverCoordinate, distance: shaftLength).coordinates.suffix(from: 1) 
         let shaftCoordinates = Array(first + second)
     
         if shaftCoordinates.count > 1 {
@@ -1069,7 +1070,7 @@ open class NavigationMapView: MGLMapView, UIGestureRecognizerDelegate {
     @objc public func setOverheadCameraView(from userLocation: CLLocationCoordinate2D, along coordinates: [CLLocationCoordinate2D], for bounds: UIEdgeInsets) {
         isAnimatingToOverheadMode = true
         
-        guard let slicedLine = LineString(coordinates).sliced(from: userLocation)?.coordinates else { return }
+        let slicedLine = LineString(coordinates).sliced(from: userLocation).coordinates 
         
         let line = MGLPolyline(coordinates: slicedLine, count: UInt(slicedLine.count))
         
