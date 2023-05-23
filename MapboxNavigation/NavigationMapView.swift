@@ -597,10 +597,9 @@ open class NavigationMapView: MGLMapView, UIGestureRecognizerDelegate {
         let minimumZoomLevel: Float = 14.5
         
         let shaftLength = max(min(30 * metersPerPoint(atLatitude: maneuverCoordinate.latitude), 30), 10)
-        let polyline = LineString(routeCoordinates)
-        let first = polyline.trimmed(from: maneuverCoordinate, distance: -shaftLength).coordinates.reversed()
-        let second = polyline.trimmed(from: maneuverCoordinate, distance: shaftLength).coordinates.suffix(from: 1) 
-        let shaftCoordinates = Array(first + second)
+        let polyline = Polyline(routeCoordinates)
+        let shaftCoordinates = Array(polyline.trimmed(from: maneuverCoordinate, distance: -shaftLength).coordinates.reversed()
+                    + polyline.trimmed(from: maneuverCoordinate, distance: shaftLength).coordinates.suffix(from: 1))
     
         if shaftCoordinates.count > 1 {
             var shaftStrokeCoordinates = shaftCoordinates
@@ -770,8 +769,8 @@ open class NavigationMapView: MGLMapView, UIGestureRecognizerDelegate {
         let closest = routes.sorted { (left, right) -> Bool in
             
             //existance has been assured through use of filter.
-            let leftLine = LineString(left.coordinates!)
-            let rightLine = LineString(right.coordinates!)
+            let leftLine = Polyline(left.coordinates!)
+            let rightLine = Polyline(right.coordinates!)
             let leftDistance = leftLine.closestCoordinate(to: tapCoordinate)!.distance
             let rightDistance = rightLine.closestCoordinate(to: tapCoordinate)!.distance
             
@@ -780,7 +779,7 @@ open class NavigationMapView: MGLMapView, UIGestureRecognizerDelegate {
         
         //filter closest coordinates by which ones are under threshold.
         let candidates = closest.filter {
-            let closestCoordinate = LineString($0.coordinates!).closestCoordinate(to: tapCoordinate)!.coordinate
+            let closestCoordinate = Polyline($0.coordinates!).closestCoordinate(to: tapCoordinate)!.coordinate
             let closestPoint = self.convert(closestCoordinate, toPointTo: self)
             
             return closestPoint.distance(to: point) < tapGestureDistanceThreshold
@@ -1029,7 +1028,7 @@ open class NavigationMapView: MGLMapView, UIGestureRecognizerDelegate {
             for (stepIndex, step) in leg.steps.enumerated() {
                 for instruction in step.instructionsSpokenAlongStep! {
                     let feature = MGLPointFeature()
-                    feature.coordinate = LineString(route.legs[legIndex].steps[stepIndex].coordinates!.reversed()).coordinateFromStart(distance: instruction.distanceAlongStep)!
+                    feature.coordinate = Polyline(route.legs[legIndex].steps[stepIndex].coordinates!.reversed()).coordinateFromStart(distance: instruction.distanceAlongStep)!
                     feature.attributes = [ "instruction": instruction.text ]
                     features.append(feature)
                 }
@@ -1069,9 +1068,7 @@ open class NavigationMapView: MGLMapView, UIGestureRecognizerDelegate {
      */
     @objc public func setOverheadCameraView(from userLocation: CLLocationCoordinate2D, along coordinates: [CLLocationCoordinate2D], for bounds: UIEdgeInsets) {
         isAnimatingToOverheadMode = true
-        
-        let slicedLine = LineString(coordinates).sliced(from: userLocation).coordinates 
-        
+        let slicedLine = Polyline(coordinates).sliced(from: userLocation).coordinates
         let line = MGLPolyline(coordinates: slicedLine, count: UInt(slicedLine.count))
         
         tracksUserCourse = false
