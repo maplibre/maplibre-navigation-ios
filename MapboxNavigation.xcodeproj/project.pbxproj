@@ -700,7 +700,6 @@
 		C538E4D8278DC92F00200823 /* Solar.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = Solar.xcframework; path = Carthage/Build/Solar.xcframework; sourceTree = "<group>"; };
 		C538E4D9278DC92F00200823 /* MapboxDirections.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = MapboxDirections.xcframework; path = Carthage/Build/MapboxDirections.xcframework; sourceTree = "<group>"; };
 		C538E4DA278DC92F00200823 /* Turf.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = Turf.xcframework; path = Carthage/Build/Turf.xcframework; sourceTree = "<group>"; };
-		C538E4F3278DCCA900200823 /* MapboxMobileEvents.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = MapboxMobileEvents.xcframework; path = Carthage/Build/MapboxMobileEvents.xcframework; sourceTree = "<group>"; };
 		C53C19701F38EACD008DB406 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		C53C19711F38EADB008DB406 /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = it.lproj/Localizable.strings; sourceTree = "<group>"; };
 		C53C19721F38EADB008DB406 /* es */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -1265,7 +1264,6 @@
 				C54658B1290001B500C068EA /* Nimble.xcframework */,
 				C546586528FECEFA00C068EA /* Quick.xcframework */,
 				C546586E28FED7F200C068EA /* FBSnapshotTestCase.xcframework */,
-				C538E4F3278DCCA900200823 /* MapboxMobileEvents.xcframework */,
 				C538E4D9278DC92F00200823 /* MapboxDirections.xcframework */,
 				C538E4D7278DC92F00200823 /* MapboxGeocoder.xcframework */,
 				C538E4D6278DC92F00200823 /* MapboxSpeech.xcframework */,
