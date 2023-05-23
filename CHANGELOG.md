@@ -8,6 +8,10 @@
 - Moved & renamed `RouteControllerProactiveReroutingInterval` to be an instance property of `RouteController` so the client can easily set this per route controller
 - Added `shouldReturnTestingETAUpdateReroutes` property to `RouteController` as an easy way to test an ETA update client-side. It uses two of the same test-routes between `52.02224357,5.78149084` and `52.03924958,5.55054131` with different ETA's to easily see the ETA change happen in the client's UI
 
+## v1.0.7 (May 23, 2023)
+ - Upgrade iOS version from 11.0 to 12.0.
+ - Upgraded dependencies to support iOS 12.0
+
 ## v1.0.6 (October 5, 2022)
 
 * Changed Swift version from 4 to 5
