@@ -1,5 +1,9 @@
 # Changes to the Mapbox Navigation SDK for iOS
 
+## v1.0.8 (May 23, 2023)
+ - Upgrade minimum iOS version from 11.0 to 12.0.
+ - Upgraded dependencies to support iOS 12.0
+
 ## v1.0.7 (November 1, 2022)
 - Rerouting logic changed
     - Routes that are found when requesting a new route that are slower but more than 90% the same geometry will get applied. This is done to account for traffic on the route that could change the ETA dramatically
@@ -7,10 +11,6 @@
     - Added option to skip check for rerouting in `RouteController` where route should have 10+mins left before fetching a new route, called `shouldCheckForRerouteInLastMinutes`
 - Moved & renamed `RouteControllerProactiveReroutingInterval` to be an instance property of `RouteController` so the client can easily set this per route controller
 - Added `shouldReturnTestingETAUpdateReroutes` property to `RouteController` as an easy way to test an ETA update client-side. It uses two of the same test-routes between `52.02224357,5.78149084` and `52.03924958,5.55054131` with different ETA's to easily see the ETA change happen in the client's UI
-
-## v1.0.7 (May 23, 2023)
- - Upgrade iOS version from 11.0 to 12.0.
- - Upgraded dependencies to support iOS 12.0
 
 ## v1.0.6 (October 5, 2022)
 
