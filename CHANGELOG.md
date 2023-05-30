@@ -1,6 +1,6 @@
 # Changes to the Mapbox Navigation SDK for iOS
 
-## v1.0.8 (May 23, 2023)
+## v2.0.0 (May 23, 2023)
  - Upgrade minimum iOS version from 11.0 to 12.0.
  - Upgraded dependencies to support iOS 12.0
 
