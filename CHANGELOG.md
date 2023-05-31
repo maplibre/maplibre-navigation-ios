@@ -1,5 +1,9 @@
 # Changes to the Mapbox Navigation SDK for iOS
 
+## v2.0.0 (May 23, 2023)
+ - Upgrade minimum iOS version from 11.0 to 12.0.
+ - Upgraded dependencies to support iOS 12.0
+
 ## v1.0.7 (November 1, 2022)
 - Rerouting logic changed
     - Routes that are found when requesting a new route that are slower but more than 90% the same geometry will get applied. This is done to account for traffic on the route that could change the ETA dramatically
