@@ -12,7 +12,8 @@ let package = Package(
         .library(
             name: "MapboxNavigation",
             targets: [
-                "MapboxNavigation"
+                "MapboxNavigation",
+                "MapboxNavigationObjC"
             ]
         ),
     ],
