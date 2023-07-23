@@ -1,6 +1,7 @@
 import Foundation
 #if canImport(CarPlay)
 import CarPlay
+import Mapbox
 
 @available(iOS 12.0, *)
 class CarPlayMapViewController: UIViewController, MGLMapViewDelegate {

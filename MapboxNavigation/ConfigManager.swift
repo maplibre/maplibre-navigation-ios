@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import UIKit
 
 class ConfigManager {
     static let shared = ConfigManager()

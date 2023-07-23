@@ -1,4 +1,7 @@
 import MapboxDirections
+import MapboxDirectionsObjc
+import Foundation
+import CoreLocation
 
 extension RouteOptions {
     internal var activityType: CLActivityType {

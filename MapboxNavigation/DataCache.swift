@@ -1,4 +1,5 @@
 import Foundation
+import UIKit
 
 @objc(MBDataCache)
 public class DataCache: NSObject, BimodalDataCache {

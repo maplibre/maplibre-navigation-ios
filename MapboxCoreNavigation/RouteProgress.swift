@@ -4,6 +4,7 @@ import Turf
 #if canImport(CarPlay)
 import CarPlay
 #endif
+import Polyline
 
 /**
  `RouteProgress` stores the user’s progress along a route.

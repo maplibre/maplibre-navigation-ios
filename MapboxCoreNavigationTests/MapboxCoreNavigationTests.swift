@@ -2,6 +2,7 @@ import XCTest
 import MapboxDirections
 import Turf
 @testable import MapboxCoreNavigation
+import CoreLocation
 
 let response = Fixture.JSONFromFileNamed(name: "routeWithInstructions")
 let jsonRoute = (response["routes"] as! [AnyObject]).first as! [String : Any]

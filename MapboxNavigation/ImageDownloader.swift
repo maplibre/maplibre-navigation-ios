@@ -1,4 +1,5 @@
 import Foundation
+import UIKit
 
 typealias ImageDownloadCompletionBlock = (UIImage?, Data?, Error?) -> Void
 

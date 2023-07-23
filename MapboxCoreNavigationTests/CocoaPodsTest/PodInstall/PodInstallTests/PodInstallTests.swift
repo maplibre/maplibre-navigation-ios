@@ -1,5 +1,5 @@
 import XCTest
-@testable import PodInstall
+//@testable import PodInstall
 
 class PodInstallTests: XCTestCase {
     

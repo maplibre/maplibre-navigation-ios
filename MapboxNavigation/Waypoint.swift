@@ -1,5 +1,6 @@
 import Foundation
 import MapboxDirections
+import CoreLocation
 
 extension Waypoint {
     var location: CLLocation {

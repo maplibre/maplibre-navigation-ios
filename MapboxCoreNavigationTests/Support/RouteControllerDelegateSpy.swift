@@ -1,6 +1,7 @@
 import Foundation
 import MapboxCoreNavigation
 import MapboxDirections
+import CoreLocation
 
 class RouteControllerDelegateSpy: RouteControllerDelegate {
     private(set) var recentMessages: [String] = []

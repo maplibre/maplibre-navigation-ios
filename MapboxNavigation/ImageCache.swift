@@ -1,4 +1,5 @@
 import Foundation
+import UIKit
 
 internal class ImageCache: BimodalImageCache {
     let memoryCache: NSCache<NSString, UIImage>

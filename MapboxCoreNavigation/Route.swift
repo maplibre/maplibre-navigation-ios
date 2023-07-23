@@ -6,6 +6,8 @@
 //  Copyright © 2022 Mapbox. All rights reserved.
 //
 import MapboxDirections
+import CoreLocation
+import MapboxCoreNavigationObjC
 
 extension Route {
     convenience init(jsonFileName: String, waypoints: [CLLocationCoordinate2D], polylineShapeFormat: RouteShapeFormat = .polyline6, bundle: Bundle = .main, accessToken: String) {
@@ -14,6 +16,6 @@ extension Route {
         }
         let routeOptions = NavigationRouteOptions(waypoints: convertedWaypoints)
         routeOptions.shapeFormat = polylineShapeFormat
-        self.init(json: Fixture.JSONFromFileNamed(name: jsonFileName, bundle: bundle), waypoints: convertedWaypoints, options: routeOptions)
+        self.init(json: Fixture.JSONFromFileNamed(name: jsonFileName), waypoints: convertedWaypoints, options: routeOptions)
     }
 }

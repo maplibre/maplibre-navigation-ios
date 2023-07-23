@@ -1,8 +1,11 @@
 
 import Foundation
 import AVFoundation
+import Mapbox
 import MapboxDirections
 import MapboxCoreNavigation
+import MapboxNavigationObjC
+import MapboxSpeech
 
 extension ErrorUserInfoKey {
     static let spokenInstructionErrorCode = MBSpokenInstructionErrorCodeKey

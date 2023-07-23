@@ -2,6 +2,7 @@ import XCTest
 import MapboxDirections
 import Turf
 @testable import MapboxCoreNavigation
+import CoreLocation
 
 struct TunnelDetectorTestData {
     static let ninthStreetFileName = "routeWithTunnels_9thStreetDC"

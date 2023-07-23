@@ -3,6 +3,7 @@ import MapboxDirections
 import MapboxCoreNavigation
 #if canImport(CarPlay)
 import CarPlay
+import Mapbox
 
 /**
  `CarPlayNavigationViewController` is a fully-featured turn-by-turn navigation UI for CarPlay.
