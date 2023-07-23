@@ -8,3 +8,5 @@
 @_exported import Mapbox
 @_exported import Turf
 @_exported import MapboxDirections
+@_exported import MapboxNavigationObjC
+@_exported import MapboxCoreNavigationObjC
