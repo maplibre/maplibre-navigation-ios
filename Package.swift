@@ -56,10 +56,21 @@ let package = Package(
             ],
             path: "MapboxNavigationObjC"
         ),
+//        .testTarget(
+//            name: "MapboxNavigationTests",
+//            dependencies: ["MapboxNavigation"],
+//            path: "MapboxNavigationTests"
+////            resources: [
+////              .copy("Resources"),
+////            ]
+//        ),
         .testTarget(
             name: "MapboxCoreNavigationTests",
-            dependencies: ["MapboxCoreNavigation", "MapboxNavigation"],
-            path: "MapboxCoreNavigationTests"
+            dependencies: ["MapboxCoreNavigation"],
+            path: "MapboxCoreNavigationTests",
+            resources: [
+              .process("Resources"),
+            ]
         ),
     ]
 )

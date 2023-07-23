@@ -49,7 +49,7 @@ class Tests: XCTestCase {
     }
     
     func testNaughtyStrings() {
-        let path = Bundle(for: Tests.self).path(forResource: "md5_crazy_strings", ofType: "txt")!
+        let path = Bundle.module.path(forResource: "md5_crazy_strings", ofType: "txt")!
         let content = try! String(contentsOfFile: path, encoding: .utf8)
         let lines = content.components(separatedBy: .newlines)
         

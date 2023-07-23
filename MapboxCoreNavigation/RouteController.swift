@@ -22,7 +22,7 @@ open class RouteController: NSObject, Router {
     /// With this property you can enable test-routes to be returned when rerouting for an ETA update. It will randomly choose a route between two that differ a lot by ETA when rerouting
     /// These will only get returned when that route is _slower_ than the current route, as that forces an ETA update reroute.
     /// To pass the rerouting checks, simulate or drive a route from coordinate `52.02224357,5.78149084` to `52.03924958,5.55054131`
-    public var shouldReturnTestingETAUpdateReroutes = false
+//    public var shouldReturnTestingETAUpdateReroutes = false
     
     /// Determines if we should check for a faster/more updated route in the last 10 minutes of the user's route. By default, we don't check this before doing the reroute call.
     public var shouldCheckForRerouteInLastMinutes = false
@@ -265,29 +265,29 @@ open class RouteController: NSObject, Router {
     }
     
     // MARK: - Pre-defined routes for testing
-    private lazy var testA12ToVeenendaalNormalWithTraffic = {
-        Route(
-            jsonFileName: "A12-To-Veenendaal-Normal-With-Big-Trafficjam",
-            waypoints: [
-                CLLocationCoordinate2D(latitude: 52.02224357, longitude: 5.78149084),
-                CLLocationCoordinate2D(latitude: 52.03924958, longitude: 5.55054131)
-            ],
-            bundle: .mapboxCoreNavigation,
-            accessToken: "nonsense"
-        )
-    }()
-    
-    private lazy var testA12ToVeenendaalNormal = {
-        Route(
-            jsonFileName: "A12-To-Veenendaal-Normal",
-            waypoints: [
-                CLLocationCoordinate2D(latitude: 52.02224357, longitude: 5.78149084),
-                CLLocationCoordinate2D(latitude: 52.03924958, longitude: 5.55054131)
-            ],
-            bundle: .mapboxCoreNavigation,
-            accessToken: "nonsense"
-        )
-    }()
+//    private lazy var testA12ToVeenendaalNormalWithTraffic = {
+//        Route(
+//            jsonFileName: "A12-To-Veenendaal-Normal-With-Big-Trafficjam",
+//            waypoints: [
+//                CLLocationCoordinate2D(latitude: 52.02224357, longitude: 5.78149084),
+//                CLLocationCoordinate2D(latitude: 52.03924958, longitude: 5.55054131)
+//            ],
+//            bundle: .mapboxCoreNavigation,
+//            accessToken: "nonsense"
+//        )
+//    }()
+//
+//    private lazy var testA12ToVeenendaalNormal = {
+//        Route(
+//            jsonFileName: "A12-To-Veenendaal-Normal",
+//            waypoints: [
+//                CLLocationCoordinate2D(latitude: 52.02224357, longitude: 5.78149084),
+//                CLLocationCoordinate2D(latitude: 52.03924958, longitude: 5.55054131)
+//            ],
+//            bundle: .mapboxCoreNavigation,
+//            accessToken: "nonsense"
+//        )
+//    }()
 }
 
 // MARK: - CLLocationManagerDelegate
@@ -587,13 +587,13 @@ extension RouteController: CLLocationManagerDelegate {
             var routeToApply = matchingRoute.route
             
             // When testing flag is flipped, return instead one of the testing routes
-            if shouldReturnTestingETAUpdateReroutes {
-                let rightOrLeft = Bool.random()
-                routeToApply = rightOrLeft ? testA12ToVeenendaalNormal : testA12ToVeenendaalNormalWithTraffic
-                print("[RouteController] Testing route: ON")
-            }
+//            if shouldReturnTestingETAUpdateReroutes {
+//                let rightOrLeft = Bool.random()
+//                routeToApply = rightOrLeft ? testA12ToVeenendaalNormal : testA12ToVeenendaalNormalWithTraffic
+//                print("[RouteController] Testing route: ON")
+//            }
                 
-            if isExpectedTravelTimeChangedSignificantly || shouldReturnTestingETAUpdateReroutes {
+            if isExpectedTravelTimeChangedSignificantly { //} || shouldReturnTestingETAUpdateReroutes {
                 // Set new route and inform delegates
                 print("[RouteController] Found matching route \(matchingRoute.matchPercentage)%, updating ETA...")
                 print("[RouteController] Duration remaining CURRENT: \(routeProgress.durationRemaining)")

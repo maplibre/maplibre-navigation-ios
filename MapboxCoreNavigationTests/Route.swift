@@ -7,6 +7,7 @@
 //
 import MapboxDirections
 import CoreLocation
+import MapboxCoreNavigation
 import MapboxCoreNavigationObjC
 
 extension Route {
