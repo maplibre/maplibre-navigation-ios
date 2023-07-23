@@ -24,6 +24,7 @@ let package = Package(
         .package(url: "https://github.com/flitsmeister/turf-swift.git", exact: "0.2.2"),
         .package(url: "https://github.com/mapbox/mapbox-speech-swift.git", from: "2.1.1"),
         .package(url: "https://github.com/ceeK/Solar.git", from: "3.0.1"),
+        .package(url: "https://github.com/uber/ios-snapshot-test-case.git", from: "8.0.0"),
     ],
     targets: [
         .target(
@@ -56,17 +57,37 @@ let package = Package(
             ],
             path: "MapboxNavigationObjC"
         ),
+        .target(
+            name: "TestHelpers",
+            dependencies: [
+                "MapboxNavigation",
+                .product(name: "MapboxDirections", package: "mapbox-directions-swift"),
+            ],
+            path: "TestHelpers"
+        ),
+        .testTarget(
+            name: "MapboxNavigationTests",
+            dependencies: [
+                "TestHelpers",
+                "MapboxNavigation",
+                .product(name: "iOSSnapshotTestCase", package: "ios-snapshot-test-case")
+            ],
+            path: "MapboxNavigationTests",
+            resources: [
+              .process("Resources"),
+            ]
+        ),
 //        .testTarget(
-//            name: "MapboxNavigationTests",
+//            name: "MapboxNavigationTestsObjC",
 //            dependencies: ["MapboxNavigation"],
-//            path: "MapboxNavigationTests"
+//            path: "MapboxNavigationTestsObjC"
 ////            resources: [
 ////              .copy("Resources"),
 ////            ]
 //        ),
         .testTarget(
             name: "MapboxCoreNavigationTests",
-            dependencies: ["MapboxCoreNavigation"],
+            dependencies: ["TestHelpers", "MapboxCoreNavigation"],
             path: "MapboxCoreNavigationTests",
             resources: [
               .process("Resources"),

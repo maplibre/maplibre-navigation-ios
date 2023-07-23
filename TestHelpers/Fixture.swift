@@ -1,9 +1,10 @@
 import Foundation
 import MapboxDirections
 import MapboxCoreNavigation
+import CoreLocation
 
-class Fixture {
-    class func JSONFromFileNamed(name: String, bundle: Bundle = .main) -> [String: Any] {
+public class Fixture {
+    public class func JSONFromFileNamed(name: String, bundle: Bundle) -> [String: Any] {
         guard let path = bundle.path(forResource: name, ofType: "json") ?? bundle.path(forResource: name, ofType: "geojson") else {
             return [:]
         }
@@ -17,7 +18,7 @@ class Fixture {
         }
     }
     
-    class func route(from url: URL) -> Route {
+    public class func route(from url: URL) -> Route {
         let semaphore = DispatchSemaphore(value: 0)
         
         var json = [String: Any]()
@@ -35,8 +36,8 @@ class Fixture {
         return route(from: json)
     }
     
-    class func route(from filename: String) -> Route {
-        let response = Fixture.JSONFromFileNamed(name: filename)
+    public class func route(from filename: String, bundle: Bundle) -> Route {
+        let response = Fixture.JSONFromFileNamed(name: filename, bundle: bundle)
         return route(from: response)
     }
     
@@ -55,4 +56,20 @@ class Fixture {
         
         return route
     }
+    
+    public class func route(from jsonFile: String, waypoints: [Waypoint], bundle: Bundle) -> Route {
+        let response = JSONFromFileNamed(name: jsonFile, bundle: bundle)
+        let jsonRoute = (response["routes"] as! [AnyObject]).first as! [String : Any]
+        return Route(json: jsonRoute, waypoints: waypoints, options: RouteOptions(waypoints: waypoints))
+    }
+    
+    public class func routeWithBannerInstructions(bundle: Bundle) -> Route {
+        return route(from: "route-with-banner-instructions", waypoints: [Waypoint(coordinate: CLLocationCoordinate2D(latitude: 37.795042, longitude: -122.413165)), Waypoint(coordinate: CLLocationCoordinate2D(latitude: 37.7727, longitude: -122.433378))], bundle: bundle)
+    }
+    
+    public class var blankStyle: URL {
+        let path = Bundle(for: self).path(forResource: "EmptyStyle", ofType: "json")
+        return URL(fileURLWithPath: path!)
+    }
+    
 }

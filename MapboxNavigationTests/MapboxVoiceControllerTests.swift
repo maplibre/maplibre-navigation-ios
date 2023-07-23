@@ -4,6 +4,7 @@ import MapboxCoreNavigation
 import MapboxSpeech
 import AVKit
 @testable import MapboxNavigation
+import TestHelpers
 
 class MapboxVoiceControllerTests: XCTestCase {
 
@@ -13,7 +14,7 @@ class MapboxVoiceControllerTests: XCTestCase {
     var route: Route {
         get {
             //TODO: these waypoints have nothing to do with this route. Not sure if it matters.
-            return Fixture.route(from: "route-with-instructions", waypoints: [Waypoint(coordinate: CLLocationCoordinate2D(latitude: 37.795042, longitude: -122.413165)), Waypoint(coordinate: CLLocationCoordinate2D(latitude: 37.7727, longitude: -122.433378))])
+            return Fixture.route(from: "route-with-instructions", waypoints: [Waypoint(coordinate: CLLocationCoordinate2D(latitude: 37.795042, longitude: -122.413165)), Waypoint(coordinate: CLLocationCoordinate2D(latitude: 37.7727, longitude: -122.433378))], bundle: .module)
         }
     }
 

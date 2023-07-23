@@ -1,5 +1,5 @@
 import Foundation
-import FBSnapshotTestCase
+import iOSSnapshotTestCase
 
 @nonobjc extension FBSnapshotTestCase {
     func verify(_ view: UIView) {

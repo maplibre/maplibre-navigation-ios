@@ -3,6 +3,7 @@ import MapboxDirections
 import Turf
 @testable import MapboxCoreNavigation
 import CoreLocation
+import TestHelpers
 
 fileprivate let mbTestHeading: CLLocationDirection = 50
 
@@ -160,7 +161,7 @@ class RouteControllerTests: XCTestCase {
 
     func testUserPuckShouldFaceBackwards() {
         // This route is a simple straight line: http://geojson.io/#id=gist:anonymous/64cfb27881afba26e3969d06bacc707c&map=17/37.77717/-122.46484
-        let response = Fixture.JSONFromFileNamed(name: "straight-line")
+        let response = Fixture.JSONFromFileNamed(name: "straight-line", bundle: .module)
         let jsonRoute = (response["routes"] as! [AnyObject]).first as! [String: Any]
         let waypoint1 = Waypoint(coordinate: CLLocationCoordinate2D(latitude: 37.795042, longitude: -122.413165))
         let waypoint2 = Waypoint(coordinate: CLLocationCoordinate2D(latitude: 37.7727, longitude: -122.433378))

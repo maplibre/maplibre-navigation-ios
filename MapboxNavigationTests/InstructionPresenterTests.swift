@@ -2,6 +2,7 @@ import Foundation
 import XCTest
 @testable import MapboxNavigation
 import MapboxDirections
+import TestHelpers
 
 class InstructionPresenterTests: XCTestCase {
     
@@ -26,7 +27,7 @@ class InstructionPresenterTests: XCTestCase {
 
     /// NOTE: This test is disabled pending https://github.com/mapbox/mapbox-navigation-ios/issues/1468
     func x_testAbbreviationPerformance() {
-        let route = Fixture.routeWithBannerInstructions()
+        let route = Fixture.routeWithBannerInstructions(bundle: .module)
         
         let steps = route.legs.flatMap { $0.steps }
         let instructions = steps.compactMap { $0.instructionsDisplayedAlongStep?.first?.primaryInstruction }
