@@ -55,7 +55,7 @@ class MapboxVoiceControllerTests: XCTestCase {
     }
     
     func testVoiceDeinit() {
-        var voiceController: MockMapboxVoiceController? = MockMapboxVoiceController()
+        var voiceController: MockMapboxVoiceController? = MockMapboxVoiceController(speechClient: SpeechSynthesizer(accessToken: " "))
         let deinitExpectation = expectation(description: "Voice Controller should deinitialize")
         voiceController!.deinitExpectation = deinitExpectation
         voiceController = nil

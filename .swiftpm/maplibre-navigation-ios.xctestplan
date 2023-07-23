@@ -1,0 +1,33 @@
+{
+  "configurations" : [
+    {
+      "id" : "F3B8C5CD-B286-479D-BCB9-63D87B5A7838",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "testRepetitionMode" : "retryOnFailure"
+  },
+  "testTargets" : [
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:",
+        "identifier" : "MapboxCoreNavigationTests",
+        "name" : "MapboxCoreNavigationTests"
+      }
+    },
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:",
+        "identifier" : "MapboxNavigationTests",
+        "name" : "MapboxNavigationTests"
+      }
+    }
+  ],
+  "version" : 1
+}

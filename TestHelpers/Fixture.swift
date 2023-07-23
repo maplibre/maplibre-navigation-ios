@@ -67,8 +67,8 @@ public class Fixture {
         return route(from: "route-with-banner-instructions", waypoints: [Waypoint(coordinate: CLLocationCoordinate2D(latitude: 37.795042, longitude: -122.413165)), Waypoint(coordinate: CLLocationCoordinate2D(latitude: 37.7727, longitude: -122.433378))], bundle: bundle)
     }
     
-    public class var blankStyle: URL {
-        let path = Bundle(for: self).path(forResource: "EmptyStyle", ofType: "json")
+    public class func blankStyle(bundle: Bundle) -> URL {
+        let path = bundle.path(forResource: "EmptyStyle", ofType: "json")
         return URL(fileURLWithPath: path!)
     }
     

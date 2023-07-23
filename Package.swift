@@ -16,6 +16,13 @@ let package = Package(
                 "MapboxNavigationObjC"
             ]
         ),
+        .library(
+            name: "MapboxCoreNavigation",
+            targets: [
+                "MapboxNavigation",
+                "MapboxNavigationObjC"
+            ]
+        ),
     ],
     dependencies: [
         .package(url: "https://github.com/tomasharkema/mapbox-directions-swift.git", branch: "main"),

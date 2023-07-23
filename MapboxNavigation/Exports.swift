@@ -8,5 +8,3 @@
 @_exported import Mapbox
 @_exported import MapboxDirections
 @_exported import MapboxNavigationObjC
-@_exported import MapboxCoreNavigation
-@_exported import MapboxCoreNavigationObjC

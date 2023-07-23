@@ -90,7 +90,10 @@ class NavigationViewControllerTests: XCTestCase {
     }
     
     func testNavigationShouldNotCallStyleManagerDidRefreshAppearanceMoreThanOnceWithOneStyle() {
-        let navigationViewController = NavigationViewController(for: initialRoute, styles: [DayStyle()], voiceController: FakeVoiceController())
+        let navigationViewController = NavigationViewController(
+            for: initialRoute,
+            directions: Directions(accessToken: " "),
+            styles: [DayStyle()], voiceController: FakeVoiceController())
         let routeController = navigationViewController.routeController!
         navigationViewController.styleManager.delegate = self
         
@@ -106,7 +109,10 @@ class NavigationViewControllerTests: XCTestCase {
     
     // If tunnel flags are enabled and we need to switch styles, we should not force refresh the map style because we have only 1 style.
     func testNavigationShouldNotCallStyleManagerDidRefreshAppearanceWhenOnlyOneStyle() {
-        let navigationViewController = NavigationViewController(for: initialRoute, styles: [NightStyle()], voiceController: FakeVoiceController())
+        let navigationViewController = NavigationViewController(
+            for: initialRoute,
+            directions: Directions(accessToken: " "),
+            styles: [NightStyle()], voiceController: FakeVoiceController())
         let routeController = navigationViewController.routeController!
         navigationViewController.styleManager.delegate = self
         
@@ -121,7 +127,10 @@ class NavigationViewControllerTests: XCTestCase {
     }
     
     func testNavigationShouldNotCallStyleManagerDidRefreshAppearanceMoreThanOnceWithTwoStyles() {
-        let navigationViewController = NavigationViewController(for: initialRoute, styles: [DayStyle(), NightStyle()], voiceController: FakeVoiceController())
+        let navigationViewController = NavigationViewController(
+            for: initialRoute,
+            directions: Directions(accessToken: " "),
+            styles: [DayStyle(), NightStyle()], voiceController: FakeVoiceController())
         let routeController = navigationViewController.routeController!
         navigationViewController.styleManager.delegate = self
         
@@ -177,7 +186,10 @@ class NavigationViewControllerTests: XCTestCase {
     
     func testDestinationAnnotationUpdatesUponReroute() {
         let styleLoaded = XCTestExpectation(description: "Style Loaded")
-        let navigationViewController = NavigationViewControllerTestable(for: initialRoute, styles: [TestableDayStyle()], styleLoaded: styleLoaded)
+        let navigationViewController = NavigationViewControllerTestable(
+            for: initialRoute,
+            directions: Directions(accessToken: " "),
+            styles: [TestableDayStyle()], styleLoaded: styleLoaded)
         
         //wait for the style to load -- routes won't show without it.
         wait(for: [styleLoaded], timeout: 5)
@@ -281,7 +293,7 @@ class NavigationViewControllerTestable: NavigationViewController {
 class TestableDayStyle: DayStyle {
     required init() {
         super.init()
-        mapStyleURL = Fixture.blankStyle
+        mapStyleURL = Fixture.blankStyle(bundle: .module)
     }
 }
 

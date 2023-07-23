@@ -1,10 +1,12 @@
 import Foundation
 import UIKit
 
+class BundleHelper { }
+
 extension Bundle {
     
     class var mapboxNavigation: Bundle {
-        get { return Bundle.module }
+        get { Bundle.module }
     }
     
     func image(named: String) -> UIImage? {
