@@ -14,3 +14,18 @@ extension Dictionary where Key == Int, Value: NSExpression {
         return newCameraStop as! Dictionary<Key, Value>
     }
 }
+
+extension Dictionary where Key == Int, Value == Double {
+    /**
+     Returns a copy of the stop dictionary with each value multiplied by the given factor.
+     */
+    public func multiplied(by factor: Double) -> Dictionary {
+        var newCameraStop: [Int: Double] = [:]
+        for stop in self {
+            let currentValue = stop.value
+            let newValue =  currentValue * factor
+            newCameraStop[stop.key] = newValue
+        }
+        return newCameraStop
+    }
+}
