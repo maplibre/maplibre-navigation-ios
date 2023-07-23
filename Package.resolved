@@ -1,6 +1,15 @@
 {
   "pins" : [
     {
+      "identity" : "mapbox-directions-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/tomasharkema/mapbox-directions-swift.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "888dc58744504341c7ba290423e2f1717de5c088"
+      }
+    },
+    {
       "identity" : "mapbox-speech-swift",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/mapbox/mapbox-speech-swift.git",

@@ -17,10 +17,10 @@ let package = Package(
         ),
     ],
     dependencies: [
-        .package(path: "../mapbox-directions-swift"),
+        .package(url: "https://github.com/tomasharkema/mapbox-directions-swift.git", branch: "main"),
         .package(url: "https://github.com/maplibre/maplibre-gl-native-distribution.git", from: "5.12.2"),
         .package(url: "https://github.com/mapbox/MapboxGeocoder.swift.git", from: "0.15.0"),
-        .package(url: "https://github.com/flitsmeister/turf-swift.git", .exact("0.2.2")),
+        .package(url: "https://github.com/flitsmeister/turf-swift.git", exact: "0.2.2"),
         .package(url: "https://github.com/mapbox/mapbox-speech-swift.git", from: "2.1.1"),
         .package(url: "https://github.com/ceeK/Solar.git", from: "3.0.1"),
     ],
