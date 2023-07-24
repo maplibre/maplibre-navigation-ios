@@ -19,8 +19,8 @@ let package = Package(
         .library(
             name: "MapboxCoreNavigation",
             targets: [
-                "MapboxNavigation",
-                "MapboxNavigationObjC"
+                "MapboxCoreNavigation",
+                "MapboxCoreNavigationObjC"
             ]
         ),
     ],
