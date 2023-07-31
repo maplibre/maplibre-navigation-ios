@@ -1,4 +1,3 @@
-import Foundation
 import UIKit
 
 internal class ImageCache: BimodalImageCache {

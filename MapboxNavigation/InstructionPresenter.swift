@@ -98,10 +98,7 @@ class InstructionPresenter {
                 
             //If we have a exit, in the first two components, lets handle that.
             case .exitCode where 0...1 ~= index:
-                guard let exitString = self.attributedString(forExitComponent: component, maneuverDirection: instruction.maneuverDirection, dataSource: dataSource)
-                else {
-                    fallthrough
-                }
+                guard let exitString = self.attributedString(forExitComponent: component, maneuverDirection: instruction.maneuverDirection, dataSource: dataSource) else { fallthrough }
                 build(component, [exitString])
                 
             //if it's a delimiter, skip it if it's between two shields.

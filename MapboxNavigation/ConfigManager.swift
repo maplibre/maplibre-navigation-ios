@@ -6,7 +6,6 @@
 //  Copyright © 2020 Mapbox. All rights reserved.
 //
 
-import Foundation
 import UIKit
 
 class ConfigManager {

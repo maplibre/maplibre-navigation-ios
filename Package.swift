@@ -84,14 +84,11 @@ let package = Package(
               .process("Resources"),
             ]
         ),
-//        .testTarget(
-//            name: "MapboxNavigationTestsObjC",
-//            dependencies: ["MapboxNavigation"],
-//            path: "MapboxNavigationTestsObjC"
-////            resources: [
-////              .copy("Resources"),
-////            ]
-//        ),
+        .testTarget(
+            name: "MapboxNavigationTestsObjC",
+            dependencies: ["MapboxNavigation"],
+            path: "MapboxNavigationTestsObjC"
+        ),
         .testTarget(
             name: "MapboxCoreNavigationTests",
             dependencies: ["TestHelpers", "MapboxCoreNavigation"],

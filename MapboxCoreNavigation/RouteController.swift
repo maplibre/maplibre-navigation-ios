@@ -22,7 +22,7 @@ open class RouteController: NSObject, Router {
     /// With this property you can enable test-routes to be returned when rerouting for an ETA update. It will randomly choose a route between two that differ a lot by ETA when rerouting
     /// These will only get returned when that route is _slower_ than the current route, as that forces an ETA update reroute.
     /// To pass the rerouting checks, simulate or drive a route from coordinate `52.02224357,5.78149084` to `52.03924958,5.55054131`
-//    public var shouldReturnTestingETAUpdateReroutes = false
+    public var shouldReturnTestingETAUpdateReroutes = false
     
     /// Determines if we should check for a faster/more updated route in the last 10 minutes of the user's route. By default, we don't check this before doing the reroute call.
     public var shouldCheckForRerouteInLastMinutes = false
