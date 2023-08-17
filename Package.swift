@@ -28,7 +28,7 @@ let package = Package(
         .package(url: "https://github.com/flitsmeister/mapbox-directions-swift.git", branch: "feature/spm"),
         .package(url: "https://github.com/maplibre/maplibre-gl-native-distribution.git", from: "5.13.0"),
         .package(url: "https://github.com/mapbox/MapboxGeocoder.swift.git", from: "0.15.0"),
-        .package(url: "https://github.com/flitsmeister/turf-swift.git", exact: "0.2.2"),
+        .package(url: "https://github.com/mapbox/turf-swift.git", from: "2.6.0"),
         .package(url: "https://github.com/mapbox/mapbox-speech-swift.git", from: "2.1.1"),
         .package(url: "https://github.com/ceeK/Solar.git", from: "3.0.1"),
         .package(url: "https://github.com/uber/ios-snapshot-test-case.git", from: "8.0.0"),
