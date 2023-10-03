@@ -1,7 +1,7 @@
 import UIKit
 import MapboxCoreNavigation
 import MapboxDirections
-import Mapbox
+import MapLibre
 #if canImport(CarPlay)
 import CarPlay
 #endif
@@ -78,56 +78,56 @@ public protocol NavigationViewControllerDelegate: VisualInstructionDelegate {
     optional func navigationViewController(_ navigationViewController: NavigationViewController, didFailToRerouteWith error: Error)
     
     /**
-     Returns an `MGLStyleLayer` that determines the appearance of the route line.
+     Returns an `MLNStyleLayer` that determines the appearance of the route line.
      
-     If this method is unimplemented, the navigation view controller’s map view draws the route line using an `MGLLineStyleLayer`.
+     If this method is unimplemented, the navigation view controller’s map view draws the route line using an `MLNLineStyleLayer`.
      */
-    @objc optional func navigationViewController(_ navigationViewController: NavigationViewController, routeStyleLayerWithIdentifier identifier: String, source: MGLSource) -> MGLStyleLayer?
+    @objc optional func navigationViewController(_ navigationViewController: NavigationViewController, routeStyleLayerWithIdentifier identifier: String, source: MLNSource) -> MLNStyleLayer?
     
     /**
-     Returns an `MGLStyleLayer` that determines the appearance of the route line’s casing.
+     Returns an `MLNStyleLayer` that determines the appearance of the route line’s casing.
      
-     If this method is unimplemented, the navigation view controller’s map view draws the route line’s casing using an `MGLLineStyleLayer` whose width is greater than that of the style layer returned by `navigationViewController(_:routeStyleLayerWithIdentifier:source:)`.
+     If this method is unimplemented, the navigation view controller’s map view draws the route line’s casing using an `MLNLineStyleLayer` whose width is greater than that of the style layer returned by `navigationViewController(_:routeStyleLayerWithIdentifier:source:)`.
      */
-    @objc optional func navigationViewController(_ navigationViewController: NavigationViewController, routeCasingStyleLayerWithIdentifier identifier: String, source: MGLSource) -> MGLStyleLayer?
+    @objc optional func navigationViewController(_ navigationViewController: NavigationViewController, routeCasingStyleLayerWithIdentifier identifier: String, source: MLNSource) -> MLNStyleLayer?
     
     /**
-     Returns an `MGLShape` that represents the path of the route line.
+     Returns an `MLNShape` that represents the path of the route line.
      
-     If this method is unimplemented, the navigation view controller’s map view represents the route line using an `MGLPolylineFeature` based on `route`’s `coordinates` property.
+     If this method is unimplemented, the navigation view controller’s map view represents the route line using an `MLNPolylineFeature` based on `route`’s `coordinates` property.
      */
     @objc(navigationViewController:shapeForRoutes:)
-    optional func navigationViewController(_ navigationViewController: NavigationViewController, shapeFor routes: [Route]) -> MGLShape?
+    optional func navigationViewController(_ navigationViewController: NavigationViewController, shapeFor routes: [Route]) -> MLNShape?
     
     /**
-     Returns an `MGLShape` that represents the path of the route line’s casing.
+     Returns an `MLNShape` that represents the path of the route line’s casing.
      
-     If this method is unimplemented, the navigation view controller’s map view represents the route line’s casing using an `MGLPolylineFeature` identical to the one returned by `navigationViewController(_:shapeFor:)`.
+     If this method is unimplemented, the navigation view controller’s map view represents the route line’s casing using an `MLNPolylineFeature` identical to the one returned by `navigationViewController(_:shapeFor:)`.
      */
     @objc(navigationViewController:simplifiedShapeForRoute:)
-    optional func navigationViewController(_ navigationViewController: NavigationViewController, simplifiedShapeFor route: Route) -> MGLShape?
+    optional func navigationViewController(_ navigationViewController: NavigationViewController, simplifiedShapeFor route: Route) -> MLNShape?
     
     /*
-     Returns an `MGLStyleLayer` that marks the location of each destination along the route when there are multiple destinations. The returned layer is added to the map below the layer returned by `navigationViewController(_:waypointSymbolStyleLayerWithIdentifier:source:)`.
+     Returns an `MLNStyleLayer` that marks the location of each destination along the route when there are multiple destinations. The returned layer is added to the map below the layer returned by `navigationViewController(_:waypointSymbolStyleLayerWithIdentifier:source:)`.
      
      If this method is unimplemented, the navigation view controller’s map view marks each destination waypoint with a circle.
      */
-    @objc optional func navigationViewController(_ navigationViewController: NavigationViewController, waypointStyleLayerWithIdentifier identifier: String, source: MGLSource) -> MGLStyleLayer?
+    @objc optional func navigationViewController(_ navigationViewController: NavigationViewController, waypointStyleLayerWithIdentifier identifier: String, source: MLNSource) -> MLNStyleLayer?
     
     /*
-     Returns an `MGLStyleLayer` that places an identifying symbol on each destination along the route when there are multiple destinations. The returned layer is added to the map above the layer returned by `navigationViewController(_:waypointStyleLayerWithIdentifier:source:)`.
+     Returns an `MLNStyleLayer` that places an identifying symbol on each destination along the route when there are multiple destinations. The returned layer is added to the map above the layer returned by `navigationViewController(_:waypointStyleLayerWithIdentifier:source:)`.
      
      If this method is unimplemented, the navigation view controller’s map view labels each destination waypoint with a number, starting with 1 at the first destination, 2 at the second destination, and so on.
      */
-    @objc optional func navigationViewController(_ navigationViewController: NavigationViewController, waypointSymbolStyleLayerWithIdentifier identifier: String, source: MGLSource) -> MGLStyleLayer?
+    @objc optional func navigationViewController(_ navigationViewController: NavigationViewController, waypointSymbolStyleLayerWithIdentifier identifier: String, source: MLNSource) -> MLNStyleLayer?
     
     /**
-     Returns an `MGLShape` that represents the destination waypoints along the route (that is, excluding the origin).
+     Returns an `MLNShape` that represents the destination waypoints along the route (that is, excluding the origin).
      
      If this method is unimplemented, the navigation map view represents the route waypoints using `navigationViewController(_:shapeFor:legIndex:)`.
      */
     @objc(navigationViewController:shapeForWaypoints:legIndex:)
-    optional func navigationViewController(_ navigationViewController: NavigationViewController, shapeFor waypoints: [Waypoint], legIndex: Int) -> MGLShape?
+    optional func navigationViewController(_ navigationViewController: NavigationViewController, shapeFor waypoints: [Waypoint], legIndex: Int) -> MLNShape?
     
     /**
      Called when the user taps to select a route on the navigation view controller’s map view.
@@ -138,20 +138,20 @@ public protocol NavigationViewControllerDelegate: VisualInstructionDelegate {
     optional func navigationViewController(_ navigationViewController: NavigationViewController, didSelect route: Route)
     
     /**
-     Return an `MGLAnnotationImage` that represents the destination marker.
+     Return an `MLNAnnotationImage` that represents the destination marker.
      
      If this method is unimplemented, the navigation view controller’s map view will represent the destination annotation with the default marker.
      */
     @objc(navigationViewController:imageForAnnotation:)
-    optional func navigationViewController(_ navigationViewController: NavigationViewController, imageFor annotation: MGLAnnotation) -> MGLAnnotationImage?
+    optional func navigationViewController(_ navigationViewController: NavigationViewController, imageFor annotation: MLNAnnotation) -> MLNAnnotationImage?
     
     /**
      Returns a view object to mark the given point annotation object on the map.
      
-     The user location annotation view can also be customized via this method. When annotation is an instance of `MGLUserLocation`, return an instance of `MGLUserLocationAnnotationView` (or a subclass thereof). Note that when `NavigationMapView.tracksUserCourse` is set to `true`, the navigation view controller’s map view uses a distinct user course view; to customize it, set the `NavigationMapView.userCourseView` property of the map view stored by the `NavigationViewController.mapView` property.
+     The user location annotation view can also be customized via this method. When annotation is an instance of `MLNUserLocation`, return an instance of `MLNUserLocationAnnotationView` (or a subclass thereof). Note that when `NavigationMapView.tracksUserCourse` is set to `true`, the navigation view controller’s map view uses a distinct user course view; to customize it, set the `NavigationMapView.userCourseView` property of the map view stored by the `NavigationViewController.mapView` property.
      */
     @objc(navigationViewController:viewForAnnotation:)
-    optional func navigationViewController(_ navigationViewController: NavigationViewController, viewFor annotation: MGLAnnotation) -> MGLAnnotationView?
+    optional func navigationViewController(_ navigationViewController: NavigationViewController, viewFor annotation: MLNAnnotation) -> MLNAnnotationView?
     
     /**
      Returns the center point of the user course view in screen coordinates relative to the map view.
@@ -217,14 +217,14 @@ open class NavigationViewController: UIViewController {
     @objc public var directions: Directions!
     
     /**
-     An optional `MGLMapCamera` you can use to improve the initial transition from a previous viewport and prevent a trigger from an excessive significant location update.
+     An optional `MLNMapCamera` you can use to improve the initial transition from a previous viewport and prevent a trigger from an excessive significant location update.
      */
-    @objc public var pendingCamera: MGLMapCamera?
+    @objc public var pendingCamera: MLNMapCamera?
     
     /**
-     An instance of `MGLAnnotation` representing the origin of your route.
+     An instance of `MLNAnnotation` representing the origin of your route.
      */
-    @objc public var origin: MGLAnnotation?
+    @objc public var origin: MLNAnnotation?
     
     /**
      The receiver’s delegate.
@@ -547,11 +547,11 @@ open class NavigationViewController: UIViewController {
 
 //MARK: - RouteMapViewControllerDelegate
 extension NavigationViewController: RouteMapViewControllerDelegate {
-    public func navigationMapView(_ mapView: NavigationMapView, routeCasingStyleLayerWithIdentifier identifier: String, source: MGLSource) -> MGLStyleLayer? {
+    public func navigationMapView(_ mapView: NavigationMapView, routeCasingStyleLayerWithIdentifier identifier: String, source: MLNSource) -> MLNStyleLayer? {
         return delegate?.navigationViewController?(self, routeCasingStyleLayerWithIdentifier: identifier, source: source)
     }
     
-    public func navigationMapView(_ mapView: NavigationMapView, routeStyleLayerWithIdentifier identifier: String, source: MGLSource) -> MGLStyleLayer? {
+    public func navigationMapView(_ mapView: NavigationMapView, routeStyleLayerWithIdentifier identifier: String, source: MLNSource) -> MLNStyleLayer? {
         return delegate?.navigationViewController?(self, routeStyleLayerWithIdentifier: identifier, source: source)
     }
     
@@ -559,31 +559,31 @@ extension NavigationViewController: RouteMapViewControllerDelegate {
         delegate?.navigationViewController?(self, didSelect: route)
     }
     
-    @objc public func navigationMapView(_ mapView: NavigationMapView, shapeFor routes: [Route]) -> MGLShape? {
+    @objc public func navigationMapView(_ mapView: NavigationMapView, shapeFor routes: [Route]) -> MLNShape? {
         return delegate?.navigationViewController?(self, shapeFor: routes)
     }
     
-    @objc public func navigationMapView(_ mapView: NavigationMapView, simplifiedShapeFor route: Route) -> MGLShape? {
+    @objc public func navigationMapView(_ mapView: NavigationMapView, simplifiedShapeFor route: Route) -> MLNShape? {
         return delegate?.navigationViewController?(self, simplifiedShapeFor: route)
     }
     
-    public func navigationMapView(_ mapView: NavigationMapView, waypointStyleLayerWithIdentifier identifier: String, source: MGLSource) -> MGLStyleLayer? {
+    public func navigationMapView(_ mapView: NavigationMapView, waypointStyleLayerWithIdentifier identifier: String, source: MLNSource) -> MLNStyleLayer? {
         return delegate?.navigationViewController?(self, waypointStyleLayerWithIdentifier: identifier, source: source)
     }
     
-    public func navigationMapView(_ mapView: NavigationMapView, waypointSymbolStyleLayerWithIdentifier identifier: String, source: MGLSource) -> MGLStyleLayer? {
+    public func navigationMapView(_ mapView: NavigationMapView, waypointSymbolStyleLayerWithIdentifier identifier: String, source: MLNSource) -> MLNStyleLayer? {
         return delegate?.navigationViewController?(self, waypointSymbolStyleLayerWithIdentifier: identifier, source: source)
     }
     
-    @objc public func navigationMapView(_ mapView: NavigationMapView, shapeFor waypoints: [Waypoint], legIndex: Int) -> MGLShape? {
+    @objc public func navigationMapView(_ mapView: NavigationMapView, shapeFor waypoints: [Waypoint], legIndex: Int) -> MLNShape? {
         return delegate?.navigationViewController?(self, shapeFor: waypoints, legIndex: legIndex)
     }
     
-    @objc public func navigationMapView(_ mapView: MGLMapView, imageFor annotation: MGLAnnotation) -> MGLAnnotationImage? {
+    @objc public func navigationMapView(_ mapView: MLNMapView, imageFor annotation: MLNAnnotation) -> MLNAnnotationImage? {
         return delegate?.navigationViewController?(self, imageFor: annotation)
     }
     
-    @objc public func navigationMapView(_ mapView: MGLMapView, viewFor annotation: MGLAnnotation) -> MGLAnnotationView? {
+    @objc public func navigationMapView(_ mapView: MLNMapView, viewFor annotation: MLNAnnotation) -> MLNAnnotationView? {
         return delegate?.navigationViewController?(self, viewFor: annotation)
     }
     
@@ -694,7 +694,7 @@ extension NavigationViewController: StyleManagerDelegate {
     
     public func styleManager(_ styleManager: StyleManager, didApply style: Style) {
         if mapView?.styleURL != style.mapStyleURL {
-            mapView?.style?.transition = MGLTransition(duration: 0.5, delay: 0)
+            mapView?.style?.transition = MLNTransition(duration: 0.5, delay: 0)
             mapView?.styleURL = style.mapStyleURL
         }
         

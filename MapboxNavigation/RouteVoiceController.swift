@@ -1,7 +1,7 @@
 
 import Foundation
 import AVFoundation
-import Mapbox
+import MapLibre
 import MapboxDirections
 import MapboxCoreNavigation
 import MapboxNavigationObjC

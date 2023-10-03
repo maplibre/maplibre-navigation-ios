@@ -1,5 +1,5 @@
 import Foundation
-import Mapbox
+import MapLibre
 import MapboxSpeech
 import MapboxCoreNavigation
 import MapboxCoreNavigationObjC

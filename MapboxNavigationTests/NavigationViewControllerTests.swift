@@ -217,9 +217,9 @@ class NavigationViewControllerTests: XCTestCase {
         
     }
     
-    private func annotationFilter(matching coordinate: CLLocationCoordinate2D) -> ((MGLAnnotation) -> Bool) {
-        let filter = { (annotation: MGLAnnotation) -> Bool in
-            guard let pointAnno = annotation as? MGLPointAnnotation else { return false }
+    private func annotationFilter(matching coordinate: CLLocationCoordinate2D) -> ((MLNAnnotation) -> Bool) {
+        let filter = { (annotation: MLNAnnotation) -> Bool in
+            guard let pointAnno = annotation as? MLNPointAnnotation else { return false }
             return pointAnno.coordinate == coordinate
         }
         return filter
@@ -280,7 +280,7 @@ class NavigationViewControllerTestable: NavigationViewController {
         fatalError("init(for:directions:styles:routeController:locationManager:voiceController:) is not supported in this testing subclass.")
     }
 
-    func mapView(_ mapView: MGLMapView, didFinishLoading style: MGLStyle) {
+    func mapView(_ mapView: MLNMapView, didFinishLoading style: MLNStyle) {
         styleLoadedExpectation.fulfill()
     }
     
