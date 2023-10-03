@@ -23,6 +23,7 @@ let package = Package(
                 "MapboxCoreNavigationObjC",
             ]
         ),
+        .library(name: "MapLibre", targets: ["MapLibre"]),
     ],
     dependencies: [
         .package(url: "https://github.com/flitsmeister/mapbox-directions-swift.git", branch: "feature/spm"),
