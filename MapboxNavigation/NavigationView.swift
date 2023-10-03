@@ -1,6 +1,6 @@
 import UIKit
 import MapboxDirections
-import Mapbox
+import MapLibre
 
 /**
  A view that represents the root view of the MapboxNavigation drop-in UI.
@@ -232,6 +232,6 @@ open class NavigationView: UIView {
     }
 }
 
-protocol NavigationViewDelegate: NavigationMapViewDelegate, MGLMapViewDelegate, StatusViewDelegate, InstructionsBannerViewDelegate, NavigationMapViewCourseTrackingDelegate, VisualInstructionDelegate {
+protocol NavigationViewDelegate: NavigationMapViewDelegate, MLNMapViewDelegate, StatusViewDelegate, InstructionsBannerViewDelegate, NavigationMapViewCourseTrackingDelegate, VisualInstructionDelegate {
     func navigationView(_ view: NavigationView, didTapCancelButton: CancelButton)
 }

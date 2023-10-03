@@ -28,24 +28,6 @@
       }
     },
     {
-      "identity" : "mapboxgeocoder.swift",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/mapbox/MapboxGeocoder.swift.git",
-      "state" : {
-        "revision" : "10c497840c9e1142194563f402ddc903310a935d",
-        "version" : "0.15.0"
-      }
-    },
-    {
-      "identity" : "maplibre-gl-native-distribution",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/maplibre/maplibre-gl-native-distribution.git",
-      "state" : {
-        "revision" : "ffda61e298c1490d4860d5184e80d618aaadc089",
-        "version" : "5.13.0"
-      }
-    },
-    {
       "identity" : "polyline",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/raphaelmor/Polyline",

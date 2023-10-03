@@ -1,11 +1,11 @@
 import UIKit
-import Mapbox
+import MapLibre
 import MapboxDirections
 import MapboxCoreNavigation
 import Turf
 import AVFoundation
 
-class ArrowFillPolyline: MGLPolylineFeature {}
+class ArrowFillPolyline: MLNPolylineFeature {}
 class ArrowStrokePolyline: ArrowFillPolyline {}
 
 class RouteMapViewController: UIViewController {
@@ -50,14 +50,14 @@ class RouteMapViewController: UIViewController {
 
     var showsEndOfRoute: Bool = true
 
-    var pendingCamera: MGLMapCamera? {
+    var pendingCamera: MLNMapCamera? {
         guard let parent = parent as? NavigationViewController else {
             return nil
         }
         return parent.pendingCamera
     }
 
-    var tiltedCamera: MGLMapCamera {
+    var tiltedCamera: MLNMapCamera {
         get {
             let camera = mapView.camera
             camera.altitude = 1000
@@ -373,11 +373,11 @@ class RouteMapViewController: UIViewController {
         mapView.altitude = altitude
     }
 
-    func mapView(_ mapView: MGLMapView, imageFor annotation: MGLAnnotation) -> MGLAnnotationImage? {
+    func mapView(_ mapView: MLNMapView, imageFor annotation: MLNAnnotation) -> MLNAnnotationImage? {
         return navigationMapView(mapView, imageFor: annotation)
     }
 
-    func mapView(_ mapView: MGLMapView, viewFor annotation: MGLAnnotation) -> MGLAnnotationView? {
+    func mapView(_ mapView: MLNMapView, viewFor annotation: MLNAnnotation) -> MLNAnnotationView? {
         return navigationMapView(mapView, viewFor: annotation)
     }
 
@@ -462,8 +462,7 @@ class RouteMapViewController: UIViewController {
 
         if let coordinates = routeController.routeProgress.route.coordinates, let userLocation = routeController?.locationManager.location?.coordinate {
             let slicedLine = Polyline(coordinates).sliced(from: userLocation).coordinates
-            let line = MGLPolyline(coordinates: slicedLine, count: UInt(slicedLine.count))
-
+            let line = MLNPolyline(coordinates: slicedLine, count: UInt(slicedLine.count))
             let camera = navigationView.mapView.cameraThatFitsShape(line, direction: navigationView.mapView.camera.heading, edgePadding: insets)
             camera.pitch = 0
             camera.altitude = navigationView.mapView.camera.altitude
@@ -528,8 +527,8 @@ extension RouteMapViewController: NavigationViewDelegate {
         delegate?.mapViewControllerDidDismiss(self, byCanceling: true)
     }
 
-    // MARK: MGLMapViewDelegate
-    func mapView(_ mapView: MGLMapView, regionDidChangeAnimated animated: Bool) {
+    // MARK: MLNMapViewDelegate
+    func mapView(_ mapView: MLNMapView, regionDidChangeAnimated animated: Bool) {
         var userTrackingMode = mapView.userTrackingMode
         if let mapView = mapView as? NavigationMapView, mapView.tracksUserCourse {
             userTrackingMode = .followWithCourse
@@ -539,7 +538,7 @@ extension RouteMapViewController: NavigationViewDelegate {
         }
     }
 
-    func mapView(_ mapView: MGLMapView, didFinishLoading style: MGLStyle) {
+    func mapView(_ mapView: MLNMapView, didFinishLoading style: MLNStyle) {
         // This method is called before the view is added to a window
         // (if the style is cached) preventing UIAppearance to apply the style.
         showRouteIfNeeded()
@@ -547,7 +546,7 @@ extension RouteMapViewController: NavigationViewDelegate {
         delegate?.mapView?(mapView, didFinishLoading: style)
     }
 
-    func mapViewDidFinishLoadingMap(_ mapView: MGLMapView) {
+    func mapViewDidFinishLoadingMap(_ mapView: MLNMapView) {
         delegate?.mapViewDidFinishLoadingMap?(mapView)
     }
 
@@ -602,27 +601,27 @@ extension RouteMapViewController: NavigationViewDelegate {
     }
 
     //MARK: NavigationMapViewDelegate
-    func navigationMapView(_ mapView: NavigationMapView, routeStyleLayerWithIdentifier identifier: String, source: MGLSource) -> MGLStyleLayer? {
+    func navigationMapView(_ mapView: NavigationMapView, routeStyleLayerWithIdentifier identifier: String, source: MLNSource) -> MLNStyleLayer? {
         return delegate?.navigationMapView?(mapView, routeStyleLayerWithIdentifier: identifier, source: source)
     }
 
-    func navigationMapView(_ mapView: NavigationMapView, routeCasingStyleLayerWithIdentifier identifier: String, source: MGLSource) -> MGLStyleLayer? {
+    func navigationMapView(_ mapView: NavigationMapView, routeCasingStyleLayerWithIdentifier identifier: String, source: MLNSource) -> MLNStyleLayer? {
         return delegate?.navigationMapView?(mapView, routeCasingStyleLayerWithIdentifier: identifier, source: source)
     }
 
-    func navigationMapView(_ mapView: NavigationMapView, waypointStyleLayerWithIdentifier identifier: String, source: MGLSource) -> MGLStyleLayer? {
+    func navigationMapView(_ mapView: NavigationMapView, waypointStyleLayerWithIdentifier identifier: String, source: MLNSource) -> MLNStyleLayer? {
         return delegate?.navigationMapView?(mapView, waypointStyleLayerWithIdentifier: identifier, source: source)
     }
 
-    func navigationMapView(_ mapView: NavigationMapView, waypointSymbolStyleLayerWithIdentifier identifier: String, source: MGLSource) -> MGLStyleLayer? {
+    func navigationMapView(_ mapView: NavigationMapView, waypointSymbolStyleLayerWithIdentifier identifier: String, source: MLNSource) -> MLNStyleLayer? {
         return delegate?.navigationMapView?(mapView, waypointSymbolStyleLayerWithIdentifier: identifier, source: source)
     }
 
-    func navigationMapView(_ mapView: NavigationMapView, shapeFor waypoints: [Waypoint], legIndex: Int) -> MGLShape? {
+    func navigationMapView(_ mapView: NavigationMapView, shapeFor waypoints: [Waypoint], legIndex: Int) -> MLNShape? {
         return delegate?.navigationMapView?(mapView, shapeFor: waypoints, legIndex: legIndex)
     }
 
-    func navigationMapView(_ mapView: NavigationMapView, shapeFor routes: [Route]) -> MGLShape? {
+    func navigationMapView(_ mapView: NavigationMapView, shapeFor routes: [Route]) -> MLNShape? {
         return delegate?.navigationMapView?(mapView, shapeFor: routes)
     }
 
@@ -630,15 +629,15 @@ extension RouteMapViewController: NavigationViewDelegate {
         delegate?.navigationMapView?(mapView, didSelect: route)
     }
 
-    func navigationMapView(_ mapView: NavigationMapView, simplifiedShapeFor route: Route) -> MGLShape? {
+    func navigationMapView(_ mapView: NavigationMapView, simplifiedShapeFor route: Route) -> MLNShape? {
         return delegate?.navigationMapView?(mapView, simplifiedShapeFor: route)
     }
 
-    func navigationMapView(_ mapView: MGLMapView, imageFor annotation: MGLAnnotation) -> MGLAnnotationImage? {
+    func navigationMapView(_ mapView: MLNMapView, imageFor annotation: MLNAnnotation) -> MLNAnnotationImage? {
         return delegate?.navigationMapView?(mapView, imageFor: annotation)
     }
 
-    func navigationMapView(_ mapView: MGLMapView, viewFor annotation: MGLAnnotation) -> MGLAnnotationView? {
+    func navigationMapView(_ mapView: MLNMapView, viewFor annotation: MLNAnnotation) -> MLNAnnotationView? {
         return delegate?.navigationMapView?(mapView, viewFor: annotation)
     }
 
@@ -688,21 +687,21 @@ extension RouteMapViewController: NavigationViewDelegate {
 
         let closestCoordinate = location.coordinate
         let roadLabelLayerIdentifier = "roadLabelLayer"
-        var streetsSources: [MGLVectorTileSource] = style.sources.compactMap {
-            $0 as? MGLVectorTileSource
+        var streetsSources: [MLNVectorTileSource] = style.sources.compactMap {
+            $0 as? MLNVectorTileSource
             }.filter {
                 $0.isMapboxStreets
         }
 
         // Add Mapbox Streets if the map does not already have it
         if streetsSources.isEmpty {
-            let source = MGLVectorTileSource(identifier: "mapboxStreetsv7", configurationURL: URL(string: "mapbox://mapbox.mapbox-streets-v7")!)
+            let source = MLNVectorTileSource(identifier: "mapboxStreetsv7", configurationURL: URL(string: "mapbox://mapbox.mapbox-streets-v7")!)
             style.addSource(source)
             streetsSources.append(source)
         }
 
         if let mapboxSteetsSource = streetsSources.first, style.layer(withIdentifier: roadLabelLayerIdentifier) == nil {
-            let streetLabelLayer = MGLLineStyleLayer(identifier: roadLabelLayerIdentifier, source: mapboxSteetsSource)
+            let streetLabelLayer = MLNLineStyleLayer(identifier: roadLabelLayerIdentifier, source: mapboxSteetsSource)
             streetLabelLayer.sourceLayerIdentifier = "road_label"
             streetLabelLayer.lineOpacity = NSExpression(forConstantValue: 1)
             streetLabelLayer.lineWidth = NSExpression(forConstantValue: 20)
@@ -717,11 +716,11 @@ extension RouteMapViewController: NavigationViewDelegate {
         var currentShieldName: NSAttributedString?
 
         for feature in features {
-            var allLines: [MGLPolyline] = []
+            var allLines: [MLNPolyline] = []
 
-            if let line = feature as? MGLPolylineFeature {
+            if let line = feature as? MLNPolylineFeature {
                 allLines.append(line)
-            } else if let lines = feature as? MGLMultiPolylineFeature {
+            } else if let lines = feature as? MLNMultiPolylineFeature {
                 allLines = lines.polylines
             }
 
@@ -742,11 +741,11 @@ extension RouteMapViewController: NavigationViewDelegate {
                 if minDistanceBetweenPoints < smallestLabelDistance {
                     smallestLabelDistance = minDistanceBetweenPoints
 
-                    if let line = feature as? MGLPolylineFeature {
+                    if let line = feature as? MLNPolylineFeature {
                         let roadNameRecord = roadFeature(for: line)
                         currentShieldName = roadNameRecord.shieldName
                         currentName = roadNameRecord.roadName
-                    } else if let line = feature as? MGLMultiPolylineFeature {
+                    } else if let line = feature as? MLNMultiPolylineFeature {
                         let roadNameRecord = roadFeature(for: line)
                         currentShieldName = roadNameRecord.shieldName
                         currentName = roadNameRecord.roadName
@@ -768,7 +767,7 @@ extension RouteMapViewController: NavigationViewDelegate {
         }
     }
 
-    private func roadFeature(for line: MGLPolylineFeature) -> (roadName: String?, shieldName: NSAttributedString?) {
+    private func roadFeature(for line: MLNPolylineFeature) -> (roadName: String?, shieldName: NSAttributedString?) {
         let roadNameRecord = roadFeatureHelper(ref: line.attribute(forKey: "ref"),
                                             shield: line.attribute(forKey: "shield"),
                                             reflen: line.attribute(forKey: "reflen"),
@@ -777,7 +776,7 @@ extension RouteMapViewController: NavigationViewDelegate {
         return (roadName: roadNameRecord.roadName, shieldName: roadNameRecord.shieldName)
     }
 
-    private func roadFeature(for line: MGLMultiPolylineFeature) -> (roadName: String?, shieldName: NSAttributedString?) {
+    private func roadFeature(for line: MLNMultiPolylineFeature) -> (roadName: String?, shieldName: NSAttributedString?) {
         let roadNameRecord = roadFeatureHelper(ref: line.attribute(forKey: "ref"),
                                             shield: line.attribute(forKey: "shield"),
                                             reflen: line.attribute(forKey: "reflen"),
@@ -967,7 +966,7 @@ fileprivate extension UIView.AnimationOptions {
         }
     }
 }
-@objc protocol RouteMapViewControllerDelegate: NavigationMapViewDelegate, MGLMapViewDelegate, VisualInstructionDelegate {
+@objc protocol RouteMapViewControllerDelegate: NavigationMapViewDelegate, MLNMapViewDelegate, VisualInstructionDelegate {
     func mapViewControllerDidDismiss(_ mapViewController: RouteMapViewController, byCanceling canceled: Bool)
     func mapViewControllerShouldAnnotateSpokenInstructions(_ routeMapViewController: RouteMapViewController) -> Bool
 

@@ -1,10 +1,10 @@
 import Foundation
 #if canImport(CarPlay)
 import CarPlay
-import Mapbox
+import MapLibre
 
 @available(iOS 12.0, *)
-class CarPlayMapViewController: UIViewController, MGLMapViewDelegate {
+class CarPlayMapViewController: UIViewController, MLNMapViewDelegate {
     
     static let defaultAltitude: CLLocationDistance = 16000
     
@@ -86,7 +86,7 @@ class CarPlayMapViewController: UIViewController, MGLMapViewDelegate {
     
     // MARK: - MGLMapViewDelegate
 
-    func mapView(_ mapView: MGLMapView, didFinishLoading style: MGLStyle) {
+    func mapView(_ mapView: MLNMapView, didFinishLoading style: MLNStyle) {
         if let mapView = mapView as? NavigationMapView {
             mapView.localizeLabels()
         }
@@ -130,7 +130,7 @@ extension CarPlayMapViewController: StyleManagerDelegate {
     func styleManager(_ styleManager: StyleManager, didApply style: Style) {
         let styleURL = style.previewMapStyleURL
         if mapView.styleURL != styleURL {
-            mapView.style?.transition = MGLTransition(duration: 0.5, delay: 0)
+            mapView.style?.transition = MLNTransition(duration: 0.5, delay: 0)
             mapView.styleURL = styleURL
         }
     }

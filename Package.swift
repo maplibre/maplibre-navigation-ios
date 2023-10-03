@@ -13,21 +13,19 @@ let package = Package(
             name: "MapboxNavigation",
             targets: [
                 "MapboxNavigation",
-                "MapboxNavigationObjC"
+                "MapboxNavigationObjC",
             ]
         ),
         .library(
             name: "MapboxCoreNavigation",
             targets: [
                 "MapboxCoreNavigation",
-                "MapboxCoreNavigationObjC"
+                "MapboxCoreNavigationObjC",
             ]
         ),
     ],
     dependencies: [
         .package(url: "https://github.com/flitsmeister/mapbox-directions-swift.git", branch: "feature/spm"),
-        .package(url: "https://github.com/maplibre/maplibre-gl-native-distribution.git", from: "5.13.0"),
-        .package(url: "https://github.com/mapbox/MapboxGeocoder.swift.git", from: "0.15.0"),
         .package(url: "https://github.com/flitsmeister/turf-swift.git", exact: "0.2.2"),
         .package(url: "https://github.com/mapbox/mapbox-speech-swift.git", from: "2.1.1"),
         .package(url: "https://github.com/ceeK/Solar.git", from: "3.0.1"),
@@ -60,7 +58,7 @@ let package = Package(
         .target(
             name: "MapboxNavigationObjC",
             dependencies: [
-                .product(name: "Mapbox", package: "maplibre-gl-native-distribution"),
+                "MapLibre",
             ],
             path: "MapboxNavigationObjC"
         ),
@@ -96,6 +94,11 @@ let package = Package(
             resources: [
               .process("Resources"),
             ]
+        ),
+        .binaryTarget(
+            name: "MapLibre",
+            url: "https://github.com/maplibre/maplibre-native/releases/download/ios-v6.0.0-pref4d3cb6b69a643d3cfd02f89d80ee162bdadf59e/MapLibre.dynamic.xcframework.zip",
+            checksum: "f3f3f5ef503f83f9ce93296894814902e2e9c72314420f1656d132946bfb37bc"
         ),
     ]
 )
