@@ -244,15 +244,6 @@ open class NavigationMapView: MGLMapView, UIGestureRecognizerDelegate {
         addSubview(imageView)
     }
     
-    open override func layoutSubviews() {
-        super.layoutSubviews()
-        
-        //If the map is in tracking mode, make sure we update the camera after the layout pass.
-        if (tracksUserCourse) {
-            updateCourseTracking(location: userLocationForCourseTracking, camera:self.camera, animated: false)
-        }
-    }
-    
     open override func anchorPoint(forGesture gesture: UIGestureRecognizer) -> CGPoint {
         if tracksUserCourse {
             return userAnchorPoint
@@ -342,11 +333,9 @@ open class NavigationMapView: MGLMapView, UIGestureRecognizerDelegate {
         }
         
         if tracksUserCourse {
-            let point = userAnchorPoint
-            let padding = UIEdgeInsets(top: point.y, left: point.x, bottom: bounds.height - point.y, right: bounds.width - point.x)
-            let newCamera = camera ?? MGLMapCamera(lookingAtCenter: location.coordinate, fromDistance: altitude, pitch: 45, heading: location.course)
+            let newCamera = camera ?? MGLMapCamera(lookingAtCenter: location.coordinate, altitude: altitude, pitch: 45.0, heading: location.course)
             let function: CAMediaTimingFunction? = animated ? CAMediaTimingFunction(name: CAMediaTimingFunctionName.linear) : nil
-            setCamera(newCamera, withDuration: duration, animationTimingFunction: function, edgePadding: padding, completionHandler: nil)
+            setCamera(newCamera, withDuration: duration, animationTimingFunction: function, edgePadding: self.cameraEdgeInsets, completionHandler: nil)
         }
         if !tracksUserCourse || userAnchorPoint != userCourseView?.center ?? userAnchorPoint {
             UIView.animate(withDuration: duration, delay: 0, options: [.curveLinear, .beginFromCurrentState], animations: {
