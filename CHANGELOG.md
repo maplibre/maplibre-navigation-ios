@@ -1,8 +1,8 @@
 # Changes to the Mapbox Navigation SDK for iOS
 
 ## Unreleased
- - Removed `updateCourseTracking` from `layoutSubviews()`
- - Set `self.cameraEdgeInsets` for each `setCamera` in `updateCourseTracking()`
+ - Removed setCamera() from updateCourseTracking()
+ - Added setCamera() to progressDidChange()
 
 ## v2.0.0 (May 23, 2023)
  - Upgrade minimum iOS version from 11.0 to 12.0.
