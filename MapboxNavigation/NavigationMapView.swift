@@ -288,13 +288,17 @@ open class NavigationMapView: MGLMapView, UIGestureRecognizerDelegate {
     @objc func progressDidChange(_ notification: Notification) {
         guard tracksUserCourse else { return }
         
-        if let location = userLocationForCourseTracking {
-            let newCamera = MGLMapCamera(lookingAtCenter: location.coordinate, acrossDistance: altitude, pitch: 45, heading: location.course)
-            let function: CAMediaTimingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.linear)
-            setCamera(newCamera, withDuration: 1, animationTimingFunction: function, edgePadding: UIEdgeInsets.zero, completionHandler: nil)
-        }
-        
         let routeProgress = notification.userInfo![RouteControllerNotificationUserInfoKey.routeProgressKey] as! RouteProgress
+        
+        if let location = userLocationForCourseTracking {
+            let cameraUpdated = courseTrackingDelegate?.updateCamera?(self, location: location, routeProgress: routeProgress) ?? false
+            
+            if(!cameraUpdated){
+                let newCamera = MGLMapCamera(lookingAtCenter: location.coordinate, acrossDistance: altitude, pitch: 45, heading: location.course)
+                let function: CAMediaTimingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.linear)
+                setCamera(newCamera, withDuration: 1, animationTimingFunction: function, edgePadding: UIEdgeInsets.zero, completionHandler: nil)
+            }
+        }
         
         let stepProgress = routeProgress.currentLegProgress.currentStepProgress
         let expectedTravelTime = stepProgress.step.expectedTravelTime
@@ -339,6 +343,7 @@ open class NavigationMapView: MGLMapView, UIGestureRecognizerDelegate {
     
 
     @objc public func updateCourseTracking(location: CLLocation?, camera: MGLMapCamera? = nil, animated: Bool = false) {
+        
         // While animating to overhead mode, don't animate the puck.
         let duration: TimeInterval = animated && !isAnimatingToOverheadMode ? 1 : 0
         animatesUserLocation = animated
@@ -1244,4 +1249,13 @@ public protocol NavigationMapViewCourseTrackingDelegate: AnyObject {
      */
     @objc(navigationMapViewDidStopTrackingCourse:)
     optional func navigationMapViewDidStopTrackingCourse(_ mapView: NavigationMapView)
+    
+    /**
+     Allows to pass a custom camera location given the current route progress. If you return true, the camera won't be updated by the NavigationMapView.
+     - parameter mapView: The NavigationMapView.
+     - parameter location: The current user location
+     - parameter routeProgress: The current route progress
+     */
+    @objc(navigationMapView:location:routeProgrss:)
+    optional func updateCamera(_ mapView: NavigationMapView, location: CLLocation, routeProgress: RouteProgress) -> Bool
 }

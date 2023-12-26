@@ -3,6 +3,7 @@
 ## Unreleased
  - Removed setCamera() from updateCourseTracking()
  - Added setCamera() to progressDidChange()
+ - Add option to overwrite camera update via NavigationMapViewCourseTrackingDelegate#updateCamera
 
 ## v2.0.0 (May 23, 2023)
  - Upgrade minimum iOS version from 11.0 to 12.0.
