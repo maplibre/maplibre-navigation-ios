@@ -205,8 +205,6 @@
 		C538E506278DCD0E00200823 /* MapboxDirections.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C538E4D9278DC92F00200823 /* MapboxDirections.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		C538E507278DCD0F00200823 /* MapboxGeocoder.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = C538E4D7278DC92F00200823 /* MapboxGeocoder.xcframework */; };
 		C538E508278DCD0F00200823 /* MapboxGeocoder.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C538E4D7278DC92F00200823 /* MapboxGeocoder.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		C538E50B278DCD1A00200823 /* MapboxSpeech.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = C538E4D6278DC92F00200823 /* MapboxSpeech.xcframework */; };
-		C538E50C278DCD1A00200823 /* MapboxSpeech.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C538E4D6278DC92F00200823 /* MapboxSpeech.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		C538E50D278DCD1C00200823 /* Polyline.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = C538E4D5278DC92F00200823 /* Polyline.xcframework */; };
 		C538E50E278DCD1C00200823 /* Polyline.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C538E4D5278DC92F00200823 /* Polyline.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		C538E50F278DCD1E00200823 /* Solar.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = C538E4D8278DC92F00200823 /* Solar.xcframework */; };
@@ -217,8 +215,6 @@
 		C538E514278DCD2400200823 /* MapboxDirections.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C538E4D9278DC92F00200823 /* MapboxDirections.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		C538E515278DCD2500200823 /* MapboxGeocoder.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = C538E4D7278DC92F00200823 /* MapboxGeocoder.xcframework */; };
 		C538E516278DCD2500200823 /* MapboxGeocoder.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C538E4D7278DC92F00200823 /* MapboxGeocoder.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		C538E519278DCD2700200823 /* MapboxSpeech.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = C538E4D6278DC92F00200823 /* MapboxSpeech.xcframework */; };
-		C538E51A278DCD2700200823 /* MapboxSpeech.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C538E4D6278DC92F00200823 /* MapboxSpeech.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		C538E51B278DCD2900200823 /* Polyline.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = C538E4D5278DC92F00200823 /* Polyline.xcframework */; };
 		C538E51C278DCD2900200823 /* Polyline.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C538E4D5278DC92F00200823 /* Polyline.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		C538E51D278DCD2A00200823 /* Solar.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = C538E4D8278DC92F00200823 /* Solar.xcframework */; };
@@ -458,7 +454,6 @@
 				354A01DE1E6626EA00D765C2 /* MapboxNavigation.framework in Embed Frameworks */,
 				C538E508278DCD0F00200823 /* MapboxGeocoder.xcframework in Embed Frameworks */,
 				C538E506278DCD0E00200823 /* MapboxDirections.xcframework in Embed Frameworks */,
-				C538E50C278DCD1A00200823 /* MapboxSpeech.xcframework in Embed Frameworks */,
 				C538E512278DCD1F00200823 /* Turf.xcframework in Embed Frameworks */,
 				C538E50E278DCD1C00200823 /* Polyline.xcframework in Embed Frameworks */,
 			);
@@ -476,7 +471,6 @@
 				C53F2EFF20EBC95600D9798F /* MapboxNavigation.framework in Embed Frameworks */,
 				C538E514278DCD2400200823 /* MapboxDirections.xcframework in Embed Frameworks */,
 				C538E516278DCD2500200823 /* MapboxGeocoder.xcframework in Embed Frameworks */,
-				C538E51A278DCD2700200823 /* MapboxSpeech.xcframework in Embed Frameworks */,
 				C538E520278DCD2B00200823 /* Turf.xcframework in Embed Frameworks */,
 				C538E51C278DCD2900200823 /* Polyline.xcframework in Embed Frameworks */,
 			);
@@ -688,7 +682,6 @@
 		C5381F01204E03B600A5493E /* UIDevice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIDevice.swift; sourceTree = "<group>"; };
 		C5387A9C1F8FDB13000D2E93 /* routeWithInstructions.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = routeWithInstructions.json; sourceTree = "<group>"; };
 		C538E4D5278DC92F00200823 /* Polyline.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = Polyline.xcframework; path = Carthage/Build/Polyline.xcframework; sourceTree = "<group>"; };
-		C538E4D6278DC92F00200823 /* MapboxSpeech.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = MapboxSpeech.xcframework; path = Carthage/Build/MapboxSpeech.xcframework; sourceTree = "<group>"; };
 		C538E4D7278DC92F00200823 /* MapboxGeocoder.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = MapboxGeocoder.xcframework; path = Carthage/Build/MapboxGeocoder.xcframework; sourceTree = "<group>"; };
 		C538E4D8278DC92F00200823 /* Solar.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = Solar.xcframework; path = Carthage/Build/Solar.xcframework; sourceTree = "<group>"; };
 		C538E4D9278DC92F00200823 /* MapboxDirections.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = MapboxDirections.xcframework; path = Carthage/Build/MapboxDirections.xcframework; sourceTree = "<group>"; };
@@ -905,7 +898,6 @@
 				354A01DD1E6626EA00D765C2 /* MapboxNavigation.framework in Frameworks */,
 				C538E505278DCD0E00200823 /* MapboxDirections.xcframework in Frameworks */,
 				C538E50D278DCD1C00200823 /* Polyline.xcframework in Frameworks */,
-				C538E50B278DCD1A00200823 /* MapboxSpeech.xcframework in Frameworks */,
 				C533529F278DD90B003DEC63 /* Mapbox in Frameworks */,
 				C538E507278DCD0F00200823 /* MapboxGeocoder.xcframework in Frameworks */,
 				C538E511278DCD1F00200823 /* Turf.xcframework in Frameworks */,
@@ -940,7 +932,6 @@
 			files = (
 				C53352A3278DD917003DEC63 /* Mapbox in Frameworks */,
 				C538E51D278DCD2A00200823 /* Solar.xcframework in Frameworks */,
-				C538E519278DCD2700200823 /* MapboxSpeech.xcframework in Frameworks */,
 				C53F2EEA20EBC95600D9798F /* MapboxNavigation.framework in Frameworks */,
 				C538E51B278DCD2900200823 /* Polyline.xcframework in Frameworks */,
 				C538E51F278DCD2B00200823 /* Turf.xcframework in Frameworks */,
@@ -1254,7 +1245,6 @@
 				C546586E28FED7F200C068EA /* FBSnapshotTestCase.xcframework */,
 				C538E4D9278DC92F00200823 /* MapboxDirections.xcframework */,
 				C538E4D7278DC92F00200823 /* MapboxGeocoder.xcframework */,
-				C538E4D6278DC92F00200823 /* MapboxSpeech.xcframework */,
 				C538E4D5278DC92F00200823 /* Polyline.xcframework */,
 				C538E4D8278DC92F00200823 /* Solar.xcframework */,
 				C538E4DA278DC92F00200823 /* Turf.xcframework */,
