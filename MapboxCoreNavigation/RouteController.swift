@@ -634,6 +634,9 @@ extension RouteController: CLLocationManagerDelegate {
             guard let strongSelf = self else {
                 return
             }
+            
+            // Update the rerouting state
+            strongSelf.isRerouting = false
 
             if let error = error {
                 strongSelf.delegate?.routeController?(strongSelf, didFailToRerouteWith: error)
@@ -687,7 +690,6 @@ extension RouteController: CLLocationManagerDelegate {
             self.lastRerouteLocation = location
             
             let complete = { [weak self] (mostSimilarRoute: Route?, routes: [Route]?, error: NSError?) in
-                self?.isRerouting = false
                 completion(mostSimilarRoute, routes, error)
             }
             
