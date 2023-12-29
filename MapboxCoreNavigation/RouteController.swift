@@ -679,25 +679,28 @@ extension RouteController: CLLocationManagerDelegate {
     }
 
     func getDirections(from location: CLLocation, along progress: RouteProgress, completion: @escaping (_ mostSimilarRoute: Route?, _ routes: [Route]?, _ error: Error?)->Void) {
-        routeTask?.cancel()
-        let options = progress.reroutingOptions(with: location)
-
-        self.lastRerouteLocation = location
-
-        let complete = { [weak self] (mostSimilarRoute: Route?, routes: [Route]?, error: NSError?) in
-            self?.isRerouting = false
-            completion(mostSimilarRoute, routes, error)
-        }
-        
-        routeTask = directions.calculate(options) {(waypoints, potentialRoutes, potentialError) in
-
-            guard let routes = potentialRoutes else {
-                return complete(nil, nil, potentialError)
+        if(delegate?.routeControllerGetDirections?(from: location, along: progress, completion: completion) != true){
+            // Run the default route calculation if the delegate method is not defined or does not return true
+            routeTask?.cancel()
+            let options = progress.reroutingOptions(with: location)
+            
+            self.lastRerouteLocation = location
+            
+            let complete = { [weak self] (mostSimilarRoute: Route?, routes: [Route]?, error: NSError?) in
+                self?.isRerouting = false
+                completion(mostSimilarRoute, routes, error)
             }
             
-            // Checks by comparing leg `name` properties and see if the edit distance is within threshold
-            let mostSimilar = routes.mostSimilar(to: progress.route)
-            return complete(mostSimilar ?? routes.first, routes, potentialError)
+            routeTask = directions.calculate(options) {(waypoints, potentialRoutes, potentialError) in
+                
+                guard let routes = potentialRoutes else {
+                    return complete(nil, nil, potentialError)
+                }
+                
+                // Checks by comparing leg `name` properties and see if the edit distance is within threshold
+                let mostSimilar = routes.mostSimilar(to: progress.route)
+                return complete(mostSimilar ?? routes.first, routes, potentialError)
+            }
         }
     }
 

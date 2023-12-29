@@ -114,4 +114,17 @@ public protocol RouteControllerDelegate: AnyObject {
      */
     @objc(routeControllerShouldDisableBatteryMonitoring:)
     optional func routeControllerShouldDisableBatteryMonitoring(_ routeController: RouteController) -> Bool
+    
+    /**
+    Allows to customise the calculation of a route.
+    
+    If you want to overwrite the defult rerouting loigc, return true.
+     
+     - parameter from: The current olocation of the user
+     - parameter along: The route progress
+     - parameter completion: Callbackc function when either the route was sucessfully caluclated or if there was an error
+     - return: True to preferent the route controller from running its own rerouting logic
+     */
+    @objc(routeControllerGetDirections:along:completion:)
+    optional func routeControllerGetDirections(from location: CLLocation, along progress: RouteProgress, completion: @escaping (_ mostSimilarRoute: Route?, _ routes: [Route]?, _ error: Error?)->Void) -> Bool
 }
