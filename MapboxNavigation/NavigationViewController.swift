@@ -372,7 +372,7 @@ open class NavigationViewController: UIViewController {
         self.routeController.delegate = self
         self.routeController.tunnelIntersectionManager.delegate = self
 
-        self.voiceController = voiceController ?? MapboxVoiceController()
+        self.voiceController = voiceController ?? RouteVoiceController()
 
         self.directions = directions
         self.route = route
