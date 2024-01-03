@@ -1256,6 +1256,6 @@ public protocol NavigationMapViewCourseTrackingDelegate: AnyObject {
      - parameter location: The current user location
      - parameter routeProgress: The current route progress
      */
-    @objc(navigationMapView:location:routeProgrss:)
+    @objc(navigationMapView:location:routeProgress:)
     optional func updateCamera(_ mapView: NavigationMapView, location: CLLocation, routeProgress: RouteProgress) -> Bool
 }
