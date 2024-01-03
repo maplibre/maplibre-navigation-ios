@@ -118,12 +118,12 @@ public protocol RouteControllerDelegate: AnyObject {
     /**
     Allows to customise the calculation of a route.
     
-    If you want to overwrite the defult rerouting loigc, return true.
+    If you want to overwrite the default rerouting logic, return true.
      
-     - parameter from: The current olocation of the user
+     - parameter from: The current location of the user
      - parameter along: The route progress
-     - parameter completion: Callbackc function when either the route was sucessfully caluclated or if there was an error
-     - return: True to preferent the route controller from running its own rerouting logic
+     - parameter completion: Callback function when either the route was successfully calculated or if there was an error
+     - return: True to prevent the route controller from running its own rerouting logic
      */
     @objc(routeControllerGetDirections:along:completion:)
     optional func routeControllerGetDirections(from location: CLLocation, along progress: RouteProgress, completion: @escaping (_ mostSimilarRoute: Route?, _ routes: [Route]?, _ error: Error?)->Void) -> Bool
