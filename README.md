@@ -36,7 +36,7 @@ If you are looking to include this inside your project, you have to follow the t
 1. Add Maplibre Maps SPM (Swift Package Manager) depedency by going to your app's project file -> Package Dependencies -> Press the '+' -> https://github.com/maplibre/maplibre-gl-native-distribution -> 'Exact' 5.12.2 
 1. Add dependencies to Cartfile
    ```
-   github "maplibre/maplibre-navigation-ios" ~> 1.0.6
+   github "maplibre/maplibre-navigation-ios" ~> 2.0.0
    ```
 1. Build the frameworks
    - Open terminal

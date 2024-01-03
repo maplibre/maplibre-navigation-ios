@@ -4,6 +4,8 @@
  - Removed setCamera() from updateCourseTracking()
  - Added setCamera() to progressDidChange()
  - Allow to customize rerouting logic by implementing RouteControllerDelegate#routeControllerGetDirections 
+ - Add option to overwrite camera update via NavigationMapViewCourseTrackingDelegate#updateCamera
+ - Remove MapboxVoiceController and Mapbox Speech dependency. If you would like to use MapboxSpeech, you can copy the deleted MapboxVoiceController into your project.
 
 ## v2.0.0 (May 23, 2023)
  - Upgrade minimum iOS version from 11.0 to 12.0.
