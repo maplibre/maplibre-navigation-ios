@@ -7,6 +7,7 @@
  - Add option to overwrite camera update via NavigationMapViewCourseTrackingDelegate#updateCamera
  - Remove MapboxVoiceController and Mapbox Speech dependency. If you would like to use MapboxSpeech, you can copy the deleted MapboxVoiceController into your project.
  - Updated MapLibre Native dependency to ios-v6.0.0 (https://github.com/maplibre/maplibre-native/releases/tag/ios-v6.0.0). Implementers need to change the prefix MGL to MLN for all MapLibre Native classes that are referenced.
+ - Only snap location to route if the location is within the `RouteControllerUserLocationSnappingDistance`
 
 ## v2.0.0 (May 23, 2023)
  - Upgrade minimum iOS version from 11.0 to 12.0.
