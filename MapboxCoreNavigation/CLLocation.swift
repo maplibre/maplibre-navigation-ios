@@ -74,14 +74,18 @@ extension CLLocation {
     func snapped(to legProgress: RouteLegProgress) -> CLLocation? {
         let coords = coordinates(for: legProgress)
         
-        guard let closest = Polyline(coords).closestCoordinate(to: coordinate) else { return nil }
+        guard let closest = Polyline(coords).closestCoordinate(to: self.coordinate) else { return nil }
         guard let calculatedCourseForLocationOnStep = interpolatedCourse(along: coords) else { return nil }
         
         let userCourse = calculatedCourseForLocationOnStep
         let userCoordinate = closest.coordinate
         guard let firstCoordinate = legProgress.leg.steps.first?.coordinates?.first else { return nil }
         
-        guard shouldSnap(toRouteWith: calculatedCourseForLocationOnStep, distanceToFirstCoordinateOnLeg: self.coordinate.distance(to: firstCoordinate)) else { return nil }
+        guard shouldSnapCourse(toRouteWith: calculatedCourseForLocationOnStep, distanceToFirstCoordinateOnLeg: self.coordinate.distance(to: firstCoordinate)) else { return nil }
+        
+        guard (closest.distance <= (RouteControllerUserLocationSnappingDistance + self.horizontalAccuracy)) else {
+            return nil
+        }
         
         return CLLocation(coordinate: userCoordinate, altitude: altitude, horizontalAccuracy: horizontalAccuracy, verticalAccuracy: verticalAccuracy, course: userCourse, speed: speed, timestamp: timestamp)
     }
@@ -159,16 +163,16 @@ extension CLLocation {
     }
     
     /**
-     Determines if the a location is qualified enough to allow the user puck to become unsnapped.
+     Determines if the course of a location is qualified enough to allow the user puck to be snapped
      */
-    func shouldSnap(toRouteWith course: CLLocationDirection, distanceToFirstCoordinateOnLeg: CLLocationDistance = CLLocationDistanceMax) -> Bool {
+    func shouldSnapCourse(toRouteWith course: CLLocationDirection, distanceToFirstCoordinateOnLeg: CLLocationDistance = CLLocationDistanceMax) -> Bool {
         
         // If the user is near the beginning of leg, allow for unsnapped more often.
-        let isWithinDepatureStep = distanceToFirstCoordinateOnLeg < RouteControllerManeuverZoneRadius
+        let isWithinDepartureStep = distanceToFirstCoordinateOnLeg < RouteControllerManeuverZoneRadius
 
         if course >= 0 &&
-            (speed >= RouteSnappingMinimumSpeed || isWithinDepatureStep) &&
-            (horizontalAccuracy < RouteSnappingMinimumHorizontalAccuracy || isWithinDepatureStep) &&
+            (speed >= RouteSnappingMinimumSpeed || isWithinDepartureStep) &&
+            (horizontalAccuracy < RouteSnappingMinimumHorizontalAccuracy || isWithinDepartureStep) &&
             course.difference(from: self.course) > RouteSnappingMaxManipulatedCourseAngle {
             return false
         }
