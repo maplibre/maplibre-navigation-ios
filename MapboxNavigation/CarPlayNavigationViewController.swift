@@ -1,4 +1,5 @@
 import Foundation
+import Mapbox
 import MapboxDirections
 import MapboxCoreNavigation
 #if canImport(CarPlay)

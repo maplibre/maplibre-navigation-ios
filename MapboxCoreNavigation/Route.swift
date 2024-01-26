@@ -5,6 +5,8 @@
 //  Created by Sander van Tulden on 28/10/2022.
 //  Copyright © 2022 Mapbox. All rights reserved.
 //
+
+import CoreLocation
 import MapboxDirections
 
 extension Route {
@@ -14,6 +16,6 @@ extension Route {
         }
         let routeOptions = NavigationRouteOptions(waypoints: convertedWaypoints)
         routeOptions.shapeFormat = polylineShapeFormat
-        self.init(json: Fixture.JSONFromFileNamed(name: jsonFileName, bundle: bundle), waypoints: convertedWaypoints, options: routeOptions)
+        self.init(json: Fixture.JSONFromFileNamed(name: jsonFileName), waypoints: convertedWaypoints, options: routeOptions)
     }
 }

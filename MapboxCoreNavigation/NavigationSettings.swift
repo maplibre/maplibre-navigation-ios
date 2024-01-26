@@ -1,4 +1,5 @@
 import Foundation
+import MapboxCoreNavigationObjC
 
 extension Notification.Name {
     /**

@@ -1,10 +1,12 @@
 import XCTest
+import CoreLocation
+import Mapbox
 import MapboxDirections
 import MapboxCoreNavigation
 import Turf
 @testable import MapboxNavigation
 
-let response = Fixture.JSONFromFileNamed(name: "route-with-instructions")
+private let response = Fixture.JSONFromFileNamed(name: "route-with-instructions")
 let otherResponse = Fixture.JSONFromFileNamed(name: "route-for-lane-testing")
 
 class NavigationViewControllerTests: XCTestCase {

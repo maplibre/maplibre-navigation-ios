@@ -1,5 +1,7 @@
 import XCTest
+import CoreLocation
 import MapboxDirections
+import MapboxCoreNavigationTestsObjc
 import Turf
 @testable import MapboxCoreNavigation
 
