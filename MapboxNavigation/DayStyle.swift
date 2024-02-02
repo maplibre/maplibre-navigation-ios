@@ -1,5 +1,5 @@
 import Foundation
-import Mapbox
+import MapLibre
 
 
 extension UIColor {
@@ -49,7 +49,7 @@ open class DayStyle: Style {
     
     public required init() {
         super.init()
-        mapStyleURL = MGLStyle.navigationGuidanceDayStyleURL
+        mapStyleURL = MLNStyle.navigationGuidanceDayStyleURL
         styleType = .day
         statusBarStyle = .default
     }
@@ -171,8 +171,8 @@ open class NightStyle: DayStyle {
     
     public required init() {
         super.init()
-        mapStyleURL = MGLStyle.navigationGuidanceNightStyleURL
-        previewMapStyleURL = MGLStyle.navigationPreviewNightStyleURL
+        mapStyleURL = MLNStyle.navigationGuidanceNightStyleURL
+        previewMapStyleURL = MLNStyle.navigationPreviewNightStyleURL
         styleType = .night
         statusBarStyle = .lightContent
     }
