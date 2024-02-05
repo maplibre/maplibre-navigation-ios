@@ -18,8 +18,7 @@ let package = Package(
         .package(url: "https://github.com/flitsmeister/mapbox-directions-swift", exact: "0.23.2"),
         .package(url: "https://github.com/flitsmeister/turf-swift", exact: "0.2.2"),
         .package(url: "https://github.com/maplibre/maplibre-gl-native-distribution.git", from: "5.0.0"),
-        .package(url: "https://github.com/ceeK/Solar.git", exact: "3.0.1"),
-        .package(url: "https://github.com/uber/ios-snapshot-test-case", exact: "8.0.0")
+        .package(url: "https://github.com/ceeK/Solar.git", exact: "3.0.1")
     ],
     targets: [
         .target(
@@ -36,18 +35,6 @@ let package = Package(
             name: "MapboxCoreNavigationObjC",
             path: "MapboxCoreNavigationObjC"
         ),
-        .testTarget(
-            name: "MapboxCoreNavigationTests",
-            dependencies: [
-                "MapboxCoreNavigation",
-                "MapboxCoreNavigationTestsObjc"
-            ],
-            path: "MapboxCoreNavigationTests"
-        ),
-        .target(
-            name: "MapboxCoreNavigationTestsObjc",
-            path: "MapboxCoreNavigationTestsObjc"
-        ),
         .target(
             name: "MapboxNavigation",
             dependencies: [
@@ -63,10 +50,6 @@ let package = Package(
                 .product(name: "Mapbox", package: "maplibre-gl-native-distribution")
             ],
             path: "MapboxNavigationObjC"
-        ),
-        .target(
-            name: "MapboxNavigationTestsObjc",
-            path: "MapboxNavigationTestsObjc"
         )
     ]
 )
