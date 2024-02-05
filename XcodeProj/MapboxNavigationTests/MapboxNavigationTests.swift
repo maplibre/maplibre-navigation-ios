@@ -1,23 +1,23 @@
 import XCTest
-import FBSnapshotTestCase
+import iOSSnapshotTestCase
 import MapboxDirections
 @testable import MapboxNavigation
 @testable import MapboxCoreNavigation
 
-let response = Fixture.JSONFromFileNamed(name: "route-with-lanes")
+let response = Fixture.JSONFromFileNamed(name: "route-with-lanes", bundle: .testsBundle)
 let jsonRoute = (response["routes"] as! [AnyObject]).first as! [String : Any]
 let waypoint1 = Waypoint(coordinate: CLLocationCoordinate2D(latitude: 37.795042, longitude: -122.413165))
 let waypoint2 = Waypoint(coordinate: CLLocationCoordinate2D(latitude: 37.7727, longitude: -122.433378))
 let bogusToken = "pk.feedCafeDeadBeefBadeBede"
 let directions = Directions(accessToken: bogusToken)
-let route = Route(json: jsonRoute, waypoints: [waypoint1, waypoint2], routeOptions: RouteOptions(waypoints: [waypoint1, waypoint2]))
+let route = Route(json: jsonRoute, waypoints: [waypoint1, waypoint2], options: RouteOptions(waypoints: [waypoint1, waypoint2]))
 
 class MapboxNavigationTests: FBSnapshotTestCase {
 
     override func setUp() {
         super.setUp()
         recordMode = false
-        isDeviceAgnostic = true
+//        isDeviceAgnostic = true
     }
 
     func storyboard() -> UIStoryboard {

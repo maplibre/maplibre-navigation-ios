@@ -16,7 +16,7 @@
 }
     
 - (void)testUpdateRoute {
-    NSDictionary *response = [Fixture JSONFromFileNamedWithName:@"routeWithInstructions"];
+    NSDictionary *response = [Fixture JSONFromFileNamedWithName:@"routeWithInstructions" bundle:[NSBundle coreTestsBundle]];
     NSDictionary *routeDict = response[@"routes"][0];
     MBWaypoint *wp1 = [[MBWaypoint alloc] initWithCoordinate:CLLocationCoordinate2DMake(37.795042, -122.413165) coordinateAccuracy:0 name:@"wp1"];
     MBWaypoint *wp2 = [[MBWaypoint alloc] initWithCoordinate:CLLocationCoordinate2DMake(37.7727, -122.433378) coordinateAccuracy:0 name:@"wp2"];

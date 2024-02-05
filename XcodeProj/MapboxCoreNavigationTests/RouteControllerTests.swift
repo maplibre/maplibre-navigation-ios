@@ -6,8 +6,8 @@ import Turf
 fileprivate let mbTestHeading: CLLocationDirection = 50
 
 extension Bundle {
-    class var testingBundle: Bundle {
-        get { return Bundle(for: RouteControllerTests.self) }
+    @objc class var coreTestsBundle: Bundle {
+        get { Bundle(for: RouteControllerTests.self) }
     }
 }
 
@@ -159,7 +159,7 @@ class RouteControllerTests: XCTestCase {
 
     func testUserPuckShouldFaceBackwards() {
         // This route is a simple straight line: http://geojson.io/#id=gist:anonymous/64cfb27881afba26e3969d06bacc707c&map=17/37.77717/-122.46484
-        let response = Fixture.JSONFromFileNamed(name: "straight-line")
+        let response = Fixture.JSONFromFileNamed(name: "straight-line", bundle: .coreTestsBundle)
         let jsonRoute = (response["routes"] as! [AnyObject]).first as! [String: Any]
         let waypoint1 = Waypoint(coordinate: CLLocationCoordinate2D(latitude: 37.795042, longitude: -122.413165))
         let waypoint2 = Waypoint(coordinate: CLLocationCoordinate2D(latitude: 37.7727, longitude: -122.433378))
@@ -336,7 +336,7 @@ class RouteControllerTests: XCTestCase {
                 CLLocationCoordinate2D(latitude: 51.83116792, longitude: 5.83897820),
                 CLLocationCoordinate2D(latitude: 52.03920380, longitude: 5.55133121)
             ],
-            bundle: .testingBundle,
+            bundle: .coreTestsBundle,
             accessToken: Constants.accessToken
         )
     }()
@@ -348,7 +348,7 @@ class RouteControllerTests: XCTestCase {
                 CLLocationCoordinate2D(latitude: 51.83116792, longitude: 5.83897820),
                 CLLocationCoordinate2D(latitude: 52.03920380, longitude: 5.55133121)
             ],
-            bundle: .testingBundle,
+            bundle: .coreTestsBundle,
             accessToken: Constants.accessToken
         )
     }()
@@ -361,7 +361,7 @@ class RouteControllerTests: XCTestCase {
                 CLLocationCoordinate2D(latitude: 51.83116792, longitude: 5.83897820),
                 CLLocationCoordinate2D(latitude: 52.03920380, longitude: 5.55133121)
             ],
-            bundle: .testingBundle,
+            bundle: .coreTestsBundle,
             accessToken: Constants.accessToken
         )
     }()
@@ -373,7 +373,7 @@ class RouteControllerTests: XCTestCase {
                 CLLocationCoordinate2D(latitude: 51.99711882858318, longitude: 5.7932572786103265),
                 CLLocationCoordinate2D(latitude: 52.0392038, longitude: 5.55133121)
             ],
-            bundle: .testingBundle,
+            bundle: .coreTestsBundle,
             accessToken: Constants.accessToken
         )
     }()
@@ -386,7 +386,7 @@ class RouteControllerTests: XCTestCase {
                 CLLocationCoordinate2D(latitude: 52.04451273, longitude: 5.57902714),
                 CLLocationCoordinate2D(latitude: 52.0392038, longitude: 5.55133121)
             ],
-            bundle: .testingBundle,
+            bundle: .coreTestsBundle,
             accessToken: Constants.accessToken
         )
     }()
@@ -398,7 +398,7 @@ class RouteControllerTests: XCTestCase {
                 CLLocationCoordinate2D(latitude: 52.02224357, longitude: 5.78149084),
                 CLLocationCoordinate2D(latitude: 52.03924958, longitude: 5.55054131)
             ],
-            bundle: .testingBundle,
+            bundle: .coreTestsBundle,
             accessToken: Constants.accessToken
         )
     }()
@@ -411,7 +411,7 @@ class RouteControllerTests: XCTestCase {
                 CLLocationCoordinate2D(latitude: 52.03917716, longitude: 5.55201356),
                 CLLocationCoordinate2D(latitude: 52.03924958, longitude: 5.55054131)
             ],
-            bundle: .testingBundle,
+            bundle: .coreTestsBundle,
             accessToken: Constants.accessToken
         )
     }()
@@ -424,7 +424,7 @@ class RouteControllerTests: XCTestCase {
                 CLLocationCoordinate2D(latitude: 52.04520875, longitude: 5.5748937),
                 CLLocationCoordinate2D(latitude: 52.03924958, longitude: 5.55054131)
             ],
-            bundle: .testingBundle,
+            bundle: .coreTestsBundle,
             accessToken: Constants.accessToken
         )
     }()
@@ -591,7 +591,7 @@ class RouteControllerTests: XCTestCase {
                 CLLocationCoordinate2D(latitude: 52.02224357, longitude: 5.78149084),
                 CLLocationCoordinate2D(latitude: 52.03924958, longitude: 5.55054131)
             ],
-            bundle: .testingBundle,
+            bundle: .coreTestsBundle,
             accessToken: Constants.accessToken
         )
     }()

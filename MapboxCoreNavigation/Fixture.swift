@@ -1,9 +1,9 @@
 import Foundation
 
-@objc(MBFixture)
-internal class Fixture: NSObject {
-    @objc class func stringFromFileNamed(name: String) -> String {
-        guard let path = Bundle.module.path(forResource: name, ofType: "json") ?? Bundle(for: self).path(forResource: name, ofType: "geojson") else {
+public class Fixture: NSObject {
+    
+    public class func stringFromFileNamed(name: String, bundle: Bundle) -> String {
+        guard let path = bundle.path(forResource: name, ofType: "json") ?? bundle.path(forResource: name, ofType: "geojson") else {
             return ""
         }
         do {
@@ -13,8 +13,8 @@ internal class Fixture: NSObject {
         }
     }
     
-    @objc class func JSONFromFileNamed(name: String) -> [String: Any] {
-        guard let path = Bundle.module.path(forResource: name, ofType: "json") ?? Bundle(for: self).path(forResource: name, ofType: "geojson") else {
+    @objc public class func JSONFromFileNamed(name: String, bundle: Bundle) -> [String: Any] {
+        guard let path = bundle.path(forResource: name, ofType: "json") ?? bundle.path(forResource: name, ofType: "geojson") else {
             return [:]
         }
         guard let data = NSData(contentsOfFile: path) else {
