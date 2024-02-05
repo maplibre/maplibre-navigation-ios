@@ -1,7 +1,6 @@
 import UIKit
 import MapboxNavigation
 
-
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
