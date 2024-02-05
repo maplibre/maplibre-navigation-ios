@@ -6,6 +6,7 @@
  - Allow to customize rerouting logic by implementing RouteControllerDelegate#routeControllerGetDirections 
  - Add option to overwrite camera update via NavigationMapViewCourseTrackingDelegate#updateCamera
  - Remove MapboxVoiceController and Mapbox Speech dependency. If you would like to use MapboxSpeech, you can copy the deleted MapboxVoiceController into your project.
+ - Add support for Swift Package Manager while dropping Carthage and Cocoapods.
 
 ## v2.0.0 (May 23, 2023)
  - Upgrade minimum iOS version from 11.0 to 12.0.
