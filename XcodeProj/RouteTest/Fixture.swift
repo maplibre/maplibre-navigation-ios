@@ -2,45 +2,14 @@ import CoreLocation
 import MapboxDirections
 import MapboxCoreNavigation
 
-internal class Fixture {
-    class func JSONFromFileNamed(name: String, bundle: Bundle = .main) -> [String: Any] {
-        guard let path = bundle.path(forResource: name, ofType: "json") ?? bundle.path(forResource: name, ofType: "geojson") else {
-            return [:]
-        }
-        guard let data = NSData(contentsOfFile: path) else {
-            return [:]
-        }
-        do {
-            return try JSONSerialization.jsonObject(with: data as Data, options: []) as! [String: AnyObject]
-        } catch {
-            return [:]
-        }
-    }
-    
-    class func route(from url: URL) -> Route {
-        let semaphore = DispatchSemaphore(value: 0)
-        
-        var json = [String: Any]()
-        URLSession.shared.dataTask(with: url) { (data, response, error) in
-            guard let data = data else {
-                assertionFailure("No route data")
-                return
-            }
-            json = try! JSONSerialization.jsonObject(with: data, options: []) as! [String : Any]
-            semaphore.signal()
-        }.resume()
-        
-        _ = semaphore.wait(timeout: DispatchTime.distantFuture)
-        
-        return route(from: json)
-    }
+extension Fixture {
     
     class func route(from filename: String) -> Route {
-        let response = Fixture.JSONFromFileNamed(name: filename)
+        let response = Fixture.JSONFromFileNamed(name: filename, bundle: Bundle(for: AppDelegate.self))
         return route(from: response)
     }
     
-    fileprivate class func route(from response: [String: Any]) -> Route {
+    private class func route(from response: [String: Any]) -> Route {
         let jsonRoute = (response["routes"] as! [AnyObject]).first as! [String: Any]
         let jsonWaypoints = response["waypoints"] as! [[String: Any]]
         
