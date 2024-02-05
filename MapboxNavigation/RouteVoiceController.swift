@@ -1,8 +1,8 @@
 
-import Foundation
 import AVFoundation
-import MapboxDirections
+import Foundation
 import MapboxCoreNavigation
+import MapboxDirections
 
 extension ErrorUserInfoKey {
     static let spokenInstructionErrorCode = MBSpokenInstructionErrorCodeKey
@@ -101,7 +101,7 @@ open class RouteVoiceController: NSObject, AVSpeechSynthesizerDelegate {
         }
 
         if !Bundle.main.backgroundModes.contains("audio") {
-            assert(false, "This application’s Info.plist file must include “audio” in UIBackgroundModes. This background mode is used for spoken instructions while the application is in the background.")
+            assertionFailure("This application’s Info.plist file must include “audio” in UIBackgroundModes. This background mode is used for spoken instructions while the application is in the background.")
         }
     }
 
@@ -115,7 +115,7 @@ open class RouteVoiceController: NSObject, AVSpeechSynthesizerDelegate {
         NotificationCenter.default.addObserver(self, selector: #selector(pauseSpeechAndPlayReroutingDing(notification:)), name: .routeControllerWillReroute, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(didReroute(notification:)), name: .routeControllerDidReroute, object: nil)
         
-        muteToken = NavigationSettings.shared.observe(\.voiceMuted) { [weak self] (settings, change) in
+        muteToken = NavigationSettings.shared.observe(\.voiceMuted) { [weak self] settings, _ in
             if settings.voiceMuted {
                 self?.speechSynth.stopSpeaking(at: .immediate)
             }
@@ -180,9 +180,15 @@ open class RouteVoiceController: NSObject, AVSpeechSynthesizerDelegate {
         routeProgress = notification.userInfo![RouteControllerNotificationUserInfoKey.routeProgressKey] as? RouteProgress
         assert(routeProgress != nil, "routeProgress should not be nil.")
 
-        guard let instruction = routeProgress!.currentLegProgress.currentStepProgress.currentSpokenInstruction else { return }
+        guard
+            let instruction = routeProgress?.currentLegProgress.currentStepProgress.currentSpokenInstruction,
+            let speechLocale = routeProgress?.route.routeOptions.locale
+        else {
+            return
+        }
+        
         lastSpokenInstruction = instruction
-        speak(instruction)
+        speak(instruction, with: speechLocale)
     }
     
     /**
@@ -190,7 +196,7 @@ open class RouteVoiceController: NSObject, AVSpeechSynthesizerDelegate {
      
      - parameter instruction: The instruction to read aloud.
      */
-    open func speak(_ instruction: SpokenInstruction) {
+    open func speak(_ instruction: SpokenInstruction, with locale: Locale) {
         assert(routeProgress != nil, "routeProgress should not be nil.")
         
         if speechSynth.isSpeaking, let lastSpokenInstruction = lastSpokenInstruction {
@@ -204,7 +210,7 @@ open class RouteVoiceController: NSObject, AVSpeechSynthesizerDelegate {
         }
         
         var utterance: AVSpeechUtterance?
-        if Locale.preferredLocalLanguageCountryCode == "en-US" {
+        if locale.identifier == "en-US" {
             // Alex can’t handle attributed text.
             utterance = AVSpeechUtterance(string: instruction.text)
             utterance!.voice = AVSpeechSynthesisVoice(identifier: AVSpeechSynthesisVoiceIdentifierAlex)
@@ -220,7 +226,7 @@ open class RouteVoiceController: NSObject, AVSpeechSynthesizerDelegate {
         
         // Only localized languages will have a proper fallback voice
         if utterance?.voice == nil {
-            utterance?.voice = AVSpeechSynthesisVoice(language: Locale.preferredLocalLanguageCountryCode)
+            utterance?.voice = AVSpeechSynthesisVoice(language: locale.identifier)
         }
         
         if let utterance = utterance {
