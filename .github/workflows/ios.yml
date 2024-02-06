@@ -16,10 +16,6 @@ jobs:
           default="All Tests"
           echo $default | cat >default
           echo Using default scheme: $default
-      - name: "Carthage Bootstrap"
-        uses: olejnjak/carthage-workaround@v1
-        with:
-            action: bootstrap --platform iOS  --use-xcframeworks --cache-builds
       - name: Build
         env:
           scheme: ${{ 'default' }}
