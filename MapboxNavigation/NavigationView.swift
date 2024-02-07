@@ -231,6 +231,6 @@ open class NavigationView: UIView {
     }
 }
 
-protocol NavigationViewDelegate: NavigationMapViewDelegate, MGLMapViewDelegate, StatusViewDelegate, InstructionsBannerViewDelegate, NavigationMapViewCourseTrackingDelegate, VisualInstructionDelegate {
+protocol NavigationViewDelegate: NavigationMapViewDelegate, MLNMapViewDelegate, StatusViewDelegate, InstructionsBannerViewDelegate, NavigationMapViewCourseTrackingDelegate, VisualInstructionDelegate {
     func navigationView(_ view: NavigationView, didTapCancelButton: CancelButton)
 }

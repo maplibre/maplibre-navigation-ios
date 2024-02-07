@@ -1,15 +1,15 @@
 import UIKit
 import MapboxCoreNavigation
 import MapboxNavigation
-import Mapbox
+import MapLibre
 import CoreLocation
 import AVFoundation
 import MapboxDirections
 import Turf
 
-class CustomViewController: UIViewController, MGLMapViewDelegate {
+class CustomViewController: UIViewController, MLNMapViewDelegate {
 
-    var destination: MGLPointAnnotation!
+    var destination: MLNPointAnnotation!
     let directions = Directions.shared
     var routeController: RouteController!
     var simulateLocation = false
@@ -69,7 +69,7 @@ class CustomViewController: UIViewController, MGLMapViewDelegate {
         NotificationCenter.default.removeObserver(self, name: .routeControllerDidPassVisualInstructionPoint, object: nil)
     }
 
-    func mapView(_ mapView: MGLMapView, didFinishLoading style: MGLStyle) {
+    func mapView(_ mapView: MLNMapView, didFinishLoading style: MLNStyle) {
         self.mapView.showRoutes([routeController.routeProgress.route])
     }
 
@@ -167,7 +167,7 @@ extension CustomViewController: NavigationMapViewCourseTrackingDelegate {
 
     func updateCamera(_ mapView: NavigationMapView, location: CLLocation, routeProgress: RouteProgress) -> Bool{
         
-        let newCamera = MGLMapCamera(lookingAtCenter: location.coordinate, acrossDistance: 750, pitch: 5, heading: location.course)
+        let newCamera = MLNMapCamera(lookingAtCenter: location.coordinate, acrossDistance: 750, pitch: 5, heading: location.course)
         let function: CAMediaTimingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.linear)
         mapView.setCamera(newCamera, withDuration: 1, animationTimingFunction: function, edgePadding: UIEdgeInsets.zero, completionHandler: nil)
         

@@ -4,10 +4,10 @@
 @import MapboxCoreNavigation;
 @import MapboxDirections;
 @import MapboxNavigation;
-@import Mapbox;
+@import MapLibre;
 
 @interface ViewController () <AVSpeechSynthesizerDelegate>
-@property (nonatomic, weak) IBOutlet MGLMapView *mapView;
+@property (nonatomic, weak) IBOutlet MLNMapView *mapView;
 @property (weak, nonatomic) IBOutlet UIButton *toggleNavigationButton;
 @property (weak, nonatomic) IBOutlet UILabel *howToBeginLabel;
 @property (nonatomic, assign) CLLocationCoordinate2D destination;
@@ -22,7 +22,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
-    self.mapView.userTrackingMode = MGLUserTrackingModeFollow;
+    self.mapView.userTrackingMode = MLNUserTrackingModeFollow;
     
     self.lengthFormatter = [[NSLengthFormatter alloc] init];
     self.lengthFormatter.unitStyle = NSFormattingUnitStyleShort;
@@ -94,7 +94,7 @@
         CLLocationCoordinate2D *routeCoordinates = malloc(route.coordinateCount * sizeof(CLLocationCoordinate2D));
         [route getCoordinates:routeCoordinates];
         
-        MGLPolyline *polyline = [MGLPolyline polylineWithCoordinates:routeCoordinates count:route.coordinateCount];
+        MLNPolyline *polyline = [MLNPolyline polylineWithCoordinates:routeCoordinates count:route.coordinateCount];
         
         [self.mapView addAnnotation:polyline];
         [self.mapView setVisibleCoordinates:routeCoordinates count:route.coordinateCount edgePadding:UIEdgeInsetsZero animated:YES];

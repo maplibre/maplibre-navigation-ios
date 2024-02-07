@@ -15,7 +15,7 @@ All issues are covered with this SDK.
 # What have we changed
 
 - Removed EventManager and all its references, this manager collected telemetry data which we don't want to send
-- Transitioned from the [Mapbox SDK](https://github.com/mapbox/mapbox-gl-native-ios) (version 4.3) to [Maplibre Maps SDK](https://github.com/maplibre/maplibre-gl-native) (version 5.12.2)
+- Transitioned from the [Mapbox SDK](https://github.com/mapbox/mapbox-gl-native-ios) (version 4.3) to [Maplibre Maps SDK](https://github.com/maplibre/maplibre-gl-native) (version 6.0.0)
 - Added optional config parameter in NavigationMapView constructor to customize certain properties like route line color
 
 # Getting Started
@@ -33,7 +33,7 @@ If you are looking to include this inside your project, you have to follow the t
    - Change location to root of XCode project: `cd path/to/Project`
     - Create the Cartfile: `touch Cartfile`
    - New file will be added: `Cartfile`
-1. Add Maplibre Maps SPM (Swift Package Manager) depedency by going to your app's project file -> Package Dependencies -> Press the '+' -> https://github.com/maplibre/maplibre-gl-native-distribution -> 'Exact' 5.12.2 
+1. Add Maplibre Maps SPM (Swift Package Manager) depedency by going to your app's project file -> Package Dependencies -> Press the '+' -> https://github.com/maplibre/maplibre-gl-native-distribution -> 'Exact' 6.0.0 
 1. Add dependencies to Cartfile
    ```
    github "maplibre/maplibre-navigation-ios" ~> 2.0.0
@@ -68,7 +68,7 @@ In order to see the map or calculate a route you need your own Maptile and Direc
 Use the following code as inspiration:
 
 ```
-import Mapbox
+import MapLibre
 import MapboxDirections
 import MapboxCoreNavigation
 import MapboxNavigation
@@ -136,7 +136,7 @@ class ViewController: UIViewController {
 
 extension ViewController: RouteControllerDelegate {
     @objc public func routeController(_ routeController: RouteController, didUpdate locations: [CLLocation]) {
-        let camera = MGLMapCamera(
+        let camera = MLNMapCamera(
             lookingAtCenter: locations.first!.coordinate,
             acrossDistance: 500,
             pitch: 0,

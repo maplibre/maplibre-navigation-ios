@@ -5,8 +5,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/maplibre/maplibre-gl-native-distribution",
       "state" : {
-        "revision" : "d761956e81e74d8bdbfba31e0ec3a75616190658",
-        "version" : "5.12.2"
+        "revision" : "3df876f8f2c6c591b0f66a29b3e216020afc885c",
+        "version" : "6.0.0"
       }
     }
   ],

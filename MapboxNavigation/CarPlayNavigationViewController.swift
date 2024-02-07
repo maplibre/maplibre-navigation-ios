@@ -1,4 +1,5 @@
 import Foundation
+import MapLibre
 import MapboxDirections
 import MapboxCoreNavigation
 #if canImport(CarPlay)
@@ -11,7 +12,7 @@ import CarPlay
  */
 @available(iOS 12.0, *)
 @objc(MBCarPlayNavigationViewController)
-public class CarPlayNavigationViewController: UIViewController, MGLMapViewDelegate {
+public class CarPlayNavigationViewController: UIViewController, MLNMapViewDelegate {
     /**
      The view controller’s delegate.
      */
@@ -177,7 +178,7 @@ public class CarPlayNavigationViewController: UIViewController, MGLMapViewDelega
         mapView?.enableFrameByFrameCourseViewTracking(for: 1)
     }
     
-    public func mapView(_ mapView: MGLMapView, didFinishLoading style: MGLStyle) {
+    public func mapView(_ mapView: MLNMapView, didFinishLoading style: MLNStyle) {
         self.mapView?.addArrow(route: routeController.routeProgress.route, legIndex: routeController.routeProgress.legIndex, stepIndex: routeController.routeProgress.currentLegProgress.stepIndex + 1)
         self.mapView?.showRoutes([routeController.routeProgress.route])
         self.mapView?.showWaypoints(routeController.routeProgress.route)
@@ -196,7 +197,7 @@ public class CarPlayNavigationViewController: UIViewController, MGLMapViewDelega
         let location = notification.userInfo![RouteControllerNotificationUserInfoKey.locationKey] as! CLLocation
         
         // Update the user puck
-        let camera = MGLMapCamera(lookingAtCenter: location.coordinate, fromDistance: 120, pitch: 60, heading: location.course)
+        let camera = MLNMapCamera(lookingAtCenter: location.coordinate, fromDistance: 120, pitch: 60, heading: location.course)
         mapView?.updateCourseTracking(location: location, camera: camera, animated: true)
         
         let congestionLevel = routeProgress.averageCongestionLevelRemainingOnLeg ?? .unknown
@@ -348,7 +349,7 @@ extension CarPlayNavigationViewController: StyleManagerDelegate {
     
     public func styleManager(_ styleManager: StyleManager, didApply style: Style) {
         if mapView?.styleURL != style.mapStyleURL {
-            mapView?.style?.transition = MGLTransition(duration: 0.5, delay: 0)
+            mapView?.style?.transition = MLNTransition(duration: 0.5, delay: 0)
             mapView?.styleURL = style.mapStyleURL
         }
     }
