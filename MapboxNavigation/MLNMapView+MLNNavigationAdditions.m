@@ -1,8 +1,8 @@
-#import "MGLMapView+MGLNavigationAdditions.h"
+#import "MLNMapView+MLNNavigationAdditions.h"
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wincomplete-implementation"
-@implementation MGLMapView (MGLNavigationAdditions)
+@implementation MLNMapView (MLNNavigationAdditions)
 #pragma clang diagnostic pop
 
 @end

@@ -1,6 +1,6 @@
 #import "AppDelegate.h"
 
-@import Mapbox;
+@import MapLibre;
 
 @interface AppDelegate ()
 

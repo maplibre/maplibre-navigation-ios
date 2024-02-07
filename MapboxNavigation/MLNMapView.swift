@@ -1,12 +1,12 @@
 import Foundation
-import Mapbox
+import MapLibre
 import MapboxDirections
 import MapboxCoreNavigation
 
 /**
- An extension on `MGLMapView` that allows for toggling traffic on a map style that contains a [Mapbox Traffic source](https://www.mapbox.com/vector-tiles/mapbox-traffic-v1/).
+ An extension on `MLNMapView` that allows for toggling traffic on a map style that contains a [Mapbox Traffic source](https://www.mapbox.com/vector-tiles/mapbox-traffic-v1/).
  */
-extension MGLMapView {
+extension MLNMapView {
     /**
      Returns a set of source identifiers for tilesets that are or include the Mapbox Incidents source.
      */
@@ -15,7 +15,7 @@ extension MGLMapView {
             return []
         }
         return Set(style.sources.compactMap {
-            $0 as? MGLVectorTileSource
+            $0 as? MLNVectorTileSource
         }.filter {
             $0.configurationURL?.host?.components(separatedBy: ",").contains(tileSetIdentifier) ?? false
         }.map {
@@ -36,7 +36,7 @@ extension MGLMapView {
         
         let incidentsSourceIdentifiers = sourceIdentifiers(forTileSetIdentifier: tileSetIdentifier)
         for layer in style.layers {
-            if let layer = layer as? MGLVectorStyleLayer, let sourceIdentifier = layer.sourceIdentifier {
+            if let layer = layer as? MLNVectorStyleLayer, let sourceIdentifier = layer.sourceIdentifier {
                 if incidentsSourceIdentifiers.contains(sourceIdentifier) && layer.sourceLayerIdentifier == layerIdentifier {
                     return layer.isVisible
                 }
@@ -58,7 +58,7 @@ extension MGLMapView {
         
         let incidentsSourceIdentifiers = sourceIdentifiers(forTileSetIdentifier: tileSetIdentifier)
         for layer in style.layers {
-            if let layer = layer as? MGLVectorStyleLayer, let sourceIdentifier = layer.sourceIdentifier {
+            if let layer = layer as? MLNVectorStyleLayer, let sourceIdentifier = layer.sourceIdentifier {
                 if incidentsSourceIdentifiers.contains(sourceIdentifier) && layer.sourceLayerIdentifier == layerIdentifier {
                     layer.isVisible = isVisible
                 }

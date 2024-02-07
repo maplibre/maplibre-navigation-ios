@@ -1,6 +1,6 @@
-#import <Mapbox/Mapbox.h>
+#import <MapLibre/Mapbox.h>
 
-@interface MGLMapView (MGLNavigationAdditions)
+@interface MLNMapView (MLNNavigationAdditions)
 
 - (void)mapViewDidFinishRenderingFrameFullyRendered:(BOOL)fullyRendered;
 
