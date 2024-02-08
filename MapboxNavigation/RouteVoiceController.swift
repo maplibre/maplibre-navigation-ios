@@ -195,6 +195,7 @@ open class RouteVoiceController: NSObject, AVSpeechSynthesizerDelegate {
      Reads aloud the given instruction.
      
      - parameter instruction: The instruction to read aloud.
+     - parameter locale: The locale used to create the voice read aloud the given instruction.
      */
     open func speak(_ instruction: SpokenInstruction, with locale: Locale) {
         assert(routeProgress != nil, "routeProgress should not be nil.")
