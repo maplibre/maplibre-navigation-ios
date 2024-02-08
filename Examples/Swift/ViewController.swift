@@ -68,7 +68,14 @@ class ViewController: UIViewController, MLNMapViewDelegate {
 
     var alertController: UIAlertController!
     
-    private var selectedLocale: Locale?
+    private var selectedLocale: Locale? {
+        didSet {
+            guard let routes, let selectedLocale else { return }
+            for route in routes {
+                route.routeOptions.locale = selectedLocale
+            }
+        }
+    }
 
     // MARK: - Lifecycle Methods
 
