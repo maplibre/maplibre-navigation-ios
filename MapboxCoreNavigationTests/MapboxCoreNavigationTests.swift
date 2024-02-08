@@ -5,7 +5,9 @@ import Turf
 
 let response = Fixture.JSONFromFileNamed(name: "routeWithInstructions")
 let jsonRoute = (response["routes"] as! [AnyObject]).first as! [String : Any]
+// -122.413165,37.795042
 let waypoint1 = Waypoint(coordinate: CLLocationCoordinate2D(latitude: 37.795042, longitude: -122.413165))
+// -122.433378,37.7727
 let waypoint2 = Waypoint(coordinate: CLLocationCoordinate2D(latitude: 37.7727, longitude: -122.433378))
 let directions = Directions(accessToken: "pk.feedCafeDeadBeefBadeBede")
 let route = Route(json: jsonRoute, waypoints: [waypoint1, waypoint2], options: NavigationRouteOptions(waypoints: [waypoint1, waypoint2]))
@@ -38,9 +40,15 @@ class MapboxCoreNavigationTests: XCTestCase {
         }
     }
     
+    func makeLocation(latitude: Double, longitude: Double, course: CLLocationDirection) -> CLLocation {
+        return CLLocation(coordinate: CLLocationCoordinate2D(latitude: latitude, longitude: longitude), altitude: 1, horizontalAccuracy: 1, verticalAccuracy: 1, course: course, speed: 10, timestamp: Date())
+    }
+    
     func testNewStep() {
         route.accessToken = "foo"
-        let location = CLLocation(coordinate: CLLocationCoordinate2D(latitude: 37.78895, longitude: -122.42543), altitude: 1, horizontalAccuracy: 1, verticalAccuracy: 1, course: 171, speed: 10, timestamp: Date())
+        let coordOnStep1 = route.legs[0].steps[1].coordinates![5]
+        let location = makeLocation(latitude: coordOnStep1.latitude, longitude: coordOnStep1.longitude, course: 250)
+        
         let locationManager = ReplayLocationManager(locations: [location, location])
         navigation = RouteController(along: route, directions: directions, locationManager: locationManager)
         
@@ -49,7 +57,7 @@ class MapboxCoreNavigationTests: XCTestCase {
             
             let routeProgress = notification.userInfo![RouteControllerNotificationUserInfoKey.routeProgressKey] as? RouteProgress
             
-            return routeProgress?.currentLegProgress.stepIndex == 2
+            return routeProgress?.currentLegProgress.stepIndex == 1
         }
         
         navigation.resume()
@@ -61,7 +69,8 @@ class MapboxCoreNavigationTests: XCTestCase {
     
     func testJumpAheadToLastStep() {
         route.accessToken = "foo"
-        let location = CLLocation(coordinate: CLLocationCoordinate2D(latitude: 37.77386, longitude: -122.43085), altitude: 1, horizontalAccuracy: 1, verticalAccuracy: 1, course: 171, speed: 10, timestamp: Date())
+        let coordOnLastStep = route.legs[0].steps[6].coordinates![5]
+        let location = makeLocation(latitude: coordOnLastStep.latitude, longitude: coordOnLastStep.longitude, course: 171)
         
         let locationManager = ReplayLocationManager(locations: [location, location])
         navigation = RouteController(along: route, directions: directions, locationManager: locationManager)
