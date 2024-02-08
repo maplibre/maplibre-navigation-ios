@@ -74,8 +74,6 @@ class MapboxCoreNavigationTests: XCTestCase {
         
         let locationManager = ReplayLocationManager(locations: [location, location])
         navigation = RouteController(along: route, directions: directions, locationManager: locationManager)
-        // Start at step 5, if you want to skip ahead to 6
-        //navigation.routeProgress.currentLegProgress.stepIndex = 5
         
         expectation(forNotification: .routeControllerDidPassSpokenInstructionPoint, object: navigation) { (notification) -> Bool in
             XCTAssertEqual(notification.userInfo?.count, 1)
