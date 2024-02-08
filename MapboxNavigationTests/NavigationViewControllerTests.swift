@@ -286,7 +286,7 @@ class TestableDayStyle: DayStyle {
 
 
 class FakeVoiceController: RouteVoiceController {
-    override func speak(_ instruction: SpokenInstruction) {
+    override func speak(_ instruction: SpokenInstruction, with locale: Locale?) {
         //no-op
     }
     

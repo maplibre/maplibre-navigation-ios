@@ -1,26 +1,26 @@
-import UIKit
-import MapLibre
 import MapboxCoreNavigation
-import MapboxNavigation
 import MapboxDirections
+import MapboxNavigation
+import MapLibre
+import UIKit
 import UserNotifications
 
-
-private typealias RouteRequestSuccess = (([Route]) -> Void)
-private typealias RouteRequestFailure = ((NSError) -> Void)
-
+private typealias RouteRequestSuccess = ([Route]) -> Void
+private typealias RouteRequestFailure = (NSError) -> Void
 
 class ViewController: UIViewController, MLNMapViewDelegate {
-    
+
     // MARK: - IBOutlets
-    @IBOutlet weak var longPressHintView: UIView!
-    @IBOutlet weak var simulationButton: UIButton!
-    @IBOutlet weak var startButton: UIButton!
-    @IBOutlet weak var bottomBar: UIView!
-    @IBOutlet weak var clearMap: UIButton!
-    @IBOutlet weak var bottomBarBackground: UIView!
-    
+
+    @IBOutlet var longPressHintView: UIView!
+    @IBOutlet var simulationButton: UIButton!
+    @IBOutlet var startButton: UIButton!
+    @IBOutlet var bottomBar: UIView!
+    @IBOutlet var clearMap: UIButton!
+    @IBOutlet var bottomBarBackground: UIView!
+
     // MARK: Properties
+
     var mapView: NavigationMapView? {
         didSet {
             oldValue?.removeFromSuperview()
@@ -30,7 +30,7 @@ class ViewController: UIViewController, MLNMapViewDelegate {
             }
         }
     }
-    
+
     var waypoints: [Waypoint] = [] {
         didSet {
             waypoints.forEach {
@@ -52,7 +52,7 @@ class ViewController: UIViewController, MLNMapViewDelegate {
 
     // MARK: Directions Request Handlers
 
-    fileprivate lazy var defaultSuccess: RouteRequestSuccess = { [weak self] (routes) in
+    fileprivate lazy var defaultSuccess: RouteRequestSuccess = { [weak self] routes in
         guard let current = routes.first else { return }
         self?.mapView?.removeWaypoints()
         self?.routes = routes
@@ -61,28 +61,37 @@ class ViewController: UIViewController, MLNMapViewDelegate {
         self?.longPressHintView.isHidden = true
     }
 
-    fileprivate lazy var defaultFailure: RouteRequestFailure = { [weak self] (error) in
-        self?.routes = nil //clear routes from the map
+    fileprivate lazy var defaultFailure: RouteRequestFailure = { [weak self] error in
+        self?.routes = nil // clear routes from the map
         print(error.localizedDescription)
     }
 
     var alertController: UIAlertController!
     
+    private var selectedLocale: Locale? {
+        didSet {
+            guard let routes, let selectedLocale else { return }
+            for route in routes {
+                route.routeOptions.locale = selectedLocale
+            }
+        }
+    }
+
     // MARK: - Lifecycle Methods
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         alertController = UIAlertController(title: "Start Navigation", message: "Select the navigation type", preferredStyle: .actionSheet)
-        
+
         typealias ActionHandler = (UIAlertAction) -> Void
-        
-        let basic: ActionHandler = {_ in self.startBasicNavigation() }
-        let day: ActionHandler = {_ in self.startNavigation(styles: [DayStyle()]) }
-        let night: ActionHandler = {_ in self.startNavigation(styles: [NightStyle()]) }
-        let custom: ActionHandler = {_ in self.startCustomNavigation() }
-        let styled: ActionHandler = {_ in self.startStyledNavigation() }
-        
+
+        let basic: ActionHandler = { _ in self.startBasicNavigation() }
+        let day: ActionHandler = { _ in self.startNavigation(styles: [DayStyle()]) }
+        let night: ActionHandler = { _ in self.startNavigation(styles: [NightStyle()]) }
+        let custom: ActionHandler = { _ in self.startCustomNavigation() }
+        let styled: ActionHandler = { _ in self.startStyledNavigation() }
+
         let actionPayloads: [(String, UIAlertAction.Style, ActionHandler?)] = [
             ("Default UI", .default, basic),
             ("DayStyle UI", .default, day),
@@ -91,24 +100,23 @@ class ViewController: UIViewController, MLNMapViewDelegate {
             ("Styled UI", .default, styled),
             ("Cancel", .cancel, nil)
         ]
-        
+
         actionPayloads
-            .map { payload in UIAlertAction(title: payload.0, style: payload.1, handler: payload.2)}
+            .map { payload in UIAlertAction(title: payload.0, style: payload.1, handler: payload.2) }
             .forEach(alertController.addAction(_:))
 
         if let popoverController = alertController.popoverPresentationController {
-            popoverController.sourceView = self.startButton
+            popoverController.sourceView = startButton
         }
-
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        self.mapView = NavigationMapView(frame: view.bounds, styleURL: nil)
+        mapView = NavigationMapView(frame: view.bounds, styleURL: nil)
 
         // Reset the navigation styling to the defaults if we are returning from a presentation.
-        if (presentedViewController != nil) {
+        if presentedViewController != nil {
             DayStyle().apply()
         }
     }
@@ -117,7 +125,7 @@ class ViewController: UIViewController, MLNMapViewDelegate {
         super.viewDidAppear(animated)
 
         if #available(iOS 10.0, *) {
-            UNUserNotificationCenter.current().requestAuthorization(options: [.badge, .alert, .sound]) { _,_ in
+            UNUserNotificationCenter.current().requestAuthorization(options: [.badge, .alert, .sound]) { _, _ in
                 DispatchQueue.main.async {
                     CLLocationManager().requestWhenInUseAuthorization()
                 }
@@ -137,7 +145,7 @@ class ViewController: UIViewController, MLNMapViewDelegate {
         if waypoints.count > 1 {
             waypoints = Array(waypoints.suffix(1))
         }
-        
+
         let coordinates = mapView.convert(tap.location(in: mapView), toCoordinateFrom: mapView)
         // Note: The destination name can be modified. The value is used in the top banner when arriving at a destination.
         let waypoint = Waypoint(coordinate: coordinates, name: "Dropped Pin #\(waypoints.endIndex + 1)")
@@ -146,8 +154,8 @@ class ViewController: UIViewController, MLNMapViewDelegate {
         requestRoute()
     }
 
-
     // MARK: - IBActions
+
     @IBAction func replay(_ sender: Any) {
         let bundle = Bundle(for: ViewController.self)
         let filePath = bundle.path(forResource: "tunnel", ofType: "json")!
@@ -177,8 +185,22 @@ class ViewController: UIViewController, MLNMapViewDelegate {
         present(alertController, animated: true, completion: nil)
     }
 
+    @IBAction func languageButtonPressed(_ sender: Any) {
+        let voiceAlertController = UIAlertController(title: "Select Locale", message: "Select navigation language", preferredStyle: .actionSheet)
+
+        voiceAlertController.addAction(UIAlertAction(title: "German", style: .default, handler: { [weak self] _ in self?.selectedLocale = Locale(identifier: "de") }))
+        voiceAlertController.addAction(UIAlertAction(title: "Italian", style: .default, handler: { [weak self] _ in self?.selectedLocale = Locale(identifier: "it") }))
+        voiceAlertController.addAction(UIAlertAction(title: "English", style: .default, handler: { [weak self] _ in self?.selectedLocale = Locale(identifier: "en") }))
+        voiceAlertController.addAction(UIAlertAction(title: "Spanish", style: .default, handler: { [weak self] _ in self?.selectedLocale = Locale(identifier: "es") }))
+        voiceAlertController.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+
+        present(voiceAlertController, animated: true, completion: nil)
+    }
+
     // MARK: - Public Methods
+
     // MARK: Route Requests
+
     func requestRoute() {
         guard waypoints.count > 0 else { return }
         guard let mapView = mapView else { return }
@@ -187,13 +209,16 @@ class ViewController: UIViewController, MLNMapViewDelegate {
         waypoints.insert(userWaypoint, at: 0)
 
         let options = NavigationRouteOptions(waypoints: waypoints)
+        
+        if let selectedLocale {
+            options.locale = selectedLocale
+        }
 
         requestRoute(with: options, success: defaultSuccess, failure: defaultFailure)
     }
 
     fileprivate func requestRoute(with options: RouteOptions, success: @escaping RouteRequestSuccess, failure: RouteRequestFailure?) {
-
-        let handler: Directions.RouteCompletionHandler = {(waypoints, potentialRoutes, potentialError) in
+        let handler: Directions.RouteCompletionHandler = { _, potentialRoutes, potentialError in
             if let error = potentialError, let fail = failure { return fail(error) }
             guard let routes = potentialRoutes else { return }
             return success(routes)
@@ -209,20 +234,21 @@ class ViewController: UIViewController, MLNMapViewDelegate {
 
         let navigationViewController = NavigationViewController(for: route, locationManager: navigationLocationManager())
         navigationViewController.delegate = self
-        
+
         presentAndRemoveMapview(navigationViewController)
     }
-    
+
     func startNavigation(styles: [Style]) {
         guard let route = routes?.first else { return }
-        
+
         let navigationViewController = NavigationViewController(for: route, styles: styles, locationManager: navigationLocationManager())
         navigationViewController.delegate = self
-        
+
         presentAndRemoveMapview(navigationViewController)
     }
-    
+
     // MARK: Custom Navigation UI
+
     func startCustomNavigation() {
         guard let route = routes?.first else { return }
 
@@ -271,13 +297,13 @@ class ViewController: UIViewController, MLNMapViewDelegate {
         mapView.logoView.isHidden = true
 
         let singleTap = UILongPressGestureRecognizer(target: self, action: #selector(didLongPress(tap:)))
-        mapView.gestureRecognizers?.filter({ $0 is UILongPressGestureRecognizer }).forEach(singleTap.require(toFail:))
+        mapView.gestureRecognizers?.filter { $0 is UILongPressGestureRecognizer }.forEach(singleTap.require(toFail:))
         mapView.addGestureRecognizer(singleTap)
     }
 
     func mapView(_ mapView: MLNMapView, didFinishLoading style: MLNStyle) {
         self.mapView?.localizeLabels()
-        
+
         if let routes = routes, let currentRoute = routes.first, let coords = currentRoute.coordinates {
             mapView.setVisibleCoordinateBounds(MLNPolygon(coordinates: coords, count: currentRoute.coordinateCount).overlayBounds, animated: false)
             self.mapView?.showRoutes(routes)
@@ -287,13 +313,14 @@ class ViewController: UIViewController, MLNMapViewDelegate {
 }
 
 // MARK: - NavigationMapViewDelegate
+
 extension ViewController: NavigationMapViewDelegate {
     func navigationMapView(_ mapView: NavigationMapView, didSelect waypoint: Waypoint) {
         guard let routeOptions = routes?.first?.routeOptions else { return }
         let modifiedOptions = routeOptions.without(waypoint: waypoint)
 
         presentWaypointRemovalActionSheet { _ in
-            self.requestRoute(with:modifiedOptions, success: self.defaultSuccess, failure: self.defaultFailure)
+            self.requestRoute(with: modifiedOptions, success: self.defaultSuccess, failure: self.defaultFailure)
         }
     }
 
@@ -315,26 +342,28 @@ extension ViewController: NavigationMapViewDelegate {
         let cancel = UIAlertAction(title: cancelTitle, style: .cancel, handler: nil)
         [remove, cancel].forEach(actionSheet.addAction(_:))
 
-        self.present(actionSheet, animated: true, completion: nil)
+        present(actionSheet, animated: true, completion: nil)
     }
 }
 
 // MARK: VoiceControllerDelegate methods
+
 // To use these delegate methods, set the `VoiceControllerDelegate` on your `VoiceController`.
 extension ViewController: VoiceControllerDelegate {
     // Called when there is an error with speaking a voice instruction.
     func voiceController(_ voiceController: RouteVoiceController, spokenInstructionsDidFailWith error: Error) {
         print(error.localizedDescription)
     }
+
     // Called when an instruction is interrupted by a new voice instruction.
     func voiceController(_ voiceController: RouteVoiceController, didInterrupt interruptedInstruction: SpokenInstruction, with interruptingInstruction: SpokenInstruction) {
         print(interruptedInstruction.text, interruptingInstruction.text)
     }
-    
+
     func voiceController(_ voiceController: RouteVoiceController, willSpeak instruction: SpokenInstruction, routeProgress: RouteProgress) -> SpokenInstruction? {
         return SpokenInstruction(distanceAlongStep: instruction.distanceAlongStep, text: "New Instruction!", ssmlText: "<speak>New Instruction!</speak>")
     }
-    
+
     // By default, the routeController will attempt to filter out bad locations.
     // If however you would like to filter these locations in,
     // you can conditionally return a Bool here according to your own heuristics.
@@ -345,6 +374,7 @@ extension ViewController: VoiceControllerDelegate {
 }
 
 // MARK: WaypointConfirmationViewControllerDelegate
+
 extension ViewController: WaypointConfirmationViewControllerDelegate {
     func confirmationControllerDidConfirm(_ confirmationController: WaypointConfirmationViewController) {
         confirmationController.dismiss(animated: true, completion: {
@@ -358,6 +388,7 @@ extension ViewController: WaypointConfirmationViewControllerDelegate {
 }
 
 // MARK: NavigationViewControllerDelegate
+
 extension ViewController: NavigationViewControllerDelegate {
     // By default, when the user arrives at a waypoint, the next leg starts immediately.
     // If you implement this method, return true to preserve this behavior.
@@ -366,13 +397,13 @@ extension ViewController: NavigationViewControllerDelegate {
     func navigationViewController(_ navigationViewController: NavigationViewController, didArriveAt waypoint: Waypoint) -> Bool {
         // When the user arrives, present a view controller that prompts the user to continue to their next destination
         // This type of screen could show information about a destination, pickup/dropoff confirmation, instructions upon arrival, etc.
-        
-        //If we're not in a "Multiple Stops" demo, show the normal EORVC
+
+        // If we're not in a "Multiple Stops" demo, show the normal EORVC
         if navigationViewController.routeController.routeProgress.isFinalLeg {
             return true
         }
-        
-        guard let confirmationController = self.storyboard?.instantiateViewController(withIdentifier: "waypointConfirmation") as? WaypointConfirmationViewController else {
+
+        guard let confirmationController = storyboard?.instantiateViewController(withIdentifier: "waypointConfirmation") as? WaypointConfirmationViewController else {
             return true
         }
 
@@ -381,7 +412,7 @@ extension ViewController: NavigationViewControllerDelegate {
         navigationViewController.present(confirmationController, animated: true, completion: nil)
         return false
     }
-    
+
     // Called when the user hits the exit button.
     // If implemented, you are responsible for also dismissing the UI.
     func navigationViewControllerDidDismiss(_ navigationViewController: NavigationViewController, byCanceling canceled: Bool) {
@@ -389,17 +420,16 @@ extension ViewController: NavigationViewControllerDelegate {
     }
 }
 
+// MARK: VisualInstructionDelegate
 
-// Mark: VisualInstructionDelegate
 extension ViewController: VisualInstructionDelegate {
     func label(_ label: InstructionLabel, willPresent instruction: VisualInstruction, as presented: NSAttributedString) -> NSAttributedString? {
-        
         // Uncomment to mutate the instruction shown in the top instruction banner
         // let range = NSRange(location: 0, length: presented.length)
         // let mutable = NSMutableAttributedString(attributedString: presented)
         // mutable.mutableString.applyTransform(.latinToKatakana, reverse: false, range: range, updatedRange: nil)
         // return mutable
-        
+
         return presented
     }
 }

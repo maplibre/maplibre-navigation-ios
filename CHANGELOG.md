@@ -1,6 +1,7 @@
 # Changes to the Mapbox Navigation SDK for iOS
 
 ## Unreleased
+ - Uses the `Locale` given in `RouteOptions` to create the corresponding `AVSpeechSynthesisVoice`.
  - Removed setCamera() from updateCourseTracking()
  - Added setCamera() to progressDidChange()
  - Allow to customize rerouting logic by implementing RouteControllerDelegate#routeControllerGetDirections 
