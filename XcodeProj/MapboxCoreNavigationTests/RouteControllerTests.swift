@@ -183,7 +183,7 @@ class RouteControllerTests: XCTestCase {
 
         // The course should not be the interpolated course, rather the raw course.
         XCTAssertEqual(directionToStart, navigation.location!.course, "The course should be the raw course and not an interpolated course")
-        XCTAssertFalse(facingTowardsStartLocation.shouldSnap(toRouteWith: facingTowardsStartLocation.interpolatedCourse(along: navigation.routeProgress.currentLegProgress.nearbyCoordinates)!, distanceToFirstCoordinateOnLeg: facingTowardsStartLocation.distance(from: firstLocation)), "Should not snap")
+        XCTAssertFalse(facingTowardsStartLocation.shouldSnapCourse(toRouteWith: facingTowardsStartLocation.interpolatedCourse(along: navigation.routeProgress.currentLegProgress.nearbyCoordinates)!, distanceToFirstCoordinateOnLeg: facingTowardsStartLocation.distance(from: firstLocation)), "Should not snap")
     }
 
     func testLocationShouldUseHeading() {
