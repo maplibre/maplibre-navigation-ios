@@ -1,5 +1,5 @@
 import UIKit
-import Mapbox
+import MapLibre
 
 /**
  `Style` is a convenient wrapper for styling the appearance of various interface components throughout the Navigation UI.

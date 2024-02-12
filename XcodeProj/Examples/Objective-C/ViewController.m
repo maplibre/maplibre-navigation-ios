@@ -5,6 +5,7 @@
 @import MapboxDirections;
 @import MapboxNavigation;
 @import MapLibre;
+@import MapboxCoreNavigationObjC;
 
 @interface ViewController () <AVSpeechSynthesizerDelegate>
 @property (nonatomic, weak) IBOutlet MLNMapView *mapView;

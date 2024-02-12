@@ -17,7 +17,7 @@ let package = Package(
     dependencies: [
         .package(url: "https://github.com/flitsmeister/mapbox-directions-swift", exact: "0.23.2"),
         .package(url: "https://github.com/flitsmeister/turf-swift", exact: "0.2.2"),
-        .package(url: "https://github.com/maplibre/maplibre-gl-native-distribution.git", from: "5.0.0"),
+        .package(url: "https://github.com/maplibre/maplibre-gl-native-distribution.git", from: "6.0.0"),
         .package(url: "https://github.com/ceeK/Solar.git", exact: "3.0.1")
     ],
     targets: [
@@ -47,7 +47,7 @@ let package = Package(
         .target(
             name: "MapboxNavigationObjC",
             dependencies: [
-                .product(name: "Mapbox", package: "maplibre-gl-native-distribution")
+                .product(name: "MapLibre", package: "maplibre-gl-native-distribution")
             ],
             path: "MapboxNavigationObjC"
         )

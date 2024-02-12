@@ -1,5 +1,5 @@
 import UIKit
-import Mapbox
+import MapLibre
 import MapboxDirections
 
 /**
