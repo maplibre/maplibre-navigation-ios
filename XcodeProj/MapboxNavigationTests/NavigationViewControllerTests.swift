@@ -1,5 +1,5 @@
 import XCTest
-import Mapbox
+import MapLibre
 import MapboxDirections
 import MapboxCoreNavigation
 import Turf
