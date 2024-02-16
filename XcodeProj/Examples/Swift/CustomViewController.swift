@@ -32,6 +32,7 @@ class CustomViewController: UIViewController, MLNMapViewDelegate {
         routeController = RouteController(along: userRoute!, locationManager: locationManager)
         
         mapView.delegate = self
+        mapView.courseTrackingDelegate = self
         mapView.compassView.isHidden = true
         
         instructionsBannerView.delegate = self
