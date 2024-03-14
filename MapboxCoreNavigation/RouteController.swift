@@ -64,6 +64,11 @@ open class RouteController: NSObject, Router {
      */
     public var tunnelIntersectionManager: TunnelIntersectionManager = TunnelIntersectionManager()
 
+    /**
+     If true, the first voice announcement is always triggered when beginning a leg.
+     */
+    public var speakFirstInstructionOnFirstStep = true
+
     var didFindFasterRoute = false
 
     /**
@@ -779,8 +784,10 @@ extension RouteController: CLLocationManagerDelegate {
         guard let userSnapToStepDistanceFromManeuver = userSnapToStepDistanceFromManeuver else { return }
         guard let spokenInstructions = routeProgress.currentLegProgress.currentStepProgress.remainingSpokenInstructions else { return }
 
+        let firstInstructionOnFirstStep = speakFirstInstructionOnFirstStep
         // Always give the first voice announcement when beginning a leg.
-        let firstInstructionOnFirstStep = routeProgress.currentLegProgress.stepIndex == 0 && routeProgress.currentLegProgress.currentStepProgress.spokenInstructionIndex == 0
+        ? routeProgress.currentLegProgress.stepIndex == 0 && routeProgress.currentLegProgress.currentStepProgress.spokenInstructionIndex == 0
+        : false
 
         for voiceInstruction in spokenInstructions {
             if userSnapToStepDistanceFromManeuver <= voiceInstruction.distanceAlongStep || firstInstructionOnFirstStep {
