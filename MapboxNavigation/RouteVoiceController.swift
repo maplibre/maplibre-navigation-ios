@@ -177,7 +177,7 @@ open class RouteVoiceController: NSObject, AVSpeechSynthesizerDelegate {
     @objc open func didPassSpokenInstructionPoint(notification: NSNotification) {
         guard !NavigationSettings.shared.voiceMuted else { return }
         
-        routeProgress = notification.userInfo![RouteControllerNotificationUserInfoKey.routeProgressKey] as? RouteProgress
+        routeProgress = notification.userInfo?[RouteControllerNotificationUserInfoKey.routeProgressKey] as? RouteProgress
         assert(routeProgress != nil, "routeProgress should not be nil.")
 
         guard let instruction = routeProgress?.currentLegProgress.currentStepProgress.currentSpokenInstruction else { return }
@@ -194,7 +194,10 @@ open class RouteVoiceController: NSObject, AVSpeechSynthesizerDelegate {
      - parameter locale: The `Locale` used to create the voice read aloud the given instruction. If `nil` the `Locale.preferredLocalLanguageCountryCode` is used for creating the voice.
      */
     open func speak(_ instruction: SpokenInstruction, with locale: Locale?) {
-        assert(routeProgress != nil, "routeProgress should not be nil.")
+        guard let routeProgress else {
+            assertionFailure("routeProgress should not be nil.")
+            return
+        }
         
         if speechSynth.isSpeaking, let lastSpokenInstruction = lastSpokenInstruction {
             voiceControllerDelegate?.voiceController?(self, didInterrupt: lastSpokenInstruction, with: instruction)
@@ -213,10 +216,10 @@ open class RouteVoiceController: NSObject, AVSpeechSynthesizerDelegate {
             utterance!.voice = AVSpeechSynthesisVoice(identifier: AVSpeechSynthesisVoiceIdentifierAlex)
         }
         
-        let modifiedInstruction = voiceControllerDelegate?.voiceController?(self, willSpeak: instruction, routeProgress: routeProgress!) ?? instruction
+        let modifiedInstruction = voiceControllerDelegate?.voiceController?(self, willSpeak: instruction, routeProgress: routeProgress) ?? instruction
         
         if #available(iOS 10.0, *), utterance?.voice == nil {
-            utterance = AVSpeechUtterance(attributedString: modifiedInstruction.attributedText(for: routeProgress!.currentLegProgress))
+            utterance = AVSpeechUtterance(attributedString: modifiedInstruction.attributedText(for: routeProgress.currentLegProgress))
         } else {
             utterance = AVSpeechUtterance(string: modifiedInstruction.text)
         }
