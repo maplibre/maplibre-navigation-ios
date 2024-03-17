@@ -1,3 +1,5 @@
+import Foundation
+
 extension String {
     enum Localized {
         static func simulationStatus(speed: Int) -> String {

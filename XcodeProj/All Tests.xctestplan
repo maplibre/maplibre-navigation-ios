@@ -1,0 +1,31 @@
+{
+  "configurations" : [
+    {
+      "id" : "DCD39100-3835-4A02-93B2-D6D9E0E0AB19",
+      "name" : "Configuration 1",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:MapboxNavigation.xcodeproj",
+        "identifier" : "C5ADFBD11DDCC7840011824B",
+        "name" : "MapboxCoreNavigationTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:MapboxNavigation.xcodeproj",
+        "identifier" : "35B711CE1E5E7AD2001EDA8D",
+        "name" : "MapboxNavigationTests"
+      }
+    }
+  ],
+  "version" : 1
+}

@@ -1,4 +1,4 @@
-import Foundation
+import UIKit
 
 extension UIImage {
     public func roundedWithBorder(width: CGFloat, color: UIColor) -> UIImage? {

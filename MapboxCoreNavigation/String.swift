@@ -16,9 +16,9 @@ extension String {
         return startIndex..<endIndex
     }
     
-    typealias Replacement = (of: String, with: String)
+    public typealias Replacement = (of: String, with: String)
     
-    func byReplacing(_ replacements: [Replacement]) -> String {
+    public func byReplacing(_ replacements: [Replacement]) -> String {
         return replacements.reduce(self) { $0.replacingOccurrences(of: $1.of, with: $1.with) }
     }
     
