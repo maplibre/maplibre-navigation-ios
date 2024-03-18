@@ -360,7 +360,7 @@ extension ViewController: VoiceControllerDelegate {
         print(interruptedInstruction.text, interruptingInstruction.text)
     }
 
-    func voiceController(_ voiceController: RouteVoiceController, willSpeak instruction: SpokenInstruction, routeProgress: RouteProgress) -> SpokenInstruction? {
+    func voiceController(_ voiceController: RouteVoiceController, willSpeak instruction: SpokenInstruction, routeProgress: RouteProgress?) -> SpokenInstruction? {
         return SpokenInstruction(distanceAlongStep: instruction.distanceAlongStep, text: "New Instruction!", ssmlText: "<speak>New Instruction!</speak>")
     }
 
