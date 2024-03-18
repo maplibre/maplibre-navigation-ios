@@ -257,7 +257,7 @@ public protocol VoiceControllerDelegate {
      
      - parameter voiceController: The voice controller that will speak an instruction.
      - parameter instruction: The spoken instruction that will be said.
-     - parameter routeProgress: The `RouteProgress` just before when the instruction is scheduled to be spoken. Could be `nil` if no progress is available or if oit should be ignored.
+     - parameter routeProgress: The `RouteProgress` just before when the instruction is scheduled to be spoken. Could be `nil` if no progress is available or if it should be ignored.
      **/
     @objc(voiceController:willSpeakSpokenInstruction:routeProgress:)
     optional func voiceController(_ voiceController: RouteVoiceController, willSpeak instruction: SpokenInstruction, routeProgress: RouteProgress?) -> SpokenInstruction?
