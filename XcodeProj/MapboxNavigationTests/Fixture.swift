@@ -4,12 +4,6 @@ import Foundation
 import MapboxDirections
 import CoreLocation
 
-extension Bundle {
-    class var testsBundle: Bundle {
-        get { Bundle(for: ImageCacheTests.self) }
-    }
-}
-
 internal extension Fixture {
     
     class func downloadRouteFixture(coordinates: [CLLocationCoordinate2D], fileName: String, completion: @escaping () -> Void) {
@@ -31,7 +25,7 @@ internal extension Fixture {
     }
     
     class var blankStyle: URL {
-        let path = Bundle(for: self).path(forResource: "EmptyStyle", ofType: "json")
+		let path = Bundle.module.path(forResource: "EmptyStyle", ofType: "json")
         return URL(fileURLWithPath: path!)
     }
     
@@ -42,6 +36,6 @@ internal extension Fixture {
     }
 
     class func routeWithBannerInstructions() -> Route {
-        return route(from: "route-with-banner-instructions", bundle: .testsBundle, waypoints: [Waypoint(coordinate: CLLocationCoordinate2D(latitude: 37.795042, longitude: -122.413165)), Waypoint(coordinate: CLLocationCoordinate2D(latitude: 37.7727, longitude: -122.433378))])
+        return route(from: "route-with-banner-instructions", bundle: .module, waypoints: [Waypoint(coordinate: CLLocationCoordinate2D(latitude: 37.795042, longitude: -122.413165)), Waypoint(coordinate: CLLocationCoordinate2D(latitude: 37.7727, longitude: -122.433378))])
     }
 }

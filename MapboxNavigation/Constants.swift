@@ -16,6 +16,14 @@ public let MBRouteLineWidthByZoomLevel: [Int: NSExpression] = [
     22: NSExpression(forConstantValue: 28)
 ]
 
+public let MLNRouteLineWidthByZoomLevel: [Int: Double] = [
+	10: 8,
+	13: 9,
+	16: 11,
+	19: 22,
+	22: 28
+]
+
 /**
  The minium distance remaining on a route before overhead zooming is stopped.
  */
