@@ -17,7 +17,7 @@ jobs:
           xcode-select --print-path
       - name: Setup Xcode
         run: |
-          sudo xcode-select -s /Applications/Xcode_15.3.app
+          sudo xcode-select -s /Applications/Xcode_15.3.app/Contents/Developer
       - uses: SwiftyLab/setup-swift@latest
       - name: Checkout
         uses: actions/checkout@v3
