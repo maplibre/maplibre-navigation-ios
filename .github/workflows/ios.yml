@@ -12,6 +12,10 @@ jobs:
     runs-on: macos-latest
 
     steps:
+      - uses: SwiftyLab/setup-swift@latest
+      - name: Get swift version in macOS
+        if: runner.os == 'macOS'
+        run: xcrun --toolchain ${{ env.TOOLCHAINS }} swift --version
       - name: Checkout
         uses: actions/checkout@v3
       - name: Set Default Scheme
