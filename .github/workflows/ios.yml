@@ -12,25 +12,14 @@ jobs:
     runs-on: macos-14
 
     steps:
-      - name: Print xcode-select
+      - name: Print Xcode Version
         run: |
           xcode-select --print-path
-          ls /Applications -a
-      - name: Setup Xcode
-        run: |
-          sudo xcode-select -s /Applications/Xcode_15.3.app/Contents/Developer
-      - uses: SwiftyLab/setup-swift@latest
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Set Default Scheme
-        run: |
-          scheme_list=$(xcodebuild -list -json | tr -d "\n")
-          default="All Tests"
-          echo $default | cat >default
-          echo Using default scheme: $default
       - name: Build
         run: |
-          xcodebuild -toolchain ${{ env.TOOLCHAINS }} build -scheme maplibre-navigation-ios -destination 'platform=iOS Simulator,OS=17.0.1,name=iPhone 15 Pro'
+          xcodebuild build -scheme maplibre-navigation-ios -destination 'platform=iOS Simulator,OS=17.0.1,name=iPhone 15 Pro'
       - name: Test
         run: |
-          xcodebuild -toolchain ${{ env.TOOLCHAINS }} test -scheme maplibre-navigation-ios -destination 'platform=iOS Simulator,OS=17.0.1,name=iPhone 15 Pro'
+          xcodebuild test -scheme maplibre-navigation-ios -destination 'platform=iOS Simulator,OS=17.0.1,name=iPhone 15 Pro'
