@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    name: Build and Test default scheme using any available iPhone simulator
+    name: Build and Test using Xcode 15.3 on iPhone 15 Pro
     runs-on: macos-14
 
     steps:
