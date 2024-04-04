@@ -61,16 +61,33 @@ let package = Package(
 				"MapboxCoreNavigation",
 				"Solar"
 			],
-			path: "XcodeProj/MapboxNavigationTests",
+			path: "MapboxNavigationTests",
 			resources: [
-				.copy("Resources2/route.json"),
-				.copy("Resources2/Fixtures.xcassets"),
+				// NOTE: Ideally we would just put all resources like route.json and Assets.xcassets in Folder 'Resources'
+				// but an Xcode/SPM bug is preventing us from doing so. It is not possible to copy and process files into the same
+				// destination directiory ('*.bundle/Resources') without a code signing error:
+				// This is the error message:
+				//	CodeSign ~/Library/Developer/Xcode/DerivedData/maplibre-navigation-ios-cdijqyqwjamndzfaqhxchbiayzsb/Build/Products/Debug-iphonesimulator/maplibre-navigation-ios_MapboxNavigationTests.bundle  (in target 'maplibre-navigation-ios_MapboxNavigationTests' from project 'maplibre-navigation-ios')
+				//	cd ~/Developer/maplibre-navigation-ios
+				//
+				//	Signing Identity:     "-"
+				//
+				//	/usr/bin/codesign --force --sign - --timestamp\=none --generate-entitlement-der ~/Library/Developer/Xcode/DerivedData/maplibre-navigation-ios-cdijqyqwjamndzfaqhxchbiayzsb/Build/Products/Debug-iphonesimulator/maplibre-navigation-ios_MapboxNavigationTests.bundle
+				//
+				//	~/Library/Developer/Xcode/DerivedData/maplibre-navigation-ios-cdijqyqwjamndzfaqhxchbiayzsb/Build/Products/Debug-iphonesimulator/maplibre-navigation-ios_MapboxNavigationTests.bundle: bundle format unrecognized, invalid, or unsuitable
+				//	Command CodeSign failed with a nonzero exit code
+				//
+				// Instead the json files are placed in a Folder called 'Fixtures' and manually specified for copying
+				// The Assets.xcassets is compiled into an Assets.car
+				// This results in a flat Bundle file structure however the tests pass.
+				
+				.process("Assets.xcassets"),
 				.copy("Fixtures/EmptyStyle.json"),
+				.copy("Fixtures/route.json"),
 				.copy("Fixtures/route-for-lane-testing.json"),
 				.copy("Fixtures/route-with-banner-instructions.json"),
 				.copy("Fixtures/route-with-instructions.json"),
-				.copy("Fixtures/route-with-lanes.json"),
-				.copy("ReferenceImages_64/")
+				.copy("Fixtures/route-with-lanes.json")
 			]
 		),
 		.testTarget(
@@ -79,7 +96,7 @@ let package = Package(
 				"MapboxNavigation",
 				"MapboxCoreNavigation"
 			],
-			path: "XcodeProj/MapboxCoreNavigationTests",
+			path: "MapboxCoreNavigationTests",
 			resources: [
 				.copy("Resources")
 			]
