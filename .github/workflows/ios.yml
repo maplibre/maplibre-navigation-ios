@@ -26,7 +26,7 @@ jobs:
           echo Using default scheme: $default
       - name: Build
         run: |
-          xcodebuild --toolchain ${{ env.TOOLCHAINS }} build -scheme maplibre-navigation-ios -destination 'platform=iOS Simulator,OS=17.0.1,name=iPhone 15 Pro'
+          xcodebuild -toolchain ${{ env.TOOLCHAINS }} build -scheme maplibre-navigation-ios -destination 'platform=iOS Simulator,OS=17.0.1,name=iPhone 15 Pro'
       - name: Test
         run: |
-          xcodebuild --toolchain ${{ env.TOOLCHAINS }} test -scheme maplibre-navigation-ios -destination 'platform=iOS Simulator,OS=17.0.1,name=iPhone 15 Pro'
+          xcodebuild -toolchain ${{ env.TOOLCHAINS }} test -scheme maplibre-navigation-ios -destination 'platform=iOS Simulator,OS=17.0.1,name=iPhone 15 Pro'
