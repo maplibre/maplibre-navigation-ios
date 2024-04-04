@@ -15,6 +15,7 @@ jobs:
       - name: Print xcode-select
         run: |
           xcode-select --print-path
+          ls /Applications -a
       - name: Setup Xcode
         run: |
           sudo xcode-select -s /Applications/Xcode_15.3.app/Contents/Developer
