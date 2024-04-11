@@ -962,10 +962,10 @@ open class NavigationMapView: MLNMapView, UIGestureRecognizerDelegate {
         let lineCasing = MLNLineStyleLayer(identifier: identifier, source: source)
         
         // Take the default line width and make it wider for the casing
-		lineCasing.lineWidth = NSExpression(forMLNInterpolating: .zoomLevelVariable,
-											curveType: .linear,
-											parameters: nil,
-											stops: NSExpression(forConstantValue: MLNRouteLineWidthByZoomLevel.multiplied(by: 1.5)))
+        lineCasing.lineWidth = NSExpression(forMLNInterpolating: .zoomLevelVariable,
+                                            curveType: .linear,
+                                            parameters: nil,
+                                            stops: NSExpression(forConstantValue: MLNRouteLineWidthByZoomLevel.multiplied(by: 1.5)))
         
         lineCasing.lineColor = NSExpression(
             forConditional: NSPredicate(format: "isAlternateRoute == true"),
