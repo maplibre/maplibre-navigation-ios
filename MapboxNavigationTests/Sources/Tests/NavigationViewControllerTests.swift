@@ -10,7 +10,7 @@ let otherResponse = Fixture.JSONFromFileNamed(name: "route-for-lane-testing", bu
 
 class NavigationViewControllerTests: XCTestCase {
     
-	let fakeDirections = Directions(accessToken: "abc", host: "ab")
+    let fakeDirections = Directions(accessToken: "abc", host: "ab")
     var customRoadName = [CLLocationCoordinate2D: String?]()
     
     var updatedStyleNumberOfTimes = 0
@@ -241,15 +241,15 @@ extension CLLocationCoordinate2D: Hashable {
 }
 
 extension NavigationViewControllerTests {
-        fileprivate func location(at coordinate: CLLocationCoordinate2D) -> CLLocation {
-                return CLLocation(coordinate: coordinate,
-                                    altitude: 5,
+    fileprivate func location(at coordinate: CLLocationCoordinate2D) -> CLLocation {
+        return CLLocation(coordinate: coordinate,
+                          altitude: 5,
                           horizontalAccuracy: 10,
-                            verticalAccuracy: 5,
-                                      course: 20,
-                                       speed: 15,
-                                   timestamp: Date())
-            }
+                          verticalAccuracy: 5,
+                          course: 20,
+                          speed: 15,
+                          timestamp: Date())
+    }
 }
 
 class NavigationViewControllerTestable: NavigationViewController {
@@ -264,11 +264,11 @@ class NavigationViewControllerTestable: NavigationViewController {
         super.init(for: route, directions: directions,styles: styles, locationManager: locationManager, voiceController: FakeVoiceController())
     }
     
-@objc(initWithRoute:directions:styles:routeController:locationManager:voiceController:)
+    @objc(initWithRoute:directions:styles:routeController:locationManager:voiceController:)
     required init(for route: Route, directions: Directions, styles: [Style]?, routeController: RouteController?, locationManager: NavigationLocationManager?, voiceController: RouteVoiceController?) {
         fatalError("init(for:directions:styles:routeController:locationManager:voiceController:) is not supported in this testing subclass.")
     }
-
+    
     func mapView(_ mapView: MLNMapView, didFinishLoading style: MLNStyle) {
         styleLoadedExpectation.fulfill()
     }

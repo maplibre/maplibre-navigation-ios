@@ -625,10 +625,10 @@ open class NavigationMapView: MLNMapView, UIGestureRecognizerDelegate {
                 arrow.minimumZoomLevel = minimumZoomLevel
                 arrow.lineCap = NSExpression(forConstantValue: "butt")
                 arrow.lineJoin = NSExpression(forConstantValue: "round")
-				arrow.lineWidth = NSExpression(forMLNInterpolating: .zoomLevelVariable,
-											   curveType: .linear,
-											   parameters: nil,
-											   stops: NSExpression(forConstantValue: MLNRouteLineWidthByZoomLevel.multiplied(by: 0.7)))
+                arrow.lineWidth = NSExpression(forMLNInterpolating: .zoomLevelVariable,
+                                               curveType: .linear,
+                                               parameters: nil,
+                                               stops: NSExpression(forConstantValue: MLNRouteLineWidthByZoomLevel.multiplied(by: 0.7)))
                 arrow.lineColor = NSExpression(forConstantValue: maneuverArrowColor)
                 
                 style.addSource(arrowSource)
@@ -638,15 +638,14 @@ open class NavigationMapView: MLNMapView, UIGestureRecognizerDelegate {
             if let source = style.source(withIdentifier: arrowSourceStrokeIdentifier) as? MLNShapeSource {
                 source.shape = arrowStrokeShape
             } else {
-                
                 arrowStroke.minimumZoomLevel = arrow.minimumZoomLevel
                 arrowStroke.lineCap = arrow.lineCap
                 arrowStroke.lineJoin = arrow.lineJoin
-				arrow.lineWidth = NSExpression(forMLNInterpolating: .zoomLevelVariable,
-											   curveType: .linear,
-											   parameters: nil,
-											   stops: NSExpression(forConstantValue: MLNRouteLineWidthByZoomLevel.multiplied(by: 0.8)))
-				arrowStroke.lineColor = NSExpression(forConstantValue: maneuverArrowStrokeColor)
+                arrow.lineWidth = NSExpression(forMLNInterpolating: .zoomLevelVariable,
+                                               curveType: .linear,
+                                               parameters: nil,
+                                               stops: NSExpression(forConstantValue: MLNRouteLineWidthByZoomLevel.multiplied(by: 0.8)))
+                arrowStroke.lineColor = NSExpression(forConstantValue: maneuverArrowStrokeColor)
                 
                 style.addSource(arrowSourceStroke)
                 style.insertLayer(arrowStroke, below: arrow)
@@ -672,10 +671,10 @@ open class NavigationMapView: MLNMapView, UIGestureRecognizerDelegate {
                 arrowSymbolLayer.iconColor = NSExpression(forConstantValue: maneuverArrowColor)
                 arrowSymbolLayer.iconRotationAlignment = NSExpression(forConstantValue: "map")
                 arrowSymbolLayer.iconRotation = NSExpression(forConstantValue: shaftDirection as NSNumber)
-				arrowSymbolLayer.iconScale = NSExpression(forMLNInterpolating: .zoomLevelVariable,
-														  curveType: .linear,
-														  parameters: nil,
-														  stops: NSExpression(forConstantValue: MLNRouteLineWidthByZoomLevel.multiplied(by: 0.12)))
+                arrowSymbolLayer.iconScale = NSExpression(forMLNInterpolating: .zoomLevelVariable,
+                                                          curveType: .linear,
+                                                          parameters: nil,
+                                                          stops: NSExpression(forConstantValue: MLNRouteLineWidthByZoomLevel.multiplied(by: 0.12)))
                 arrowSymbolLayer.iconAllowsOverlap = NSExpression(forConstantValue: true)
                 
                 let arrowSymbolLayerCasing = MLNSymbolStyleLayer(identifier: arrowCasingSymbolLayerIdentifier, source: arrowSymbolSource)
@@ -684,10 +683,10 @@ open class NavigationMapView: MLNMapView, UIGestureRecognizerDelegate {
                 arrowSymbolLayerCasing.iconColor = NSExpression(forConstantValue: maneuverArrowStrokeColor)
                 arrowSymbolLayerCasing.iconRotationAlignment = arrowSymbolLayer.iconRotationAlignment
                 arrowSymbolLayerCasing.iconRotation = arrowSymbolLayer.iconRotation
-				arrowSymbolLayerCasing.iconScale = NSExpression(forMLNInterpolating: .zoomLevelVariable,
-																curveType: .linear,
-																parameters: nil,
-																stops: NSExpression(forConstantValue: MLNRouteLineWidthByZoomLevel.multiplied(by: 0.14)))
+                arrowSymbolLayerCasing.iconScale = NSExpression(forMLNInterpolating: .zoomLevelVariable,
+                                                                curveType: .linear,
+                                                                parameters: nil,
+                                                                stops: NSExpression(forConstantValue: MLNRouteLineWidthByZoomLevel.multiplied(by: 0.14)))
                 arrowSymbolLayerCasing.iconAllowsOverlap = arrowSymbolLayer.iconAllowsOverlap
                 
                 style.addSource(arrowSymbolSource)
@@ -939,10 +938,10 @@ open class NavigationMapView: MLNMapView, UIGestureRecognizerDelegate {
     
     func routeStyleLayer(identifier: String, source: MLNSource) -> MLNStyleLayer {
         let line = MLNLineStyleLayer(identifier: identifier, source: source)
-		line.lineWidth = NSExpression(forMLNInterpolating: .zoomLevelVariable,
-									  curveType: .linear,
-									  parameters: nil,
-									  stops: NSExpression(forConstantValue: MLNRouteLineWidthByZoomLevel))
+        line.lineWidth = NSExpression(forMLNInterpolating: .zoomLevelVariable,
+                                      curveType: .linear,
+                                      parameters: nil,
+                                      stops: NSExpression(forConstantValue: MLNRouteLineWidthByZoomLevel))
         line.lineColor = NSExpression(
             forConditional: NSPredicate(format: "isAlternateRoute == true"),
             trueExpression: NSExpression(forConstantValue: routeLineAlternativeColor),

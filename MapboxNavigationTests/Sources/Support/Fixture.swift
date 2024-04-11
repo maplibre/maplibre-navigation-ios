@@ -25,7 +25,7 @@ internal extension Fixture {
     }
     
     class var blankStyle: URL {
-		let path = Bundle.module.path(forResource: "EmptyStyle", ofType: "json")
+        let path = Bundle.module.path(forResource: "EmptyStyle", ofType: "json")
         return URL(fileURLWithPath: path!)
     }
     
@@ -34,7 +34,7 @@ internal extension Fixture {
         let jsonRoute = (response["routes"] as! [AnyObject]).first as! [String : Any]
         return Route(json: jsonRoute, waypoints: waypoints, options: RouteOptions(waypoints: waypoints))
     }
-
+    
     class func routeWithBannerInstructions() -> Route {
         return route(from: "route-with-banner-instructions", bundle: .module, waypoints: [Waypoint(coordinate: CLLocationCoordinate2D(latitude: 37.795042, longitude: -122.413165)), Waypoint(coordinate: CLLocationCoordinate2D(latitude: 37.7727, longitude: -122.433378))])
     }

@@ -17,11 +17,11 @@ public let MBRouteLineWidthByZoomLevel: [Int: NSExpression] = [
 ]
 
 public let MLNRouteLineWidthByZoomLevel: [Int: Double] = [
-	10: 8,
-	13: 9,
-	16: 11,
-	19: 22,
-	22: 28
+    10: 8,
+    13: 9,
+    16: 11,
+    19: 22,
+    22: 28
 ]
 
 /**

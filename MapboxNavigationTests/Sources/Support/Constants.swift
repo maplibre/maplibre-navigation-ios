@@ -12,8 +12,8 @@ struct ShieldImage {
 }
 
 extension ShieldImage {
-	static let i280 = ShieldImage(image: UIImage(named: "i-280", in: .module, compatibleWith: nil)!,
+    static let i280 = ShieldImage(image: UIImage(named: "i-280", in: .module, compatibleWith: nil)!,
                                   url: URL(string: "https://s3.amazonaws.com/mapbox/shields/v3/i-280@3x.png")!)
-	static let us101 = ShieldImage(image: UIImage(named: "us-101", in: .module, compatibleWith: nil)!,
+    static let us101 = ShieldImage(image: UIImage(named: "us-101", in: .module, compatibleWith: nil)!,
                                    url: URL(string: "https://s3.amazonaws.com/mapbox/shields/v3/us-101@3x.png")!)
 }

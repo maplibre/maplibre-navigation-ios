@@ -27,9 +27,9 @@ class DataCacheTests: XCTestCase {
 
     var exampleData: Data? {
         get {
-			let bundle = Bundle.module
+            let bundle = Bundle.module
             do {
-				return try NSData.init(contentsOf: bundle.url(forResource: "route", withExtension: "json")!) as Data
+                return try NSData.init(contentsOf: bundle.url(forResource: "route", withExtension: "json")!) as Data
             } catch {
                 XCTFail("Failed to create data")
                 return nil
@@ -106,7 +106,7 @@ class DataCacheTests: XCTestCase {
 
         NotificationCenter.default.post(name: UIApplication.didReceiveMemoryWarningNotification, object: nil)
     }
-    
+
     func testCacheKeyForKey() {
         let threeMileInstruction = "<speak><amazon:effect name=\"drc\"><prosody rate=\"1.08\">Continue on <say-as interpret-as=\"address\">I-80</say-as> East for 3 miles</prosody></amazon:effect></speak>"
         let sixMileInstruction = "<speak><amazon:effect name=\"drc\"><prosody rate=\"1.08\">Continue on <say-as interpret-as=\"address\">I-80</say-as> East for 6 miles</prosody></amazon:effect></speak>"
