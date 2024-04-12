@@ -1,9 +1,10 @@
 import XCTest
 import MapboxDirections
 import Turf
+import CoreLocation
 @testable import MapboxCoreNavigation
 
-let response = Fixture.JSONFromFileNamed(name: "routeWithInstructions")
+let response = Fixture.JSONFromFileNamed(name: "routeWithInstructions", bundle: .module)
 let jsonRoute = (response["routes"] as! [AnyObject]).first as! [String : Any]
 // -122.413165,37.795042
 let waypoint1 = Waypoint(coordinate: CLLocationCoordinate2D(latitude: 37.795042, longitude: -122.413165))

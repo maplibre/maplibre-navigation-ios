@@ -1,0 +1,31 @@
+{
+  "configurations" : [
+    {
+      "id" : "28B892B6-E97D-4176-8D38-6A6D040E9265",
+      "name" : "Configuration 1",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "testTimeoutsEnabled" : true
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:",
+        "identifier" : "MapboxCoreNavigationTests",
+        "name" : "MapboxCoreNavigationTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:",
+        "identifier" : "MapboxNavigationTests",
+        "name" : "MapboxNavigationTests"
+      }
+    }
+  ],
+  "version" : 1
+}

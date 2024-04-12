@@ -701,7 +701,7 @@ extension RouteController: CLLocationManagerDelegate {
             
             self.lastRerouteLocation = location
             
-            let complete = { [weak self] (mostSimilarRoute: Route?, routes: [Route]?, error: NSError?) in
+            let complete = { (mostSimilarRoute: Route?, routes: [Route]?, error: NSError?) in
                 completion(mostSimilarRoute, routes, error)
             }
             

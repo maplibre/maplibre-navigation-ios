@@ -8,41 +8,21 @@ on:
 
 jobs:
   build:
-    name: Build and Test default scheme using any available iPhone simulator
-    runs-on: macos-latest
+    name: Build and Test using Xcode 15.3 on iPhone 15 Pro
+    runs-on: macos-14
 
     steps:
+      - name: Configure Xcode 15.3
+        run: |
+          sudo xcode-select -s /Applications/Xcode_15.3.app
+      - name: Print Xcode Version
+        run: |
+          xcode-select --print-path
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Set Default Scheme
-        run: |
-          scheme_list=$(xcodebuild -list -json | tr -d "\n")
-          default="All Tests"
-          echo $default | cat >default
-          echo Using default scheme: $default
-      - name: "Carthage Bootstrap"
-        uses: olejnjak/carthage-workaround@v1
-        with:
-            action: bootstrap --platform iOS  --use-xcframeworks --cache-builds
       - name: Build
-        env:
-          scheme: ${{ 'default' }}
-          platform: ${{ 'iOS Simulator' }}
         run: |
-          # xcrun xctrace returns via stderr, not the expected stdout (see https://developer.apple.com/forums/thread/663959)
-          device=`xcrun xctrace list devices 2>&1 | grep -oE 'iPhone.*?[^\(]+' | head -1 | awk '{$1=$1;print}' | sed -e "s/ Simulator$//"`
-          if [ $scheme = default ]; then scheme=$(cat default); fi
-          if [ "`ls -A | grep -i \\.xcworkspace\$`" ]; then filetype_parameter="workspace" && file_to_build="`ls -A | grep -i \\.xcworkspace\$`"; else filetype_parameter="project" && file_to_build="`ls -A | grep -i \\.xcodeproj\$`"; fi
-          file_to_build=`echo $file_to_build | awk '{$1=$1;print}'`
-          xcodebuild build-for-testing -scheme "$scheme" -"$filetype_parameter" "$file_to_build" -destination "platform=$platform,name=$device"
+          set -o pipefail && xcodebuild build -scheme maplibre-navigation-ios -destination 'platform=iOS Simulator,OS=17.0.1,name=iPhone 15 Pro' | xcbeautify --renderer github-actions
       - name: Test
-        env:
-          scheme: ${{ 'default' }}
-          platform: ${{ 'iOS Simulator' }}
         run: |
-          # xcrun xctrace returns via stderr, not the expected stdout (see https://developer.apple.com/forums/thread/663959)
-          device=`xcrun xctrace list devices 2>&1 | grep -oE 'iPhone.*?[^\(]+' | head -1 | awk '{$1=$1;print}' | sed -e "s/ Simulator$//"`
-          if [ $scheme = default ]; then scheme=$(cat default); fi
-          if [ "`ls -A | grep -i \\.xcworkspace\$`" ]; then filetype_parameter="workspace" && file_to_build="`ls -A | grep -i \\.xcworkspace\$`"; else filetype_parameter="project" && file_to_build="`ls -A | grep -i \\.xcodeproj\$`"; fi
-          file_to_build=`echo $file_to_build | awk '{$1=$1;print}'`
-          xcodebuild test-without-building -scheme "$scheme" -"$filetype_parameter" "$file_to_build" -destination "platform=$platform,name=$device"
+          set -o pipefail && xcodebuild test -scheme maplibre-navigation-ios -destination 'platform=iOS Simulator,OS=17.0.1,name=iPhone 15 Pro' | xcbeautify --renderer github-actions
