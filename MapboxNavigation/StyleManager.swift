@@ -125,12 +125,10 @@ open class StyleManager: NSObject {
         
         NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(timeOfDayChanged), object: nil)
         
-        for style in styles {
-            if style.styleType == styleType {
-                style.apply()
-                currentStyleType = styleType
-                delegate?.styleManager?(self, didApply: style)
-            }
+        for style in styles where style.styleType == styleType {
+            style.apply()
+            currentStyleType = styleType
+            delegate?.styleManager?(self, didApply: style)
         }
         
         forceRefreshAppearance()
