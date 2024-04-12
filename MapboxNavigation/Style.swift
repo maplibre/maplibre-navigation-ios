@@ -149,10 +149,10 @@ public class ReportButton: Button {
         setNeedsUpdateConstraints()
         UIView.defaultAnimation(0.5, animations: {
             self.superview?.layoutIfNeeded()
-        }) { _ in
+        }, completion: { _ in
             NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(ReportButton.slideUp(constraint:)), object: nil)
             self.perform(#selector(ReportButton.slideUp(constraint:)), with: constraint, afterDelay: interval)
-        }
+        })
     }
     
     @objc func slideUp(constraint: NSLayoutConstraint) {
@@ -160,9 +160,9 @@ public class ReportButton: Button {
         setNeedsUpdateConstraints()
         UIView.defaultSpringAnimation(0.5, animations: {
             self.superview?.layoutIfNeeded()
-        }) { _ in
+        }, completion: { _ in
             self.isHidden = true
-        }
+        })
     }
 }
 

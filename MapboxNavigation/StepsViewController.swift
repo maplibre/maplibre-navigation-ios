@@ -199,9 +199,9 @@ public class StepsViewController: UIViewController {
             var frame = self.view.frame
             frame.origin.y -= frame.height
             self.view.frame = frame
-        }) { _ in
+        }, completion: { _ in
             completion?()
-        }
+        })
     }
 
     @IBAction func tappedDismiss(_ sender: Any) {

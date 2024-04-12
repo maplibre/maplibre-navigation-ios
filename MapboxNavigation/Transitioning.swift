@@ -23,9 +23,9 @@ extension DismissAnimator: UIViewControllerAnimatedTransitioning {
         UIView.animate(withDuration: transitionDuration(using: transitionContext), delay: 0, options: [.curveEaseInOut], animations: {
             fromVC.view.frame = finalFrame
             containerView.backgroundColor = .clear
-        }) { _ in
+        }, completion: { _ in
             transitionContext.completeTransition(!transitionContext.transitionWasCancelled)
-        }
+        })
     }
 }
 
@@ -59,9 +59,9 @@ extension PresentAnimator: UIViewControllerAnimatedTransitioning {
         UIView.animate(withDuration: transitionDuration(using: transitionContext), delay: 0, options: [.curveEaseInOut], animations: {
             toView.frame = finalFrame
             containerView.backgroundColor = UIColor.black.withAlphaComponent(0.5)
-        }) { _ in
+        }, completion: { _ in
             transitionContext.completeTransition(!transitionContext.transitionWasCancelled)
-        }
+        })
     }
 }
 
