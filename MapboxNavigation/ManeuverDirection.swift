@@ -3,7 +3,7 @@ import MapboxDirections
 
 extension ManeuverDirection {
     init(angle: Int) {
-        var description = switch angle {
+        let description = switch angle {
         case -30 ..< 30:
             "straight"
         case 30 ..< 60:
