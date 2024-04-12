@@ -3,7 +3,7 @@ import UIKit
 typealias ImageDownloadCompletionBlock = (UIImage?, Data?, Error?) -> Void
 
 protocol ReentrantImageDownloader {
-    func downloadImage(with url: URL, completion: ImageDownloadCompletionBlock?) -> Void
+    func downloadImage(with url: URL, completion: ImageDownloadCompletionBlock?)
     func activeOperation(with url: URL) -> ImageDownload?
     func setOperationType(_ operationType: ImageDownload.Type?)
 }

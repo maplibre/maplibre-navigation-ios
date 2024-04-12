@@ -116,14 +116,14 @@ public protocol CarPlayManagerDelegate {
      - parameter routeController: The route controller that has begun managing location updates for a navigation session.
      */
     @objc(carPlayManager:didBeginNavigationWithRouteController:)
-    func carPlayManager(_ carPlayManager: CarPlayManager, didBeginNavigationWith routeController: RouteController) -> Void
+    func carPlayManager(_ carPlayManager: CarPlayManager, didBeginNavigationWith routeController: RouteController)
 
     /**
      Called when navigation ends so that the containing app can update accordingly.
      
      - parameter carPlayManager: The shared CarPlay manager.
      */
-    @objc func carPlayManagerDidEndNavigation(_ carPlayManager: CarPlayManager) -> Void
+    @objc func carPlayManagerDidEndNavigation(_ carPlayManager: CarPlayManager)
 
     /**
      Called when the carplay manager will disable the idle timer.
