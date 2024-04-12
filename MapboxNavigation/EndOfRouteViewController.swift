@@ -122,7 +122,11 @@ class EndOfRouteViewController: UIViewController {
         
         let completion: (Bool) -> Void = { _ in self.labelContainer.isHidden = true }
         let noAnimate = { animate(); completion(true) }
-        animated ? UIView.animate(withDuration: 0.3, animations: animate, completion: nil) : noAnimate()
+        if animated {
+            UIView.animate(withDuration: 0.3, animations: animate, completion: nil)
+        } else {
+            noAnimate()
+        }
     }
     
     private func hideComments(animated: Bool = true) {
@@ -140,7 +144,9 @@ class EndOfRouteViewController: UIViewController {
         
         let completion: (Bool) -> Void = { _ in self.commentViewContainer.isHidden = true }
         let noAnimation = { animate(); completion(true) }
-        animated ? UIView.animate(withDuration: 0.3, animations: animate, completion: nil) : noAnimation()
+        if animated {
+            UIView.animate(withDuration: 0.3, animations: animate, completion: nil)
+        } else { noAnimation() }
     }
     
     private func height(for height: ContainerHeight) -> CGFloat {

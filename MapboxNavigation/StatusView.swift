@@ -149,6 +149,6 @@ public class StatusView: UIView {
             }
         }
         
-        animated ? animate() : hide()
+        if animated { animate() } else { hide() }
     }
 }

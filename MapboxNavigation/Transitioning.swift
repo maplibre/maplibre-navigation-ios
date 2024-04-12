@@ -106,7 +106,11 @@ private extension UIViewController {
             vc.interactor.cancel()
         case .ended:
             vc.interactor.hasStarted = false
-            vc.interactor.shouldFinish ? vc.interactor.finish() : vc.interactor.cancel()
+            if vc.interactor.shouldFinish {
+                vc.interactor.finish()
+            } else {
+                vc.interactor.cancel()
+            }
         default:
             break
         }

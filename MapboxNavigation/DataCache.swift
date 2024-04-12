@@ -22,7 +22,11 @@ public class DataCache: NSObject, BimodalDataCache {
     public func store(_ data: Data, forKey key: String, toDisk: Bool, completion: CompletionHandler?) {
         storeDataInMemoryCache(data, forKey: key)
 
-        toDisk == true ? fileCache.store(data, forKey: key, completion: completion) : completion?()
+        if toDisk {
+            fileCache.store(data, forKey: key, completion: completion)
+        } else {
+            completion?()
+        }
     }
 
     /*
