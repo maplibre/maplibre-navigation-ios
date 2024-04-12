@@ -15,12 +15,20 @@ When reporting a bug in the navigation SDK itself, please indicate:
 
 ## Building the SDK
 
-To build this SDK, you need Xcode 14 and [Carthage](https://github.com/Carthage/Carthage/):
+To build this SDK, you need Xcode 15 and [Carthage](https://github.com/Carthage/Carthage/):
 
 1. Run `carthage bootstrap --platform iOS --cache-builds`.
 1. Once the Carthage build finishes, open `MapboxNavigation.xcodeproj` in Xcode and build the MapboxNavigation scheme.
 
 See [the README](./README.md#running-the-example-project) for instructions on building and running the included Swift and Objective-C example projects.
+
+## Enable automatic code formatting
+
+We use SwiftFormat via a commit hook which allows us to reformat the changed files on commit. This ensures a conistent code style. The repo is prepared for this, however you need to enable this manually via:
+
+```bash
+git config core.hooksPath .githooks
+```
 
 ## Testing the SDK
 
