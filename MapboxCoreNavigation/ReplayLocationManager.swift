@@ -1,5 +1,5 @@
-import Foundation
 import CoreLocation
+import Foundation
 
 /**
  `ReplayLocationManager` replays an array of locations exactly as they were
@@ -8,7 +8,6 @@ import CoreLocation
  */
 @objc(MBReplayLocationManager)
 open class ReplayLocationManager: NavigationLocationManager {
-    
     /**
      `speedMultiplier` adjusts the speed of the replay.
      */
@@ -28,9 +27,7 @@ open class ReplayLocationManager: NavigationLocationManager {
     }
     
     @objc override open var location: CLLocation? {
-        get {
-            return lastKnownLocation
-        }
+        lastKnownLocation
     }
     
     public init(locations: [CLLocation]) {
@@ -53,19 +50,19 @@ open class ReplayLocationManager: NavigationLocationManager {
     }
     
     @objc fileprivate func tick() {
-        guard let startDate = startDate else { return }
+        guard let startDate else { return }
         let location = locations[currentIndex]
         lastKnownLocation = location
         delegate?.locationManager?(self, didUpdateLocations: [location])
         NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(tick), object: nil)
         
         if currentIndex < locations.count - 1 {
-            let nextLocation = locations[currentIndex+1]
+            let nextLocation = locations[currentIndex + 1]
             let interval = nextLocation.timestamp.timeIntervalSince(location.timestamp) / TimeInterval(speedMultiplier)
-            let intervalSinceStart = Date().timeIntervalSince(startDate)+interval
+            let intervalSinceStart = Date().timeIntervalSince(startDate) + interval
             let actualInterval = nextLocation.timestamp.timeIntervalSince(locations.first!.timestamp)
-            let diff = min(max(0, intervalSinceStart-actualInterval), 0.9) // Don't try to resync more than 0.9 seconds per location update
-            let syncedInterval = interval-diff
+            let diff = min(max(0, intervalSinceStart - actualInterval), 0.9) // Don't try to resync more than 0.9 seconds per location update
+            let syncedInterval = interval - diff
             
             perform(#selector(tick), with: nil, afterDelay: syncedInterval)
             currentIndex += 1

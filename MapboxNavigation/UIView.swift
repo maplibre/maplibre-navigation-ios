@@ -30,9 +30,9 @@ extension UIView {
     }
     
     func applyGradient(colors: [UIColor], locations: [NSNumber]? = nil) {
-        let gradient: CAGradientLayer = CAGradientLayer()
-        gradient.frame = self.bounds
-        gradient.colors = colors.map { $0.cgColor }
+        let gradient = CAGradientLayer()
+        gradient.frame = bounds
+        gradient.colors = colors.map(\.cgColor)
         gradient.locations = locations
         
         if let sublayers = layer.sublayers, !sublayers.isEmpty, let sublayer = sublayers.first {
@@ -51,13 +51,13 @@ extension UIView {
         rippleLayer.startAnimation()
     }
     
-    class func fromNib<ViewType : UIView>() -> ViewType? {
+    class func fromNib<ViewType: UIView>() -> ViewType? {
         let nibName = String(describing: ViewType.self)
         return Bundle.main.loadNibNamed(nibName, owner: nil, options: nil)?[0] as? ViewType
     }
     
     func constraints(affecting view: UIView?) -> [NSLayoutConstraint]? {
-        guard let view = view else { return nil }
+        guard let view else { return nil }
         return constraints.filter { constraint in
             if let first = constraint.firstItem as? UIView, first == view {
                 return true
@@ -70,8 +70,8 @@ extension UIView {
     }
     
     func pinInSuperview(respectingMargins margins: Bool = false) {
-        guard let superview = superview else { return }
-        let guide: Anchorable = (margins) ? superview.layoutMarginsGuide : superview
+        guard let superview else { return }
+        let guide: Anchorable = margins ? superview.layoutMarginsGuide : superview
         
         let constraints = [
             topAnchor.constraint(equalTo: guide.topAnchor),
@@ -82,9 +82,8 @@ extension UIView {
         NSLayoutConstraint.activate(constraints)
     }
     
-
     class func forAutoLayout<ViewType: UIView>(frame: CGRect = .zero, hidden: Bool = false) -> ViewType {
-        let view = ViewType.init(frame: frame)
+        let view = ViewType(frame: frame)
         view.isHidden = hidden
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
@@ -141,7 +140,7 @@ extension UIView {
         let size = CGSize(width: frame.size.width, height: frame.size.height)
         UIGraphicsBeginImageContextWithOptions(size, false, UIScreen.main.scale)
         guard let currentContext = UIGraphicsGetCurrentContext() else { return nil }
-        layer.render(in:currentContext)
+        layer.render(in: currentContext)
         let image = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
         return image
@@ -154,6 +153,7 @@ class RippleLayer: CAReplicatorLayer {
             animationGroup?.delegate = self
         }
     }
+
     var rippleRadius: CGFloat = 100
     var rippleColor: UIColor = .red
     var rippleRepeatCount: Float = .greatestFiniteMagnitude
@@ -179,7 +179,7 @@ class RippleLayer: CAReplicatorLayer {
     override func layoutSublayers() {
         super.layoutSublayers()
         
-        rippleEffect?.bounds = CGRect(x: 0, y: 0, width: rippleRadius*2, height: rippleRadius*2)
+        rippleEffect?.bounds = CGRect(x: 0, y: 0, width: rippleRadius * 2, height: rippleRadius * 2)
         rippleEffect?.cornerRadius = rippleRadius
         instanceCount = 3
         instanceDelay = 0.4
@@ -208,7 +208,7 @@ class RippleLayer: CAReplicatorLayer {
         
         let group = CAAnimationGroup()
         group.duration = duration
-        group.repeatCount = self.repeatCount
+        group.repeatCount = repeatCount
         group.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.default)
         
         let scaleAnimation = CABasicAnimation(keyPath: "transform.scale.xy")
@@ -219,7 +219,7 @@ class RippleLayer: CAReplicatorLayer {
         let opacityAnimation = CAKeyframeAnimation(keyPath: "opacity")
         opacityAnimation.duration = duration
         let fromAlpha = 1.0
-        opacityAnimation.values = [fromAlpha, (fromAlpha * 0.5), 0]
+        opacityAnimation.values = [fromAlpha, fromAlpha * 0.5, 0]
         opacityAnimation.keyTimes = [0, 0.2, 1]
         
         group.animations = [scaleAnimation, opacityAnimation]
@@ -247,4 +247,3 @@ protocol Anchorable {
 
 extension UIView: Anchorable {}
 extension UILayoutGuide: Anchorable {}
-

@@ -1,6 +1,6 @@
 import CoreLocation
-import UIKit
 import Solar
+import UIKit
 
 /**
  The `StyleManagerDelegate` protocol defines a set of methods used for controlling the style.
@@ -29,7 +29,6 @@ public protocol StyleManagerDelegate: NSObjectProtocol {
  */
 @objc(MBStyleManager)
 open class StyleManager: NSObject {
-    
     /**
      The receiver of the delegate. See `StyleManagerDelegate` for more information.
      */
@@ -61,7 +60,7 @@ open class StyleManager: NSObject {
         }
     }
     
-    internal var date: Date?
+    var date: Date?
     
     var currentStyleType: StyleType?
     
@@ -70,7 +69,7 @@ open class StyleManager: NSObject {
      
      - parameter delegate: The receiver’s delegate
      */
-    required public init(_ delegate: StyleManagerDelegate) {
+    public required init(_ delegate: StyleManagerDelegate) {
         self.delegate = delegate
         super.init()
         resumeNotifications()
@@ -95,13 +94,13 @@ open class StyleManager: NSObject {
     func resetTimeOfDayTimer() {
         NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(timeOfDayChanged), object: nil)
         
-        guard automaticallyAdjustsStyleForTimeOfDay && styles.count > 1 else { return }
+        guard automaticallyAdjustsStyleForTimeOfDay, styles.count > 1 else { return }
         guard let location = delegate?.locationFor(styleManager: self) else { return }
         
         guard let solar = Solar(date: date, coordinate: location.coordinate),
-            let sunrise = solar.sunrise,
-            let sunset = solar.sunset else {
-                return
+              let sunrise = solar.sunrise,
+              let sunset = solar.sunset else {
+            return
         }
         
         guard let interval = solar.date.intervalUntilTimeOfDayChanges(sunrise: sunrise, sunset: sunset) else {
@@ -109,7 +108,7 @@ open class StyleManager: NSObject {
             return
         }
         
-        perform(#selector(timeOfDayChanged), with: nil, afterDelay: interval+1)
+        perform(#selector(timeOfDayChanged), with: nil, afterDelay: interval + 1)
     }
     
     @objc func preferredContentSizeChanged(_ notification: Notification) {
@@ -164,9 +163,9 @@ open class StyleManager: NSObject {
     
     func styleType(for location: CLLocation) -> StyleType {
         guard let solar = Solar(date: date, coordinate: location.coordinate),
-            let sunrise = solar.sunrise,
-            let sunset = solar.sunset else {
-                return .day
+              let sunrise = solar.sunrise,
+              let sunset = solar.sunset else {
+            return .day
         }
         
         return solar.date.isNighttime(sunrise: sunrise, sunset: sunset) ? .night : .day
@@ -236,7 +235,7 @@ extension Date {
 
 extension Solar {
     init?(date: Date?, coordinate: CLLocationCoordinate2D) {
-        if let date = date {
+        if let date {
             self.init(for: date, coordinate: coordinate)
         } else {
             self.init(coordinate: coordinate)

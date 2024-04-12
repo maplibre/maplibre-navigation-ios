@@ -1,12 +1,12 @@
 import Foundation
 
-extension Notification.Name {
+public extension Notification.Name {
     /**
      Posted when something changes in the shared `NavigationSettings` object.
      
      The user info dictionary indicates which keys and values changed.
      */
-    public static let navigationSettingsDidChange = MBNavigationSettingsDidChange
+    static let navigationSettingsDidChange = MBNavigationSettingsDidChange
 }
 
 /**
@@ -16,36 +16,33 @@ extension Notification.Name {
  */
 @objc(MBNavigationSettings)
 public class NavigationSettings: NSObject {
-    
     /**
-     The volume that the voice controller will use.
+      The volume that the voice controller will use.
      
-     This volume is relative to the system’s volume where 1.0 is same volume as the system.
-    */
+      This volume is relative to the system’s volume where 1.0 is same volume as the system.
+     */
     @objc public dynamic var voiceVolume: Float = 1.0
     
     /**
      Specifies whether to mute the voice controller or not.
      */
-    @objc public dynamic var voiceMuted : Bool = false
+    @objc public dynamic var voiceMuted: Bool = false
     
     /**
      Specifies the preferred distance measurement unit.
      - note: Anything but `kilometer` and `mile` will fall back to the default measurement for the current locale.
         Meters and feets will be used when the presented distances are small enough. See `DistanceFormatter` for more information.
      */
-    @objc public dynamic var distanceUnit : LengthFormatter.Unit = Locale.current.usesMetric ? .kilometer : .mile
+    @objc public dynamic var distanceUnit: LengthFormatter.Unit = Locale.current.usesMetric ? .kilometer : .mile
     
     var usesMetric: Bool {
-        get {
-            switch distanceUnit {
-            case .kilometer:
-                return true
-            case .mile:
-                return false
-            default:
-                return Locale.current.usesMetric
-            }
+        switch distanceUnit {
+        case .kilometer:
+            true
+        case .mile:
+            false
+        default:
+            Locale.current.usesMetric
         }
     }
     
@@ -54,12 +51,12 @@ public class NavigationSettings: NSObject {
     /// Returns a reflection of this class excluding the `properties` variable.
     lazy var properties: [Mirror.Child] = {
         let properties = Mirror(reflecting: self).children
-        return properties.filter({ (child) -> Bool in
+        return properties.filter { child -> Bool in
             if let label = child.label {
                 return label != "properties.storage" && label != "$__lazy_storage_$_properties" // The last is needed to fix a weird crash: https://github.com/mapbox/mapbox-navigation-ios/issues/2262
             }
             return false
-        })
+        }
     }()
     
     override init() {
@@ -102,8 +99,8 @@ public class NavigationSettings: NSObject {
     }
 }
 
-extension String {
-    fileprivate var prefixed: String {
-        return "MB" + self
+private extension String {
+    var prefixed: String {
+        "MB" + self
     }
 }

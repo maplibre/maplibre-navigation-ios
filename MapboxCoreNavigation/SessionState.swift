@@ -1,8 +1,7 @@
-import Foundation
 import CoreLocation
+import Foundation
 import MapboxDirections
 import UIKit.UIDevice
-
 
 struct SessionState {
     let identifier = UUID()
@@ -61,7 +60,7 @@ struct SessionState {
 }
 
 class FixedLengthQueue<T> {
-    private var objects = Array<T>()
+    private var objects = [T]()
     private var length: Int
     
     public init(length: Int) {
@@ -75,9 +74,7 @@ class FixedLengthQueue<T> {
         }
     }
     
-    public var allObjects: Array<T> {
-        get {
-            return Array(objects)
-        }
+    public var allObjects: [T] {
+        Array(objects)
     }
 }

@@ -1,11 +1,10 @@
 import Foundation
 import UIKit
 
-
 class FeedbackCollectionViewCell: UICollectionViewCell {
     static let defaultIdentifier = "MapboxFeedbackCell"
     
-    struct Constants {
+    enum Constants {
         static let imageSize: CGSize = 70.0
         static let padding: CGFloat = 8
         static let titleFont: UIFont = .systemFont(ofSize: 18.0)
@@ -42,7 +41,7 @@ class FeedbackCollectionViewCell: UICollectionViewCell {
     override var isHighlighted: Bool {
         didSet {
             if originalTransform == nil {
-                originalTransform = self.imageView.transform
+                originalTransform = imageView.transform
             }
             
             UIView.defaultSpringAnimation(0.3, animations: {

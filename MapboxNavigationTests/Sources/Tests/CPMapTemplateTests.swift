@@ -1,5 +1,5 @@
-import XCTest
 @testable import MapboxNavigation
+import XCTest
 #if canImport(CarPlay)
 import CarPlay
 

@@ -1,5 +1,5 @@
-import Foundation
 import CoreLocation
+import Foundation
 import MapboxDirections
 
 @objc public protocol Router: AnyObject, CLLocationManagerDelegate {

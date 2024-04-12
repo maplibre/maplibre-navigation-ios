@@ -1,20 +1,18 @@
 import CoreLocation
-import UIKit
 import MapboxCoreNavigation
 import MapboxDirections
+import UIKit
 
 /**
  `InstructionsBannerViewDelegate` provides methods for reacting to user interactions in `InstructionsBannerView`.
  */
 @objc(MBInstructionsBannerViewDelegate)
 public protocol InstructionsBannerViewDelegate: AnyObject {
-    
     /**
      Called when the user taps the `InstructionsBannerView`.
      */
     @objc(didTapInstructionsBanner:)
     optional func didTapInstructionsBanner(_ sender: BaseInstructionsBannerView)
-    
     
     /**
      Called when the user drags either up or down on the `InstructionsBannerView`.
@@ -26,11 +24,10 @@ public protocol InstructionsBannerViewDelegate: AnyObject {
 /// :nodoc:
 @IBDesignable
 @objc(MBInstructionsBannerView)
-open class InstructionsBannerView: BaseInstructionsBannerView { }
+open class InstructionsBannerView: BaseInstructionsBannerView {}
 
 /// :nodoc:
 open class BaseInstructionsBannerView: UIControl {
-    
     weak var maneuverView: ManeuverView!
     weak var primaryLabel: PrimaryLabel!
     weak var secondaryLabel: SecondaryLabel!
@@ -61,7 +58,7 @@ open class BaseInstructionsBannerView: UIControl {
         didSet {
             distanceLabel.attributedDistanceString = nil
             
-            if let distance = distance {
+            if let distance {
                 distanceLabel.attributedDistanceString = distanceFormatter.attributedString(for: distance)
             } else {
                 distanceLabel.text = nil
@@ -74,7 +71,7 @@ open class BaseInstructionsBannerView: UIControl {
         commonInit()
     }
     
-    required public init?(coder aDecoder: NSCoder) {
+    public required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         commonInit()
     }
@@ -88,14 +85,14 @@ open class BaseInstructionsBannerView: UIControl {
     }
     
     @objc func draggedInstructionsBanner(_ sender: Any) {
-        if let gestureRecognizer = sender as? UIPanGestureRecognizer, gestureRecognizer.state == .ended, let delegate = delegate {
+        if let gestureRecognizer = sender as? UIPanGestureRecognizer, gestureRecognizer.state == .ended, let delegate {
             stepListIndicatorView.isHidden = !stepListIndicatorView.isHidden
             delegate.didDragInstructionsBanner?(self)
         }
     }
     
     @objc func tappedInstructionsBanner(_ sender: Any) {
-        if let delegate = delegate {
+        if let delegate {
             stepListIndicatorView.isHidden = !stepListIndicatorView.isHidden
             delegate.didTapInstructionsBanner?(self)
         }

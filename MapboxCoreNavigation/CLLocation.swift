@@ -3,10 +3,8 @@ import MapboxDirections
 import Turf
 
 extension CLLocation {
-    
     var isQualified: Bool {
-        return
-            0...100 ~= horizontalAccuracy
+        0 ... 100 ~= horizontalAccuracy
     }
     
     /// Returns a dictionary representation of the location.
@@ -69,21 +67,21 @@ extension CLLocation {
         return closestCoordinate.distance < maximumDistance
     }
     
-    //MARK: - Route Snapping
+    // MARK: - Route Snapping
     
     func snapped(to legProgress: RouteLegProgress) -> CLLocation? {
         let coords = coordinates(for: legProgress)
         
-        guard let closest = Polyline(coords).closestCoordinate(to: self.coordinate) else { return nil }
+        guard let closest = Polyline(coords).closestCoordinate(to: coordinate) else { return nil }
         guard let calculatedCourseForLocationOnStep = interpolatedCourse(along: coords) else { return nil }
         
         let userCourse = calculatedCourseForLocationOnStep
         let userCoordinate = closest.coordinate
         guard let firstCoordinate = legProgress.leg.steps.first?.coordinates?.first else { return nil }
         
-        guard shouldSnapCourse(toRouteWith: calculatedCourseForLocationOnStep, distanceToFirstCoordinateOnLeg: self.coordinate.distance(to: firstCoordinate)) else { return nil }
+        guard shouldSnapCourse(toRouteWith: calculatedCourseForLocationOnStep, distanceToFirstCoordinateOnLeg: coordinate.distance(to: firstCoordinate)) else { return nil }
         
-        guard (closest.distance <= (RouteControllerUserLocationSnappingDistance + self.horizontalAccuracy)) else {
+        guard closest.distance <= (RouteControllerUserLocationSnappingDistance + horizontalAccuracy) else {
             return nil
         }
         
@@ -100,14 +98,12 @@ extension CLLocation {
         // If the upcoming maneuver a sharp turn, only look at the current step for snapping.
         // Otherwise, we may get false positives from nearby step coordinates
         if let upcomingStep = legProgress.upComingStep,
-            let initialHeading = upcomingStep.initialHeading,
-            let finalHeading = upcomingStep.finalHeading {
-            
+           let initialHeading = upcomingStep.initialHeading,
+           let finalHeading = upcomingStep.finalHeading {
             // The max here is 180. The closer it is to 180, the sharper the turn.
             if initialHeading.clockwiseDifference(from: finalHeading) > 180 - RouteSnappingMaxManipulatedCourseAngle {
                 return stepCoordinates
             }
-            
             
             if finalHeading.difference(from: course) > RouteControllerMaximumAllowedDegreeOffsetForTurnCompletion {
                 return stepCoordinates
@@ -120,7 +116,6 @@ extension CLLocation {
         
         return nearbyCoordinates
     }
-    
     
     /**
      Given a location and a series of coordinates, compute what the course should be for a the location.
@@ -149,14 +144,14 @@ extension CLLocation {
         let relativeAnglepointAhead = (wrappedPointAhead - wrappedCourse).wrap(min: -180, max: 180)
         
         let averageRelativeAngle: Double
-        // User is at the beginning of the route, there is no closest point behind the user.
-        if pointBehindClosest.distance <= 0 && pointAheadClosest.distance > 0 {
-            averageRelativeAngle = relativeAnglepointAhead
+            // User is at the beginning of the route, there is no closest point behind the user.
+            = if pointBehindClosest.distance <= 0, pointAheadClosest.distance > 0 {
+            relativeAnglepointAhead
             // User is at the end of the route, there is no closest point in front of the user.
-        } else if pointAheadClosest.distance <= 0 && pointBehindClosest.distance > 0 {
-            averageRelativeAngle = relativeAnglepointBehind
+        } else if pointAheadClosest.distance <= 0, pointBehindClosest.distance > 0 {
+            relativeAnglepointBehind
         } else {
-            averageRelativeAngle = (relativeAnglepointBehind + relativeAnglepointAhead) / 2
+            (relativeAnglepointBehind + relativeAnglepointAhead) / 2
         }
         
         return (wrappedCourse + averageRelativeAngle).wrap(min: 0, max: 360)
@@ -166,14 +161,13 @@ extension CLLocation {
      Determines if the course of a location is qualified enough to allow the user puck to be snapped
      */
     func shouldSnapCourse(toRouteWith course: CLLocationDirection, distanceToFirstCoordinateOnLeg: CLLocationDistance = CLLocationDistanceMax) -> Bool {
-        
         // If the user is near the beginning of leg, allow for unsnapped more often.
         let isWithinDepartureStep = distanceToFirstCoordinateOnLeg < RouteControllerManeuverZoneRadius
 
-        if course >= 0 &&
-            (speed >= RouteSnappingMinimumSpeed || isWithinDepartureStep) &&
-            (horizontalAccuracy < RouteSnappingMinimumHorizontalAccuracy || isWithinDepartureStep) &&
-            course.difference(from: self.course) > RouteSnappingMaxManipulatedCourseAngle {
+        if course >= 0,
+           speed >= RouteSnappingMinimumSpeed || isWithinDepartureStep,
+           horizontalAccuracy < RouteSnappingMinimumHorizontalAccuracy || isWithinDepartureStep,
+           course.difference(from: self.course) > RouteSnappingMaxManipulatedCourseAngle {
             return false
         }
         return true

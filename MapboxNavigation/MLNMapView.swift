@@ -1,7 +1,7 @@
 import Foundation
-import MapLibre
-import MapboxDirections
 import MapboxCoreNavigation
+import MapboxDirections
+import MapLibre
 
 /**
  An extension on `MLNMapView` that allows for toggling traffic on a map style that contains a [Mapbox Traffic source](https://www.mapbox.com/vector-tiles/mapbox-traffic-v1/).
@@ -11,16 +11,14 @@ extension MLNMapView {
      Returns a set of source identifiers for tilesets that are or include the Mapbox Incidents source.
      */
     func sourceIdentifiers(forTileSetIdentifier tileSetIdentifier: String) -> Set<String> {
-        guard let style = style else {
+        guard let style else {
             return []
         }
         return Set(style.sources.compactMap {
             $0 as? MLNVectorTileSource
         }.filter {
             $0.configurationURL?.host?.components(separatedBy: ",").contains(tileSetIdentifier) ?? false
-        }.map {
-            $0.identifier
-        })
+        }.map(\.identifier))
     }
     
     /**
@@ -30,14 +28,14 @@ extension MLNMapView {
      - parameter layerIdentifier: Identifier of the layer in the tile set; in other words, a source layer identifier. Not to be confused with a style layer.
      */
     func showsTileSet(withIdentifier tileSetIdentifier: String, layerIdentifier: String) -> Bool {
-        guard let style = style else {
+        guard let style else {
             return false
         }
         
         let incidentsSourceIdentifiers = sourceIdentifiers(forTileSetIdentifier: tileSetIdentifier)
         for layer in style.layers {
             if let layer = layer as? MLNVectorStyleLayer, let sourceIdentifier = layer.sourceIdentifier {
-                if incidentsSourceIdentifiers.contains(sourceIdentifier) && layer.sourceLayerIdentifier == layerIdentifier {
+                if incidentsSourceIdentifiers.contains(sourceIdentifier), layer.sourceLayerIdentifier == layerIdentifier {
                     return layer.isVisible
                 }
             }
@@ -52,14 +50,14 @@ extension MLNMapView {
      - parameter layerIdentifier: Identifier of the layer in the tile set; in other words, a source layer identifier. Not to be confused with a style layer.
      */
     func setShowsTileSet(_ isVisible: Bool, withIdentifier tileSetIdentifier: String, layerIdentifier: String) {
-        guard let style = style else {
+        guard let style else {
             return
         }
         
         let incidentsSourceIdentifiers = sourceIdentifiers(forTileSetIdentifier: tileSetIdentifier)
         for layer in style.layers {
             if let layer = layer as? MLNVectorStyleLayer, let sourceIdentifier = layer.sourceIdentifier {
-                if incidentsSourceIdentifiers.contains(sourceIdentifier) && layer.sourceLayerIdentifier == layerIdentifier {
+                if incidentsSourceIdentifiers.contains(sourceIdentifier), layer.sourceLayerIdentifier == layerIdentifier {
                     layer.isVisible = isVisible
                 }
             }
@@ -71,7 +69,7 @@ extension MLNMapView {
      */
     public var showsTraffic: Bool {
         get {
-            return showsTileSet(withIdentifier: "mapbox.mapbox-traffic-v1", layerIdentifier: "traffic")
+            showsTileSet(withIdentifier: "mapbox.mapbox-traffic-v1", layerIdentifier: "traffic")
         }
         set {
             setShowsTileSet(newValue, withIdentifier: "mapbox.mapbox-traffic-v1", layerIdentifier: "traffic")
@@ -83,7 +81,7 @@ extension MLNMapView {
      */
     public var showsIncidents: Bool {
         get {
-            return showsTileSet(withIdentifier: "mapbox.mapbox-incidents-v1", layerIdentifier: "closures")
+            showsTileSet(withIdentifier: "mapbox.mapbox-incidents-v1", layerIdentifier: "closures")
         }
         set {
             setShowsTileSet(newValue, withIdentifier: "mapbox.mapbox-incidents-v1", layerIdentifier: "closures")

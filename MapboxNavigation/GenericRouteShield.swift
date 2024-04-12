@@ -5,9 +5,9 @@ import UIKit
  `GenericRouteShield` is a class to render routes that do not have route-shields.
  */
 public class GenericRouteShield: StylableView {
-    static let labelFontSizeScaleFactor: CGFloat = 2.0/3.0
+    static let labelFontSizeScaleFactor: CGFloat = 2.0 / 3.0
     
-    //The color to use for the text and border.
+    // The color to use for the text and border.
     @objc dynamic var foregroundColor: UIColor? {
         didSet {
             layer.borderColor = foregroundColor?.cgColor
@@ -16,7 +16,7 @@ public class GenericRouteShield: StylableView {
         }
     }
      
-    //The label that contains the route code.
+    // The label that contains the route code.
     lazy var routeLabel: UILabel = {
         let label: UILabel = .forAutoLayout()
         label.text = routeText
@@ -26,7 +26,7 @@ public class GenericRouteShield: StylableView {
         return label
     }()
     
-    //The text to put in the label
+    // The text to put in the label
     var routeText: String? {
         didSet {
             routeLabel.text = routeText
@@ -34,7 +34,7 @@ public class GenericRouteShield: StylableView {
         }
     }
     
-    //The size of the text the view attachment is contained within.
+    // The size of the text the view attachment is contained within.
     var pointSize: CGFloat {
         didSet {
             routeLabel.font = routeLabel.font.withSize(pointSize * ExitView.labelFontSizeScaleFactor)
@@ -45,7 +45,7 @@ public class GenericRouteShield: StylableView {
     convenience init(pointSize: CGFloat, text: String) {
         self.init(frame: .zero)
         self.pointSize = pointSize
-        self.routeText = text
+        routeText = text
         commonInit()
     }
     
@@ -54,14 +54,14 @@ public class GenericRouteShield: StylableView {
         super.init(frame: frame)
     }
     
-    required public init?(coder aDecoder: NSCoder) {
+    public required init?(coder aDecoder: NSCoder) {
         pointSize = 0.0
         super.init(coder: aDecoder)
         commonInit()
     }
     
     func rebuildConstraints() {
-        NSLayoutConstraint.deactivate(self.constraints)
+        NSLayoutConstraint.deactivate(constraints)
         buildConstraints()
     }
     
@@ -69,7 +69,7 @@ public class GenericRouteShield: StylableView {
         translatesAutoresizingMaskIntoConstraints = false
         layer.masksToBounds = true
         
-        //build view hierarchy
+        // build view hierarchy
         addSubview(routeLabel)
         buildConstraints()
         
@@ -97,6 +97,6 @@ public class GenericRouteShield: StylableView {
     static func criticalHash(dataSource: DataSource) -> String {
         let proxy = GenericRouteShield.appearance()
         let criticalProperties: [AnyHashable?] = [dataSource.font.pointSize, proxy.backgroundColor, proxy.foregroundColor, proxy.borderWidth, proxy.cornerRadius]
-        return String(describing: criticalProperties.reduce(0, { $0 ^ ($1?.hashValue ?? 0)}))
+        return String(describing: criticalProperties.reduce(0) { $0 ^ ($1?.hashValue ?? 0) })
     }
 }

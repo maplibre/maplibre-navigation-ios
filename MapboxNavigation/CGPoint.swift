@@ -1,10 +1,10 @@
 import Foundation
 
-extension CGPoint {
+public extension CGPoint {
     /**
      Calculates the straight line distance between two `CGPoint`.
      */
-    public func distance(to: CGPoint) -> CGFloat {
-        return sqrt((self.x - to.x) * (self.x - to.x) + (self.y - to.y) * (self.y - to.y))
+    func distance(to: CGPoint) -> CGFloat {
+        sqrt((x - to.x) * (x - to.x) + (y - to.y) * (y - to.y))
     }
 }

@@ -2,7 +2,6 @@ import Foundation
 
 @objc(MBStyleType)
 public enum StyleType: Int, CustomStringConvertible {
-    
     case day
     case night
     
@@ -22,9 +21,9 @@ public enum StyleType: Int, CustomStringConvertible {
     public var description: String {
         switch self {
         case .day:
-            return "day"
+            "day"
         case .night:
-            return "night"
+            "night"
         }
     }
 }

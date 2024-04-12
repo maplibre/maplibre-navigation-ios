@@ -1,10 +1,10 @@
-import XCTest
-import MapboxDirections
-import Turf
 import CoreLocation
 @testable import MapboxCoreNavigation
+import MapboxDirections
+import Turf
+import XCTest
 
-struct TunnelDetectorTestData {
+enum TunnelDetectorTestData {
     static let ninthStreetFileName = "routeWithTunnels_9thStreetDC"
     static let kRouteKey = "routes"
     static let startLocation = CLLocationCoordinate2D(latitude: 38.890774, longitude: -77.023970)
@@ -18,7 +18,6 @@ let tunnelWaypoint2 = Waypoint(coordinate: TunnelDetectorTestData.endLocation)
 let tunnelRoute = Route(json: tunnelJsonRoute, waypoints: [tunnelWayPoint1, tunnelWaypoint2], options: NavigationRouteOptions(waypoints: [tunnelWayPoint1, tunnelWaypoint2]))
 
 class TunnelIntersectionManagerTests: XCTestCase {
-    
     lazy var tunnelSetup: (tunnelIntersectionManager: TunnelIntersectionManager, routeController: RouteController, firstLocation: CLLocation) = {
         tunnelRoute.accessToken = "foo"
         let navigation = RouteController(along: tunnelRoute, directions: directions)
@@ -26,14 +25,14 @@ class TunnelIntersectionManagerTests: XCTestCase {
         let tunnelIntersectionManager = TunnelIntersectionManager()
         
         return (tunnelIntersectionManager: tunnelIntersectionManager,
-                          routeController: navigation,
-                            firstLocation: CLLocation(coordinate: firstCoord,
-                                                        altitude: 5,
-                                              horizontalAccuracy: 10,
-                                                verticalAccuracy: 5,
-                                                          course: 20,
-                                                           speed: 6,
-                                timestamp: Date()))
+                routeController: navigation,
+                firstLocation: CLLocation(coordinate: firstCoord,
+                                          altitude: 5,
+                                          horizontalAccuracy: 10,
+                                          verticalAccuracy: 5,
+                                          course: 20,
+                                          speed: 6,
+                                          timestamp: Date()))
     }()
     
     func testUserWithinTunnelEntranceRadius() {
@@ -55,9 +54,9 @@ class TunnelIntersectionManagerTests: XCTestCase {
         
         // Mock location moved from the first location on route to the tunnel intersection location
         var currentLocation = location(at: tunnelSetup.firstLocation.coordinate,
-                                      for: routeController,
-                             intersection: tunnelIntersection,
-                                 distance: intersectionLocation.distance(to: tunnelSetup.firstLocation.coordinate))
+                                       for: routeController,
+                                       intersection: tunnelIntersection,
+                                       distance: intersectionLocation.distance(to: tunnelSetup.firstLocation.coordinate))
         
         routeController.locationManager(routeController.locationManager, didUpdateLocations: [currentLocation])
         
@@ -75,9 +74,9 @@ class TunnelIntersectionManagerTests: XCTestCase {
         routeController.locationManager(routeController.locationManager, didUpdateLocations: [outsideTunnelEntranceRadiusLocation])
         
         currentLocation = location(at: tunnelSetup.firstLocation.coordinate,
-                                  for: routeController,
-                         intersection: tunnelIntersection,
-                             distance: 10)
+                                   for: routeController,
+                                   intersection: tunnelIntersection,
+                                   distance: 10)
         
         userIsAtTunnelEntranceRadius = tunnelIntersectionManager.userWithinTunnelEntranceRadius(at: currentLocation, routeProgress: routeController.routeProgress)
         XCTAssertFalse(userIsAtTunnelEntranceRadius, "Location must not be within the tunnel entrance radius")
@@ -128,9 +127,9 @@ class TunnelIntersectionManagerTests: XCTestCase {
         let intersectionLocation = tunnelIntersection.location
         
         let currentLocation = location(at: tunnelSetup.firstLocation.coordinate,
-                                      for: routeController,
-                             intersection: tunnelIntersection,
-                                 distance: intersectionLocation.distance(to: tunnelSetup.firstLocation.coordinate))
+                                       for: routeController,
+                                       intersection: tunnelIntersection,
+                                       distance: intersectionLocation.distance(to: tunnelSetup.firstLocation.coordinate))
         
         routeController.locationManager(routeController.locationManager, didUpdateLocations: [currentLocation])
         
@@ -158,9 +157,9 @@ class TunnelIntersectionManagerTests: XCTestCase {
         let intersectionLocation = tunnelExitIntersection.location
         
         let currentLocation = location(at: tunnelSetup.firstLocation.coordinate,
-                                      for: routeController,
-                             intersection: tunnelExitIntersection,
-                                 distance: intersectionLocation.distance(to: tunnelSetup.firstLocation.coordinate))
+                                       for: routeController,
+                                       intersection: tunnelExitIntersection,
+                                       distance: intersectionLocation.distance(to: tunnelSetup.firstLocation.coordinate))
         
         routeController.locationManager(routeController.locationManager, didUpdateLocations: [currentLocation])
         
@@ -180,32 +179,29 @@ class TunnelIntersectionManagerTests: XCTestCase {
         routeController.tunnelIntersectionManager(routeController.tunnelIntersectionManager, willDisableAnimationAt: tunnelExitLocation)
         XCTAssertFalse(tunnelIntersectionManager.isAnimationEnabled, "Animation through tunnel should be disabled after 3 location updates.")
     }
-    
 }
 
-extension TunnelIntersectionManagerTests {
-    
-    fileprivate func location(at coordinate: CLLocationCoordinate2D,
-                        for routeController: RouteController,
-                               intersection: Intersection,
-                                   distance: CLLocationDistance? = 200) -> CLLocation {
-        
+private extension TunnelIntersectionManagerTests {
+    func location(at coordinate: CLLocationCoordinate2D,
+                  for routeController: RouteController,
+                  intersection: Intersection,
+                  distance: CLLocationDistance? = 200) -> CLLocation {
         let polyline = Polyline(routeController.routeProgress.currentLegProgress.currentStep.coordinates!)
         let newLocation = CLLocationCoordinate2D(latitude: coordinate.latitude,
-                                                longitude: coordinate.longitude).coordinate(
-                                                       at: distance!,
-                                                   facing: (polyline.coordinates.first?.direction(to: intersection.location))!
+                                                 longitude: coordinate.longitude).coordinate(
+            at: distance!,
+            facing: (polyline.coordinates.first?.direction(to: intersection.location))!
         )
         return location(at: newLocation)
     }
     
-    fileprivate func location(at coordinate: CLLocationCoordinate2D, horizontalAccuracy: CLLocationAccuracy? = 258.20) -> CLLocation {
-        return CLLocation(coordinate: coordinate,
-                            altitude: 5,
-                  horizontalAccuracy: horizontalAccuracy!,
-                    verticalAccuracy: 200,
-                              course: 20,
-                               speed: 15,
-                           timestamp: Date())
+    func location(at coordinate: CLLocationCoordinate2D, horizontalAccuracy: CLLocationAccuracy? = 258.20) -> CLLocation {
+        CLLocation(coordinate: coordinate,
+                   altitude: 5,
+                   horizontalAccuracy: horizontalAccuracy!,
+                   verticalAccuracy: 200,
+                   course: 20,
+                   speed: 15,
+                   timestamp: Date())
     }
 }

@@ -1,8 +1,7 @@
 import MapboxDirections
 
 extension RouteStep {
-    static func ==(left: RouteStep, right: RouteStep) -> Bool {
-        
+    static func == (left: RouteStep, right: RouteStep) -> Bool {
         var finalHeading = false
         if let leftFinalHeading = left.finalHeading, let rightFinalHeading = right.finalHeading {
             finalHeading = leftFinalHeading == rightFinalHeading
@@ -18,7 +17,7 @@ extension RouteStep {
      Returns true if the route step is on a motorway.
      */
     public var isMotorway: Bool {
-        return intersections?.first?.outletRoadClasses?.contains(.motorway) ?? false
+        intersections?.first?.outletRoadClasses?.contains(.motorway) ?? false
     }
     
     /**
@@ -26,7 +25,7 @@ extension RouteStep {
      */
     var isNumberedMotorway: Bool {
         guard isMotorway else { return false }
-        guard let codes = codes, let digitRange = codes.first?.rangeOfCharacter(from: .decimalDigits) else {
+        guard let codes, let digitRange = codes.first?.rangeOfCharacter(from: .decimalDigits) else {
             return false
         }
         return !digitRange.isEmpty
@@ -36,6 +35,6 @@ extension RouteStep {
      Returns the last instruction for a given step.
      */
     public var lastInstruction: SpokenInstruction? {
-        return instructionsSpokenAlongStep?.last
+        instructionsSpokenAlongStep?.last
     }
 }

@@ -4,16 +4,15 @@ import CarPlay
 #endif
 
 extension VisualInstruction {
-    
     var containsLaneIndications: Bool {
-        return components.contains(where: { $0 is LaneIndicationComponent })
+        components.contains(where: { $0 is LaneIndicationComponent })
     }
 
-#if canImport(CarPlay)
+    #if canImport(CarPlay)
     @available(iOS 12.0, *)
     func maneuverImageSet(side: DrivingSide) -> CPImageSet? {
         let colors: [UIColor] = [.black, .white]
-        let blackAndWhiteManeuverIcons: [UIImage] = colors.compactMap { (color) in
+        let blackAndWhiteManeuverIcons: [UIImage] = colors.compactMap { color in
             let mv = ManeuverView()
             mv.frame = CGRect(x: 0, y: 0, width: 30, height: 30)
             mv.primaryColor = color
@@ -58,5 +57,5 @@ extension VisualInstruction {
         
         return instructionLabel.attributedText
     }
-#endif
+    #endif
 }

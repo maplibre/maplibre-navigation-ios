@@ -1,17 +1,17 @@
 import CoreLocation
+@testable import MapboxCoreNavigation
 import MapboxDirections
 import Turf
 import XCTest
-@testable import MapboxCoreNavigation
 
-fileprivate let mbTestHeading: CLLocationDirection = 50
+private let mbTestHeading: CLLocationDirection = 50
 
 class RouteControllerTests: XCTestCase {
-
-    struct Constants {
+    enum Constants {
         static let jsonRoute = (response["routes"] as! [AnyObject]).first as! [String: Any]
         static let accessToken = "nonsense"
     }
+
     let directionsClientSpy = DirectionsSpy(accessToken: "garbage", host: nil)
     let delegate = RouteControllerDelegateSpy()
 
@@ -204,14 +204,14 @@ class RouteControllerTests: XCTestCase {
         let routeController = dependencies.routeController
         let testLocation = dependencies.routeLocations.firstLocation
 
-        let willRerouteNotificationExpectation = expectation(forNotification: .routeControllerWillReroute, object: routeController) { (notification) -> Bool in
+        let willRerouteNotificationExpectation = expectation(forNotification: .routeControllerWillReroute, object: routeController) { notification -> Bool in
             let fromLocation = notification.userInfo![RouteControllerNotificationUserInfoKey.locationKey] as? CLLocation
             return fromLocation == testLocation
         }
 
         let didRerouteNotificationExpectation = expectation(forNotification: .routeControllerDidReroute, object: routeController, handler: nil)
 
-        let routeProgressDidChangeNotificationExpectation = expectation(forNotification: .routeControllerProgressDidChange, object: routeController) { (notification) -> Bool in
+        let routeProgressDidChangeNotificationExpectation = expectation(forNotification: .routeControllerProgressDidChange, object: routeController) { notification -> Bool in
             let location = notification.userInfo![RouteControllerNotificationUserInfoKey.locationKey] as? CLLocation
             let rawLocation = notification.userInfo![RouteControllerNotificationUserInfoKey.rawLocationKey] as? CLLocation
             let _ = notification.userInfo![RouteControllerNotificationUserInfoKey.routeProgressKey] as! RouteProgress
@@ -220,23 +220,29 @@ class RouteControllerTests: XCTestCase {
         }
 
         // MARK: When told to re-route from location -- `reroute(from:)`
+
         routeController.rerouteForDiversion(from: testLocation, along: routeController.routeProgress)
 
         // MARK: it tells the delegate & posts a willReroute notification
+
         XCTAssertTrue(delegate.recentMessages.contains("routeController(_:willRerouteFrom:)"))
         wait(for: [willRerouteNotificationExpectation], timeout: 0.1)
 
         // MARK: Upon rerouting successfully...
+
         directionsClientSpy.fireLastCalculateCompletion(with: nil, routes: [alternateRoute], error: nil)
 
         // MARK: It tells the delegate & posts a didReroute notification
+
         XCTAssertTrue(delegate.recentMessages.contains("routeController(_:didRerouteAlong:reason:)"))
         wait(for: [didRerouteNotificationExpectation], timeout: 0.1)
 
         // MARK: On the next call to `locationManager(_, didUpdateLocations:)`
+
         routeController.locationManager(routeController.locationManager, didUpdateLocations: [testLocation])
 
         // MARK: It tells the delegate & posts a routeProgressDidChange notification
+
         XCTAssertTrue(delegate.recentMessages.contains("routeController(_:didUpdate:)"))
         wait(for: [routeProgressDidChangeNotificationExpectation], timeout: 0.1)
     }
@@ -248,19 +254,24 @@ class RouteControllerTests: XCTestCase {
         let lastLocation = dependencies.routeLocations.lastLocation
 
         // MARK: When navigation begins with a location update
+
         routeController.locationManager(routeController.locationManager, didUpdateLocations: [firstLocation])
 
         // MARK: When at a valid location just before the last location (should this really be necessary?)
+
         routeController.locationManager(routeController.locationManager, didUpdateLocations: [penultimateLocation])
 
         // MARK: When navigation continues with a location update to the last location
+
         routeController.locationManager(routeController.locationManager, didUpdateLocations: [lastLocation])
 
         // MARK: And then navigation continues with another location update at the last location
+
         let currentLocation = routeController.location!
         routeController.locationManager(routeController.locationManager, didUpdateLocations: [currentLocation])
 
         // MARK: It tells the delegate that the user did arrive
+
         XCTAssertTrue(delegate.recentMessages.contains("routeController(_:didArriveAt:)"))
     }
     
@@ -271,19 +282,24 @@ class RouteControllerTests: XCTestCase {
         let lastLocation = dependencies.routeLocations.lastLocation
 
         // MARK: When navigation begins with a location update
+
         routeController.locationManager(routeController.locationManager, didUpdateLocations: [firstLocation])
         
         // MARK: When at a valid location just before the last location (should this really be necessary?)
+
         routeController.locationManager(routeController.locationManager, didUpdateLocations: [penultimateLocation])
 
         // MARK: When navigation continues with a location update to the last location
+
         routeController.locationManager(routeController.locationManager, didUpdateLocations: [lastLocation])
         
         // MARK: And then navigation continues with another location update at the last location
+
         let currentLocation = routeController.location!
         routeController.locationManager(routeController.locationManager, didUpdateLocations: [currentLocation])
         
         // MARK: It tells the delegate that the user did arrive
+
         XCTAssertTrue(delegate.recentMessages.contains("routeController(_:didArriveAt:)"))
         
         // Find a location that is very far off route
@@ -297,9 +313,7 @@ class RouteControllerTests: XCTestCase {
         XCTAssertFalse(delegate.recentMessages.contains("routeController(_:didRerouteAlong:)"))
     }
 
-
     func testRouteControllerDoesNotHaveRetainCycle() {
-        
         weak var subject: RouteController? = nil
         
         autoreleasepool {
@@ -312,7 +326,6 @@ class RouteControllerTests: XCTestCase {
     }
 
     func testRouteControllerNilsOutLocationDelegateOnDeinit() {
-        
         weak var subject: CLLocationManagerDelegate? = nil
         autoreleasepool {
             let locationManager = NavigationLocationManager()
@@ -324,105 +337,90 @@ class RouteControllerTests: XCTestCase {
     }
     
     // MARK: - Matching route geometries
-    lazy var nijmegenArnhemVeenendaal = {
-        Route(
-            jsonFileName: "Nijmegen-Arnhem-Veenendaal",
-            waypoints: [
-                CLLocationCoordinate2D(latitude: 51.83116792, longitude: 5.83897820),
-                CLLocationCoordinate2D(latitude: 52.03920380, longitude: 5.55133121)
-            ],
-            bundle: .module,
-            accessToken: Constants.accessToken
-        )
-    }()
+
+    lazy var nijmegenArnhemVeenendaal = Route(
+        jsonFileName: "Nijmegen-Arnhem-Veenendaal",
+        waypoints: [
+            CLLocationCoordinate2D(latitude: 51.83116792, longitude: 5.83897820),
+            CLLocationCoordinate2D(latitude: 52.03920380, longitude: 5.55133121)
+        ],
+        bundle: .module,
+        accessToken: Constants.accessToken
+    )
     
-    lazy var nijmegenBemmelVeenendaal = {
-        Route(
-            jsonFileName: "Nijmegen-Bemmel-Veenendaal",
-            waypoints: [
-                CLLocationCoordinate2D(latitude: 51.83116792, longitude: 5.83897820),
-                CLLocationCoordinate2D(latitude: 52.03920380, longitude: 5.55133121)
-            ],
-            bundle: .module,
-            accessToken: Constants.accessToken
-        )
-    }()
+    lazy var nijmegenBemmelVeenendaal = Route(
+        jsonFileName: "Nijmegen-Bemmel-Veenendaal",
+        waypoints: [
+            CLLocationCoordinate2D(latitude: 51.83116792, longitude: 5.83897820),
+            CLLocationCoordinate2D(latitude: 52.03920380, longitude: 5.55133121)
+        ],
+        bundle: .module,
+        accessToken: Constants.accessToken
+    )
     
     // Same route, routed on a different day
-    lazy var nijmegenBemmelVeenendaal2 = {
-        Route(
-            jsonFileName: "Nijmegen-Bemmel-Veenendaal2",
-            waypoints: [
-                CLLocationCoordinate2D(latitude: 51.83116792, longitude: 5.83897820),
-                CLLocationCoordinate2D(latitude: 52.03920380, longitude: 5.55133121)
-            ],
-            bundle: .module,
-            accessToken: Constants.accessToken
-        )
-    }()
+    lazy var nijmegenBemmelVeenendaal2 = Route(
+        jsonFileName: "Nijmegen-Bemmel-Veenendaal2",
+        waypoints: [
+            CLLocationCoordinate2D(latitude: 51.83116792, longitude: 5.83897820),
+            CLLocationCoordinate2D(latitude: 52.03920380, longitude: 5.55133121)
+        ],
+        bundle: .module,
+        accessToken: Constants.accessToken
+    )
     
-    lazy var wolfhezeVeenendaalNormal = {
-        Route(
-            jsonFileName: "Wolfheze-Veenendaal-Normal",
-            waypoints: [
-                CLLocationCoordinate2D(latitude: 51.99711882858318, longitude: 5.7932572786103265),
-                CLLocationCoordinate2D(latitude: 52.0392038, longitude: 5.55133121)
-            ],
-            bundle: .module,
-            accessToken: Constants.accessToken
-        )
-    }()
+    lazy var wolfhezeVeenendaalNormal = Route(
+        jsonFileName: "Wolfheze-Veenendaal-Normal",
+        waypoints: [
+            CLLocationCoordinate2D(latitude: 51.99711882858318, longitude: 5.7932572786103265),
+            CLLocationCoordinate2D(latitude: 52.0392038, longitude: 5.55133121)
+        ],
+        bundle: .module,
+        accessToken: Constants.accessToken
+    )
     
-    lazy var wolfhezeVeenendaalSmallDetourAtEnd = {
-        Route(
-            jsonFileName: "Wolfheze-Veenendaal-Small-Detour-At-End",
-            waypoints: [
-                CLLocationCoordinate2D(latitude: 51.99711882858318, longitude: 5.7932572786103265),
-                CLLocationCoordinate2D(latitude: 52.04451273, longitude: 5.57902714),
-                CLLocationCoordinate2D(latitude: 52.0392038, longitude: 5.55133121)
-            ],
-            bundle: .module,
-            accessToken: Constants.accessToken
-        )
-    }()
+    lazy var wolfhezeVeenendaalSmallDetourAtEnd = Route(
+        jsonFileName: "Wolfheze-Veenendaal-Small-Detour-At-End",
+        waypoints: [
+            CLLocationCoordinate2D(latitude: 51.99711882858318, longitude: 5.7932572786103265),
+            CLLocationCoordinate2D(latitude: 52.04451273, longitude: 5.57902714),
+            CLLocationCoordinate2D(latitude: 52.0392038, longitude: 5.55133121)
+        ],
+        bundle: .module,
+        accessToken: Constants.accessToken
+    )
     
-    lazy var a12ToVeenendaalNormal = {
-        Route(
-            jsonFileName: "A12-To-Veenendaal-Normal",
-            waypoints: [
-                CLLocationCoordinate2D(latitude: 52.02224357, longitude: 5.78149084),
-                CLLocationCoordinate2D(latitude: 52.03924958, longitude: 5.55054131)
-            ],
-            bundle: .module,
-            accessToken: Constants.accessToken
-        )
-    }()
+    lazy var a12ToVeenendaalNormal = Route(
+        jsonFileName: "A12-To-Veenendaal-Normal",
+        waypoints: [
+            CLLocationCoordinate2D(latitude: 52.02224357, longitude: 5.78149084),
+            CLLocationCoordinate2D(latitude: 52.03924958, longitude: 5.55054131)
+        ],
+        bundle: .module,
+        accessToken: Constants.accessToken
+    )
     
-    lazy var a12ToVeenendaalSlightDifference = {
-        Route(
-            jsonFileName: "A12-To-Veenendaal-Slight-Difference",
-            waypoints: [
-                CLLocationCoordinate2D(latitude: 52.02224357, longitude: 5.78149084),
-                CLLocationCoordinate2D(latitude: 52.03917716, longitude: 5.55201356),
-                CLLocationCoordinate2D(latitude: 52.03924958, longitude: 5.55054131)
-            ],
-            bundle: .module,
-            accessToken: Constants.accessToken
-        )
-    }()
+    lazy var a12ToVeenendaalSlightDifference = Route(
+        jsonFileName: "A12-To-Veenendaal-Slight-Difference",
+        waypoints: [
+            CLLocationCoordinate2D(latitude: 52.02224357, longitude: 5.78149084),
+            CLLocationCoordinate2D(latitude: 52.03917716, longitude: 5.55201356),
+            CLLocationCoordinate2D(latitude: 52.03924958, longitude: 5.55054131)
+        ],
+        bundle: .module,
+        accessToken: Constants.accessToken
+    )
     
-    lazy var a12ToVeenendaalBiggerDetour = {
-        Route(
-            jsonFileName: "A12-To-Veenendaal-Bigger-Detour",
-            waypoints: [
-                CLLocationCoordinate2D(latitude: 52.02224357, longitude: 5.78149084),
-                CLLocationCoordinate2D(latitude: 52.04520875, longitude: 5.5748937),
-                CLLocationCoordinate2D(latitude: 52.03924958, longitude: 5.55054131)
-            ],
-            bundle: .module,
-            accessToken: Constants.accessToken
-        )
-    }()
+    lazy var a12ToVeenendaalBiggerDetour = Route(
+        jsonFileName: "A12-To-Veenendaal-Bigger-Detour",
+        waypoints: [
+            CLLocationCoordinate2D(latitude: 52.02224357, longitude: 5.78149084),
+            CLLocationCoordinate2D(latitude: 52.04520875, longitude: 5.5748937),
+            CLLocationCoordinate2D(latitude: 52.03924958, longitude: 5.55054131)
+        ],
+        bundle: .module,
+        accessToken: Constants.accessToken
+    )
 
     func testRouteControllerMatchPercentage() {
         // These routes differ around 40%
@@ -513,6 +511,7 @@ class RouteControllerTests: XCTestCase {
     }
     
     // MARK: - Applying faster/slower route
+
     func testApplyingFasterRoute() {
         let routeController = dependencies.routeController
         let oldRouteProgress = routeController.routeProgress
@@ -579,17 +578,15 @@ class RouteControllerTests: XCTestCase {
     
     // Same exact JSON as a12ToVeenendaalNormal, but with one of the steps increased in 'duration' with 500 secs simulating a traffic jam
     // Makes checking 'durationRemaining' work, as that is a sum of all step's 'duration' in a leg
-    lazy var a12ToVeenendaalNormalWithTraffic = {
-        Route(
-            jsonFileName: "A12-To-Veenendaal-Normal-With-Big-Trafficjam",
-            waypoints: [
-                CLLocationCoordinate2D(latitude: 52.02224357, longitude: 5.78149084),
-                CLLocationCoordinate2D(latitude: 52.03924958, longitude: 5.55054131)
-            ],
-            bundle: .module,
-            accessToken: Constants.accessToken
-        )
-    }()
+    lazy var a12ToVeenendaalNormalWithTraffic = Route(
+        jsonFileName: "A12-To-Veenendaal-Normal-With-Big-Trafficjam",
+        waypoints: [
+            CLLocationCoordinate2D(latitude: 52.02224357, longitude: 5.78149084),
+            CLLocationCoordinate2D(latitude: 52.03924958, longitude: 5.55054131)
+        ],
+        bundle: .module,
+        accessToken: Constants.accessToken
+    )
     
     func testApplyingSlowerRoute() {
         let routeController = dependencies.routeController

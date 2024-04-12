@@ -1,19 +1,19 @@
 #if os(iOS) || os(tvOS)
-    import UIKit
+import UIKit
 #elseif os(watchOS)
-    import WatchKit
+import WatchKit
 #endif
 
 extension ProcessInfo {
     static var systemName: String {
         #if os(iOS) || os(tvOS)
-            return UIDevice.current.systemName
+        return UIDevice.current.systemName
         #elseif os(watchOS)
-            return WKInterfaceDevice.current.systemName
+        return WKInterfaceDevice.current.systemName
         #elseif os(OSX)
-            return "macOS"
+        return "macOS"
         #else
-            return "unknown"
+        return "unknown"
         #endif
     }
     

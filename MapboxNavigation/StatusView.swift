@@ -14,7 +14,6 @@ import UIKit
 @IBDesignable
 @objc(MBStatusView)
 public class StatusView: UIView {
-    
     weak var activityIndicatorView: UIActivityIndicatorView!
     weak var textLabel: UILabel!
     @objc public weak var delegate: StatusViewDelegate?
@@ -28,7 +27,7 @@ public class StatusView: UIView {
         }
     }
     
-    @objc public override init(frame: CGRect) {
+    @objc override public init(frame: CGRect) {
         super.init(frame: frame)
         commonInit()
     }
@@ -110,18 +109,18 @@ public class StatusView: UIView {
         canChangeValue = interactive
         textLabel.text = title
         activityIndicatorView.hidesWhenStopped = true
-        if (!showSpinner) { activityIndicatorView.stopAnimating() }
+        if !showSpinner { activityIndicatorView.stopAnimating() }
 
         guard isCurrentlyVisible == false, isHidden == true else { return }
                 
         let show = {
             self.isHidden = false
             self.textLabel.alpha = 1
-            if (showSpinner) { self.activityIndicatorView.isHidden = false }
+            if showSpinner { self.activityIndicatorView.isHidden = false }
             self.superview?.layoutIfNeeded()
         }
         
-        UIView.defaultAnimation(0.3, animations:show, completion:{ _ in
+        UIView.defaultAnimation(0.3, animations: show, completion: { _ in
             self.isCurrentlyVisible = true
             guard showSpinner else { return }
             self.activityIndicatorView.startAnimating()
@@ -132,7 +131,6 @@ public class StatusView: UIView {
      Hides the status view.
      */
     public func hide(delay: TimeInterval = 0, animated: Bool = true) {
-        
         let hide = {
             self.isHidden = true
             self.textLabel.alpha = 0
@@ -143,12 +141,12 @@ public class StatusView: UIView {
             guard self.isHidden == false else { return }
             
             let fireTime = DispatchTime.now() + delay
-            DispatchQueue.main.asyncAfter(deadline: fireTime, execute: {
+            DispatchQueue.main.asyncAfter(deadline: fireTime) {
                 self.activityIndicatorView.stopAnimating()
                 UIView.defaultAnimation(0.3, delay: 0, animations: hide, completion: { _ in
                     self.isCurrentlyVisible = false
                 })
-            })
+            }
         }
         
         animated ? animate() : hide()

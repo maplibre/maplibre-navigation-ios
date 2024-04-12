@@ -1,6 +1,6 @@
 import UIKit
 
-internal class ImageCache: BimodalImageCache {
+class ImageCache: BimodalImageCache {
     let memoryCache: NSCache<NSString, UIImage>
     let fileCache: FileCache
 
@@ -33,7 +33,7 @@ internal class ImageCache: BimodalImageCache {
      Returns an image from the cache for the given key, if any. The memory cache is consulted first, followed by the disk cache. If an image is found on disk which isn't in memory, it is added to the memory cache.
      */
     public func image(forKey key: String?) -> UIImage? {
-        guard let key = key else {
+        guard let key else {
             return nil
         }
 
@@ -74,7 +74,7 @@ internal class ImageCache: BimodalImageCache {
     }
 
     private func imageFromMemoryCache(forKey key: String) -> UIImage? {
-        return memoryCache.object(forKey: key as NSString)
+        memoryCache.object(forKey: key as NSString)
     }
 
     private func imageFromDiskCache(forKey key: String?) -> UIImage? {

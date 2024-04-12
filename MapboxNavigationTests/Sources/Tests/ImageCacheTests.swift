@@ -1,10 +1,8 @@
-import XCTest
 @testable import MapboxNavigation
-
+import XCTest
 
 class ImageCacheTests: XCTestCase {
-
-    let cache: ImageCache = ImageCache()
+    let cache: ImageCache = .init()
     let asyncTimeout: TimeInterval = 10.0
 
     private func clearDiskCache() {
@@ -18,7 +16,7 @@ class ImageCacheTests: XCTestCase {
 
     override func setUp() {
         super.setUp()
-        self.continueAfterFailure = false
+        continueAfterFailure = false
 
         cache.clearMemory()
         clearDiskCache()
@@ -48,11 +46,11 @@ class ImageCacheTests: XCTestCase {
 
     func testUsingURLStringAsCacheKey() {
         let cacheKeyURLString = "https://zombo.com/lulz/shieldKey.xyz"
-        let expectation = self.expectation(description: "Storing image in disk cache")
+        let expectation = expectation(description: "Storing image in disk cache")
         cache.store(ShieldImage.i280.image, forKey: cacheKeyURLString, toDisk: true) {
             expectation.fulfill()
         }
-        self.wait(for: [expectation], timeout: asyncTimeout)
+        wait(for: [expectation], timeout: asyncTimeout)
 
         let returnedImage = cache.image(forKey: cacheKeyURLString)
         XCTAssertTrue((returnedImage?.isKind(of: UIImage.self))!)
@@ -60,11 +58,11 @@ class ImageCacheTests: XCTestCase {
 
     func testUsingPathStringAsCacheKey() {
         let cacheKeyURLString = "/path/to/something.xyz"
-        let expectation = self.expectation(description: "Storing image in disk cache")
+        let expectation = expectation(description: "Storing image in disk cache")
         cache.store(ShieldImage.i280.image, forKey: cacheKeyURLString, toDisk: true) {
             expectation.fulfill()
         }
-        self.wait(for: [expectation], timeout: asyncTimeout)
+        wait(for: [expectation], timeout: asyncTimeout)
 
         let returnedImage = cache.image(forKey: cacheKeyURLString)
         XCTAssertTrue((returnedImage?.isKind(of: UIImage.self))!)
@@ -115,9 +113,9 @@ class ImageCacheTests: XCTestCase {
 
     func testJPEGSupport() {
         let imageJPEGData = ShieldImage.i280.image.jpegData(compressionQuality: 9.0)!
-        let image = UIImage.init(data: imageJPEGData)!
+        let image = UIImage(data: imageJPEGData)!
 
-        let expectation = self.expectation(description: "Storing image in disk cache")
+        let expectation = expectation(description: "Storing image in disk cache")
         cache.store(image, forKey: "JPEG Test", toDisk: true) {
             expectation.fulfill()
         }

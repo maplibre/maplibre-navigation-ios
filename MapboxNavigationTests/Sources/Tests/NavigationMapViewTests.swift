@@ -1,18 +1,17 @@
-import XCTest
 import CoreLocation
-@testable import MapboxNavigation
 import MapboxDirections
+@testable import MapboxNavigation
+import XCTest
 
 class NavigationMapViewTests: XCTestCase {
-    
     let coordinates: [CLLocationCoordinate2D] = [
         CLLocationCoordinate2D(latitude: 0, longitude: 0),
         CLLocationCoordinate2D(latitude: 1, longitude: 1),
         CLLocationCoordinate2D(latitude: 2, longitude: 2),
         CLLocationCoordinate2D(latitude: 3, longitude: 3),
         CLLocationCoordinate2D(latitude: 4, longitude: 4),
-        CLLocationCoordinate2D(latitude: 5, longitude: 5),
-        ]
+        CLLocationCoordinate2D(latitude: 5, longitude: 5)
+    ]
     
     func testNavigationMapViewCombineWithSimilarCongestions() {
         let navigationMapView = NavigationMapView(frame: CGRect(origin: .zero, size: .iPhone6Plus))
@@ -23,7 +22,7 @@ class NavigationMapViewTests: XCTestCase {
             .low,
             .low,
             .low
-            ])
+        ])
         
         XCTAssertEqual(congestionSegments.count, 1)
         XCTAssertEqual(congestionSegments[0].0.count, 10)
@@ -39,7 +38,7 @@ class NavigationMapViewTests: XCTestCase {
             .severe,
             .low,
             .low
-            ])
+        ])
         
         // The severe breaks the trend of .low.
         // Any time the current congestion level is different than the previous segment, we have to create a new congestion segment.

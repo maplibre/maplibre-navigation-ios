@@ -3,23 +3,23 @@ import MapboxDirections
 #if canImport(CarPlay)
 import CarPlay
 
-extension CongestionLevel {
+public extension CongestionLevel {
     /**
      Converts a CongestionLevel to a CPTimeRemainingColor.
      */
     @available(iOS 12.0, *)
-    public var asCPTimeRemainingColor: CPTimeRemainingColor {
+    var asCPTimeRemainingColor: CPTimeRemainingColor {
         switch self {
         case .unknown:
-            return .default
+            .default
         case .low:
-            return .green
+            .green
         case .moderate:
-            return .orange
+            .orange
         case .heavy:
-            return .red
+            .red
         case .severe:
-            return .red
+            .red
         }
     }
 }

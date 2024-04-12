@@ -1,16 +1,15 @@
-import UIKit
-import MapboxDirections
 import MapboxCoreNavigation
+import MapboxDirections
+import UIKit
 
 /// :nodoc:
 @objc(MBNextInstructionLabel)
-open class NextInstructionLabel: InstructionLabel { }
+open class NextInstructionLabel: InstructionLabel {}
 
 /// :nodoc:
 @IBDesignable
 @objc(MBNextBannerView)
 open class NextBannerView: UIView {
-    
     weak var maneuverView: ManeuverView!
     weak var instructionLabel: NextInstructionLabel!
     weak var bottomSeparatorView: SeparatorView!
@@ -25,7 +24,7 @@ open class NextBannerView: UIView {
         commonInit()
     }
     
-    required public init?(coder aDecoder: NSCoder) {
+    public required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         commonInit()
     }
@@ -52,7 +51,7 @@ open class NextBannerView: UIView {
         
         instructionLabel.availableBounds = { [unowned self] in
             // Available width H:|-padding-maneuverView-padding-availableWidth-padding-|
-            let availableWidth = self.bounds.width - BaseInstructionsBannerView.maneuverViewSize.width - BaseInstructionsBannerView.padding * 3
+            let availableWidth = bounds.width - BaseInstructionsBannerView.maneuverViewSize.width - BaseInstructionsBannerView.padding * 3
             return CGRect(x: 0, y: 0, width: availableWidth, height: self.instructionLabel.font.lineHeight)
         }
         
@@ -120,5 +119,4 @@ open class NextBannerView: UIView {
             self.isHidden = true
         }, completion: nil)
     }
-    
 }

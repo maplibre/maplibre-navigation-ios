@@ -9,11 +9,9 @@ protocol ReentrantImageDownloader {
 }
 
 class ImageDownloader: NSObject, ReentrantImageDownloader, URLSessionDataDelegate {
-    private var sessionConfiguration: URLSessionConfiguration = URLSessionConfiguration.default
+    private var sessionConfiguration: URLSessionConfiguration = .default
 
-    lazy private var urlSession: URLSession = {
-        return URLSession.init(configuration: sessionConfiguration, delegate: self, delegateQueue: nil)
-    }()
+    private lazy var urlSession: URLSession = .init(configuration: sessionConfiguration, delegate: self, delegateQueue: nil)
 
     private var downloadQueue: OperationQueue
     private var accessQueue: DispatchQueue
@@ -24,9 +22,9 @@ class ImageDownloader: NSObject, ReentrantImageDownloader, URLSessionDataDelegat
     private var headers: [String: String] = ["Accept": "image/*;q=0.8"]
 
     override init() {
-        self.downloadQueue = OperationQueue()
-        self.downloadQueue.name = Bundle.mapboxNavigation.bundleIdentifier! + ".ImageDownloader"
-        self.accessQueue = DispatchQueue(label: Bundle.mapboxNavigation.bundleIdentifier! + ".ImageDownloaderInternal", attributes: .concurrent)
+        downloadQueue = OperationQueue()
+        downloadQueue.name = Bundle.mapboxNavigation.bundleIdentifier! + ".ImageDownloader"
+        accessQueue = DispatchQueue(label: Bundle.mapboxNavigation.bundleIdentifier! + ".ImageDownloaderInternal", attributes: .concurrent)
     }
 
     convenience init(sessionConfiguration: URLSessionConfiguration? = nil, operationType: ImageDownload.Type? = nil) {
@@ -58,7 +56,7 @@ class ImageDownloader: NSObject, ReentrantImageDownloader, URLSessionDataDelegat
                     self.downloadQueue.addOperation(operation)
                 }
             }
-            if let completion = completion {
+            if let completion {
                 operation.addCompletion(completion)
             }
         }
@@ -76,13 +74,13 @@ class ImageDownloader: NSObject, ReentrantImageDownloader, URLSessionDataDelegat
     
     private func urlRequest(with url: URL) -> URLRequest {
         var request = URLRequest(url: url)
-        request.allHTTPHeaderFields = self.headers
+        request.allHTTPHeaderFields = headers
         request.cachePolicy = .reloadIgnoringCacheData
         return request
     }
 
     func setOperationType(_ operationType: ImageDownload.Type?) {
-        if let operationType = operationType {
+        if let operationType {
             self.operationType = operationType
         } else {
             self.operationType = ImageDownloadOperation.self
@@ -115,5 +113,4 @@ class ImageDownloader: NSObject, ReentrantImageDownloader, URLSessionDataDelegat
             self.operations[url] = nil
         }
     }
-
 }

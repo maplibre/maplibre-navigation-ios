@@ -5,7 +5,6 @@ import CarPlay
 
 @available(iOS 12.0, *)
 class CarPlayMapViewController: UIViewController, MLNMapViewDelegate {
-    
     static let defaultAltitude: CLLocationDistance = 16000
     
     var styleManager: StyleManager!
@@ -19,9 +18,7 @@ class CarPlayMapViewController: UIViewController, MLNMapViewDelegate {
     var isOverviewingRoutes: Bool = false
     
     var mapView: NavigationMapView {
-        get {
-            return self.view as! NavigationMapView
-        }
+        view as! NavigationMapView
     }
 
     lazy var recenterButton: CPMapButton = {
@@ -46,7 +43,7 @@ class CarPlayMapViewController: UIViewController, MLNMapViewDelegate {
         mapView.logoView.isHidden = true
         mapView.attributionButton.isHidden = true
         
-        self.view = mapView
+        view = mapView
     }
 
     override func viewDidLoad() {
@@ -60,7 +57,7 @@ class CarPlayMapViewController: UIViewController, MLNMapViewDelegate {
     }
     
     public func zoomInButton() -> CPMapButton {
-        let zoomInButton = CPMapButton { [weak self] (button) in
+        let zoomInButton = CPMapButton { [weak self] _ in
             guard let strongSelf = self else {
                 return
             }
@@ -72,7 +69,7 @@ class CarPlayMapViewController: UIViewController, MLNMapViewDelegate {
     }
     
     public func zoomOutButton() -> CPMapButton {
-        let zoomInOut = CPMapButton { [weak self] (button) in
+        let zoomInOut = CPMapButton { [weak self] _ in
             guard let strongSelf = self else {
                 return
             }
@@ -83,7 +80,6 @@ class CarPlayMapViewController: UIViewController, MLNMapViewDelegate {
         return zoomInOut
     }
 
-    
     // MARK: - MLNMapViewDelegate
 
     func mapView(_ mapView: MLNMapView, didFinishLoading style: MLNStyle) {
@@ -94,12 +90,11 @@ class CarPlayMapViewController: UIViewController, MLNMapViewDelegate {
     
     func resetCamera(animated: Bool = false, altitude: CLLocationDistance? = nil) {
         let camera = mapView.camera
-        if let altitude = altitude {
+        if let altitude {
             camera.altitude = altitude
         }
         camera.pitch = 60
         mapView.setCamera(camera, animated: animated)
-
     }
     
     override func viewSafeAreaInsetsDidChange() {
@@ -110,11 +105,10 @@ class CarPlayMapViewController: UIViewController, MLNMapViewDelegate {
             return
         }
         
-        
         guard let routes = mapView.routes,
-            let active = routes.first else {
-                super.viewSafeAreaInsetsDidChange()
-                return
+              let active = routes.first else {
+            super.viewSafeAreaInsetsDidChange()
+            return
         }
         
         mapView.fit(to: active, animated: false)
@@ -124,7 +118,7 @@ class CarPlayMapViewController: UIViewController, MLNMapViewDelegate {
 @available(iOS 12.0, *)
 extension CarPlayMapViewController: StyleManagerDelegate {
     func locationFor(styleManager: StyleManager) -> CLLocation? {
-        return mapView.userLocationForCourseTracking ?? mapView.userLocation?.location ?? coarseLocationManager.location
+        mapView.userLocationForCourseTracking ?? mapView.userLocation?.location ?? coarseLocationManager.location
     }
     
     func styleManager(_ styleManager: StyleManager, didApply style: Style) {
@@ -140,4 +134,3 @@ extension CarPlayMapViewController: StyleManagerDelegate {
     }
 }
 #endif
-

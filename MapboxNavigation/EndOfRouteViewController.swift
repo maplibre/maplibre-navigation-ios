@@ -1,12 +1,12 @@
-import UIKit
 import MapboxDirections
+import UIKit
 
-fileprivate enum ConstraintSpacing: CGFloat {
+private enum ConstraintSpacing: CGFloat {
     case closer = 8.0
     case further = 65.0
 }
 
-fileprivate enum ContainerHeight: CGFloat {
+private enum ContainerHeight: CGFloat {
     case normal = 200
     case commentShowing = 260
 }
@@ -33,24 +33,25 @@ open class EndOfRouteButton: StylableButton {}
 
 @objc(MBEndOfRouteViewController)
 class EndOfRouteViewController: UIViewController {
-
     // MARK: - IBOutlets
-    @IBOutlet weak var labelContainer: UIView!
-    @IBOutlet weak var staticYouHaveArrived: EndOfRouteStaticLabel!
-    @IBOutlet weak var primary: UILabel!
-    @IBOutlet weak var endNavigationButton: UIButton!
-    @IBOutlet weak var stars: RatingControl!
-    @IBOutlet weak var commentView: UITextView!
-    @IBOutlet weak var commentViewContainer: UIView!
-    @IBOutlet weak var showCommentView: NSLayoutConstraint!
-    @IBOutlet weak var hideCommentView: NSLayoutConstraint!
-    @IBOutlet weak var ratingCommentsSpacing: NSLayoutConstraint!
+
+    @IBOutlet var labelContainer: UIView!
+    @IBOutlet var staticYouHaveArrived: EndOfRouteStaticLabel!
+    @IBOutlet var primary: UILabel!
+    @IBOutlet var endNavigationButton: UIButton!
+    @IBOutlet var stars: RatingControl!
+    @IBOutlet var commentView: UITextView!
+    @IBOutlet var commentViewContainer: UIView!
+    @IBOutlet var showCommentView: NSLayoutConstraint!
+    @IBOutlet var hideCommentView: NSLayoutConstraint!
+    @IBOutlet var ratingCommentsSpacing: NSLayoutConstraint!
     
     // MARK: - Properties
+
     lazy var placeholder: String = NSLocalizedString("END_OF_ROUTE_TITLE", bundle: .mapboxNavigation, value: "How can we improve?", comment: "Comment Placeholder Text")
     lazy var endNavigation: String = NSLocalizedString("END_NAVIGATION", bundle: .mapboxNavigation, value: "End Navigation", comment: "End Navigation Button Text")
     
-    typealias DismissHandler = ((Int, String?) -> Void)
+    typealias DismissHandler = (Int, String?) -> Void
     var dismissHandler: DismissHandler?
     var comment: String?
     var rating: Int = 0 {
@@ -67,13 +68,14 @@ class EndOfRouteViewController: UIViewController {
     }
 
     // MARK: - Lifecycle Methods
+
     override func viewDidLoad() {
         super.viewDidLoad()
         clearInterface()
-        stars.didChangeRating = { [weak self] (new) in self?.rating = new }
+        stars.didChangeRating = { [weak self] new in self?.rating = new }
         setPlaceholderText()
         styleCommentView()
-        commentViewContainer.alpha = 0.0 //setting initial hidden state
+        commentViewContainer.alpha = 0.0 // setting initial hidden state
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -84,11 +86,13 @@ class EndOfRouteViewController: UIViewController {
     }
 
     // MARK: - IBActions
+
     @IBAction func endNavigationPressed(_ sender: Any) {
         dismissView()
     }
     
     // MARK: - Private Functions
+
     private func styleCommentView() {
         commentView.layer.cornerRadius = 6.0
         commentView.layer.borderColor = UIColor.lightGray.cgColor
@@ -100,7 +104,7 @@ class EndOfRouteViewController: UIViewController {
         let dismissal: () -> Void = { self.dismissHandler?(self.rating, self.comment) }
         guard commentView.isFirstResponder else { return _ = dismissal() }
         commentView.resignFirstResponder()
-        let fireTime = DispatchTime.now() + 0.3 //Not ideal, but works for now
+        let fireTime = DispatchTime.now() + 0.3 // Not ideal, but works for now
         DispatchQueue.main.asyncAfter(deadline: fireTime, execute: dismissal)
     }
     
@@ -116,8 +120,8 @@ class EndOfRouteViewController: UIViewController {
             self.labelContainer.alpha = 0.0
         }
         
-        let completion: (Bool) -> Void = { _ in self.labelContainer.isHidden = true}
-        let noAnimate = { animate() ; completion(true) }
+        let completion: (Bool) -> Void = { _ in self.labelContainer.isHidden = true }
+        let noAnimate = { animate(); completion(true) }
         animated ? UIView.animate(withDuration: 0.3, animations: animate, completion: nil) : noAnimate()
     }
     
@@ -135,7 +139,7 @@ class EndOfRouteViewController: UIViewController {
         }
         
         let completion: (Bool) -> Void = { _ in self.commentViewContainer.isHidden = true }
-        let noAnimation = { animate(); completion(true)}
+        let noAnimation = { animate(); completion(true) }
         animated ? UIView.animate(withDuration: 0.3, animations: animate, completion: nil) : noAnimation()
     }
     
@@ -157,7 +161,7 @@ class EndOfRouteViewController: UIViewController {
     
     private func styleForUnnamedDestination() {
         staticYouHaveArrived.alpha = 0.0
-        primary.text = NSLocalizedString("END_OF_ROUTE_ARRIVED", bundle: .mapboxNavigation, value:"You have arrived", comment:"Title used for arrival")
+        primary.text = NSLocalizedString("END_OF_ROUTE_ARRIVED", bundle: .mapboxNavigation, value: "You have arrived", comment: "Title used for arrival")
     }
     
     private func setPlaceholderText() {
@@ -166,6 +170,7 @@ class EndOfRouteViewController: UIViewController {
 }
 
 // MARK: - UITextViewDelegate
+
 extension EndOfRouteViewController: UITextViewDelegate {
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
         guard text.count == 1, text.rangeOfCharacter(from: CharacterSet.newlines) != nil else { return true }
@@ -174,7 +179,7 @@ extension EndOfRouteViewController: UITextViewDelegate {
     }
     
     func textViewDidChange(_ textView: UITextView) {
-        comment = textView.text //Bind data model
+        comment = textView.text // Bind data model
     }
     
     func textViewDidBeginEditing(_ textView: UITextView) {

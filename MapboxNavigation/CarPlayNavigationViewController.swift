@@ -1,7 +1,7 @@
 import Foundation
-import MapLibre
-import MapboxDirections
 import MapboxCoreNavigation
+import MapboxDirections
+import MapLibre
 #if canImport(CarPlay)
 import CarPlay
 
@@ -34,7 +34,7 @@ public class CarPlayNavigationViewController: UIViewController, MLNMapViewDelega
     let distanceFormatter = DistanceFormatter(approximate: true)
     
     var edgePadding: UIEdgeInsets {
-        let padding:CGFloat = 15
+        let padding: CGFloat = 15
         return UIEdgeInsets(top: view.safeAreaInsets.top + padding,
                             left: view.safeAreaInsets.left + padding,
                             bottom: view.safeAreaInsets.bottom + padding,
@@ -56,12 +56,13 @@ public class CarPlayNavigationViewController: UIViewController, MLNMapViewDelega
                 interfaceController: CPInterfaceController) {
         self.routeController = routeController
         self.mapTemplate = mapTemplate
-        self.carInterfaceController = interfaceController
+        carInterfaceController = interfaceController
         
         super.init(nibName: nil, bundle: nil)
         routeController.delegate = self
     }
     
+    @available(*, unavailable)
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -108,10 +109,10 @@ public class CarPlayNavigationViewController: UIViewController, MLNMapViewDelega
         NotificationCenter.default.removeObserver(self, name: .routeControllerDidPassVisualInstructionPoint, object: nil)
     }
     
-    public override func viewSafeAreaInsetsDidChange() {
+    override public func viewSafeAreaInsetsDidChange() {
         super.viewSafeAreaInsetsDidChange()
         
-        if let previousSafeAreaInsets = previousSafeAreaInsets {
+        if let previousSafeAreaInsets {
             let navigationBarIsOpen = view.safeAreaInsets > previousSafeAreaInsets
             mapView?.compassView.isHidden = navigationBarIsOpen
         }
@@ -145,7 +146,7 @@ public class CarPlayNavigationViewController: UIViewController, MLNMapViewDelega
      Shows the interface for providing feedback about the route.
      */
     @objc public func showFeedback() {
-        carInterfaceController.pushTemplate(self.carFeedbackTemplate, animated: true)
+        carInterfaceController.pushTemplate(carFeedbackTemplate, animated: true)
     }
     
     /**
@@ -155,20 +156,20 @@ public class CarPlayNavigationViewController: UIViewController, MLNMapViewDelega
      */
     @objc public var tracksUserCourse: Bool {
         get {
-            return mapView?.tracksUserCourse ?? false
+            mapView?.tracksUserCourse ?? false
         }
         set {
-            if !tracksUserCourse && newValue {
+            if !tracksUserCourse, newValue {
                 mapView?.recenterMap()
                 mapView?.addArrow(route: routeController.routeProgress.route,
-                                 legIndex: routeController.routeProgress.legIndex,
-                                 stepIndex: routeController.routeProgress.currentLegProgress.stepIndex + 1)
-            } else if tracksUserCourse && !newValue {
-                guard let userLocation = self.routeController.locationManager.location?.coordinate else {
+                                  legIndex: routeController.routeProgress.legIndex,
+                                  stepIndex: routeController.routeProgress.currentLegProgress.stepIndex + 1)
+            } else if tracksUserCourse, !newValue {
+                guard let userLocation = routeController.locationManager.location?.coordinate else {
                     return
                 }
                 mapView?.enableFrameByFrameCourseViewTracking(for: 3)
-                mapView?.setOverheadCameraView(from: userLocation, along: routeController.routeProgress.route.coordinates!, for: self.edgePadding)
+                mapView?.setOverheadCameraView(from: userLocation, along: routeController.routeProgress.route.coordinates!, for: edgePadding)
             }
         }
     }
@@ -216,7 +217,7 @@ public class CarPlayNavigationViewController: UIViewController, MLNMapViewDelega
     
     @objc func rerouted(_ notification: NSNotification) {
         updateRouteOnMap()
-        self.mapView?.recenterMap()
+        mapView?.recenterMap()
     }
     
     func updateRouteOnMap() {
@@ -289,8 +290,8 @@ public class CarPlayNavigationViewController: UIViewController, MLNMapViewDelega
     }
     
     func endOfRouteFeedbackTemplate() -> CPGridTemplate {
-        let buttonHandler: (_: CPGridButton) -> Void = { [weak self] (button) in
-            //TODO: no such method exists, and the replacement candidate ignores the feedback sent, so ... ?
+        let buttonHandler: (_: CPGridButton) -> Void = { [weak self] _ in
+            // TODO: no such method exists, and the replacement candidate ignores the feedback sent, so ... ?
 //            self?.routeController.setEndOfRoute(rating: Int(button.titleVariants.first!.components(separatedBy: CharacterSet.decimalDigits.inverted).joined())!, comment: nil)
             self?.carInterfaceController.popTemplate(animated: true)
             self?.exitNavigation()
@@ -298,7 +299,7 @@ public class CarPlayNavigationViewController: UIViewController, MLNMapViewDelega
         
         var buttons: [CPGridButton] = []
         let starImage = UIImage(named: "star", in: .mapboxNavigation, compatibleWith: nil)!
-        for i in 1...5 {
+        for i in 1 ... 5 {
             let button = CPGridButton(titleVariants: ["\(i) star\(i == 1 ? "" : "s")"], image: starImage, handler: buttonHandler)
             buttons.append(button)
         }
@@ -309,12 +310,12 @@ public class CarPlayNavigationViewController: UIViewController, MLNMapViewDelega
     
     func presentArrivalUI() {
         let exitTitle = NSLocalizedString("CARPLAY_EXIT_NAVIGATION", bundle: .mapboxNavigation, value: "Exit navigation", comment: "Title on the exit button in the arrival form")
-        let exitAction = CPAlertAction(title: exitTitle, style: .cancel) { (action) in
+        let exitAction = CPAlertAction(title: exitTitle, style: .cancel) { _ in
             self.exitNavigation()
             self.dismiss(animated: true, completion: nil)
         }
         let rateTitle = NSLocalizedString("CARPLAY_RATE_TRIP", bundle: .mapboxNavigation, value: "Rate your trip", comment: "Title on rate button in CarPlay")
-        let rateAction = CPAlertAction(title: rateTitle, style: .default) { (action) in
+        let rateAction = CPAlertAction(title: rateTitle, style: .default) { _ in
             self.carInterfaceController.pushTemplate(self.endOfRouteFeedbackTemplate(), animated: true)
         }
         let arrivalTitle = NSLocalizedString("CARPLAY_ARRIVED", bundle: .mapboxNavigation, value: "You have arrived", comment: "Title on arrival action sheet")
@@ -330,7 +331,7 @@ public class CarPlayNavigationViewController: UIViewController, MLNMapViewDelega
         }
         
         let continueTitle = NSLocalizedString("CARPLAY_CONTINUE", bundle: .mapboxNavigation, value: "Continue", comment: "Title on continue button in CarPlay")
-        let continueAlert = CPAlertAction(title: continueTitle, style: .default) { (action) in
+        let continueAlert = CPAlertAction(title: continueTitle, style: .default) { _ in
             self.routeController.routeProgress.legIndex += 1
             self.carInterfaceController.dismissTemplate(animated: true)
             self.updateRouteOnMap()
@@ -344,7 +345,7 @@ public class CarPlayNavigationViewController: UIViewController, MLNMapViewDelega
 @available(iOS 12.0, *)
 extension CarPlayNavigationViewController: StyleManagerDelegate {
     public func locationFor(styleManager: StyleManager) -> CLLocation? {
-        return routeController.locationManager.location
+        routeController.locationManager.location
     }
     
     public func styleManager(_ styleManager: StyleManager, didApply style: Style) {

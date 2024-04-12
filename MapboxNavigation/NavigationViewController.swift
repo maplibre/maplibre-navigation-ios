@@ -1,7 +1,7 @@
-import UIKit
 import MapboxCoreNavigation
 import MapboxDirections
 import MapLibre
+import UIKit
 #if canImport(CarPlay)
 import CarPlay
 #endif
@@ -33,14 +33,14 @@ public protocol NavigationViewControllerDelegate: VisualInstructionDelegate {
     optional func navigationViewController(_ navigationViewController: NavigationViewController, didArriveAt waypoint: Waypoint) -> Bool
 
     /**
-     Returns whether the navigation view controller should be allowed to calculate a new route.
+      Returns whether the navigation view controller should be allowed to calculate a new route.
      
-     If implemented, this method is called as soon as the navigation view controller detects that the user is off the predetermined route. Implement this method to conditionally prevent rerouting. If this method returns `true`, `navigationViewController(_:willRerouteFrom:)` will be called immediately afterwards.
+      If implemented, this method is called as soon as the navigation view controller detects that the user is off the predetermined route. Implement this method to conditionally prevent rerouting. If this method returns `true`, `navigationViewController(_:willRerouteFrom:)` will be called immediately afterwards.
      
-     - parameter navigationViewController: The navigation view controller that has detected the need to calculate a new route.
-     - parameter location: The user’s current location.
-     - returns: True to allow the navigation view controller to calculate a new route; false to keep tracking the current route.
-    */
+      - parameter navigationViewController: The navigation view controller that has detected the need to calculate a new route.
+      - parameter location: The user’s current location.
+      - returns: True to allow the navigation view controller to calculate a new route; false to keep tracking the current route.
+     */
     @objc(navigationViewController:shouldRerouteFromLocation:)
     optional func navigationViewController(_ navigationViewController: NavigationViewController, shouldRerouteFrom location: CLLocation) -> Bool
     
@@ -192,8 +192,7 @@ public protocol NavigationViewControllerDelegate: VisualInstructionDelegate {
  */
 @objc(MBNavigationViewController)
 open class NavigationViewController: UIViewController {
-    
-    /** 
+    /**
      A `Route` object constructed by [MapboxDirections](https://mapbox.github.io/mapbox-navigation-ios/directions/).
      
      In cases where you need to update the route after navigation has started you can set a new `route` here and `NavigationViewController` will update its UI accordingly.
@@ -255,9 +254,7 @@ open class NavigationViewController: UIViewController {
      - note: Do not change this map view’s delegate.
      */
     @objc public var mapView: NavigationMapView? {
-        get {
-            return mapViewController?.mapView
-        }
+        mapViewController?.mapView
     }
     
     /**
@@ -283,8 +280,8 @@ open class NavigationViewController: UIViewController {
     }
     
     /**
-    Shows End of route Feedback UI when the route controller arrives at the final destination. Defaults to `true.`
-    */
+     Shows End of route Feedback UI when the route controller arrives at the final destination. Defaults to `true.`
+     */
     @objc public var showsEndOfRouteFeedback: Bool = true {
         didSet {
             mapViewController?.showsEndOfRoute = showsEndOfRouteFeedback
@@ -316,9 +313,9 @@ open class NavigationViewController: UIViewController {
     
     var isConnectedToCarPlay: Bool {
         if #available(iOS 12.0, *) {
-            return CarPlayManager.shared.isConnectedToCarPlay
+            CarPlayManager.shared.isConnectedToCarPlay
         } else {
-            return false
+            false
         }
     }
     
@@ -340,13 +337,11 @@ open class NavigationViewController: UIViewController {
         }
     }
     
-    open override var preferredStatusBarStyle: UIStatusBarStyle {
-        get {
-            return currentStatusBarStyle
-        }
+    override open var preferredStatusBarStyle: UIStatusBarStyle {
+        currentStatusBarStyle
     }
     
-    required public init?(coder aDecoder: NSCoder) {
+    public required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
     
@@ -356,13 +351,12 @@ open class NavigationViewController: UIViewController {
      See [Mapbox Directions](https://mapbox.github.io/mapbox-navigation-ios/directions/) for further information.
      */
     @objc(initWithRoute:directions:styles:routeController:locationManager:voiceController:)
-    required public init(for route: Route,
+    public required init(for route: Route,
                          directions: Directions = Directions.shared,
                          styles: [Style]? = [DayStyle(), NightStyle()],
                          routeController: RouteController? = nil,
                          locationManager: NavigationLocationManager? = nil,
                          voiceController: RouteVoiceController? = nil) {
-        
         super.init(nibName: nil, bundle: nil)
         
         self.locationManager = locationManager ?? NavigationLocationManager()
@@ -392,8 +386,8 @@ open class NavigationViewController: UIViewController {
         mapSubview.pinInSuperview()
         mapViewController.reportButton.isHidden = !showsReportFeedback
         
-        self.styleManager = StyleManager(self)
-        self.styleManager.styles = styles ?? [DayStyle(), NightStyle()]
+        styleManager = StyleManager(self)
+        styleManager.styles = styles ?? [DayStyle(), NightStyle()]
         
         if !(route.routeOptions is NavigationRouteOptions) {
             print("`Route` was created using `RouteOptions` and not `NavigationRouteOptions`. Although not required, this may lead to a suboptimal navigation experience. Without `NavigationRouteOptions`, it is not guaranteed you will get congestion along the route line, better ETAs and ETA label color dependent on congestion.")
@@ -413,7 +407,7 @@ open class NavigationViewController: UIViewController {
         view.clipsToBounds = true
     }
     
-    open override func viewWillAppear(_ animated: Bool) {
+    override open func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
         if shouldManageApplicationIdleTimer {
@@ -426,7 +420,7 @@ open class NavigationViewController: UIViewController {
         }
     }
     
-    open override func viewWillDisappear(_ animated: Bool) {
+    override open func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
 
         if shouldManageApplicationIdleTimer {
@@ -462,7 +456,7 @@ open class NavigationViewController: UIViewController {
         let userHasArrivedAndShouldPreventRerouting = shouldPreventReroutesWhenArrivingAtWaypoint && !routeController.routeProgress.currentLegProgress.userHasArrivedAtWaypoint
         
         if snapsUserLocationAnnotationToRoute,
-            userHasArrivedAndShouldPreventRerouting {
+           userHasArrivedAndShouldPreventRerouting {
             mapViewController?.mapView.updateCourseTracking(location: location, animated: true)
         }
     }
@@ -510,17 +504,14 @@ open class NavigationViewController: UIViewController {
      */
     @available(iOS 12.0, *)
     public class func carPlayManager(_ carPlayManager: CarPlayManager, didBeginNavigationWith routeController: RouteController, window: UIWindow) {
-        
         if let navigationViewController = window.viewControllerInStack(of: NavigationViewController.self) {
             // Open StepsViewController on iPhone if NavigationViewController is being presented
             navigationViewController.isUsedInConjunctionWithCarPlayWindow = true
         } else {
-            
             // Start NavigationViewController and open StepsViewController if navigation has not started on iPhone yet.
             let navigationViewControllerExistsInStack = window.viewControllerInStack(of: NavigationViewController.self) != nil
             
             if !navigationViewControllerExistsInStack {
-                
                 let locationManager = routeController.locationManager.copy() as! NavigationLocationManager
                 let directions = routeController.directions
                 let route = routeController.routeProgress.route
@@ -545,14 +536,15 @@ open class NavigationViewController: UIViewController {
     #endif
 }
 
-//MARK: - RouteMapViewControllerDelegate
+// MARK: - RouteMapViewControllerDelegate
+
 extension NavigationViewController: RouteMapViewControllerDelegate {
     public func navigationMapView(_ mapView: NavigationMapView, routeCasingStyleLayerWithIdentifier identifier: String, source: MLNSource) -> MLNStyleLayer? {
-        return delegate?.navigationViewController?(self, routeCasingStyleLayerWithIdentifier: identifier, source: source)
+        delegate?.navigationViewController?(self, routeCasingStyleLayerWithIdentifier: identifier, source: source)
     }
     
     public func navigationMapView(_ mapView: NavigationMapView, routeStyleLayerWithIdentifier identifier: String, source: MLNSource) -> MLNStyleLayer? {
-        return delegate?.navigationViewController?(self, routeStyleLayerWithIdentifier: identifier, source: source)
+        delegate?.navigationViewController?(self, routeStyleLayerWithIdentifier: identifier, source: source)
     }
     
     public func navigationMapView(_ mapView: NavigationMapView, didSelect route: Route) {
@@ -560,31 +552,31 @@ extension NavigationViewController: RouteMapViewControllerDelegate {
     }
     
     @objc public func navigationMapView(_ mapView: NavigationMapView, shapeFor routes: [Route]) -> MLNShape? {
-        return delegate?.navigationViewController?(self, shapeFor: routes)
+        delegate?.navigationViewController?(self, shapeFor: routes)
     }
     
     @objc public func navigationMapView(_ mapView: NavigationMapView, simplifiedShapeFor route: Route) -> MLNShape? {
-        return delegate?.navigationViewController?(self, simplifiedShapeFor: route)
+        delegate?.navigationViewController?(self, simplifiedShapeFor: route)
     }
     
     public func navigationMapView(_ mapView: NavigationMapView, waypointStyleLayerWithIdentifier identifier: String, source: MLNSource) -> MLNStyleLayer? {
-        return delegate?.navigationViewController?(self, waypointStyleLayerWithIdentifier: identifier, source: source)
+        delegate?.navigationViewController?(self, waypointStyleLayerWithIdentifier: identifier, source: source)
     }
     
     public func navigationMapView(_ mapView: NavigationMapView, waypointSymbolStyleLayerWithIdentifier identifier: String, source: MLNSource) -> MLNStyleLayer? {
-        return delegate?.navigationViewController?(self, waypointSymbolStyleLayerWithIdentifier: identifier, source: source)
+        delegate?.navigationViewController?(self, waypointSymbolStyleLayerWithIdentifier: identifier, source: source)
     }
     
     @objc public func navigationMapView(_ mapView: NavigationMapView, shapeFor waypoints: [Waypoint], legIndex: Int) -> MLNShape? {
-        return delegate?.navigationViewController?(self, shapeFor: waypoints, legIndex: legIndex)
+        delegate?.navigationViewController?(self, shapeFor: waypoints, legIndex: legIndex)
     }
     
     @objc public func navigationMapView(_ mapView: MLNMapView, imageFor annotation: MLNAnnotation) -> MLNAnnotationImage? {
-        return delegate?.navigationViewController?(self, imageFor: annotation)
+        delegate?.navigationViewController?(self, imageFor: annotation)
     }
     
     @objc public func navigationMapView(_ mapView: MLNMapView, viewFor annotation: MLNAnnotation) -> MLNAnnotationView? {
-        return delegate?.navigationViewController?(self, viewFor: annotation)
+        delegate?.navigationViewController?(self, viewFor: annotation)
     }
     
     func mapViewControllerDidDismiss(_ mapViewController: RouteMapViewController, byCanceling canceled: Bool) {
@@ -596,11 +588,11 @@ extension NavigationViewController: RouteMapViewControllerDelegate {
     }
     
     public func navigationMapViewUserAnchorPoint(_ mapView: NavigationMapView) -> CGPoint {
-        return delegate?.navigationViewController?(self, mapViewUserAnchorPoint: mapView) ?? .zero
+        delegate?.navigationViewController?(self, mapViewUserAnchorPoint: mapView) ?? .zero
     }
     
     func mapViewControllerShouldAnnotateSpokenInstructions(_ routeMapViewController: RouteMapViewController) -> Bool {
-        return annotatesSpokenInstructions
+        annotatesSpokenInstructions
     }
     
     @objc func mapViewController(_ mapViewController: RouteMapViewController, roadNameAt location: CLLocation) -> String? {
@@ -611,14 +603,15 @@ extension NavigationViewController: RouteMapViewControllerDelegate {
     }
     
     @objc public func label(_ label: InstructionLabel, willPresent instruction: VisualInstruction, as presented: NSAttributedString) -> NSAttributedString? {
-        return delegate?.label?(label, willPresent: instruction, as: presented)
+        delegate?.label?(label, willPresent: instruction, as: presented)
     }
 }
 
-//MARK: - RouteControllerDelegate
+// MARK: - RouteControllerDelegate
+
 extension NavigationViewController: RouteControllerDelegate {
     @objc public func routeController(_ routeController: RouteController, shouldRerouteFrom location: CLLocation) -> Bool {
-        return delegate?.navigationViewController?(self, shouldRerouteFrom: location) ?? true
+        delegate?.navigationViewController?(self, shouldRerouteFrom: location) ?? true
     }
     
     @objc public func routeController(_ routeController: RouteController, willRerouteFrom location: CLLocation) {
@@ -634,12 +627,11 @@ extension NavigationViewController: RouteControllerDelegate {
         delegate?.navigationViewController?(self, didFailToRerouteWith: error)
     }
     
-    @objc public func routeController(_ routeController: RouteController, shouldDiscard location: CLLocation)  -> Bool {
-        return delegate?.navigationViewController?(self, shouldDiscard: location) ?? true
+    @objc public func routeController(_ routeController: RouteController, shouldDiscard location: CLLocation) -> Bool {
+        delegate?.navigationViewController?(self, shouldDiscard: location) ?? true
     }
     
     @objc public func routeController(_ routeController: RouteController, didUpdate locations: [CLLocation]) {
-        
         // If the user has arrived, don't snap the user puck.
         // In the case the user drives beyond the waypoint,
         // we should accurately depict this.
@@ -647,9 +639,9 @@ extension NavigationViewController: RouteControllerDelegate {
         let userHasArrivedAndShouldPreventRerouting = shouldPreventReroutesWhenArrivingAtWaypoint && !routeController.routeProgress.currentLegProgress.userHasArrivedAtWaypoint
         
         if snapsUserLocationAnnotationToRoute,
-            let snappedLocation = routeController.location ?? locations.last,
-            let rawLocation = locations.last,
-            userHasArrivedAndShouldPreventRerouting {
+           let snappedLocation = routeController.location ?? locations.last,
+           let rawLocation = locations.last,
+           userHasArrivedAndShouldPreventRerouting {
             mapViewController?.labelCurrentRoad(at: rawLocation, for: snappedLocation)
         } else if let rawlocation = locations.last {
             mapViewController?.labelCurrentRoad(at: rawlocation)
@@ -660,8 +652,8 @@ extension NavigationViewController: RouteControllerDelegate {
         let advancesToNextLeg = delegate?.navigationViewController?(self, didArriveAt: waypoint) ?? true
         
         if !isConnectedToCarPlay, // CarPlayManager shows rating on CarPlay if it's connected
-            routeController.routeProgress.isFinalLeg && advancesToNextLeg && showsEndOfRouteFeedback {
-            self.mapViewController?.showEndOfRoute { _ in }
+           routeController.routeProgress.isFinalLeg, advancesToNextLeg, showsEndOfRouteFeedback {
+            mapViewController?.showEndOfRoute { _ in }
         }
         return advancesToNextLeg
     }
@@ -679,16 +671,14 @@ extension NavigationViewController: TunnelIntersectionManagerDelegate {
     }
 }
 
-
 extension NavigationViewController: StyleManagerDelegate {
-    
     public func locationFor(styleManager: StyleManager) -> CLLocation? {
         if let location = routeController.location {
-            return location
+            location
         } else if let firstCoord = routeController.routeProgress.route.coordinates?.first {
-            return CLLocation(latitude: firstCoord.latitude, longitude: firstCoord.longitude)
+            CLLocation(latitude: firstCoord.latitude, longitude: firstCoord.longitude)
         } else {
-            return nil
+            nil
         }
     }
     

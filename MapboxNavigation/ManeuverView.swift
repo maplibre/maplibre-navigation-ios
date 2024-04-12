@@ -1,13 +1,12 @@
-import UIKit
-import MapboxDirections
 import MapboxCoreNavigation
+import MapboxDirections
 import Turf
+import UIKit
 
 /// :nodoc:
 @IBDesignable
 @objc(MBManeuverView)
 open class ManeuverView: UIView {
-
     @objc public dynamic var primaryColor: UIColor = .defaultTurnArrowPrimary {
         didSet {
             setNeedsDisplay()
@@ -64,11 +63,11 @@ open class ManeuverView: UIView {
         let resizing: ManeuversStyleKit.ResizingBehavior = .aspectFit
 
         #if TARGET_INTERFACE_BUILDER
-            ManeuversStyleKit.drawFork(frame: bounds, resizing: resizing, primaryColor: primaryColor, secondaryColor: secondaryColor)
-            return
+        ManeuversStyleKit.drawFork(frame: bounds, resizing: resizing, primaryColor: primaryColor, secondaryColor: secondaryColor)
+        return
         #endif
 
-        guard let visualInstruction = visualInstruction else {
+        guard let visualInstruction else {
             if isStart {
                 ManeuversStyleKit.drawStarting(frame: bounds, resizing: resizing, primaryColor: primaryColor)
             } else if isEnd {
@@ -77,7 +76,7 @@ open class ManeuverView: UIView {
             return
         }
 
-        var flip: Bool = false
+        var flip = false
         let maneuverType = visualInstruction.maneuverType
         let maneuverDirection = visualInstruction.maneuverDirection
         

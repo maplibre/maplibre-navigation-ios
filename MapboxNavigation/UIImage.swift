@@ -6,7 +6,7 @@ extension UIImage {
         let imageView = UIImageView(frame: CGRect(origin: .zero, size: square))
         imageView.contentMode = .center
         imageView.image = self
-        imageView.layer.cornerRadius = square.width/2
+        imageView.layer.cornerRadius = square.width / 2
         imageView.layer.masksToBounds = true
         imageView.layer.borderWidth = width
         imageView.layer.backgroundColor = color.cgColor

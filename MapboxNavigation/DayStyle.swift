@@ -1,7 +1,6 @@
 import Foundation
 import MapLibre
 
-
 extension UIColor {
     class var defaultRouteLine: UIColor { ConfigManager.shared.config.routeLineColor }
     class var defaultRouteLineAlternative: UIColor { ConfigManager.shared.config.routeLineAlternativeColor }
@@ -9,36 +8,36 @@ extension UIColor {
     class var defaultRouteLineCasing: UIColor { ConfigManager.shared.config.routeLineCasingColor }
     class var defaultRouteLineCasingAlternative: UIColor { ConfigManager.shared.config.routeLineCasingAlternativeColor }
     
-    class var defaultRouteLayer: UIColor { get { return #colorLiteral(red: 0.337254902, green: 0.6588235294, blue: 0.9843137255, alpha: 1) } }
+    class var defaultRouteLayer: UIColor { #colorLiteral(red: 0.337254902, green: 0.6588235294, blue: 0.9843137255, alpha: 1) }
     class var defaultManeuverArrowStroke: UIColor { ConfigManager.shared.config.routeArrowCasingColor }
     class var defaultManeuverArrow: UIColor { ConfigManager.shared.config.routeArrowColor }
     
-    class var defaultTurnArrowPrimary: UIColor { get { return #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1) } }
-    class var defaultTurnArrowSecondary: UIColor { get { return #colorLiteral(red: 0.6196078431, green: 0.6196078431, blue: 0.6196078431, alpha: 1) } }
+    class var defaultTurnArrowPrimary: UIColor { #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1) }
+    class var defaultTurnArrowSecondary: UIColor { #colorLiteral(red: 0.6196078431, green: 0.6196078431, blue: 0.6196078431, alpha: 1) }
     
-    class var defaultLaneArrowPrimary: UIColor { get { return #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1) } }
-    class var defaultLaneArrowSecondary: UIColor { get { return #colorLiteral(red: 0.6196078431, green: 0.6196078431, blue: 0.6196078431, alpha: 1) } }
+    class var defaultLaneArrowPrimary: UIColor { #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1) }
+    class var defaultLaneArrowSecondary: UIColor { #colorLiteral(red: 0.6196078431, green: 0.6196078431, blue: 0.6196078431, alpha: 1) }
     
-    class var trafficUnknown: UIColor { get { return defaultRouteLayer } }
-    class var trafficLow: UIColor { get { return defaultRouteLayer } }
-    class var trafficModerate: UIColor { get { return #colorLiteral(red: 0.9529411765, green: 0.6509803922, blue: 0.3098039216, alpha: 1) } }
-    class var trafficHeavy: UIColor { get { return #colorLiteral(red: 0.9137254902, green: 0.2, blue: 0.2509803922, alpha: 1) } }
-    class var trafficSevere: UIColor { get { return #colorLiteral(red: 0.5411764706, green: 0.05882352941, blue: 0.2196078431, alpha: 1) } }
-    class var trafficAlternateLow: UIColor { get { return #colorLiteral(red: 0.4666666687, green: 0.7647058964, blue: 0.2666666806, alpha: 1) } }
+    class var trafficUnknown: UIColor { defaultRouteLayer }
+    class var trafficLow: UIColor { defaultRouteLayer }
+    class var trafficModerate: UIColor { #colorLiteral(red: 0.9529411765, green: 0.6509803922, blue: 0.3098039216, alpha: 1) }
+    class var trafficHeavy: UIColor { #colorLiteral(red: 0.9137254902, green: 0.2, blue: 0.2509803922, alpha: 1) }
+    class var trafficSevere: UIColor { #colorLiteral(red: 0.5411764706, green: 0.05882352941, blue: 0.2196078431, alpha: 1) }
+    class var trafficAlternateLow: UIColor { #colorLiteral(red: 0.4666666687, green: 0.7647058964, blue: 0.2666666806, alpha: 1) }
 }
 
-extension UIColor {
+private extension UIColor {
     // General styling
-    fileprivate class var defaultTint: UIColor { get { return #colorLiteral(red: 0.1843137255, green: 0.4784313725, blue: 0.7764705882, alpha: 1) } }
-    fileprivate class var defaultTintStroke: UIColor { get { return #colorLiteral(red: 0.1843137255, green: 0.4784313725, blue: 0.7764705882, alpha: 1) } }
-    fileprivate class var defaultPrimaryText: UIColor { get { return #colorLiteral(red: 45.0/255.0, green: 45.0/255.0, blue: 45.0/255.0, alpha: 1) } }
-    fileprivate class var defaultSecondaryText: UIColor { get { return #colorLiteral(red: 0.4509803922, green: 0.4509803922, blue: 0.4509803922, alpha: 1) } }
+    class var defaultTint: UIColor { #colorLiteral(red: 0.1843137255, green: 0.4784313725, blue: 0.7764705882, alpha: 1) }
+    class var defaultTintStroke: UIColor { #colorLiteral(red: 0.1843137255, green: 0.4784313725, blue: 0.7764705882, alpha: 1) }
+    class var defaultPrimaryText: UIColor { #colorLiteral(red: 45.0 / 255.0, green: 45.0 / 255.0, blue: 45.0 / 255.0, alpha: 1) }
+    class var defaultSecondaryText: UIColor { #colorLiteral(red: 0.4509803922, green: 0.4509803922, blue: 0.4509803922, alpha: 1) }
 }
 
-extension UIFont {
+private extension UIFont {
     // General styling
-    fileprivate class var defaultPrimaryText: UIFont { get { return UIFont.systemFont(ofSize: 26) } }
-    fileprivate class var defaultSecondaryText: UIFont { get { return UIFont.systemFont(ofSize: 16) } }
+    class var defaultPrimaryText: UIFont { UIFont.systemFont(ofSize: 26) }
+    class var defaultSecondaryText: UIFont { UIFont.systemFont(ofSize: 16) }
 }
 
 /**
@@ -46,7 +45,6 @@ extension UIFont {
  */
 @objc(MBDayStyle)
 open class DayStyle: Style {
-    
     public required init() {
         super.init()
         mapStyleURL = MLNStyle.navigationGuidanceDayStyleURL
@@ -54,7 +52,7 @@ open class DayStyle: Style {
         statusBarStyle = .default
     }
     
-    open override func apply() {
+    override open func apply() {
         super.apply()
         
         // General styling
@@ -113,17 +111,17 @@ open class DayStyle: Style {
         ManeuverView.appearance(whenContainedInInstancesOf: [NextBannerView.self]).secondaryColor = .defaultTurnArrowSecondary
         ManeuverView.appearance(whenContainedInInstancesOf: [StepInstructionsView.self]).primaryColor = .defaultTurnArrowPrimary
         ManeuverView.appearance(whenContainedInInstancesOf: [StepInstructionsView.self]).secondaryColor = .defaultTurnArrowSecondary
-        NavigationMapView.appearance().maneuverArrowColor               = .defaultManeuverArrow
-        NavigationMapView.appearance().maneuverArrowStrokeColor         = .defaultManeuverArrowStroke
-        NavigationMapView.appearance().routeLineColor                   = .defaultRouteLine
-        NavigationMapView.appearance().routeLineAlternativeColor        = .defaultRouteLineAlternative
-        NavigationMapView.appearance().routeLineCasingColor             = .defaultRouteLineCasing
-        NavigationMapView.appearance().routeLineCasingAlternativeColor  = .defaultRouteLineCasingAlternative
-        NavigationMapView.appearance().trafficHeavyColor                = .trafficHeavy
-        NavigationMapView.appearance().trafficLowColor                  = .trafficLow
-        NavigationMapView.appearance().trafficModerateColor             = .trafficModerate
-        NavigationMapView.appearance().trafficSevereColor               = .trafficSevere
-        NavigationMapView.appearance().trafficUnknownColor              = .trafficUnknown
+        NavigationMapView.appearance().maneuverArrowColor = .defaultManeuverArrow
+        NavigationMapView.appearance().maneuverArrowStrokeColor = .defaultManeuverArrowStroke
+        NavigationMapView.appearance().routeLineColor = .defaultRouteLine
+        NavigationMapView.appearance().routeLineAlternativeColor = .defaultRouteLineAlternative
+        NavigationMapView.appearance().routeLineCasingColor = .defaultRouteLineCasing
+        NavigationMapView.appearance().routeLineCasingAlternativeColor = .defaultRouteLineCasingAlternative
+        NavigationMapView.appearance().trafficHeavyColor = .trafficHeavy
+        NavigationMapView.appearance().trafficLowColor = .trafficLow
+        NavigationMapView.appearance().trafficModerateColor = .trafficModerate
+        NavigationMapView.appearance().trafficSevereColor = .trafficSevere
+        NavigationMapView.appearance().trafficUnknownColor = .trafficUnknown
         NavigationView.appearance().backgroundColor = #colorLiteral(red: 0.764706, green: 0.752941, blue: 0.733333, alpha: 1)
         NextBannerView.appearance().backgroundColor = #colorLiteral(red: 0.9675388083, green: 0.9675388083, blue: 0.9675388083, alpha: 1)
         NextInstructionLabel.appearance().font = UIFont.systemFont(ofSize: 20, weight: .medium).adjustedFont
@@ -143,20 +141,20 @@ open class DayStyle: Style {
         SecondaryLabel.appearance(whenContainedInInstancesOf: [InstructionsBannerView.self]).normalTextColor = #colorLiteral(red: 0.2156862745, green: 0.2156862745, blue: 0.2156862745, alpha: 1)
         SecondaryLabel.appearance(whenContainedInInstancesOf: [StepInstructionsView.self]).normalTextColor = #colorLiteral(red: 0.2156862745, green: 0.2156862745, blue: 0.2156862745, alpha: 1)
         SeparatorView.appearance().backgroundColor = #colorLiteral(red: 0.737254902, green: 0.7960784314, blue: 0.8705882353, alpha: 1)
-        StatusView.appearance().backgroundColor = UIColor.black.withAlphaComponent(2.0/3.0)
+        StatusView.appearance().backgroundColor = UIColor.black.withAlphaComponent(2.0 / 3.0)
         StepInstructionsView.appearance().backgroundColor = #colorLiteral(red: 0.9675388083, green: 0.9675388083, blue: 0.9675388083, alpha: 1)
         StepListIndicatorView.appearance().gradientColors = [#colorLiteral(red: 0.431372549, green: 0.431372549, blue: 0.431372549, alpha: 1), #colorLiteral(red: 0.6274509804, green: 0.6274509804, blue: 0.6274509804, alpha: 1), #colorLiteral(red: 0.431372549, green: 0.431372549, blue: 0.431372549, alpha: 1)]
         StepTableViewCell.appearance().backgroundColor = #colorLiteral(red: 0.9675388083, green: 0.9675388083, blue: 0.9675388083, alpha: 1)
         StepsBackgroundView.appearance().backgroundColor = #colorLiteral(red: 0.9675388083, green: 0.9675388083, blue: 0.9675388083, alpha: 1)
         TimeRemainingLabel.appearance().font = UIFont.systemFont(ofSize: 28, weight: .medium).adjustedFont
         TimeRemainingLabel.appearance().normalTextColor = .defaultPrimaryText
-        TimeRemainingLabel.appearance().trafficHeavyColor = #colorLiteral(red:0.91, green:0.20, blue:0.25, alpha:1.0)
+        TimeRemainingLabel.appearance().trafficHeavyColor = #colorLiteral(red: 0.91, green: 0.20, blue: 0.25, alpha: 1.0)
         TimeRemainingLabel.appearance().trafficLowColor = #colorLiteral(red: 0.4666666687, green: 0.7647058964, blue: 0.2666666806, alpha: 1)
-        TimeRemainingLabel.appearance().trafficModerateColor = #colorLiteral(red:0.95, green:0.65, blue:0.31, alpha:1.0)
+        TimeRemainingLabel.appearance().trafficModerateColor = #colorLiteral(red: 0.95, green: 0.65, blue: 0.31, alpha: 1.0)
         TimeRemainingLabel.appearance().trafficSevereColor = #colorLiteral(red: 0.7705719471, green: 0.1753477752, blue: 0.1177056804, alpha: 1)
         TimeRemainingLabel.appearance().trafficUnknownColor = .defaultPrimaryText
         UserPuckCourseView.appearance().puckColor = #colorLiteral(red: 0.149, green: 0.239, blue: 0.341, alpha: 1)
-        WayNameLabel.appearance().normalFont = UIFont.systemFont(ofSize:20, weight: .medium).adjustedFont
+        WayNameLabel.appearance().normalFont = UIFont.systemFont(ofSize: 20, weight: .medium).adjustedFont
         WayNameLabel.appearance().normalTextColor = #colorLiteral(red: 0.968627451, green: 0.968627451, blue: 0.968627451, alpha: 1)
         WayNameView.appearance().backgroundColor = UIColor.defaultRouteLayer.withAlphaComponent(0.85)
         WayNameView.appearance().borderColor = UIColor.defaultRouteLineCasing.withAlphaComponent(0.8)
@@ -168,7 +166,6 @@ open class DayStyle: Style {
  */
 @objc(MBNightStyle)
 open class NightStyle: DayStyle {
-    
     public required init() {
         super.init()
         mapStyleURL = MLNStyle.navigationGuidanceNightStyleURL
@@ -177,7 +174,7 @@ open class NightStyle: DayStyle {
         statusBarStyle = .lightContent
     }
     
-    open override func apply() {
+    override open func apply() {
         super.apply()
         
         let backgroundColor = #colorLiteral(red: 0.1493228376, green: 0.2374534607, blue: 0.333029449, alpha: 1)

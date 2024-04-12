@@ -1,5 +1,5 @@
-import UIKit
 import MapboxDirections
+import UIKit
 
 protocol InstructionPresenterDataSource: AnyObject {
     var availableBounds: (() -> CGRect)! { get }
@@ -11,7 +11,6 @@ protocol InstructionPresenterDataSource: AnyObject {
 typealias DataSource = InstructionPresenterDataSource
 
 class InstructionPresenter {
-    
     private let instruction: VisualInstruction
     private weak var dataSource: DataSource?
 
@@ -19,11 +18,11 @@ class InstructionPresenter {
         self.instruction = instruction
         self.dataSource = dataSource
         self.imageRepository = imageRepository
-        self.onShieldDownload = downloadCompletion
+        onShieldDownload = downloadCompletion
     }
 
     typealias ImageDownloadCompletion = (UIImage?) -> Void
-    typealias ShieldDownloadCompletion = (NSAttributedString) -> ()
+    typealias ShieldDownloadCompletion = (NSAttributedString) -> Void
     
     let onShieldDownload: ShieldDownloadCompletion?
 
@@ -36,8 +35,8 @@ class InstructionPresenter {
     }
     
     func fittedAttributedComponents() -> [NSAttributedString] {
-        guard let source = self.dataSource else { return [] }
-        var attributedPairs = self.attributedPairs(for: instruction, dataSource: source, imageRepository: imageRepository, onImageDownload: completeShieldDownload)
+        guard let source = dataSource else { return [] }
+        var attributedPairs = attributedPairs(for: instruction, dataSource: source, imageRepository: imageRepository, onImageDownload: completeShieldDownload)
         let availableBounds = source.availableBounds()
         let totalWidth: CGFloat = attributedPairs.attributedStrings.map { $0.size() }.reduce(.zero, +).width
         let stringFits = totalWidth <= availableBounds.width
@@ -71,41 +70,40 @@ class InstructionPresenter {
         var strings: [NSAttributedString] = []
         var processedComponents: [VisualInstructionComponent] = []
         
-        
         for (index, component) in components.enumerated() {
             let isFirst = index == 0
             let joinChar = isFirst ? "" : " "
             let joinString = NSAttributedString(string: joinChar, attributes: attributes(for: dataSource))
             let initial = NSAttributedString()
             
-            //This is the closure that builds the string.
-            let build: (_: VisualInstructionComponent, _: [NSAttributedString]) -> Void = { (component, attributedStrings) in
+            // This is the closure that builds the string.
+            let build: (_: VisualInstructionComponent, _: [NSAttributedString]) -> Void = { component, attributedStrings in
                 processedComponents.append(component)
                 strings.append(attributedStrings.reduce(initial, +))
             }
-            let isShield: (_: VisualInstructionComponent?) -> Bool = { (component) in
+            let isShield: (_: VisualInstructionComponent?) -> Bool = { component in
                 guard let key = component?.cacheKey else { return false }
                 return imageRepository.cachedImageForKey(key) != nil
             }
             let componentBefore = components.component(before: component)
-            let componentAfter  = components.component(after: component)
+            let componentAfter = components.component(after: component)
             
             switch component.type {
-            //Throw away exit components. We know this is safe because we know that if there is an exit component,
+            // Throw away exit components. We know this is safe because we know that if there is an exit component,
             //  there is an exit code component, and the latter contains the information we care about.
             case .exit:
                 continue
                 
-            //If we have a exit, in the first two components, lets handle that.
-            case .exitCode where 0...1 ~= index:
-                guard let exitString = self.attributedString(forExitComponent: component, maneuverDirection: instruction.maneuverDirection, dataSource: dataSource) else { fallthrough }
+            // If we have a exit, in the first two components, lets handle that.
+            case .exitCode where 0 ... 1 ~= index:
+                guard let exitString = attributedString(forExitComponent: component, maneuverDirection: instruction.maneuverDirection, dataSource: dataSource) else { fallthrough }
                 build(component, [exitString])
                 
-            //if it's a delimiter, skip it if it's between two shields.
+            // if it's a delimiter, skip it if it's between two shields.
             case .delimiter where isShield(componentBefore) && isShield(componentAfter):
                 continue
                 
-            //If we have an icon component, lets turn it into a shield.
+            // If we have an icon component, lets turn it into a shield.
             case .image:
                 if let shieldString = attributedString(forShieldComponent: component, repository: imageRepository, dataSource: dataSource, onImageDownload: onImageDownload) {
                     build(component, [joinString, shieldString])
@@ -115,7 +113,7 @@ class InstructionPresenter {
                     fallthrough
                 }
                 
-            //Otherwise, process as text component.
+            // Otherwise, process as text component.
             default:
                 guard let componentString = attributedString(forTextComponent: component, dataSource: dataSource) else { continue }
                 build(component, [joinString, componentString])
@@ -138,10 +136,10 @@ class InstructionPresenter {
         return genericShield(text: text, component: component, dataSource: dataSource)
     }
     
-    func attributedString(forShieldComponent shield: VisualInstructionComponent, repository:ImageRepository, dataSource: DataSource, onImageDownload: @escaping ImageDownloadCompletion) -> NSAttributedString? {
+    func attributedString(forShieldComponent shield: VisualInstructionComponent, repository: ImageRepository, dataSource: DataSource, onImageDownload: @escaping ImageDownloadCompletion) -> NSAttributedString? {
         guard shield.imageURL != nil, let shieldKey = shield.cacheKey else { return nil }
         
-        //If we have the shield already cached, use that.
+        // If we have the shield already cached, use that.
         if let cachedImage = repository.cachedImageForKey(shieldKey) {
             return attributedString(withFont: dataSource.font, shieldImage: cachedImage)
         }
@@ -149,7 +147,7 @@ class InstructionPresenter {
         // Let's download the shield
         shieldImageForComponent(shield, in: repository, height: dataSource.shieldHeight, completion: onImageDownload)
         
-        //Return nothing in the meantime, triggering downstream behavior (generic shield or text)
+        // Return nothing in the meantime, triggering downstream behavior (generic shield or text)
         return nil
     }
     
@@ -163,7 +161,7 @@ class InstructionPresenter {
             return
         }
 
-        repository.imageWithURL(imageURL, cacheKey: shieldKey, completion: completion )
+        repository.imageWithURL(imageURL, cacheKey: shieldKey, completion: completion)
     }
 
     private func instructionHasDownloadedAllShields() -> Bool {
@@ -183,7 +181,7 @@ class InstructionPresenter {
     }
 
     private func attributes(for dataSource: InstructionPresenterDataSource) -> [NSAttributedString.Key: Any] {
-        return [.font: dataSource.font as Any, .foregroundColor: dataSource.textColor as Any]
+        [.font: dataSource.font as Any, .foregroundColor: dataSource.textColor as Any]
     }
 
     private func attributedString(withFont font: UIFont, shieldImage: UIImage) -> NSAttributedString {
@@ -217,7 +215,6 @@ class InstructionPresenter {
     private func exitShield(side: ExitSide = .right, text: String, component: VisualInstructionComponent, dataSource: DataSource) -> NSAttributedString? {
         guard let cacheKey = component.cacheKey else { return nil }
         
-
         let additionalKey = ExitView.criticalHash(side: side, dataSource: dataSource)
         let attachment = ExitAttachment()
 
@@ -237,16 +234,15 @@ class InstructionPresenter {
     }
     
     private func completeShieldDownload(_ image: UIImage?) {
-        //We *must* be on main thread here, because attributedText() looks at object properties only accessible on main thread.
+        // We *must* be on main thread here, because attributedText() looks at object properties only accessible on main thread.
         DispatchQueue.main.async {
-            self.onShieldDownload?(self.attributedText()) //FIXME: Can we work with the image directly?
+            self.onShieldDownload?(self.attributedText()) // FIXME: Can we work with the image directly?
         }
     }
     
     private func takeSnapshot(on view: UIView) -> UIImage? {
-		return view.imageRepresentation
+        view.imageRepresentation
     }
-
 }
 
 protocol ImagePresenter: TextPresenter {
@@ -259,11 +255,11 @@ protocol TextPresenter {
 }
 
 class ImageInstruction: NSTextAttachment, ImagePresenter {
-    var font: UIFont = UIFont.systemFont(ofSize: UIFont.systemFontSize)
+    var font: UIFont = .systemFont(ofSize: UIFont.systemFontSize)
     var text: String?
     
     override func attachmentBounds(for textContainer: NSTextContainer?, proposedLineFragment lineFrag: CGRect, glyphPosition position: CGPoint, characterIndex charIndex: Int) -> CGRect {
-        guard let image = image else {
+        guard let image else {
             return super.attachmentBounds(for: textContainer, proposedLineFragment: lineFrag, glyphPosition: position, characterIndex: charIndex)
         }
         let yOrigin = (font.capHeight - image.size.height).rounded() / 2
@@ -280,7 +276,7 @@ class RoadNameLabelAttachment: TextInstruction {
     var color: UIColor?
 
     var compositeImage: UIImage? {
-        guard let image = image, let text = text, let color = color, let scale = scale else {
+        guard let image, let text, let color, let scale else {
             return nil
         }
         
@@ -303,36 +299,36 @@ class RoadNameLabelAttachment: TextInstruction {
     }
 }
 
-extension CGSize {
-    fileprivate static var greatestFiniteSize = CGSize(width: CGFloat.greatestFiniteMagnitude, height: CGFloat.greatestFiniteMagnitude)
+private extension CGSize {
+    static var greatestFiniteSize = CGSize(width: CGFloat.greatestFiniteMagnitude, height: CGFloat.greatestFiniteMagnitude)
     
-    fileprivate static func +(lhs: CGSize, rhs: CGSize) -> CGSize {
-        return CGSize(width: lhs.width + rhs.width, height: lhs.height +  rhs.height)
+    static func + (lhs: CGSize, rhs: CGSize) -> CGSize {
+        CGSize(width: lhs.width + rhs.width, height: lhs.height + rhs.height)
     }
 }
 
-fileprivate struct IndexedVisualInstructionComponent {
+private struct IndexedVisualInstructionComponent {
     let component: Array<VisualInstructionComponent>.Element
     let index: Array<VisualInstructionComponent>.Index
 }
 
-extension Array where Element == VisualInstructionComponent {
-    fileprivate func component(before component: VisualInstructionComponent) -> VisualInstructionComponent? {
-        guard let index = self.firstIndex(of: component) else {
+private extension [VisualInstructionComponent] {
+    func component(before component: VisualInstructionComponent) -> VisualInstructionComponent? {
+        guard let index = firstIndex(of: component) else {
             return nil
         }
         if index > 0 {
-            return self[index-1]
+            return self[index - 1]
         }
         return nil
     }
     
-    fileprivate func component(after component: VisualInstructionComponent) -> VisualInstructionComponent? {
-        guard let index = self.firstIndex(of: component) else {
+    func component(after component: VisualInstructionComponent) -> VisualInstructionComponent? {
+        guard let index = firstIndex(of: component) else {
             return nil
         }
-        if index+1 < self.endIndex {
-            return self[index+1]
+        if index + 1 < endIndex {
+            return self[index + 1]
         }
         return nil
     }

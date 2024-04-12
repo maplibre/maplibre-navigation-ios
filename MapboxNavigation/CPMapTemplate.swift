@@ -6,7 +6,7 @@ import CarPlay
 @available(iOS 12.0, *)
 extension CLLocationDirection {
     init?(panDirection: CPMapTemplate.PanDirection) {
-        var horizontalBias: Double? = nil
+        var horizontalBias: Double?
         if panDirection.contains(.right) {
             horizontalBias = 90
         } else if panDirection.contains(.left) {
@@ -33,4 +33,3 @@ extension CLLocationDirection {
     }
 }
 #endif
-

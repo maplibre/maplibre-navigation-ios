@@ -4,7 +4,7 @@ import XCTest
 extension XCTestCase {
     enum NavigationTests {
         static var timeout: DispatchTime {
-            return DispatchTime.now() + DispatchTimeInterval.seconds(10)
+            DispatchTime.now() + DispatchTimeInterval.seconds(10)
         }
 
         static let pollingInterval: TimeInterval = 0.05
@@ -15,7 +15,7 @@ extension XCTestCase {
     }
 
     func runUntil(condition: () -> Bool, testCase: String, pollingInterval: TimeInterval, until timeout: DispatchTime) {
-        guard (timeout >= DispatchTime.now()) else {
+        guard timeout >= DispatchTime.now() else {
             XCTFail("Timeout occurred in \(testCase)")
             return
         }

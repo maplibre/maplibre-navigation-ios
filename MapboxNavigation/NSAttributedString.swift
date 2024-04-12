@@ -11,7 +11,7 @@ extension NSAttributedString {
 
 extension NSMutableAttributedString {
     func canonicalizeAttachments() {
-        enumerateAttribute(.attachment, in: NSRange(location: 0, length: length), options: []) { (value, range, stop) in
+        enumerateAttribute(.attachment, in: NSRange(location: 0, length: length), options: []) { value, range, _ in
             guard let attachment = value as? NSTextAttachment, type(of: attachment) != NSTextAttachment.self else {
                 return
             }

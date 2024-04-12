@@ -1,10 +1,10 @@
 import UIKit
 
-enum ExitSide: String{
+enum ExitSide: String {
     case left, right, other
     
     var exitImage: UIImage {
-        return self == .left ? ExitView.leftExitImage : ExitView.rightExitImage
+        self == .left ? ExitView.leftExitImage : ExitView.rightExitImage
     }
 }
 
@@ -12,7 +12,7 @@ class ExitView: StylableView {
     static let leftExitImage = UIImage(named: "exit-left", in: .mapboxNavigation, compatibleWith: nil)!.withRenderingMode(.alwaysTemplate)
     static let rightExitImage = UIImage(named: "exit-right", in: .mapboxNavigation, compatibleWith: nil)!.withRenderingMode(.alwaysTemplate)
     
-    static let labelFontSizeScaleFactor: CGFloat = 2.0/3.0
+    static let labelFontSizeScaleFactor: CGFloat = 2.0 / 3.0
     
     @objc dynamic var foregroundColor: UIColor? {
         didSet {
@@ -61,19 +61,17 @@ class ExitView: StylableView {
         }
     }
     
-    
     func spacing(for side: ExitSide, direction: UIUserInterfaceLayoutDirection = UIApplication.shared.userInterfaceLayoutDirection) -> CGFloat {
         let space: (less: CGFloat, more: CGFloat) = (4.0, 6.0)
         let lessSide: ExitSide = (direction == .rightToLeft) ? .left : .right
         return side == lessSide ? space.less : space.more
     }
     
-    
     convenience init(pointSize: CGFloat, side: ExitSide = .right, text: String) {
         self.init(frame: .zero)
         self.pointSize = pointSize
         self.side = side
-        self.exitText = text
+        exitText = text
         commonInit()
     }
     
@@ -83,13 +81,13 @@ class ExitView: StylableView {
     }
     
     required init?(coder aDecoder: NSCoder) {
-        pointSize = 0.0        
+        pointSize = 0.0
         super.init(coder: aDecoder)
         commonInit()
     }
     
     func rebuildConstraints() {
-        NSLayoutConstraint.deactivate(self.constraints)
+        NSLayoutConstraint.deactivate(constraints)
         buildConstraints()
     }
     
@@ -97,7 +95,7 @@ class ExitView: StylableView {
         translatesAutoresizingMaskIntoConstraints = false
         layer.masksToBounds = true
 
-        //build view hierarchy
+        // build view hierarchy
         [imageView, exitNumberLabel].forEach(addSubview(_:))
         buildConstraints()
         
@@ -107,7 +105,7 @@ class ExitView: StylableView {
     }
     
     func populateExitImage() {
-        imageView.image = self.side.exitImage
+        imageView.image = side.exitImage
     }
     
     func buildConstraints() {
@@ -119,16 +117,17 @@ class ExitView: StylableView {
         let imageCenterY = imageView.centerYAnchor.constraint(equalTo: centerYAnchor)
         let labelCenterY = exitNumberLabel.centerYAnchor.constraint(equalTo: centerYAnchor)
 
-        let sideConstraints = self.side != .left ? rightExitConstraints() : leftExitConstraints()
+        let sideConstraints = side != .left ? rightExitConstraints() : leftExitConstraints()
         
         let constraints = [height, imageHeight, imageAspect,
                            imageCenterY, labelCenterY] + sideConstraints
         
         addConstraints(constraints)
     }
+
     func rightExitConstraints() -> [NSLayoutConstraint] {
         let labelLeading = exitNumberLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 8)
-        let spacing = self.spacing(for: .right)
+        let spacing = spacing(for: .right)
         let imageLabelSpacing = exitNumberLabel.trailingAnchor.constraint(equalTo: imageView.leadingAnchor, constant: -1 * spacing)
         let imageTrailing = trailingAnchor.constraint(equalTo: imageView.trailingAnchor, constant: 8)
         return [labelLeading, imageLabelSpacing, imageTrailing]
@@ -136,7 +135,7 @@ class ExitView: StylableView {
     
     func leftExitConstraints() -> [NSLayoutConstraint] {
         let imageLeading = imageView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 8)
-        let spacing = self.spacing(for: .left)
+        let spacing = spacing(for: .left)
         let imageLabelSpacing = imageView.trailingAnchor.constraint(equalTo: exitNumberLabel.leadingAnchor, constant: -1 * spacing)
         let labelTrailing = trailingAnchor.constraint(equalTo: exitNumberLabel.trailingAnchor, constant: 8)
         return [imageLeading, imageLabelSpacing, labelTrailing]
@@ -148,6 +147,6 @@ class ExitView: StylableView {
     static func criticalHash(side: ExitSide, dataSource: DataSource) -> String {
         let proxy = ExitView.appearance()
         let criticalProperties: [AnyHashable?] = [side, dataSource.font.pointSize, proxy.backgroundColor, proxy.foregroundColor, proxy.borderWidth, proxy.cornerRadius]
-        return String(describing: criticalProperties.reduce(0, { $0 ^ ($1?.hashValue ?? 0)}))
+        return String(describing: criticalProperties.reduce(0) { $0 ^ ($1?.hashValue ?? 0) })
     }
 }

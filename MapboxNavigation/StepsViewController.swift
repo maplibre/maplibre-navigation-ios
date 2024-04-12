@@ -1,18 +1,16 @@
-import UIKit
-import MapboxDirections
 import MapboxCoreNavigation
+import MapboxDirections
 import Turf
+import UIKit
 
 /// :nodoc:
 @objc(MBStepsBackgroundView)
-open class StepsBackgroundView: UIView { }
-
+open class StepsBackgroundView: UIView {}
 
 /**
  `StepsViewControllerDelegate` provides methods for user interactions in a `StepsViewController`.
  */
 @objc public protocol StepsViewControllerDelegate: AnyObject {
-
     /**
      Called when the user selects a step in a `StepsViewController`.
      */
@@ -27,7 +25,6 @@ open class StepsBackgroundView: UIView { }
 /// :nodoc:
 @objc(MBStepsViewController)
 public class StepsViewController: UIViewController {
-
     weak var tableView: UITableView!
     weak var backgroundView: UIView!
     weak var bottomView: UIView!
@@ -57,7 +54,6 @@ public class StepsViewController: UIViewController {
 
     @discardableResult
     func rebuildDataSourceIfNecessary() -> Bool {
-
         let legIndex = routeProgress.legIndex
         let stepIndex = routeProgress.currentLegProgress.stepIndex
         let didProcessCurrentStep = previousLegIndex == legIndex && previousStepIndex == stepIndex
@@ -83,8 +79,8 @@ public class StepsViewController: UIViewController {
 
         // Include all steps on any future legs
         if !routeProgress.isFinalLeg {
-            routeProgress.route.legs.suffix(from: routeProgress.legIndex + 1).forEach {
-                var steps = $0.steps
+            for item in routeProgress.route.legs.suffix(from: routeProgress.legIndex + 1) {
+                var steps = item.steps
                 // Don't include the last step, it includes nothing
                 _ = steps.popLast()
                 sections.append(steps)
@@ -110,7 +106,6 @@ public class StepsViewController: UIViewController {
     }
 
     @objc func progressDidChange(_ notification: Notification) {
-
         if rebuildDataSourceIfNecessary() {
             tableView.reloadData()
         }
@@ -181,7 +176,6 @@ public class StepsViewController: UIViewController {
         tableView.register(StepTableViewCell.self, forCellReuseIdentifier: cellId)
     }
 
-
     /**
      Shows and animates the `StepsViewController` down.
      */
@@ -197,7 +191,6 @@ public class StepsViewController: UIViewController {
         }, completion: nil)
     }
 
-
     /**
      Dismisses and animates the `StepsViewController` up.
      */
@@ -206,7 +199,7 @@ public class StepsViewController: UIViewController {
             var frame = self.view.frame
             frame.origin.y -= frame.height
             self.view.frame = frame
-        }) { (completed) in
+        }) { _ in
             completion?()
         }
     }
@@ -248,7 +241,7 @@ extension StepsViewController: UITableViewDelegate {
 
 extension StepsViewController: UITableViewDataSource {
     public func numberOfSections(in tableView: UITableView) -> Int {
-        return sections.count
+        sections.count
     }
 
     public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -257,7 +250,7 @@ extension StepsViewController: UITableViewDataSource {
     }
 
     public func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 96
+        96
     }
 
     public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -311,12 +304,11 @@ extension StepsViewController: UITableViewDataSource {
 
 /// :nodoc:
 @objc(MBStepInstructionsView)
-open class StepInstructionsView: BaseInstructionsBannerView { }
+open class StepInstructionsView: BaseInstructionsBannerView {}
 
 /// :nodoc:
 @objc(MBStepTableViewCell)
 open class StepTableViewCell: UITableViewCell {
-
     weak var instructionsView: StepInstructionsView!
     weak var separatorView: SeparatorView!
 
@@ -325,7 +317,7 @@ open class StepTableViewCell: UITableViewCell {
         commonInit()
     }
 
-    required public init?(coder aDecoder: NSCoder) {
+    public required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         commonInit()
     }
@@ -356,21 +348,20 @@ open class StepTableViewCell: UITableViewCell {
         separatorView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -18).isActive = true
     }
 
-    open override func prepareForReuse() {
+    override open func prepareForReuse() {
         super.prepareForReuse()
-        instructionsView.update(for:nil)
+        instructionsView.update(for: nil)
     }
 }
 
-extension Array where Element == RouteStep {
-
-    fileprivate func stepBefore(_ step: RouteStep) -> RouteStep? {
-        guard let index = self.firstIndex(of: step) else {
+private extension [RouteStep] {
+    func stepBefore(_ step: RouteStep) -> RouteStep? {
+        guard let index = firstIndex(of: step) else {
             return nil
         }
 
         if index > 0 {
-            return self[index-1]
+            return self[index - 1]
         }
 
         return nil

@@ -1,16 +1,15 @@
-import XCTest
-import Solar
 import CoreLocation
 @testable import MapboxNavigation
+import Solar
+import XCTest
 
-struct Location {
+enum Location {
     static let sf = CLLocation(latitude: 37.78, longitude: -122.40)
     static let london = CLLocation(latitude: 51.50, longitude: -0.12)
     static let paris = CLLocation(latitude: 48.85, longitude: 2.35)
 }
 
 class StyleManagerTests: XCTestCase {
-    
     var location = Location.london
     var styleManager: StyleManager!
     
@@ -53,7 +52,7 @@ class StyleManagerTests: XCTestCase {
         dateFormatter.dateFormat = "HH:mm:ss"
         dateFormatter.timeZone = TimeZone(identifier: "CET")
 
-        NSTimeZone.default = NSTimeZone.init(abbreviation: "CET")! as TimeZone
+        NSTimeZone.default = NSTimeZone(abbreviation: "CET")! as TimeZone
 
         let justBeforeSunrise = dateFormatter.date(from: "08:44:05")!
         let justAfterSunrise = dateFormatter.date(from: "08:44:30")!
@@ -82,7 +81,7 @@ class StyleManagerTests: XCTestCase {
         dateFormatter.dateFormat = "hh:mm a"
         dateFormatter.timeZone = TimeZone(identifier: "PST")
         
-        NSTimeZone.default = NSTimeZone.init(abbreviation: "PST")! as TimeZone
+        NSTimeZone.default = NSTimeZone(abbreviation: "PST")! as TimeZone
         
         let beforeSunrise = dateFormatter.date(from: "05:00 AM")!
         let afterSunrise = dateFormatter.date(from: "09:00 AM")!
@@ -111,7 +110,7 @@ class StyleManagerTests: XCTestCase {
         dateFormatter.dateFormat = "HH:mm"
         dateFormatter.timeZone = TimeZone(identifier: "CET")
 
-        NSTimeZone.default = NSTimeZone.init(abbreviation: "CET")! as TimeZone
+        NSTimeZone.default = NSTimeZone(abbreviation: "CET")! as TimeZone
 
         let sunrise = dateFormatter.date(from: "08:00")!
         let sunset = dateFormatter.date(from: "18:00")!
@@ -127,10 +126,10 @@ class StyleManagerTests: XCTestCase {
 }
 
 extension StyleManagerTests: StyleManagerDelegate {
-    func styleManagerDidRefreshAppearance(_ styleManager: StyleManager) { }
-    func styleManager(_ styleManager: StyleManager, didApply style: Style) { }
+    func styleManagerDidRefreshAppearance(_ styleManager: StyleManager) {}
+    func styleManager(_ styleManager: StyleManager, didApply style: Style) {}
     
     func locationFor(styleManager: StyleManager) -> CLLocation? {
-        return location
+        location
     }
 }

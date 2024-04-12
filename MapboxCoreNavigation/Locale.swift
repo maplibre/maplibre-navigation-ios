@@ -1,11 +1,10 @@
 import Foundation
 
-extension Locale {
-    
+public extension Locale {
     /**
      Given the app's localized language setting, returns a string representing the user's localization.
      */
-    public static var preferredLocalLanguageCountryCode: String {
+    static var preferredLocalLanguageCountryCode: String {
         let firstBundleLocale = Bundle.main.preferredLocalizations.first!
         let bundleLocale = firstBundleLocale.components(separatedBy: "-")
         
@@ -23,17 +22,17 @@ extension Locale {
     /**
      Returns a `Locale` from `preferredLocalLanguageCountryCode`.
      */
-    public static var nationalizedCurrent = Locale(identifier: preferredLocalLanguageCountryCode)
+    static var nationalizedCurrent = Locale(identifier: preferredLocalLanguageCountryCode)
     
-    public static var usesMetric: Bool {
-        let locale = self.current as NSLocale
+    static var usesMetric: Bool {
+        let locale = current as NSLocale
         guard let measurementSystem = locale.object(forKey: .measurementSystem) as? String else {
             return false
         }
         return measurementSystem == "Metric"
     }
     
-    public var usesMetric: Bool {
+    var usesMetric: Bool {
         let locale = self as NSLocale
         guard let measurementSystem = locale.object(forKey: .measurementSystem) as? String else {
             return false

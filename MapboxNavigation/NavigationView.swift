@@ -1,6 +1,6 @@
-import UIKit
-import MapLibre
 import MapboxDirections
+import MapLibre
+import UIKit
 
 /**
  A view that represents the root view of the MapboxNavigation drop-in UI.
@@ -34,11 +34,10 @@ import MapboxDirections
  |         3          |
  +--------------------+
  ```
-*/
+ */
 @IBDesignable
 @objc(MBNavigationView)
 open class NavigationView: UIView {
-    
     private enum Constants {
         static let endOfRouteHeight: CGFloat = 260.0
         static let feedbackTopConstraintPadding: CGFloat = 10.0
@@ -48,7 +47,8 @@ open class NavigationView: UIView {
     
     lazy var bannerShowConstraints: [NSLayoutConstraint] = [
         self.instructionsBannerView.topAnchor.constraint(equalTo: self.safeTopAnchor),
-        self.instructionsBannerContentView.topAnchor.constraint(equalTo: self.topAnchor)]
+        self.instructionsBannerContentView.topAnchor.constraint(equalTo: self.topAnchor)
+    ]
     
     lazy var bannerHideConstraints: [NSLayoutConstraint] = [
         self.informationStackView.bottomAnchor.constraint(equalTo: self.topAnchor),
@@ -64,7 +64,7 @@ open class NavigationView: UIView {
     private enum Images {
         static let overview = UIImage(named: "overview", in: .mapboxNavigation, compatibleWith: nil)!.withRenderingMode(.alwaysTemplate)
         static let volumeUp = UIImage(named: "volume_up", in: .mapboxNavigation, compatibleWith: nil)!.withRenderingMode(.alwaysTemplate)
-        static let volumeOff =  UIImage(named: "volume_off", in: .mapboxNavigation, compatibleWith: nil)!.withRenderingMode(.alwaysTemplate)
+        static let volumeOff = UIImage(named: "volume_off", in: .mapboxNavigation, compatibleWith: nil)!.withRenderingMode(.alwaysTemplate)
         static let feedback = UIImage(named: "feedback", in: .mapboxNavigation, compatibleWith: nil)!.withRenderingMode(.alwaysTemplate)
     }
     
@@ -125,9 +125,8 @@ open class NavigationView: UIView {
         let view: BottomBannerView = .forAutoLayout()
         view.cancelButton.addTarget(self, action: Actions.cancelButton, for: .touchUpInside)
         return view
-        }()
+    }()
     
-
     weak var delegate: NavigationViewDelegate? {
         didSet {
             updateDelegates()
@@ -146,12 +145,12 @@ open class NavigationView: UIView {
         }
     }
     
-    //MARK: - Initializers
+    // MARK: - Initializers
     
     convenience init(delegate: NavigationViewDelegate) {
         self.init(frame: .zero)
         self.delegate = delegate
-        updateDelegates() //this needs to be called because didSet's do not fire in init contexts.
+        updateDelegates() // this needs to be called because didSet's do not fire in init contexts.
     }
     
     override init(frame: CGRect) {
@@ -159,7 +158,7 @@ open class NavigationView: UIView {
         commonInit()
     }
     
-    required public init?(coder aDecoder: NSCoder) {
+    public required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         commonInit()
     }
@@ -170,7 +169,6 @@ open class NavigationView: UIView {
     }
     
     func setupStackViews() {
-    
         setupInformationStackView()
         floatingStackView.addArrangedSubviews([overviewButton, muteButton, reportButton])
     }
@@ -179,9 +177,9 @@ open class NavigationView: UIView {
         let informationChildren: [UIView] = [instructionsBannerView, lanesView, nextBannerView, statusView]
         informationStackView.addArrangedSubviews(informationChildren)
         
-        informationChildren.forEach {
-            $0.leadingAnchor.constraint(equalTo: informationStackView.leadingAnchor).isActive = true
-            $0.trailingAnchor.constraint(equalTo: informationStackView.trailingAnchor).isActive = true
+        for informationChild in informationChildren {
+            informationChild.leadingAnchor.constraint(equalTo: informationStackView.leadingAnchor).isActive = true
+            informationChild.trailingAnchor.constraint(equalTo: informationStackView.trailingAnchor).isActive = true
         }
     }
     
@@ -210,7 +208,7 @@ open class NavigationView: UIView {
         subviews.forEach(addSubview(_:))
     }
     
-    open override func prepareForInterfaceBuilder() {
+    override open func prepareForInterfaceBuilder() {
         super.prepareForInterfaceBuilder()
         DayStyle().apply()
         [mapView, instructionsBannerView, lanesView, bottomBannerView, nextBannerView].forEach { $0.prepareForInterfaceBuilder() }

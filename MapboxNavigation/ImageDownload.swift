@@ -14,15 +14,15 @@ protocol ImageDownload: URLSessionDataDelegate {
 
 class ImageDownloadOperation: Operation, ImageDownload {
     override var isConcurrent: Bool {
-        return true
+        true
     }
 
     override var isFinished: Bool {
-        return _finished
+        _finished
     }
 
     override var isExecuting: Bool {
-        return _executing
+        _executing
     }
 
     private var _finished = false {
@@ -48,7 +48,7 @@ class ImageDownloadOperation: Operation, ImageDownload {
 
     private var dataTask: URLSessionDataTask?
     private var incomingData: Data?
-    private var completionBlocks: Array<ImageDownloadCompletionBlock> = []
+    private var completionBlocks: [ImageDownloadCompletionBlock] = []
     private let barrierQueue = DispatchQueue(label: Bundle.mapboxNavigation.bundleIdentifier! + ".ImageDownloadCompletionBarrierQueue", attributes: .concurrent)
 
     required init(request: URLRequest, in session: URLSession) {
@@ -69,7 +69,7 @@ class ImageDownloadOperation: Operation, ImageDownload {
         }
         super.cancel()
 
-        if let dataTask = dataTask {
+        if let dataTask {
             dataTask.cancel()
             incomingData = nil
             self.dataTask = nil
@@ -99,14 +99,13 @@ class ImageDownloadOperation: Operation, ImageDownload {
             return
         }
 
-        dataTask = session.dataTask(with: self.request)
-        if let dataTask = dataTask {
+        dataTask = session.dataTask(with: request)
+        if let dataTask {
             _executing = true
             dataTask.resume()
         } else {
-            //fail and bail; connection failed or bad URL (client-side error)
+            // fail and bail; connection failed or bad URL (client-side error)
         }
-
     }
 
     // MARK: URLSessionDataDelegate
@@ -117,7 +116,7 @@ class ImageDownloadOperation: Operation, ImageDownload {
             return
         }
         if response.statusCode < 400 {
-            self.incomingData = Data()
+            incomingData = Data()
             completionHandler(.allow)
         } else {
             fireAllCompletions(nil, data: nil, error: DownloadError.serverError)
@@ -126,10 +125,10 @@ class ImageDownloadOperation: Operation, ImageDownload {
     }
 
     func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {
-        if var localData: Data = self.incomingData {
+        if var localData: Data = incomingData {
             let bytes = [UInt8](data)
             localData.append(bytes, count: bytes.count)
-            self.incomingData = localData
+            incomingData = localData
         }
     }
 
@@ -139,7 +138,7 @@ class ImageDownloadOperation: Operation, ImageDownload {
             return
         }
 
-        if let data = incomingData, let image = UIImage.init(data: data, scale: UIScreen.main.scale) {
+        if let data = incomingData, let image = UIImage(data: data, scale: UIScreen.main.scale) {
             fireAllCompletions(image, data: data, error: nil)
         } else {
             fireAllCompletions(nil, data: incomingData, error: DownloadError.noImageData)

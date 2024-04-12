@@ -1,12 +1,11 @@
 import UIKit
 
 extension UICollectionView {
-    
     func numberOfRows(using delegate: UIViewController & UICollectionViewDelegateFlowLayout) -> Int {
         let layout = (collectionViewLayout as? UICollectionViewFlowLayout)!
         
         var totalNumberOfItems = 0
-        for section in 0...numberOfSections - 1 {
+        for section in 0 ... numberOfSections - 1 {
             totalNumberOfItems += numberOfItems(inSection: section)
         }
         

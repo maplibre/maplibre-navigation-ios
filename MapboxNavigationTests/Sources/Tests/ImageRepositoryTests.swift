@@ -1,8 +1,7 @@
-import XCTest
 @testable import MapboxNavigation
+import XCTest
 
 class ImageRepositoryTests: XCTestCase {
-
     lazy var repository: ImageRepository = {
         let repo = ImageRepository.shared
         let config = URLSessionConfiguration.default
@@ -14,7 +13,7 @@ class ImageRepositoryTests: XCTestCase {
 
     override func setUp() {
         super.setUp()
-        self.continueAfterFailure = false
+        continueAfterFailure = false
 
         ImageLoadingURLProtocolSpy.reset()
 
@@ -27,7 +26,6 @@ class ImageRepositoryTests: XCTestCase {
     }
 
     override func tearDown() {
-
         super.tearDown()
     }
 
@@ -41,7 +39,7 @@ class ImageRepositoryTests: XCTestCase {
         var imageReturned: UIImage? = nil
         let semaphore = DispatchSemaphore(value: 0)
 
-        repository.imageWithURL(fakeURL, cacheKey: imageName) { (image) in
+        repository.imageWithURL(fakeURL, cacheKey: imageName) { image in
             imageReturned = image
             semaphore.signal()
         }
@@ -62,7 +60,7 @@ class ImageRepositoryTests: XCTestCase {
         var imageReturned: UIImage? = nil
         let semaphore = DispatchSemaphore(value: 0)
 
-        repository.imageWithURL(fakeURL, cacheKey: imageName) { (image) in
+        repository.imageWithURL(fakeURL, cacheKey: imageName) { image in
             imageReturned = image
             semaphore.signal()
         }

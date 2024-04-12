@@ -1,5 +1,5 @@
-import UIKit
 import MapboxDirections
+import UIKit
 
 /// :nodoc:
 @objc(MBLaneView)
@@ -13,7 +13,7 @@ open class LaneView: UIView {
     var isValid: Bool = false
     
     override open var intrinsicContentSize: CGSize {
-        return bounds.size
+        bounds.size
     }
     
     @objc public dynamic var primaryColor: UIColor = .defaultLaneArrowPrimary {
@@ -29,10 +29,10 @@ open class LaneView: UIView {
     }
     
     var appropriatePrimaryColor: UIColor {
-        return isValid ? primaryColor : secondaryColor
+        isValid ? primaryColor : secondaryColor
     }
     
-    static let defaultFrame: CGRect = CGRect(origin: .zero, size: 30.0)
+    static let defaultFrame: CGRect = .init(origin: .zero, size: 30.0)
     
     convenience init(component: LaneIndicationComponent) {
         self.init(frame: LaneView.defaultFrame)
@@ -44,7 +44,7 @@ open class LaneView: UIView {
     
     override open func draw(_ rect: CGRect) {
         super.draw(rect)
-        if let lane = lane {
+        if let lane {
             var flipLane: Bool
             if lane.indications.isSuperset(of: [.straightAhead, .sharpRight]) || lane.indications.isSuperset(of: [.straightAhead, .right]) || lane.indications.isSuperset(of: [.straightAhead, .slightRight]) {
                 flipLane = false
@@ -128,7 +128,7 @@ open class LaneView: UIView {
                 LanesStyleKit.drawLane_uturn(primaryColor: appropriatePrimaryColor)
                 flipLane = false
                 alpha = isValid ? 1 : invalidAlpha
-            } else if lane.indications.isEmpty && isValid {
+            } else if lane.indications.isEmpty, isValid {
                 // If the lane indication is `none` and the maneuver modifier has a turn in it,
                 // show the turn in the lane image.
                 if maneuverDirection == .sharpRight || maneuverDirection == .right || maneuverDirection == .slightRight {
@@ -159,8 +159,8 @@ open class LaneView: UIView {
         }
         
         #if TARGET_INTERFACE_BUILDER
-            isValid = true
-            LanesStyleKit.drawLane_right_only(primaryColor: appropriatePrimaryColor, secondaryColor: secondaryColor)
+        isValid = true
+        LanesStyleKit.drawLane_right_only(primaryColor: appropriatePrimaryColor, secondaryColor: secondaryColor)
         #endif
     }
 }

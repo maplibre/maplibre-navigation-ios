@@ -1,7 +1,6 @@
 import UIKit
 
 extension BaseInstructionsBannerView {
-    
     static let padding: CGFloat = 16
     static let maneuverViewSize = CGSize(width: 38, height: 38)
     static let stepListIndicatorViewSize = CGSize(width: 30, height: 5)
@@ -88,7 +87,7 @@ extension BaseInstructionsBannerView {
         // Primary Label
         primaryLabel.leadingAnchor.constraint(equalTo: dividerView.trailingAnchor).isActive = true
         primaryLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -18).isActive = true
-        baselineConstraints.append(primaryLabel.topAnchor.constraint(equalTo: maneuverView.topAnchor, constant: -BaseInstructionsBannerView.padding/2))
+        baselineConstraints.append(primaryLabel.topAnchor.constraint(equalTo: maneuverView.topAnchor, constant: -BaseInstructionsBannerView.padding / 2))
         centerYConstraints.append(primaryLabel.centerYAnchor.constraint(equalTo: centerYAnchor))
         
         // Secondary Label
@@ -143,14 +142,14 @@ extension BaseInstructionsBannerView {
         // Abbreviate if the instructions do not fit on one line
         primaryLabel.availableBounds = { [unowned self] in
             // Available width H:|-padding-maneuverView-padding-availableWidth-padding-|
-            let availableWidth = self.primaryLabel.viewForAvailableBoundsCalculation?.bounds.width ?? self.bounds.width - BaseInstructionsBannerView.maneuverViewSize.width - BaseInstructionsBannerView.padding * 3
-            return CGRect(x: 0, y: 0, width: availableWidth, height: self.primaryLabel.font.lineHeight)
+            let availableWidth = primaryLabel.viewForAvailableBoundsCalculation?.bounds.width ?? bounds.width - BaseInstructionsBannerView.maneuverViewSize.width - BaseInstructionsBannerView.padding * 3
+            return CGRect(x: 0, y: 0, width: availableWidth, height: primaryLabel.font.lineHeight)
         }
         
         secondaryLabel.availableBounds = { [unowned self] in
             // Available width H:|-padding-maneuverView-padding-availableWidth-padding-|
-            let availableWidth = self.secondaryLabel.viewForAvailableBoundsCalculation?.bounds.width ?? self.bounds.width - BaseInstructionsBannerView.maneuverViewSize.width - BaseInstructionsBannerView.padding * 3
-            return CGRect(x: 0, y: 0, width: availableWidth, height: self.secondaryLabel.font.lineHeight)
+            let availableWidth = secondaryLabel.viewForAvailableBoundsCalculation?.bounds.width ?? bounds.width - BaseInstructionsBannerView.maneuverViewSize.width - BaseInstructionsBannerView.padding * 3
+            return CGRect(x: 0, y: 0, width: availableWidth, height: secondaryLabel.font.lineHeight)
         }
     }
 }

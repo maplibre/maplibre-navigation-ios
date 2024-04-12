@@ -1,6 +1,6 @@
-import UIKit
 import MapboxCoreNavigation
 import MapboxDirections
+import UIKit
 
 protocol BottomBannerViewDelegate: AnyObject {
     func didCancel()
@@ -10,7 +10,6 @@ protocol BottomBannerViewDelegate: AnyObject {
 @IBDesignable
 @objc(MBBottomBannerView)
 open class BottomBannerView: UIView {
-    
     weak var timeRemainingLabel: TimeRemainingLabel!
     weak var distanceRemainingLabel: DistanceRemainingLabel!
     weak var arrivalTimeLabel: ArrivalTimeLabel!
@@ -51,7 +50,7 @@ open class BottomBannerView: UIView {
         commonInit()
     }
     
-    required public init?(coder aDecoder: NSCoder) {
+    public required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         commonInit()
     }

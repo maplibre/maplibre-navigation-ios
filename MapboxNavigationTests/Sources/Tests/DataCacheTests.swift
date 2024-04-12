@@ -1,10 +1,8 @@
-import XCTest
 @testable import MapboxNavigation
-
+import XCTest
 
 class DataCacheTests: XCTestCase {
-
-    let cache: DataCache = DataCache()
+    let cache: DataCache = .init()
 
     private func clearDisk() {
         let semaphore = DispatchSemaphore(value: 0)
@@ -17,7 +15,7 @@ class DataCacheTests: XCTestCase {
 
     override func setUp() {
         super.setUp()
-        self.continueAfterFailure = false
+        continueAfterFailure = false
 
         cache.clearMemory()
         clearDisk()
@@ -26,14 +24,12 @@ class DataCacheTests: XCTestCase {
     let dataKey = "dataKey"
 
     var exampleData: Data? {
-        get {
-            let bundle = Bundle.module
-            do {
-                return try NSData.init(contentsOf: bundle.url(forResource: "route", withExtension: "json")!) as Data
-            } catch {
-                XCTFail("Failed to create data")
-                return nil
-            }
+        let bundle = Bundle.module
+        do {
+            return try NSData(contentsOf: bundle.url(forResource: "route", withExtension: "json")!) as Data
+        } catch {
+            XCTFail("Failed to create data")
+            return nil
         }
     }
 
@@ -124,7 +120,7 @@ class DataCacheTests: XCTestCase {
         let instructionTurn = "Turn left"
         let instructionContinue = "<speak><amazon:effect name=\"drc\"><prosody rate=\"1.08\">Continue on <say-as interpret-as=\"address\">I-80</say-as> East for 3 miles</prosody></amazon:effect></speak>"
         measure {
-            for _ in 0...1000 {
+            for _ in 0 ... 1000 {
                 _ = cache.fileCache.cacheKeyForKey(instructionTurn)
                 _ = cache.fileCache.cacheKeyForKey(instructionContinue)
             }

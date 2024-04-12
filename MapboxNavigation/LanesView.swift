@@ -1,6 +1,6 @@
-import UIKit
 import MapboxCoreNavigation
 import MapboxDirections
+import UIKit
 
 /// :nodoc:
 @IBDesignable
@@ -14,15 +14,15 @@ open class LanesView: UIView {
         commonInit()
     }
     
-    required public init?(coder aDecoder: NSCoder) {
+    public required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         commonInit()
     }
     
-    open override func prepareForInterfaceBuilder() {
+    override open func prepareForInterfaceBuilder() {
         super.prepareForInterfaceBuilder()
 
-        for _ in 0...4 {
+        for _ in 0 ... 4 {
             let laneView = laneArrowView()
             stackView.addArrangedSubview(laneView)
         }
@@ -74,12 +74,12 @@ open class LanesView: UIView {
         clearLaneViews()
         
         guard let tertiaryInstruction = visualInstruction?.tertiaryInstruction,
-                  tertiaryInstruction.containsLaneIndications else {
-                    hide()
-                    return
+              tertiaryInstruction.containsLaneIndications else {
+            hide()
+            return
         }
         
-        let laneIndications: [LaneIndicationComponent]? = tertiaryInstruction.components.compactMap({ $0 as? LaneIndicationComponent })
+        let laneIndications: [LaneIndicationComponent]? = tertiaryInstruction.components.compactMap { $0 as? LaneIndicationComponent }
         
         guard let lanes = laneIndications, !lanes.isEmpty else {
             hide()
@@ -98,7 +98,7 @@ open class LanesView: UIView {
                 self.isHidden = false
             }, completion: nil)
         } else {
-            self.isHidden = false
+            isHidden = false
         }
     }
     
@@ -110,10 +110,9 @@ open class LanesView: UIView {
     }
     
     fileprivate func clearLaneViews() {
-        stackView.arrangedSubviews.forEach {
-            stackView.removeArrangedSubview($0)
-            $0.removeFromSuperview()
+        for arrangedSubview in stackView.arrangedSubviews {
+            stackView.removeArrangedSubview(arrangedSubview)
+            arrangedSubview.removeFromSuperview()
         }
     }
-    
 }

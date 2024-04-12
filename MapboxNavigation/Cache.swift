@@ -29,10 +29,10 @@ public protocol BimodalDataCache: BimodalCache {
     func data(forKey: String?) -> Data?
 }
 
- /**
+/**
   A general purpose on-disk cache used by both the ImageCache and DataCache implementations
  */
-internal class FileCache {
+class FileCache {
     let diskCacheURL: URL = {
         let fileManager = FileManager.default
         let basePath = fileManager.urls(for: .cachesDirectory, in: .userDomainMask).first!
@@ -53,7 +53,7 @@ internal class FileCache {
      Stores data in the file cache for the given key, and calls the completion handler when finished.
      */
     public func store(_ data: Data, forKey key: String, completion: CompletionHandler?) {
-        guard let fileManager = fileManager else {
+        guard let fileManager else {
             completion?()
             return
         }
@@ -69,19 +69,18 @@ internal class FileCache {
             }
             completion?()
         }
-
     }
 
     /*
      Returns data from the file cache for the given key, if any.
      */
     public func dataFromFileCache(forKey key: String?) -> Data? {
-        guard let key = key else {
+        guard let key else {
             return nil
         }
 
         do {
-            return try Data.init(contentsOf: cacheURLWithKey(key))
+            return try Data(contentsOf: cacheURLWithKey(key))
         } catch {
             return nil
         }
@@ -91,12 +90,12 @@ internal class FileCache {
      Clears the disk cache by removing and recreating the cache directory, and calls the completion handler when finished.
      */
     public func clearDisk(completion: CompletionHandler?) {
-        guard let fileManager = fileManager else {
+        guard let fileManager else {
             return
         }
 
-        let cacheURL = self.diskCacheURL
-        self.diskAccessQueue.async {
+        let cacheURL = diskCacheURL
+        diskAccessQueue.async {
             do {
                 try fileManager.removeItem(at: cacheURL)
             } catch {
@@ -120,7 +119,7 @@ internal class FileCache {
     }
 
     func cacheKeyForKey(_ key: String) -> String {
-        return key.md5()
+        key.md5()
     }
 
     private func createCacheDirIfNeeded(_ url: URL, fileManager: FileManager) {
