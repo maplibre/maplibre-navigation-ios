@@ -48,10 +48,10 @@
     {
       "identity" : "swiftlintplugin",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/lukepistrol/SwiftLintPlugin",
+      "location" : "https://github.com/patrick-kladek/SwiftLintPlugin",
       "state" : {
-        "revision" : "ea6d3ca895b49910f790e98e4b4ca658e0fe490e",
-        "version" : "0.54.0"
+        "branch" : "feature/reduce-min-platform-requirements",
+        "revision" : "e892d86980c28d77e87caaeea81f7bcbc126b8bc"
       }
     },
     {

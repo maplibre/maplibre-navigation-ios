@@ -5,7 +5,7 @@ import PackageDescription
 let package = Package(
     name: "maplibre-navigation-ios",
     defaultLocalization: "en",
-    platforms: [.iOS(.v13)],
+    platforms: [.iOS(.v12)],
     products: [
         .library(
             name: "MapboxNavigation",
@@ -19,7 +19,7 @@ let package = Package(
         .package(url: "https://github.com/flitsmeister/turf-swift", exact: "0.2.2"),
         .package(url: "https://github.com/maplibre/maplibre-gl-native-distribution.git", from: "6.0.0"),
         .package(url: "https://github.com/ceeK/Solar.git", exact: "3.0.1"),
-        .package(url: "https://github.com/lukepistrol/SwiftLintPlugin", from: "0.54.0"),
+        .package(url: "https://github.com/patrick-kladek/SwiftLintPlugin", branch: "feature/reduce-min-platform-requirements"),
         .package(url: "https://github.com/nicklockwood/SwiftFormat.git", from: "0.53.6")
     ],
     targets: [
