@@ -38,7 +38,11 @@ public class StatusView: UIView {
     }
     
     func commonInit() {
-        let activityIndicatorView = UIActivityIndicatorView(style: .medium)
+        let activityIndicatorView = if #available(iOS 13.0, *) {
+            UIActivityIndicatorView(style: .medium)
+        } else {
+            UIActivityIndicatorView(style: .white)
+        }
         activityIndicatorView.translatesAutoresizingMaskIntoConstraints = false
         addSubview(activityIndicatorView)
         self.activityIndicatorView = activityIndicatorView
