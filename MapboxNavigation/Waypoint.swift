@@ -12,6 +12,6 @@ extension Waypoint {
     }
     
     var instructionComponents: [VisualInstructionComponent]? {
-        (instructionComponent != nil) ? [instructionComponent!] : nil
+        (self.instructionComponent != nil) ? [self.instructionComponent!] : nil
     }
 }

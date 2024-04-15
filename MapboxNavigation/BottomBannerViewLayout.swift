@@ -35,12 +35,12 @@ extension BottomBannerView {
         addSubview(horizontalDividerView)
         self.horizontalDividerView = horizontalDividerView
         
-        setupConstraints()
+        self.setupConstraints()
     }
     
     private func setupConstraints() {
-        setupVerticalCompactLayout(&verticalCompactConstraints)
-        setupVerticalRegularLayout(&verticalRegularConstraints)
+        self.setupVerticalCompactLayout(&verticalCompactConstraints)
+        self.setupVerticalRegularLayout(&verticalRegularConstraints)
     }
     
     private func setupVerticalCompactLayout(_ c: inout [NSLayoutConstraint]) {

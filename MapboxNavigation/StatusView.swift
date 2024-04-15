@@ -23,18 +23,18 @@ public class StatusView: UIView {
     @objc public var canChangeValue = false
     var value: Double = 0 {
         didSet {
-            delegate?.statusView?(self, valueChangedTo: value)
+            self.delegate?.statusView?(self, valueChangedTo: self.value)
         }
     }
     
     @objc override public init(frame: CGRect) {
         super.init(frame: frame)
-        commonInit()
+        self.commonInit()
     }
     
     @objc public required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
-        commonInit()
+        self.commonInit()
     }
     
     func commonInit() {
@@ -73,22 +73,22 @@ public class StatusView: UIView {
     }
     
     @objc func pan(_ sender: UIPanGestureRecognizer) {
-        guard canChangeValue else { return }
+        guard self.canChangeValue else { return }
         
         let location = sender.location(in: self)
         
         if sender.state == .began {
-            panStartPoint = location
+            self.panStartPoint = location
         } else if sender.state == .changed {
             guard let startPoint = panStartPoint else { return }
             let offsetX = location.x - startPoint.x
             let coefficient = (offsetX / bounds.width) / 20.0
-            value = Double(min(max(CGFloat(value) + coefficient, 0), 1))
+            self.value = Double(min(max(CGFloat(self.value) + coefficient, 0), 1))
         }
     }
     
     @objc func tap(_ sender: UITapGestureRecognizer) {
-        guard canChangeValue else { return }
+        guard self.canChangeValue else { return }
         
         let location = sender.location(in: self)
         
@@ -102,7 +102,7 @@ public class StatusView: UIView {
             @unknown default:
                 fatalError("Unknown userInterfaceLayoutDirection")
             }
-            value = min(max(value + incrementer, 0), 1)
+            self.value = min(max(self.value + incrementer, 0), 1)
         }
     }
     
@@ -110,12 +110,12 @@ public class StatusView: UIView {
      Shows the status view with an optional spinner.
      */
     public func show(_ title: String, showSpinner: Bool, interactive: Bool = false) {
-        canChangeValue = interactive
-        textLabel.text = title
-        activityIndicatorView.hidesWhenStopped = true
-        if !showSpinner { activityIndicatorView.stopAnimating() }
+        self.canChangeValue = interactive
+        self.textLabel.text = title
+        self.activityIndicatorView.hidesWhenStopped = true
+        if !showSpinner { self.activityIndicatorView.stopAnimating() }
 
-        guard isCurrentlyVisible == false, isHidden == true else { return }
+        guard self.isCurrentlyVisible == false, isHidden == true else { return }
                 
         let show = {
             self.isHidden = false

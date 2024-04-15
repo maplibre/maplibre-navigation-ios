@@ -22,9 +22,9 @@ class ImageDownloader: NSObject, ReentrantImageDownloader, URLSessionDataDelegat
     private var headers: [String: String] = ["Accept": "image/*;q=0.8"]
 
     override init() {
-        downloadQueue = OperationQueue()
-        downloadQueue.name = Bundle.mapboxNavigation.bundleIdentifier! + ".ImageDownloader"
-        accessQueue = DispatchQueue(label: Bundle.mapboxNavigation.bundleIdentifier! + ".ImageDownloaderInternal", attributes: .concurrent)
+        self.downloadQueue = OperationQueue()
+        self.downloadQueue.name = Bundle.mapboxNavigation.bundleIdentifier! + ".ImageDownloader"
+        self.accessQueue = DispatchQueue(label: Bundle.mapboxNavigation.bundleIdentifier! + ".ImageDownloaderInternal", attributes: .concurrent)
     }
 
     convenience init(sessionConfiguration: URLSessionConfiguration? = nil, operationType: ImageDownload.Type? = nil) {
@@ -44,7 +44,7 @@ class ImageDownloader: NSObject, ReentrantImageDownloader, URLSessionDataDelegat
     }
 
     func downloadImage(with url: URL, completion: ImageDownloadCompletionBlock?) {
-        accessQueue.sync(flags: .barrier) {
+        self.accessQueue.sync(flags: .barrier) {
             let request: URLRequest = self.urlRequest(with: url)
             var operation: ImageDownload
             if let activeOperation = self.activeOperation(with: url) {
@@ -74,7 +74,7 @@ class ImageDownloader: NSObject, ReentrantImageDownloader, URLSessionDataDelegat
     
     private func urlRequest(with url: URL) -> URLRequest {
         var request = URLRequest(url: url)
-        request.allHTTPHeaderFields = headers
+        request.allHTTPHeaderFields = self.headers
         request.cachePolicy = .reloadIgnoringCacheData
         return request
     }
@@ -109,7 +109,7 @@ class ImageDownloader: NSObject, ReentrantImageDownloader, URLSessionDataDelegat
             return
         }
         operation.urlSession?(session, task: task, didCompleteWithError: error)
-        accessQueue.async {
+        self.accessQueue.async {
             self.operations[url] = nil
         }
     }

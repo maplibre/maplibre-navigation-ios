@@ -30,71 +30,71 @@ open class BottomBannerView: UIView {
     
     var congestionLevel: CongestionLevel = .unknown {
         didSet {
-            switch congestionLevel {
+            switch self.congestionLevel {
             case .unknown:
-                timeRemainingLabel.textColor = timeRemainingLabel.trafficUnknownColor
+                self.timeRemainingLabel.textColor = self.timeRemainingLabel.trafficUnknownColor
             case .low:
-                timeRemainingLabel.textColor = timeRemainingLabel.trafficLowColor
+                self.timeRemainingLabel.textColor = self.timeRemainingLabel.trafficLowColor
             case .moderate:
-                timeRemainingLabel.textColor = timeRemainingLabel.trafficModerateColor
+                self.timeRemainingLabel.textColor = self.timeRemainingLabel.trafficModerateColor
             case .heavy:
-                timeRemainingLabel.textColor = timeRemainingLabel.trafficHeavyColor
+                self.timeRemainingLabel.textColor = self.timeRemainingLabel.trafficHeavyColor
             case .severe:
-                timeRemainingLabel.textColor = timeRemainingLabel.trafficSevereColor
+                self.timeRemainingLabel.textColor = self.timeRemainingLabel.trafficSevereColor
             }
         }
     }
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        commonInit()
+        self.commonInit()
     }
     
     public required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
-        commonInit()
+        self.commonInit()
     }
     
     func commonInit() {
-        dateFormatter.timeStyle = .short
-        dateComponentsFormatter.allowedUnits = [.hour, .minute]
-        dateComponentsFormatter.unitsStyle = .abbreviated
+        self.dateFormatter.timeStyle = .short
+        self.dateComponentsFormatter.allowedUnits = [.hour, .minute]
+        self.dateComponentsFormatter.unitsStyle = .abbreviated
         
         setupViews()
         
-        cancelButton.addTarget(self, action: #selector(BottomBannerView.cancel(_:)), for: .touchUpInside)
+        self.cancelButton.addTarget(self, action: #selector(BottomBannerView.cancel(_:)), for: .touchUpInside)
     }
     
     @IBAction func cancel(_ sender: Any) {
-        delegate?.didCancel()
+        self.delegate?.didCancel()
     }
     
     override open func prepareForInterfaceBuilder() {
         super.prepareForInterfaceBuilder()
-        timeRemainingLabel.text = "22 min"
-        distanceRemainingLabel.text = "4 mi"
-        arrivalTimeLabel.text = "10:09"
+        self.timeRemainingLabel.text = "22 min"
+        self.distanceRemainingLabel.text = "4 mi"
+        self.arrivalTimeLabel.text = "10:09"
     }
     
     func updateETA(routeProgress: RouteProgress) {
         guard let arrivalDate = NSCalendar.current.date(byAdding: .second, value: Int(routeProgress.durationRemaining), to: Date()) else { return }
-        arrivalTimeLabel.text = dateFormatter.string(from: arrivalDate)
+        self.arrivalTimeLabel.text = self.dateFormatter.string(from: arrivalDate)
 
         if routeProgress.durationRemaining < 5 {
-            distanceRemainingLabel.text = nil
+            self.distanceRemainingLabel.text = nil
         } else {
-            distanceRemainingLabel.text = distanceFormatter.string(from: routeProgress.distanceRemaining)
+            self.distanceRemainingLabel.text = self.distanceFormatter.string(from: routeProgress.distanceRemaining)
         }
 
-        dateComponentsFormatter.unitsStyle = routeProgress.durationRemaining < 3600 ? .short : .abbreviated
+        self.dateComponentsFormatter.unitsStyle = routeProgress.durationRemaining < 3600 ? .short : .abbreviated
 
         if let hardcodedTime = dateComponentsFormatter.string(from: 61), routeProgress.durationRemaining < 60 {
-            timeRemainingLabel.text = String.localizedStringWithFormat(NSLocalizedString("LESS_THAN", bundle: .mapboxNavigation, value: "<%@", comment: "Format string for a short distance or time less than a minimum threshold; 1 = duration remaining"), hardcodedTime)
+            self.timeRemainingLabel.text = String.localizedStringWithFormat(NSLocalizedString("LESS_THAN", bundle: .mapboxNavigation, value: "<%@", comment: "Format string for a short distance or time less than a minimum threshold; 1 = duration remaining"), hardcodedTime)
         } else {
-            timeRemainingLabel.text = dateComponentsFormatter.string(from: routeProgress.durationRemaining)
+            self.timeRemainingLabel.text = self.dateComponentsFormatter.string(from: routeProgress.durationRemaining)
         }
         
         guard let congestionForRemainingLeg = routeProgress.averageCongestionLevelRemainingOnLeg else { return }
-        congestionLevel = congestionForRemainingLeg
+        self.congestionLevel = congestionForRemainingLeg
     }
 }

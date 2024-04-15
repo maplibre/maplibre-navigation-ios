@@ -18,7 +18,7 @@ class ImageRepositoryTests: XCTestCase {
         ImageLoadingURLProtocolSpy.reset()
 
         let semaphore = DispatchSemaphore(value: 0)
-        repository.resetImageCache {
+        self.repository.resetImageCache {
             semaphore.signal()
         }
         let semaphoreResult = semaphore.wait(timeout: XCTestCase.NavigationTests.timeout)
@@ -34,12 +34,12 @@ class ImageRepositoryTests: XCTestCase {
         let fakeURL = URL(string: "http://an.image.url/\(imageName)")!
 
         ImageLoadingURLProtocolSpy.registerData(ShieldImage.i280.image.pngData()!, forURL: fakeURL)
-        XCTAssertNil(repository.cachedImageForKey(imageName))
+        XCTAssertNil(self.repository.cachedImageForKey(imageName))
 
         var imageReturned: UIImage? = nil
         let semaphore = DispatchSemaphore(value: 0)
 
-        repository.imageWithURL(fakeURL, cacheKey: imageName) { image in
+        self.repository.imageWithURL(fakeURL, cacheKey: imageName) { image in
             imageReturned = image
             semaphore.signal()
         }
@@ -55,12 +55,12 @@ class ImageRepositoryTests: XCTestCase {
         let imageName = "1.png"
         let fakeURL = URL(string: "http://an.image.url/\(imageName)")!
 
-        repository.storeImage(ShieldImage.i280.image, forKey: imageName, toDisk: false)
+        self.repository.storeImage(ShieldImage.i280.image, forKey: imageName, toDisk: false)
 
         var imageReturned: UIImage? = nil
         let semaphore = DispatchSemaphore(value: 0)
 
-        repository.imageWithURL(fakeURL, cacheKey: imageName) { image in
+        self.repository.imageWithURL(fakeURL, cacheKey: imageName) { image in
             imageReturned = image
             semaphore.signal()
         }

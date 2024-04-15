@@ -15,7 +15,7 @@ class CoreFeedbackEvent: Hashable {
     }
     
     func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
+        hasher.combine(self.id)
     }
     
     static func == (lhs: CoreFeedbackEvent, rhs: CoreFeedbackEvent) -> Bool {

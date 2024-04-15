@@ -11,7 +11,7 @@ class DirectionsSpy: Directions {
     }
     
     override func calculate(_ options: RouteOptions, completionHandler: @escaping Directions.RouteCompletionHandler) -> URLSessionDataTask {
-        lastCalculateOptionsCompletion = completionHandler
+        self.lastCalculateOptionsCompletion = completionHandler
         return DummyURLSessionDataTask()
     }
     
@@ -30,6 +30,6 @@ class DirectionsSpy: Directions {
     }
     
     public func reset() {
-        lastCalculateOptionsCompletion = nil
+        self.lastCalculateOptionsCompletion = nil
     }
 }

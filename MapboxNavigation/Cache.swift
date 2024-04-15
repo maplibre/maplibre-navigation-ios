@@ -44,8 +44,8 @@ class FileCache {
     var fileManager: FileManager?
 
     init() {
-        diskAccessQueue.sync {
-            fileManager = FileManager()
+        self.diskAccessQueue.sync {
+            self.fileManager = FileManager()
         }
     }
 
@@ -58,7 +58,7 @@ class FileCache {
             return
         }
 
-        diskAccessQueue.async {
+        self.diskAccessQueue.async {
             self.createCacheDirIfNeeded(self.diskCacheURL, fileManager: fileManager)
             let cacheURL = self.cacheURLWithKey(key)
 
@@ -80,7 +80,7 @@ class FileCache {
         }
 
         do {
-            return try Data(contentsOf: cacheURLWithKey(key))
+            return try Data(contentsOf: self.cacheURLWithKey(key))
         } catch {
             return nil
         }
@@ -94,8 +94,8 @@ class FileCache {
             return
         }
 
-        let cacheURL = diskCacheURL
-        diskAccessQueue.async {
+        let cacheURL = self.diskCacheURL
+        self.diskAccessQueue.async {
             do {
                 try fileManager.removeItem(at: cacheURL)
             } catch {
@@ -109,13 +109,13 @@ class FileCache {
     }
 
     func cachePathWithKey(_ key: String) -> String {
-        let cacheKey = cacheKeyForKey(key)
-        return cacheURLWithKey(cacheKey).absoluteString
+        let cacheKey = self.cacheKeyForKey(key)
+        return self.cacheURLWithKey(cacheKey).absoluteString
     }
 
     func cacheURLWithKey(_ key: String) -> URL {
-        let cacheKey = cacheKeyForKey(key)
-        return diskCacheURL.appendingPathComponent(cacheKey)
+        let cacheKey = self.cacheKeyForKey(key)
+        return self.diskCacheURL.appendingPathComponent(cacheKey)
     }
 
     func cacheKeyForKey(_ key: String) -> String {

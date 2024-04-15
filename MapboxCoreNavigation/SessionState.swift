@@ -39,22 +39,22 @@ struct SessionState {
     
     public mutating func reportChange(to orientation: UIDeviceOrientation) {
         if orientation.isPortrait {
-            timeSpentInLandscape += abs(lastTimeInPortrait.timeIntervalSinceNow)
-            lastTimeInPortrait = Date()
+            self.timeSpentInLandscape += abs(self.lastTimeInPortrait.timeIntervalSinceNow)
+            self.lastTimeInPortrait = Date()
         } else if orientation.isLandscape {
-            timeSpentInPortrait += abs(lastTimeInLandscape.timeIntervalSinceNow)
-            lastTimeInLandscape = Date()
+            self.timeSpentInPortrait += abs(self.lastTimeInLandscape.timeIntervalSinceNow)
+            self.lastTimeInLandscape = Date()
         }
     }
     
     public mutating func reportChange(to applicationState: UIApplication.State) {
         if applicationState == .active {
-            timeSpentInForeground += abs(lastTimeInBackground.timeIntervalSinceNow)
+            self.timeSpentInForeground += abs(self.lastTimeInBackground.timeIntervalSinceNow)
             
-            lastTimeInForeground = Date()
+            self.lastTimeInForeground = Date()
         } else if applicationState == .background {
-            timeSpentInBackground += abs(lastTimeInForeground.timeIntervalSinceNow)
-            lastTimeInBackground = Date()
+            self.timeSpentInBackground += abs(self.lastTimeInForeground.timeIntervalSinceNow)
+            self.lastTimeInBackground = Date()
         }
     }
 }
@@ -68,13 +68,13 @@ class FixedLengthQueue<T> {
     }
     
     public func push(_ obj: T) {
-        objects.append(obj)
-        if objects.count == length {
-            objects.remove(at: 0)
+        self.objects.append(obj)
+        if self.objects.count == self.length {
+            self.objects.remove(at: 0)
         }
     }
     
     public var allObjects: [T] {
-        Array(objects)
+        Array(self.objects)
     }
 }

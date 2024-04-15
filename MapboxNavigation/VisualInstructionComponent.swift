@@ -10,7 +10,7 @@ extension VisualInstructionComponent {
             guard let exitCode = text else { return nil }
             return "exit-" + exitCode + "-\(VisualInstructionComponent.scale)"
         case .image:
-            guard let imageURL else { return genericCacheKey }
+            guard let imageURL else { return self.genericCacheKey }
             return "\(imageURL.absoluteString)-\(VisualInstructionComponent.scale)"
         case .text, .delimiter:
             return nil

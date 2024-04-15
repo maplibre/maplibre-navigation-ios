@@ -18,7 +18,7 @@ private class SimulatedLocation: CLLocation {
     var turnPenalty: Double = 0
     
     override var description: String {
-        "\(super.description) \(turnPenalty)"
+        "\(super.description) \(self.turnPenalty)"
     }
 }
 
@@ -42,23 +42,23 @@ open class SimulatedLocationManager: NavigationLocationManager {
     @objc public var speedMultiplier: Double = 1
     
     @objc override open var location: CLLocation? {
-        currentLocation
+        self.currentLocation
     }
     
     var route: Route? {
         didSet {
-            reset()
+            self.reset()
         }
     }
     
     override public func copy(with zone: NSZone? = nil) -> Any {
         let copy = SimulatedLocationManager(route: route!)
-        copy.currentDistance = currentDistance
-        copy.currentLocation = currentLocation
-        copy.currentSpeed = currentSpeed
-        copy.locations = locations
-        copy.routeLine = routeLine
-        copy.speedMultiplier = speedMultiplier
+        copy.currentDistance = self.currentDistance
+        copy.currentLocation = self.currentLocation
+        copy.currentSpeed = self.currentSpeed
+        copy.locations = self.locations
+        copy.routeLine = self.routeLine
+        copy.speedMultiplier = self.speedMultiplier
         return copy
     }
     
@@ -72,7 +72,7 @@ open class SimulatedLocationManager: NavigationLocationManager {
      */
     @objc public init(route: Route) {
         super.init()
-        initializeSimulatedLocationManager(for: route, currentDistance: 0, currentSpeed: 30)
+        self.initializeSimulatedLocationManager(for: route, currentDistance: 0, currentSpeed: 30)
     }
 
     /**
@@ -83,8 +83,8 @@ open class SimulatedLocationManager: NavigationLocationManager {
      */
     @objc public init(routeProgress: RouteProgress) {
         super.init()
-        let currentDistance = calculateCurrentDistance(routeProgress.distanceTraveled)
-        initializeSimulatedLocationManager(for: routeProgress.route, currentDistance: currentDistance, currentSpeed: 0)
+        let currentDistance = self.calculateCurrentDistance(routeProgress.distanceTraveled)
+        self.initializeSimulatedLocationManager(for: routeProgress.route, currentDistance: currentDistance, currentSpeed: 0)
     }
 
     private func initializeSimulatedLocationManager(for route: Route, currentDistance: CLLocationDistance, currentSpeed: CLLocationSpeed) {
@@ -92,23 +92,23 @@ open class SimulatedLocationManager: NavigationLocationManager {
         self.currentDistance = currentDistance
         self.route = route
         
-        NotificationCenter.default.addObserver(self, selector: #selector(didReroute(_:)), name: .routeControllerDidReroute, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(progressDidChange(_:)), name: .routeControllerProgressDidChange, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.didReroute(_:)), name: .routeControllerDidReroute, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.progressDidChange(_:)), name: .routeControllerProgressDidChange, object: nil)
     }
     
     private func reset() {
         if let coordinates = route?.coordinates {
-            routeLine = coordinates
-            locations = coordinates.simulatedLocationsWithTurnPenalties()
+            self.routeLine = coordinates
+            self.locations = coordinates.simulatedLocationsWithTurnPenalties()
         }
     }
     
     private func calculateCurrentDistance(_ distance: CLLocationDistance) -> CLLocationDistance {
-        distance + (currentSpeed * speedMultiplier)
+        distance + (self.currentSpeed * self.speedMultiplier)
     }
     
     @objc private func progressDidChange(_ notification: Notification) {
-        routeProgress = notification.userInfo![RouteControllerNotificationUserInfoKey.routeProgressKey] as? RouteProgress
+        self.routeProgress = notification.userInfo![RouteControllerNotificationUserInfoKey.routeProgressKey] as? RouteProgress
     }
     
     @objc private func didReroute(_ notification: Notification) {
@@ -116,7 +116,7 @@ open class SimulatedLocationManager: NavigationLocationManager {
             return
         }
         
-        route = routeController.routeProgress.route
+        self.route = routeController.routeProgress.route
     }
     
     deinit {
@@ -125,7 +125,7 @@ open class SimulatedLocationManager: NavigationLocationManager {
     }
     
     override open func startUpdatingLocation() {
-        DispatchQueue.main.async(execute: tick)
+        DispatchQueue.main.async(execute: self.tick)
     }
     
     override open func stopUpdatingLocation() {
@@ -135,7 +135,7 @@ open class SimulatedLocationManager: NavigationLocationManager {
     }
     
     @objc fileprivate func tick() {
-        NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(tick), object: nil)
+        NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(self.tick), object: nil)
         
         let polyline = Polyline(routeLine)
         
@@ -147,7 +147,7 @@ open class SimulatedLocationManager: NavigationLocationManager {
         guard let lookAheadCoordinate = polyline.coordinateFromStart(distance: currentDistance + 10) else { return }
         guard let closestCoordinate = polyline.closestCoordinate(to: newCoordinate) else { return }
         
-        let closestLocation = locations[closestCoordinate.index]
+        let closestLocation = self.locations[closestCoordinate.index]
         let distanceToClosest = closestLocation.distance(from: CLLocation(newCoordinate))
         
         let distance = min(max(distanceToClosest, 10), safeDistance)
@@ -160,9 +160,9 @@ open class SimulatedLocationManager: NavigationLocationManager {
            let nextCoordinateOnRoute = coordinates.after(element: coordinates[closestCoordinateOnRoute.index]),
            let time = expectedSegmentTravelTimes.optional[closestCoordinateOnRoute.index] {
             let distance = coordinates[closestCoordinateOnRoute.index].distance(to: nextCoordinateOnRoute)
-            currentSpeed = max(distance / time, 2)
+            self.currentSpeed = max(distance / time, 2)
         } else {
-            currentSpeed = calculateCurrentSpeed(distance: distance, coordinatesNearby: coordinatesNearby, closestLocation: closestLocation)
+            self.currentSpeed = self.calculateCurrentSpeed(distance: distance, coordinatesNearby: coordinatesNearby, closestLocation: closestLocation)
         }
         
         let location = CLLocation(coordinate: newCoordinate,
@@ -170,14 +170,14 @@ open class SimulatedLocationManager: NavigationLocationManager {
                                   horizontalAccuracy: horizontalAccuracy,
                                   verticalAccuracy: verticalAccuracy,
                                   course: newCoordinate.direction(to: lookAheadCoordinate).wrap(min: 0, max: 360),
-                                  speed: currentSpeed,
+                                  speed: self.currentSpeed,
                                   timestamp: Date())
-        currentLocation = location
+        self.currentLocation = location
         lastKnownLocation = location
         
-        delegate?.locationManager?(self, didUpdateLocations: [currentLocation])
-        currentDistance = calculateCurrentDistance(currentDistance)
-        perform(#selector(tick), with: nil, afterDelay: 1)
+        delegate?.locationManager?(self, didUpdateLocations: [self.currentLocation])
+        self.currentDistance = self.calculateCurrentDistance(self.currentDistance)
+        perform(#selector(self.tick), with: nil, afterDelay: 1)
     }
     
     private func calculateCurrentSpeed(distance: CLLocationDistance, coordinatesNearby: [CLLocationCoordinate2D]? = nil, closestLocation: SimulatedLocation) -> CLLocationSpeed {
@@ -213,7 +213,7 @@ private extension Array where Element: Hashable {
     struct OptionalSubscript {
         var elements: [Element]
         subscript(index: Int) -> Element? {
-            index < elements.count ? elements[index] : nil
+            index < self.elements.count ? self.elements[index] : nil
         }
     }
     

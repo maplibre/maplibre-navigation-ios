@@ -54,15 +54,15 @@ public class StepsViewController: UIViewController {
 
     @discardableResult
     func rebuildDataSourceIfNecessary() -> Bool {
-        let legIndex = routeProgress.legIndex
-        let stepIndex = routeProgress.currentLegProgress.stepIndex
-        let didProcessCurrentStep = previousLegIndex == legIndex && previousStepIndex == stepIndex
+        let legIndex = self.routeProgress.legIndex
+        let stepIndex = self.routeProgress.currentLegProgress.stepIndex
+        let didProcessCurrentStep = self.previousLegIndex == legIndex && self.previousStepIndex == stepIndex
 
         guard !didProcessCurrentStep else { return false }
 
-        sections.removeAll()
+        self.sections.removeAll()
 
-        let currentLeg = routeProgress.currentLeg
+        let currentLeg = self.routeProgress.currentLeg
 
         // Add remaining steps for current leg
         var section = [RouteStep]()
@@ -74,29 +74,29 @@ public class StepsViewController: UIViewController {
         }
 
         if !section.isEmpty {
-            sections.append(section)
+            self.sections.append(section)
         }
 
         // Include all steps on any future legs
-        if !routeProgress.isFinalLeg {
-            for item in routeProgress.route.legs.suffix(from: routeProgress.legIndex + 1) {
+        if !self.routeProgress.isFinalLeg {
+            for item in self.routeProgress.route.legs.suffix(from: self.routeProgress.legIndex + 1) {
                 var steps = item.steps
                 // Don't include the last step, it includes nothing
                 _ = steps.popLast()
-                sections.append(steps)
+                self.sections.append(steps)
             }
         }
 
-        previousStepIndex = stepIndex
-        previousLegIndex = legIndex
+        self.previousStepIndex = stepIndex
+        self.previousLegIndex = legIndex
 
         return true
     }
 
     override open func viewDidLoad() {
         super.viewDidLoad()
-        setupViews()
-        rebuildDataSourceIfNecessary()
+        self.setupViews()
+        self.rebuildDataSourceIfNecessary()
 
         NotificationCenter.default.addObserver(self, selector: #selector(StepsViewController.progressDidChange(_:)), name: .routeControllerProgressDidChange, object: nil)
     }
@@ -106,8 +106,8 @@ public class StepsViewController: UIViewController {
     }
 
     @objc func progressDidChange(_ notification: Notification) {
-        if rebuildDataSourceIfNecessary() {
-            tableView.reloadData()
+        if self.rebuildDataSourceIfNecessary() {
+            self.tableView.reloadData()
         }
     }
 
@@ -173,7 +173,7 @@ public class StepsViewController: UIViewController {
         tableView.bottomAnchor.constraint(equalTo: dismissButton.topAnchor).isActive = true
         tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
 
-        tableView.register(StepTableViewCell.self, forCellReuseIdentifier: cellId)
+        tableView.register(StepTableViewCell.self, forCellReuseIdentifier: self.cellId)
     }
 
     /**
@@ -205,14 +205,14 @@ public class StepsViewController: UIViewController {
     }
 
     @IBAction func tappedDismiss(_ sender: Any) {
-        delegate?.didDismissStepsViewController(self)
+        self.delegate?.didDismissStepsViewController(self)
     }
 
     /**
      Dismisses the `StepsViewController`.
      */
     public func dismiss(completion: CompletionHandler? = nil) {
-        slideUpAnimation {
+        self.slideUpAnimation {
             self.willMove(toParent: nil)
             self.view.removeFromSuperview()
             self.removeFromParent()
@@ -231,21 +231,21 @@ extension StepsViewController: UITableViewDelegate {
         if indexPath.section > 0 {
             stepIndex = indexPath.row
         } else {
-            stepIndex = indexPath.row + routeProgress.currentLegProgress.stepIndex
+            stepIndex = indexPath.row + self.routeProgress.currentLegProgress.stepIndex
             // For the current leg, we need to know the upcoming step.
-            stepIndex += indexPath.row + 1 > sections[indexPath.section].count ? 0 : 1
+            stepIndex += indexPath.row + 1 > self.sections[indexPath.section].count ? 0 : 1
         }
-        delegate?.stepsViewController?(self, didSelect: indexPath.section, stepIndex: stepIndex, cell: cell)
+        self.delegate?.stepsViewController?(self, didSelect: indexPath.section, stepIndex: stepIndex, cell: cell)
     }
 }
 
 extension StepsViewController: UITableViewDataSource {
     public func numberOfSections(in tableView: UITableView) -> Int {
-        sections.count
+        self.sections.count
     }
 
     public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        let steps = sections[section]
+        let steps = self.sections[section]
         return steps.count
     }
 
@@ -254,19 +254,19 @@ extension StepsViewController: UITableViewDataSource {
     }
 
     public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: cellId, for: indexPath) as! StepTableViewCell
+        let cell = tableView.dequeueReusableCell(withIdentifier: self.cellId, for: indexPath) as! StepTableViewCell
         return cell
     }
 
     public func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        updateCell(cell as! StepTableViewCell, at: indexPath)
+        self.updateCell(cell as! StepTableViewCell, at: indexPath)
     }
 
     func updateCell(_ cell: StepTableViewCell, at indexPath: IndexPath) {
         cell.instructionsView.primaryLabel.viewForAvailableBoundsCalculation = cell
         cell.instructionsView.secondaryLabel.viewForAvailableBoundsCalculation = cell
 
-        let step = sections[indexPath.section][indexPath.row]
+        let step = self.sections[indexPath.section][indexPath.row]
 
         if let instructions = step.instructionsDisplayedAlongStep?.last {
             cell.instructionsView.update(for: instructions)
@@ -277,7 +277,7 @@ extension StepsViewController: UITableViewDataSource {
         cell.instructionsView.stepListIndicatorView.isHidden = true
 
         // Hide cell separator if it’s the last row in a section
-        let isLastRowInSection = indexPath.row == sections[indexPath.section].count - 1
+        let isLastRowInSection = indexPath.row == self.sections[indexPath.section].count - 1
         cell.separatorView.isHidden = isLastRowInSection
     }
 
@@ -286,7 +286,7 @@ extension StepsViewController: UITableViewDataSource {
             return nil
         }
 
-        let leg = routeProgress.route.legs[section]
+        let leg = self.routeProgress.route.legs[section]
         let sourceName = leg.source.name
         let destinationName = leg.destination.name
         let majorWays = leg.name.components(separatedBy: ", ")
@@ -314,12 +314,12 @@ open class StepTableViewCell: UITableViewCell {
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        commonInit()
+        self.commonInit()
     }
 
     public required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
-        commonInit()
+        self.commonInit()
     }
 
     func commonInit() {
@@ -350,7 +350,7 @@ open class StepTableViewCell: UITableViewCell {
 
     override open func prepareForReuse() {
         super.prepareForReuse()
-        instructionsView.update(for: nil)
+        self.instructionsView.update(for: nil)
     }
 }
 

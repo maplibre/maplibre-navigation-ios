@@ -20,7 +20,7 @@ extension VisualInstruction {
             mv.scale = UIScreen.main.scale
             mv.visualInstruction = self
             let image = mv.imageRepresentation
-            return shouldFlipImage(side: side) ? image?.withHorizontallyFlippedOrientation() : image
+            return self.shouldFlipImage(side: side) ? image?.withHorizontallyFlippedOrientation() : image
         }
         guard blackAndWhiteManeuverIcons.count == 2 else { return nil }
         return CPImageSet(lightContentImage: blackAndWhiteManeuverIcons[1], darkContentImage: blackAndWhiteManeuverIcons[0])

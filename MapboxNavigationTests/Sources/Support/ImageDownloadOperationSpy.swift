@@ -23,14 +23,14 @@ class ImageDownloadOperationSpy: Operation, ImageDownload {
     }
 
     static func reset() {
-        operations.removeAll()
+        self.operations.removeAll()
     }
 
     /**
      * Retrieve an operation spy instance for the given URL, which can then be used to inspect and/or execute completion handlers
      */
     static func operationForURL(_ URL: URL) -> ImageDownloadOperationSpy? {
-        operations[URL]
+        self.operations[URL]
     }
 
     func addCompletion(_ completion: @escaping ImageDownloadCompletionBlock) {
@@ -39,7 +39,7 @@ class ImageDownloadOperationSpy: Operation, ImageDownload {
             // Sadly we need to tick the run loop here to deal with the fact that the underlying implementations hop between queues. This has a similar effect to using XCTestCase's async expectations.
             RunLoop.current.run(until: Date())
         }
-        completionBlocks.append(wrappedCompletion)
+        self.completionBlocks.append(wrappedCompletion)
     }
 
     func shouldDecompressImages() -> Bool {
@@ -55,7 +55,7 @@ class ImageDownloadOperationSpy: Operation, ImageDownload {
     func setCredential(_ value: URLCredential?) {}
 
     func fireAllCompletions(_ image: UIImage, data: Data?, error: Error?) {
-        for completion in completionBlocks {
+        for completion in self.completionBlocks {
             completion(image, data, error)
         }
     }

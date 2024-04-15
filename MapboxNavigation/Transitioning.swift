@@ -20,7 +20,7 @@ extension DismissAnimator: UIViewControllerAnimatedTransitioning {
         let height = fromVC.view.bounds.height - toVC.view.frame.minY
         let finalFrame = CGRect(origin: point, size: CGSize(width: fromVC.view.bounds.width, height: height))
         
-        UIView.animate(withDuration: transitionDuration(using: transitionContext), delay: 0, options: [.curveEaseInOut], animations: {
+        UIView.animate(withDuration: self.transitionDuration(using: transitionContext), delay: 0, options: [.curveEaseInOut], animations: {
             fromVC.view.frame = finalFrame
             containerView.backgroundColor = .clear
         }, completion: { _ in
@@ -56,7 +56,7 @@ extension PresentAnimator: UIViewControllerAnimatedTransitioning {
         let finalFrame = CGRect(origin: CGPoint(x: 0, y: fromVC.view.bounds.height - height),
                                 size: CGSize(width: fromVC.view.bounds.width, height: height))
         
-        UIView.animate(withDuration: transitionDuration(using: transitionContext), delay: 0, options: [.curveEaseInOut], animations: {
+        UIView.animate(withDuration: self.transitionDuration(using: transitionContext), delay: 0, options: [.curveEaseInOut], animations: {
             toView.frame = finalFrame
             containerView.backgroundColor = UIColor.black.withAlphaComponent(0.5)
         }, completion: { _ in
@@ -84,7 +84,7 @@ extension DismissDraggable where Self: UIViewController {
 
 private extension UIViewController {
     @objc func handleDismissPan(_ sender: UIPanGestureRecognizer) {
-        handlePan(sender)
+        self.handlePan(sender)
     }
     
     func handlePan(_ sender: UIPanGestureRecognizer) {

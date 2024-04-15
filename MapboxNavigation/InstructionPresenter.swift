@@ -18,7 +18,7 @@ class InstructionPresenter {
         self.instruction = instruction
         self.dataSource = dataSource
         self.imageRepository = imageRepository
-        onShieldDownload = downloadCompletion
+        self.onShieldDownload = downloadCompletion
     }
 
     typealias ImageDownloadCompletion = (UIImage?) -> Void
@@ -30,7 +30,7 @@ class InstructionPresenter {
     
     func attributedText() -> NSAttributedString {
         let string = NSMutableAttributedString()
-        fittedAttributedComponents().forEach { string.append($0) }
+        self.fittedAttributedComponents().forEach { string.append($0) }
         return string
     }
     
@@ -52,7 +52,7 @@ class InstructionPresenter {
             guard component.component.type == .text else { continue }
             guard let abbreviation = component.component.abbreviation else { continue }
             
-            attributedPairs.attributedStrings[component.index] = NSAttributedString(string: joinChar + abbreviation, attributes: attributes(for: source))
+            attributedPairs.attributedStrings[component.index] = NSAttributedString(string: joinChar + abbreviation, attributes: self.attributes(for: source))
             let newWidth: CGFloat = attributedPairs.attributedStrings.map { $0.size() }.reduce(.zero, +).width
             
             if newWidth <= availableBounds.width {
@@ -133,7 +133,7 @@ class InstructionPresenter {
     
     func attributedString(forGenericShield component: VisualInstructionComponent, dataSource: DataSource) -> NSAttributedString? {
         guard component.type == .image, let text = component.text else { return nil }
-        return genericShield(text: text, component: component, dataSource: dataSource)
+        return self.genericShield(text: text, component: component, dataSource: dataSource)
     }
     
     func attributedString(forShieldComponent shield: VisualInstructionComponent, repository: ImageRepository, dataSource: DataSource, onImageDownload: @escaping ImageDownloadCompletion) -> NSAttributedString? {
@@ -141,11 +141,11 @@ class InstructionPresenter {
         
         // If we have the shield already cached, use that.
         if let cachedImage = repository.cachedImageForKey(shieldKey) {
-            return attributedString(withFont: dataSource.font, shieldImage: cachedImage)
+            return self.attributedString(withFont: dataSource.font, shieldImage: cachedImage)
         }
         
         // Let's download the shield
-        shieldImageForComponent(shield, in: repository, height: dataSource.shieldHeight, completion: onImageDownload)
+        self.shieldImageForComponent(shield, in: repository, height: dataSource.shieldHeight, completion: onImageDownload)
         
         // Return nothing in the meantime, triggering downstream behavior (generic shield or text)
         return nil
@@ -153,7 +153,7 @@ class InstructionPresenter {
     
     func attributedString(forTextComponent component: VisualInstructionComponent, dataSource: DataSource) -> NSAttributedString? {
         guard let text = component.text else { return nil }
-        return NSAttributedString(string: text, attributes: attributes(for: dataSource))
+        return NSAttributedString(string: text, attributes: self.attributes(for: dataSource))
     }
     
     private func shieldImageForComponent(_ component: VisualInstructionComponent, in repository: ImageRepository, height: CGFloat, completion: @escaping ImageDownloadCompletion) {
@@ -165,7 +165,7 @@ class InstructionPresenter {
     }
 
     private func instructionHasDownloadedAllShields() -> Bool {
-        let textComponents = instruction.components.compactMap { $0 as? VisualInstructionComponent }
+        let textComponents = self.instruction.components.compactMap { $0 as? VisualInstructionComponent }
         guard !textComponents.isEmpty else { return false }
         
         for component in textComponents {
@@ -173,7 +173,7 @@ class InstructionPresenter {
                 continue
             }
 
-            if imageRepository.cachedImageForKey(key) == nil {
+            if self.imageRepository.cachedImageForKey(key) == nil {
                 return false
             }
         }
@@ -203,7 +203,7 @@ class InstructionPresenter {
         } else {
             let view = GenericRouteShield(pointSize: dataSource.font.pointSize, text: text)
             guard let image = takeSnapshot(on: view) else { return nil }
-            imageRepository.storeImage(image, forKey: key, toDisk: false)
+            self.imageRepository.storeImage(image, forKey: key, toDisk: false)
             attachment.image = image
         }
         
@@ -224,7 +224,7 @@ class InstructionPresenter {
         } else {
             let view = ExitView(pointSize: dataSource.font.pointSize, side: side, text: text)
             guard let image = takeSnapshot(on: view) else { return nil }
-            imageRepository.storeImage(image, forKey: key, toDisk: false)
+            self.imageRepository.storeImage(image, forKey: key, toDisk: false)
             attachment.image = image
         }
         
@@ -295,7 +295,7 @@ class RoadNameLabelAttachment: TextInstruction {
         self.text = text
         self.color = color
         self.scale = scale
-        self.image = compositeImage ?? image
+        self.image = self.compositeImage ?? image
     }
 }
 

@@ -36,7 +36,7 @@ public class NavigationSettings: NSObject {
     @objc public dynamic var distanceUnit: LengthFormatter.Unit = Locale.current.usesMetric ? .kilometer : .mile
     
     var usesMetric: Bool {
-        switch distanceUnit {
+        switch self.distanceUnit {
         case .kilometer:
             true
         case .mile:
@@ -61,7 +61,7 @@ public class NavigationSettings: NSObject {
     
     override init() {
         super.init()
-        for property in properties {
+        for property in self.properties {
             guard let key = property.label else { continue }
             let val = UserDefaults.standard.object(forKey: key.prefixed) ?? value(forKey: key)
             setValue(val, forKey: key)
@@ -79,7 +79,7 @@ public class NavigationSettings: NSObject {
     override public func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey: Any]?, context: UnsafeMutableRawPointer?) {
         var found = false
         
-        for property in properties {
+        for property in self.properties {
             guard let key = property.label else { continue }
             
             if key == keyPath {

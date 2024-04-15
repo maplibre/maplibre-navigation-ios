@@ -39,8 +39,8 @@ class LocationTests: XCTestCase {
     }
     
     func testSnappedLocation100MetersAlongRoute() {
-        let progress = setup.progress
-        let firstLocation = setup.firstLocation
+        let progress = self.setup.progress
+        let firstLocation = self.setup.firstLocation
         
         let initialHeadingOnFirstStep = progress.currentLegProgress.currentStep.finalHeading!
         let coordinateAlongFirstStep = firstLocation.coordinate.coordinate(at: 100, facing: initialHeadingOnFirstStep)
@@ -53,8 +53,8 @@ class LocationTests: XCTestCase {
     }
     
     func testInterpolatedCourse() {
-        let progress = setup.progress
-        let firstLocation = setup.firstLocation
+        let progress = self.setup.progress
+        let firstLocation = self.setup.firstLocation
         
         let calculatedCourse = firstLocation.interpolatedCourse(along: progress.currentLegProgress.currentStepProgress.step.coordinates!)!
         let initialHeadingOnFirstStep = progress.currentLegProgress.currentStepProgress.step.finalHeading!
@@ -62,8 +62,8 @@ class LocationTests: XCTestCase {
     }
 
     func testShouldSnap() {
-        let progress = setup.progress
-        let firstLocation = setup.firstLocation
+        let progress = self.setup.progress
+        let firstLocation = self.setup.firstLocation
         
         let initialHeadingOnFirstStep = progress.currentLegProgress.currentStepProgress.step.finalHeading!
         

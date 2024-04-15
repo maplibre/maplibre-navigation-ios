@@ -19,7 +19,7 @@ class RouteControllerTests: XCTestCase {
 
     lazy var dependencies: (routeController: RouteController, routeLocations: RouteLocations) = {
         let routeController = RouteController(along: initialRoute, directions: directionsClientSpy, locationManager: NavigationLocationManager())
-        routeController.delegate = delegate
+        routeController.delegate = self.delegate
 
         let legProgress: RouteLegProgress = routeController.routeProgress.currentLegProgress
 
@@ -57,21 +57,21 @@ class RouteControllerTests: XCTestCase {
     override func setUp() {
         super.setUp()
 
-        directionsClientSpy.reset()
-        delegate.reset()
+        self.directionsClientSpy.reset()
+        self.delegate.reset()
     }
 
     func testUserIsOnRoute() {
-        let navigation = dependencies.routeController
-        let firstLocation = dependencies.routeLocations.firstLocation
+        let navigation = self.dependencies.routeController
+        let firstLocation = self.dependencies.routeLocations.firstLocation
 
         navigation.locationManager(navigation.locationManager, didUpdateLocations: [firstLocation])
         XCTAssertTrue(navigation.userIsOnRoute(firstLocation), "User should be on route")
     }
 
     func testUserIsOffRoute() {
-        let navigation = dependencies.routeController
-        let firstLocation = dependencies.routeLocations.firstLocation
+        let navigation = self.dependencies.routeController
+        let firstLocation = self.dependencies.routeLocations.firstLocation
 
         let coordinateOffRoute = firstLocation.coordinate.coordinate(at: 100, facing: 90)
         let locationOffRoute = CLLocation(latitude: coordinateOffRoute.latitude, longitude: coordinateOffRoute.longitude)
@@ -80,8 +80,8 @@ class RouteControllerTests: XCTestCase {
     }
 
     func testAdvancingToFutureStepAndNotRerouting() {
-        let navigation = dependencies.routeController
-        let firstLocation = dependencies.routeLocations.firstLocation
+        let navigation = self.dependencies.routeController
+        let firstLocation = self.dependencies.routeLocations.firstLocation
         navigation.locationManager(navigation.locationManager, didUpdateLocations: [firstLocation])
         XCTAssertTrue(navigation.userIsOnRoute(firstLocation), "User should be on route")
         XCTAssertEqual(navigation.routeProgress.currentLegProgress.stepIndex, 0, "User is on first step")
@@ -95,15 +95,15 @@ class RouteControllerTests: XCTestCase {
     }
 
     func testSnappedLocation() {
-        let navigation = dependencies.routeController
-        let firstLocation = dependencies.routeLocations.firstLocation
+        let navigation = self.dependencies.routeController
+        let firstLocation = self.dependencies.routeLocations.firstLocation
         navigation.locationManager(navigation.locationManager, didUpdateLocations: [firstLocation])
         XCTAssertEqual(navigation.location!.coordinate, firstLocation.coordinate, "Check snapped location is working")
     }
     
     func testSnappedAtEndOfStepLocationWhenMovingSlowly() {
-        let navigation = dependencies.routeController
-        let firstLocation = dependencies.routeLocations.firstLocation
+        let navigation = self.dependencies.routeController
+        let firstLocation = self.dependencies.routeLocations.firstLocation
         
         navigation.locationManager(navigation.locationManager, didUpdateLocations: [firstLocation])
         XCTAssertEqual(navigation.location!.coordinate, firstLocation.coordinate, "Check snapped location is working")
@@ -120,8 +120,8 @@ class RouteControllerTests: XCTestCase {
     }
     
     func testSnappedAtEndOfStepLocationWhenCourseIsSimilar() {
-        let navigation = dependencies.routeController
-        let firstLocation = dependencies.routeLocations.firstLocation
+        let navigation = self.dependencies.routeController
+        let firstLocation = self.dependencies.routeLocations.firstLocation
         
         navigation.locationManager(navigation.locationManager, didUpdateLocations: [firstLocation])
         XCTAssertEqual(navigation.location!.coordinate, firstLocation.coordinate, "Check snapped location is working")
@@ -140,8 +140,8 @@ class RouteControllerTests: XCTestCase {
     }
 
     func testSnappedLocationForUnqualifiedLocation() {
-        let navigation = dependencies.routeController
-        let firstLocation = dependencies.routeLocations.firstLocation
+        let navigation = self.dependencies.routeController
+        let firstLocation = self.dependencies.routeLocations.firstLocation
         navigation.locationManager(navigation.locationManager, didUpdateLocations: [firstLocation])
         XCTAssertEqual(navigation.location!.coordinate, firstLocation.coordinate, "Check snapped location is working")
 
@@ -182,8 +182,8 @@ class RouteControllerTests: XCTestCase {
     }
 
     func testLocationShouldUseHeading() {
-        let navigation = dependencies.routeController
-        let firstLocation = dependencies.routeLocations.firstLocation
+        let navigation = self.dependencies.routeController
+        let firstLocation = self.dependencies.routeLocations.firstLocation
         navigation.locationManager(navigation.locationManager, didUpdateLocations: [firstLocation])
 
         XCTAssertEqual(navigation.location!.course, firstLocation.course, "Course should be using course")
@@ -201,8 +201,8 @@ class RouteControllerTests: XCTestCase {
     // MARK: - Events & Delegation
 
     func testReroutingFromALocationSendsEvents() {
-        let routeController = dependencies.routeController
-        let testLocation = dependencies.routeLocations.firstLocation
+        let routeController = self.dependencies.routeController
+        let testLocation = self.dependencies.routeLocations.firstLocation
 
         let willRerouteNotificationExpectation = expectation(forNotification: .routeControllerWillReroute, object: routeController) { notification -> Bool in
             let fromLocation = notification.userInfo![RouteControllerNotificationUserInfoKey.locationKey] as? CLLocation
@@ -225,16 +225,16 @@ class RouteControllerTests: XCTestCase {
 
         // MARK: it tells the delegate & posts a willReroute notification
 
-        XCTAssertTrue(delegate.recentMessages.contains("routeController(_:willRerouteFrom:)"))
+        XCTAssertTrue(self.delegate.recentMessages.contains("routeController(_:willRerouteFrom:)"))
         wait(for: [willRerouteNotificationExpectation], timeout: 0.1)
 
         // MARK: Upon rerouting successfully...
 
-        directionsClientSpy.fireLastCalculateCompletion(with: nil, routes: [alternateRoute], error: nil)
+        self.directionsClientSpy.fireLastCalculateCompletion(with: nil, routes: [self.alternateRoute], error: nil)
 
         // MARK: It tells the delegate & posts a didReroute notification
 
-        XCTAssertTrue(delegate.recentMessages.contains("routeController(_:didRerouteAlong:reason:)"))
+        XCTAssertTrue(self.delegate.recentMessages.contains("routeController(_:didRerouteAlong:reason:)"))
         wait(for: [didRerouteNotificationExpectation], timeout: 0.1)
 
         // MARK: On the next call to `locationManager(_, didUpdateLocations:)`
@@ -243,15 +243,15 @@ class RouteControllerTests: XCTestCase {
 
         // MARK: It tells the delegate & posts a routeProgressDidChange notification
 
-        XCTAssertTrue(delegate.recentMessages.contains("routeController(_:didUpdate:)"))
+        XCTAssertTrue(self.delegate.recentMessages.contains("routeController(_:didUpdate:)"))
         wait(for: [routeProgressDidChangeNotificationExpectation], timeout: 0.1)
     }
 
     func testGeneratingAnArrivalEvent() {
-        let routeController = dependencies.routeController
-        let firstLocation = dependencies.routeLocations.firstLocation
-        let penultimateLocation = dependencies.routeLocations.penultimateLocation
-        let lastLocation = dependencies.routeLocations.lastLocation
+        let routeController = self.dependencies.routeController
+        let firstLocation = self.dependencies.routeLocations.firstLocation
+        let penultimateLocation = self.dependencies.routeLocations.penultimateLocation
+        let lastLocation = self.dependencies.routeLocations.lastLocation
 
         // MARK: When navigation begins with a location update
 
@@ -272,14 +272,14 @@ class RouteControllerTests: XCTestCase {
 
         // MARK: It tells the delegate that the user did arrive
 
-        XCTAssertTrue(delegate.recentMessages.contains("routeController(_:didArriveAt:)"))
+        XCTAssertTrue(self.delegate.recentMessages.contains("routeController(_:didArriveAt:)"))
     }
     
     func testNoReroutesAfterArriving() {
-        let routeController = dependencies.routeController
-        let firstLocation = dependencies.routeLocations.firstLocation
-        let penultimateLocation = dependencies.routeLocations.penultimateLocation
-        let lastLocation = dependencies.routeLocations.lastLocation
+        let routeController = self.dependencies.routeController
+        let firstLocation = self.dependencies.routeLocations.firstLocation
+        let penultimateLocation = self.dependencies.routeLocations.penultimateLocation
+        let lastLocation = self.dependencies.routeLocations.lastLocation
 
         // MARK: When navigation begins with a location update
 
@@ -300,17 +300,17 @@ class RouteControllerTests: XCTestCase {
         
         // MARK: It tells the delegate that the user did arrive
 
-        XCTAssertTrue(delegate.recentMessages.contains("routeController(_:didArriveAt:)"))
+        XCTAssertTrue(self.delegate.recentMessages.contains("routeController(_:didArriveAt:)"))
         
         // Find a location that is very far off route
         let locationBeyondRoute = routeController.location!.coordinate.coordinate(at: 2000, facing: 0)
         routeController.locationManager(routeController.locationManager, didUpdateLocations: [CLLocation(latitude: locationBeyondRoute.latitude, longitude: locationBeyondRoute.latitude)])
         
         // Make sure configurable delegate is called
-        XCTAssertTrue(delegate.recentMessages.contains("routeController(_:shouldPreventReroutesWhenArrivingAt:)"))
+        XCTAssertTrue(self.delegate.recentMessages.contains("routeController(_:shouldPreventReroutesWhenArrivingAt:)"))
         
         // We should not reroute here because the user has arrived.
-        XCTAssertFalse(delegate.recentMessages.contains("routeController(_:didRerouteAlong:)"))
+        XCTAssertFalse(self.delegate.recentMessages.contains("routeController(_:didRerouteAlong:)"))
     }
 
     func testRouteControllerDoesNotHaveRetainCycle() {
@@ -329,7 +329,7 @@ class RouteControllerTests: XCTestCase {
         weak var subject: CLLocationManagerDelegate? = nil
         autoreleasepool {
             let locationManager = NavigationLocationManager()
-            _ = RouteController(along: initialRoute, directions: directionsClientSpy, locationManager: locationManager)
+            _ = RouteController(along: self.initialRoute, directions: self.directionsClientSpy, locationManager: locationManager)
             subject = locationManager.delegate
         }
         
@@ -483,7 +483,7 @@ class RouteControllerTests: XCTestCase {
         // - Bigger detour -> 53%
         // --> Same route match is correct
         if let bestMatch = RouteController.bestMatch(for: a12ToVeenendaalNormal, and: firstRoutes) {
-            XCTAssertEqual(bestMatch.route, a12ToVeenendaalNormal)
+            XCTAssertEqual(bestMatch.route, self.a12ToVeenendaalNormal)
             XCTAssertEqual(bestMatch.matchPercentage, 100.0)
         } else {
             XCTFail("Should get a match above 90%")
@@ -495,7 +495,7 @@ class RouteControllerTests: XCTestCase {
         // --> Slight difference route match is correct
         let secondRoutes = [a12ToVeenendaalSlightDifference, a12ToVeenendaalBiggerDetour].shuffled()
         if let bestMatch = RouteController.bestMatch(for: a12ToVeenendaalNormal, and: secondRoutes) {
-            XCTAssertEqual(bestMatch.route, a12ToVeenendaalSlightDifference)
+            XCTAssertEqual(bestMatch.route, self.a12ToVeenendaalSlightDifference)
             XCTAssertEqual(bestMatch.matchPercentage, 91.5, accuracy: 0.1)
         } else {
             XCTFail("Should get a match above 90%")
@@ -513,20 +513,20 @@ class RouteControllerTests: XCTestCase {
     // MARK: - Applying faster/slower route
 
     func testApplyingFasterRoute() {
-        let routeController = dependencies.routeController
+        let routeController = self.dependencies.routeController
         let oldRouteProgress = routeController.routeProgress
         
         // Starting with route 'A12-To-Veenendaal-Normal'
         routeController.routeProgress = .init(
-            route: a12ToVeenendaalNormal,
+            route: self.a12ToVeenendaalNormal,
             legIndex: 0,
             spokenInstructionIndex: 0
         )
         
         // Try to apply slightly faster route 'A12-To-Veenendaal-Slight-Difference'
         routeController.applyNewRerouteIfNeeded(
-            mostSimilarRoute: a12ToVeenendaalSlightDifference,
-            allRoutes: [a12ToVeenendaalSlightDifference],
+            mostSimilarRoute: self.a12ToVeenendaalSlightDifference,
+            allRoutes: [self.a12ToVeenendaalSlightDifference],
             currentUpcomingManeuver: routeController.routeProgress.currentLegProgress.upComingStep!,
             durationRemaining: routeController.routeProgress.durationRemaining
         )
@@ -535,7 +535,7 @@ class RouteControllerTests: XCTestCase {
         XCTAssertEqual(
             routeController.routeProgress.durationRemaining,
             RouteProgress(
-                route: a12ToVeenendaalSlightDifference,
+                route: self.a12ToVeenendaalSlightDifference,
                 legIndex: 0,
                 spokenInstructionIndex: 0).durationRemaining
         )
@@ -545,20 +545,20 @@ class RouteControllerTests: XCTestCase {
     }
     
     func testNotApplyingSlowerRoute() {
-        let routeController = dependencies.routeController
+        let routeController = self.dependencies.routeController
         let oldRouteProgress = routeController.routeProgress
         
         // Starting with route 'A12-To-Veenendaal-Normal'
         routeController.routeProgress = .init(
-            route: a12ToVeenendaalNormal,
+            route: self.a12ToVeenendaalNormal,
             legIndex: 0,
             spokenInstructionIndex: 0
         )
         
         // Try to apply slower route 'A12-To-Veenendaal-Slight-Difference'
         routeController.applyNewRerouteIfNeeded(
-            mostSimilarRoute: a12ToVeenendaalBiggerDetour,
-            allRoutes: [a12ToVeenendaalBiggerDetour],
+            mostSimilarRoute: self.a12ToVeenendaalBiggerDetour,
+            allRoutes: [self.a12ToVeenendaalBiggerDetour],
             currentUpcomingManeuver: routeController.routeProgress.currentLegProgress.upComingStep!,
             durationRemaining: routeController.routeProgress.durationRemaining
         )
@@ -567,7 +567,7 @@ class RouteControllerTests: XCTestCase {
         XCTAssertNotEqual(
             routeController.routeProgress.durationRemaining,
             RouteProgress(
-                route: a12ToVeenendaalBiggerDetour,
+                route: self.a12ToVeenendaalBiggerDetour,
                 legIndex: 0,
                 spokenInstructionIndex: 0).durationRemaining
         )
@@ -589,20 +589,20 @@ class RouteControllerTests: XCTestCase {
     )
     
     func testApplyingSlowerRoute() {
-        let routeController = dependencies.routeController
+        let routeController = self.dependencies.routeController
         let oldRouteProgress = routeController.routeProgress
         
         // Starting with route 'A12-To-Veenendaal-Normal'
         routeController.routeProgress = .init(
-            route: a12ToVeenendaalNormal,
+            route: self.a12ToVeenendaalNormal,
             legIndex: 0,
             spokenInstructionIndex: 0
         )
         
         // Try to apply slower route 'A12-To-Veenendaal-Normal-With-Big-Trafficjam'
         routeController.applyNewRerouteIfNeeded(
-            mostSimilarRoute: a12ToVeenendaalNormalWithTraffic,
-            allRoutes: [a12ToVeenendaalNormalWithTraffic],
+            mostSimilarRoute: self.a12ToVeenendaalNormalWithTraffic,
+            allRoutes: [self.a12ToVeenendaalNormalWithTraffic],
             currentUpcomingManeuver: routeController.routeProgress.currentLegProgress.upComingStep!,
             durationRemaining: routeController.routeProgress.durationRemaining
         )
@@ -611,7 +611,7 @@ class RouteControllerTests: XCTestCase {
         XCTAssertEqual(
             routeController.routeProgress.durationRemaining,
             RouteProgress(
-                route: a12ToVeenendaalNormalWithTraffic,
+                route: self.a12ToVeenendaalNormalWithTraffic,
                 legIndex: 0,
                 spokenInstructionIndex: 0).durationRemaining
         )
@@ -621,20 +621,20 @@ class RouteControllerTests: XCTestCase {
     }
     
     func testApplyingBestMatch() {
-        let routeController = dependencies.routeController
+        let routeController = self.dependencies.routeController
         let oldRouteProgress = routeController.routeProgress
         
         // Starting with route 'A12-To-Veenendaal-Normal'
         routeController.routeProgress = .init(
-            route: a12ToVeenendaalNormal,
+            route: self.a12ToVeenendaalNormal,
             legIndex: 0,
             spokenInstructionIndex: 0
         )
         
         // Try to apply slower route 'A12-To-Veenendaal-Normal-With-Big-Trafficjam' or faster route 'A12-To-Veenendaal-Slight-Difference'
         routeController.applyNewRerouteIfNeeded(
-            mostSimilarRoute: a12ToVeenendaalSlightDifference,
-            allRoutes: [a12ToVeenendaalNormalWithTraffic, a12ToVeenendaalSlightDifference],
+            mostSimilarRoute: self.a12ToVeenendaalSlightDifference,
+            allRoutes: [self.a12ToVeenendaalNormalWithTraffic, self.a12ToVeenendaalSlightDifference],
             currentUpcomingManeuver: routeController.routeProgress.currentLegProgress.upComingStep!,
             durationRemaining: routeController.routeProgress.durationRemaining
         )
@@ -643,7 +643,7 @@ class RouteControllerTests: XCTestCase {
         XCTAssertEqual(
             routeController.routeProgress.durationRemaining,
             RouteProgress(
-                route: a12ToVeenendaalNormalWithTraffic,
+                route: self.a12ToVeenendaalNormalWithTraffic,
                 legIndex: 0,
                 spokenInstructionIndex: 0).durationRemaining
         )

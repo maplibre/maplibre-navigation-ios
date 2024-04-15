@@ -66,7 +66,7 @@ extension CarPlayManager: CPSearchTemplateDelegate {
         CarPlayManager.shared.recentSearchText = searchText
         
         // Append recent searches
-        var items = recentSearches(searchText)
+        var items = self.recentSearches(searchText)
         
         // Search for placemarks using MapboxGeocoder.swift
         let shouldSearch = searchText.count > 2
@@ -74,17 +74,17 @@ extension CarPlayManager: CPSearchTemplateDelegate {
             let options = CarPlayManager.forwardGeocodeOptions(searchText)
             Geocoder.shared.geocode(options, completionHandler: { placemarks, _, _ in
                 guard let placemarks else {
-                    completionHandler(CarPlayManager.resultsOrNoResults(items, limit: MaximumInitialSearchResults))
+                    completionHandler(CarPlayManager.resultsOrNoResults(items, limit: self.MaximumInitialSearchResults))
                     return
                 }
                 
                 let results = placemarks.map { $0.listItem() }
                 items.append(contentsOf: results)
-                completionHandler(CarPlayManager.resultsOrNoResults(results, limit: MaximumInitialSearchResults))
+                completionHandler(CarPlayManager.resultsOrNoResults(results, limit: self.MaximumInitialSearchResults))
             })
             
         } else {
-            completionHandler(CarPlayManager.resultsOrNoResults(items, limit: MaximumInitialSearchResults))
+            completionHandler(CarPlayManager.resultsOrNoResults(items, limit: self.MaximumInitialSearchResults))
         }
     }
     
@@ -110,8 +110,8 @@ extension CarPlayManager: CPSearchTemplateDelegate {
             return
         }
         
-        recentItems.add(RecentItem(placemark))
-        recentItems.save()
+        self.recentItems.add(RecentItem(placemark))
+        self.recentItems.save()
         
         let destinationWaypoint = Waypoint(location: location, heading: nil, name: placemark.formattedName)
         CarPlayManager.shared.calculateRouteAndStart(to: destinationWaypoint, completionHandler: completionHandler)
@@ -120,9 +120,9 @@ extension CarPlayManager: CPSearchTemplateDelegate {
     @available(iOS 12.0, *)
     static func recentSearches(_ searchText: String) -> [CPListItem] {
         if searchText.isEmpty {
-            return recentItems.map { $0.geocodedPlacemark.listItem() }
+            return self.recentItems.map { $0.geocodedPlacemark.listItem() }
         }
-        return recentItems.filter { $0.matches(searchText) }.map { $0.geocodedPlacemark.listItem() }
+        return self.recentItems.filter { $0.matches(searchText) }.map { $0.geocodedPlacemark.listItem() }
     }
     
     @available(iOS 12.0, *)

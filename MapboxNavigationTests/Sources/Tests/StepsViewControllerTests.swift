@@ -36,7 +36,7 @@ class StepsViewControllerTests: XCTestCase {
     }()
     
     func testRebuildStepsInstructionsViewDataSource() {
-        let stepsViewController = dependencies.stepsViewController
+        let stepsViewController = self.dependencies.stepsViewController
 
         measure {
             // Measure Performance - stepsViewController.rebuildDataSourceIfNecessary()
@@ -50,7 +50,7 @@ class StepsViewControllerTests: XCTestCase {
 
     /// NOTE: This test is disabled pending https://github.com/mapbox/mapbox-navigation-ios/issues/1468
     func x_testUpdateCellPerformance() {
-        let stepsViewController = dependencies.stepsViewController
+        let stepsViewController = self.dependencies.stepsViewController
         
         // Test that Steps ViewController viewLoads
         XCTAssertNotNil(stepsViewController.view, "StepsViewController not initiated properly")

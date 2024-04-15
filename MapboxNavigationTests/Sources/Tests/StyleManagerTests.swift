@@ -15,12 +15,12 @@ class StyleManagerTests: XCTestCase {
     
     override func setUp() {
         super.setUp()
-        styleManager = StyleManager(self)
-        styleManager.automaticallyAdjustsStyleForTimeOfDay = true
+        self.styleManager = StyleManager(self)
+        self.styleManager.automaticallyAdjustsStyleForTimeOfDay = true
     }
     
     func testStyleManagerLondon() {
-        location = Location.london
+        self.location = Location.london
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "HH:mm"
         dateFormatter.timeZone = TimeZone(identifier: "UTC")
@@ -32,22 +32,22 @@ class StyleManagerTests: XCTestCase {
         let afterSunset = dateFormatter.date(from: "21:00")!
         let midnight = dateFormatter.date(from: "00:00")!
         
-        styleManager.date = beforeSunrise
-        XCTAssert(styleManager.styleType(for: location) == .night)
-        styleManager.date = afterSunrise
-        XCTAssert(styleManager.styleType(for: location) == .day)
-        styleManager.date = noonDate
-        XCTAssert(styleManager.styleType(for: location) == .day)
-        styleManager.date = beforeSunset
-        XCTAssert(styleManager.styleType(for: location) == .day)
-        styleManager.date = afterSunset
-        XCTAssert(styleManager.styleType(for: location) == .night)
-        styleManager.date = midnight
-        XCTAssert(styleManager.styleType(for: location) == .night)
+        self.styleManager.date = beforeSunrise
+        XCTAssert(self.styleManager.styleType(for: self.location) == .night)
+        self.styleManager.date = afterSunrise
+        XCTAssert(self.styleManager.styleType(for: self.location) == .day)
+        self.styleManager.date = noonDate
+        XCTAssert(self.styleManager.styleType(for: self.location) == .day)
+        self.styleManager.date = beforeSunset
+        XCTAssert(self.styleManager.styleType(for: self.location) == .day)
+        self.styleManager.date = afterSunset
+        XCTAssert(self.styleManager.styleType(for: self.location) == .night)
+        self.styleManager.date = midnight
+        XCTAssert(self.styleManager.styleType(for: self.location) == .night)
     }
 
     func testStyleManagerParisWithSeconds() {
-        location = Location.paris
+        self.location = Location.paris
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "HH:mm:ss"
         dateFormatter.timeZone = TimeZone(identifier: "CET")
@@ -61,22 +61,22 @@ class StyleManagerTests: XCTestCase {
         let justAfterSunset = dateFormatter.date(from: "17:04:30")!
         let midnight = dateFormatter.date(from: "00:00:00")!
 
-        styleManager.date = justBeforeSunrise
-        XCTAssert(styleManager.styleType(for: location) == .night)
-        styleManager.date = justAfterSunrise
-        XCTAssert(styleManager.styleType(for: location) == .day)
-        styleManager.date = noonDate
-        XCTAssert(styleManager.styleType(for: location) == .day)
-        styleManager.date = juetBeforeSunset
-        XCTAssert(styleManager.styleType(for: location) == .day)
-        styleManager.date = justAfterSunset
-        XCTAssert(styleManager.styleType(for: location) == .night)
-        styleManager.date = midnight
-        XCTAssert(styleManager.styleType(for: location) == .night)
+        self.styleManager.date = justBeforeSunrise
+        XCTAssert(self.styleManager.styleType(for: self.location) == .night)
+        self.styleManager.date = justAfterSunrise
+        XCTAssert(self.styleManager.styleType(for: self.location) == .day)
+        self.styleManager.date = noonDate
+        XCTAssert(self.styleManager.styleType(for: self.location) == .day)
+        self.styleManager.date = juetBeforeSunset
+        XCTAssert(self.styleManager.styleType(for: self.location) == .day)
+        self.styleManager.date = justAfterSunset
+        XCTAssert(self.styleManager.styleType(for: self.location) == .night)
+        self.styleManager.date = midnight
+        XCTAssert(self.styleManager.styleType(for: self.location) == .night)
     }
     
     func testStyleManagerSanFrancisco() {
-        location = Location.sf
+        self.location = Location.sf
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "hh:mm a"
         dateFormatter.timeZone = TimeZone(identifier: "PST")
@@ -90,22 +90,22 @@ class StyleManagerTests: XCTestCase {
         let afterSunset = dateFormatter.date(from: "09:00 PM")!
         let midnight = dateFormatter.date(from: "00:00 AM")!
         
-        styleManager.date = beforeSunrise
-        XCTAssert(styleManager.styleType(for: location) == .night)
-        styleManager.date = afterSunrise
-        XCTAssert(styleManager.styleType(for: location) == .day)
-        styleManager.date = noonDate
-        XCTAssert(styleManager.styleType(for: location) == .day)
-        styleManager.date = beforeSunset
-        XCTAssert(styleManager.styleType(for: location) == .day)
-        styleManager.date = afterSunset
-        XCTAssert(styleManager.styleType(for: location) == .night)
-        styleManager.date = midnight
-        XCTAssert(styleManager.styleType(for: location) == .night)
+        self.styleManager.date = beforeSunrise
+        XCTAssert(self.styleManager.styleType(for: self.location) == .night)
+        self.styleManager.date = afterSunrise
+        XCTAssert(self.styleManager.styleType(for: self.location) == .day)
+        self.styleManager.date = noonDate
+        XCTAssert(self.styleManager.styleType(for: self.location) == .day)
+        self.styleManager.date = beforeSunset
+        XCTAssert(self.styleManager.styleType(for: self.location) == .day)
+        self.styleManager.date = afterSunset
+        XCTAssert(self.styleManager.styleType(for: self.location) == .night)
+        self.styleManager.date = midnight
+        XCTAssert(self.styleManager.styleType(for: self.location) == .night)
     }
 
     func testTimeIntervalsUntilTimeOfDayChanges() {
-        location = Location.paris
+        self.location = Location.paris
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "HH:mm"
         dateFormatter.timeZone = TimeZone(identifier: "CET")
@@ -130,6 +130,6 @@ extension StyleManagerTests: StyleManagerDelegate {
     func styleManager(_ styleManager: StyleManager, didApply style: Style) {}
     
     func locationFor(styleManager: StyleManager) -> CLLocation? {
-        location
+        self.location
     }
 }

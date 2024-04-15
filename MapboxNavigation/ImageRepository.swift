@@ -3,7 +3,7 @@ import UIKit
 class ImageRepository {
     public var sessionConfiguration: URLSessionConfiguration = .default {
         didSet {
-            imageDownloader = ImageDownloader(sessionConfiguration: sessionConfiguration)
+            self.imageDownloader = ImageDownloader(sessionConfiguration: self.sessionConfiguration)
         }
     }
 
@@ -15,22 +15,22 @@ class ImageRepository {
     var useDiskCache: Bool
 
     required init(withDownloader downloader: ReentrantImageDownloader = ImageDownloader(), cache: BimodalImageCache = ImageCache(), useDisk: Bool = true) {
-        imageDownloader = downloader
-        imageCache = cache
-        useDiskCache = useDisk
+        self.imageDownloader = downloader
+        self.imageCache = cache
+        self.useDiskCache = useDisk
     }
 
     func resetImageCache(_ completion: CompletionHandler?) {
-        imageCache.clearMemory()
-        imageCache.clearDisk(completion: completion)
+        self.imageCache.clearMemory()
+        self.imageCache.clearDisk(completion: completion)
     }
 
     func storeImage(_ image: UIImage, forKey key: String, toDisk: Bool = true) {
-        imageCache.store(image, forKey: key, toDisk: toDisk, completion: nil)
+        self.imageCache.store(image, forKey: key, toDisk: toDisk, completion: nil)
     }
 
     func cachedImageForKey(_ key: String) -> UIImage? {
-        imageCache.image(forKey: key)
+        self.imageCache.image(forKey: key)
     }
 
     func imageWithURL(_ imageURL: URL, cacheKey: String, completion: @escaping (UIImage?) -> Void) {
@@ -39,7 +39,7 @@ class ImageRepository {
             return
         }
 
-        _ = imageDownloader.downloadImage(with: imageURL, completion: { [weak self] image, _, error in
+        _ = self.imageDownloader.downloadImage(with: imageURL, completion: { [weak self] image, _, error in
             guard let strongSelf = self, let image else {
                 completion(nil)
                 return
@@ -57,6 +57,6 @@ class ImageRepository {
     }
 
     func disableDiskCache() {
-        useDiskCache = false
+        self.useDiskCache = false
     }
 }

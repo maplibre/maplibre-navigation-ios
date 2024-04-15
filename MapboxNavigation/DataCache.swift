@@ -6,8 +6,8 @@ public class DataCache: NSObject, BimodalDataCache {
     let fileCache = FileCache()
 
     override public init() {
-        memoryCache = NSCache<NSString, NSData>()
-        memoryCache.name = "In-Memory Data Cache"
+        self.memoryCache = NSCache<NSString, NSData>()
+        self.memoryCache.name = "In-Memory Data Cache"
 
         super.init()
         
@@ -20,10 +20,10 @@ public class DataCache: NSObject, BimodalDataCache {
       Stores data in the cache for the given key. If `toDisk` is set to `true`, the completion handler is called following writing the data to disk, otherwise it is called immediately upon storing the data in the memory cache.
      */
     public func store(_ data: Data, forKey key: String, toDisk: Bool, completion: CompletionHandler?) {
-        storeDataInMemoryCache(data, forKey: key)
+        self.storeDataInMemoryCache(data, forKey: key)
 
         if toDisk {
-            fileCache.store(data, forKey: key, completion: completion)
+            self.fileCache.store(data, forKey: key, completion: completion)
         } else {
             completion?()
         }
@@ -42,7 +42,7 @@ public class DataCache: NSObject, BimodalDataCache {
         }
 
         if let data = fileCache.dataFromFileCache(forKey: key) {
-            storeDataInMemoryCache(data, forKey: key)
+            self.storeDataInMemoryCache(data, forKey: key)
             return data
         }
 
@@ -53,18 +53,18 @@ public class DataCache: NSObject, BimodalDataCache {
      Clears out the memory cache.
      */
     public func clearMemory() {
-        memoryCache.removeAllObjects()
+        self.memoryCache.removeAllObjects()
     }
 
     /*
      Clears the disk cache and calls the completion handler when finished.
      */
     public func clearDisk(completion: CompletionHandler?) {
-        fileCache.clearDisk(completion: completion)
+        self.fileCache.clearDisk(completion: completion)
     }
 
     private func storeDataInMemoryCache(_ data: Data, forKey key: String) {
-        memoryCache.setObject(data as NSData, forKey: key as NSString)
+        self.memoryCache.setObject(data as NSData, forKey: key as NSString)
     }
 
     private func dataFromMemoryCache(forKey key: String) -> Data? {

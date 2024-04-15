@@ -11,20 +11,20 @@ open class LanesView: UIView {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        commonInit()
+        self.commonInit()
     }
     
     public required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
-        commonInit()
+        self.commonInit()
     }
     
     override open func prepareForInterfaceBuilder() {
         super.prepareForInterfaceBuilder()
 
         for _ in 0 ... 4 {
-            let laneView = laneArrowView()
-            stackView.addArrangedSubview(laneView)
+            let laneView = self.laneArrowView()
+            self.stackView.addArrangedSubview(laneView)
         }
     }
     
@@ -71,24 +71,24 @@ open class LanesView: UIView {
      */
     @objc(updateForVisualInstructionBanner:)
     public func update(for visualInstruction: VisualInstructionBanner?) {
-        clearLaneViews()
+        self.clearLaneViews()
         
         guard let tertiaryInstruction = visualInstruction?.tertiaryInstruction,
               tertiaryInstruction.containsLaneIndications else {
-            hide()
+            self.hide()
             return
         }
         
         let laneIndications: [LaneIndicationComponent]? = tertiaryInstruction.components.compactMap { $0 as? LaneIndicationComponent }
         
         guard let lanes = laneIndications, !lanes.isEmpty else {
-            hide()
+            self.hide()
             return
         }
         
         let subviews = lanes.map { LaneView(component: $0) }
-        stackView.addArrangedSubviews(subviews)
-        show()
+        self.stackView.addArrangedSubviews(subviews)
+        self.show()
     }
     
     public func show(animated: Bool = true) {
@@ -110,8 +110,8 @@ open class LanesView: UIView {
     }
     
     fileprivate func clearLaneViews() {
-        for arrangedSubview in stackView.arrangedSubviews {
-            stackView.removeArrangedSubview(arrangedSubview)
+        for arrangedSubview in self.stackView.arrangedSubviews {
+            self.stackView.removeArrangedSubview(arrangedSubview)
             arrangedSubview.removeFromSuperview()
         }
     }

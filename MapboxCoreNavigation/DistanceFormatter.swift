@@ -16,7 +16,7 @@ extension CLLocationDistance {
     
     // Returns the distance converted to yards
     var yards: Double {
-        feet / 3
+        self.feet / 3
     }
     
     // Returns the distance converted to kilometers
@@ -43,15 +43,15 @@ extension CLLocationDistance {
         case .meter:
             return self
         case .kilometer:
-            return kilometers
+            return self.kilometers
         case .inch:
-            return feet * 12
+            return self.feet * 12
         case .foot:
-            return feet
+            return self.feet
         case .yard:
-            return yards
+            return self.yards
         case .mile:
-            return miles
+            return self.miles
         @unknown default:
             fatalError("Unknown unit")
         }
@@ -67,7 +67,7 @@ struct RoundingTable {
         
         @available(iOS 10.0, *)
         func measurement(for distance: CLLocationDistance) -> Measurement<UnitLength> {
-            switch unit {
+            switch self.unit {
             case .millimeter:
                 return Measurement(value: distance.kilometers / 1e6, unit: .millimeters)
             case .centimeter:
@@ -90,17 +90,17 @@ struct RoundingTable {
         }
         
         func localizedDistanceString(for distance: CLLocationDistance, using formatter: DistanceFormatter) -> String {
-            switch unit {
+            switch self.unit {
             case .mile:
-                formatter.string(fromValue: distance.miles, unit: unit)
+                formatter.string(fromValue: distance.miles, unit: self.unit)
             case .foot:
-                formatter.string(fromValue: distance.feet, unit: unit)
+                formatter.string(fromValue: distance.feet, unit: self.unit)
             case .yard:
-                formatter.string(fromValue: distance.yards, unit: unit)
+                formatter.string(fromValue: distance.yards, unit: self.unit)
             case .kilometer:
-                formatter.string(fromValue: distance.kilometers, unit: unit)
+                formatter.string(fromValue: distance.kilometers, unit: self.unit)
             default:
-                formatter.string(fromValue: distance, unit: unit)
+                formatter.string(fromValue: distance, unit: self.unit)
             }
         }
     }
@@ -108,12 +108,12 @@ struct RoundingTable {
     let thresholds: [Threshold]
     
     func threshold(for distance: CLLocationDistance) -> Threshold {
-        for threshold in thresholds {
+        for threshold in self.thresholds {
             if distance < threshold.maximumDistance {
                 return threshold
             }
         }
-        return thresholds.last!
+        return self.thresholds.last!
     }
 }
 
@@ -155,28 +155,28 @@ open class DistanceFormatter: LengthFormatter {
      - parameter approximate: approximates the distances.
      */
     @objc public init(approximate: Bool = false) {
-        approx = approximate
+        self.approx = approximate
         super.init()
         numberFormatter.locale = .nationalizedCurrent
     }
     
     public required init?(coder decoder: NSCoder) {
-        approx = decoder.decodeBool(forKey: "approximate")
+        self.approx = decoder.decodeBool(forKey: "approximate")
         super.init(coder: decoder)
     }
     
     override open func encode(with aCoder: NSCoder) {
         super.encode(with: aCoder)
-        aCoder.encode(approx, forKey: "approximate")
+        aCoder.encode(self.approx, forKey: "approximate")
     }
     
     func threshold(for distance: CLLocationDistance) -> RoundingTable.Threshold {
         if NavigationSettings.shared.usesMetric {
-            roundingTableMetric.threshold(for: distance)
+            self.roundingTableMetric.threshold(for: distance)
         } else if numberFormatter.locale.identifier == "en-GB" {
-            roundingTableUK.threshold(for: distance)
+            self.roundingTableUK.threshold(for: distance)
         } else {
-            roundingTableImperial.threshold(for: distance)
+            self.roundingTableImperial.threshold(for: distance)
         }
     }
     
@@ -188,21 +188,21 @@ open class DistanceFormatter: LengthFormatter {
     @objc public func string(from distance: CLLocationDistance) -> String {
         numberFormatter.positivePrefix = ""
         numberFormatter.positiveSuffix = ""
-        numberFormatter.decimalSeparator = nonFractionalLengthFormatter.numberFormatter.decimalSeparator
-        numberFormatter.alwaysShowsDecimalSeparator = nonFractionalLengthFormatter.numberFormatter.alwaysShowsDecimalSeparator
+        numberFormatter.decimalSeparator = self.nonFractionalLengthFormatter.numberFormatter.decimalSeparator
+        numberFormatter.alwaysShowsDecimalSeparator = self.nonFractionalLengthFormatter.numberFormatter.alwaysShowsDecimalSeparator
         numberFormatter.usesSignificantDigits = false
-        return formattedDistance(distance)
+        return self.formattedDistance(distance)
     }
     
     @objc override open func string(fromMeters numberInMeters: Double) -> String {
-        string(from: numberInMeters)
+        self.string(from: numberInMeters)
     }
     
     func formattedDistance(_ distance: CLLocationDistance) -> String {
         let threshold = threshold(for: distance)
         numberFormatter.maximumFractionDigits = threshold.maximumFractionDigits
         numberFormatter.roundingIncrement = threshold.roundingIncrement as NSNumber
-        unit = threshold.unit
+        self.unit = threshold.unit
         return threshold.localizedDistanceString(for: distance, using: self)
     }
     
@@ -212,7 +212,7 @@ open class DistanceFormatter: LengthFormatter {
         let threshold = threshold(for: distance)
         numberFormatter.maximumFractionDigits = threshold.maximumFractionDigits
         numberFormatter.roundingIncrement = threshold.roundingIncrement as NSNumber
-        unit = threshold.unit
+        self.unit = threshold.unit
         return threshold.measurement(for: distance)
     }
     
@@ -228,7 +228,7 @@ open class DistanceFormatter: LengthFormatter {
         
         let string = string(from: distance)
         let attributedString = NSMutableAttributedString(string: string, attributes: attrs)
-        let convertedDistance = distance.converted(to: threshold(for: distance).unit)
+        let convertedDistance = distance.converted(to: self.threshold(for: distance).unit)
         if let quantityString = numberFormatter.string(from: convertedDistance as NSNumber) {
             // NSMutableAttributedString methods accept NSRange, not Range.
             let quantityRange = (string as NSString).range(of: quantityString)

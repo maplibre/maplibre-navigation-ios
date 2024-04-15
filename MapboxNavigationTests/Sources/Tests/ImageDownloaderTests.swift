@@ -19,13 +19,13 @@ class ImageDownloaderTests: XCTestCase {
         ImageLoadingURLProtocolSpy.reset()
 
         let imageData = ShieldImage.i280.image.pngData()!
-        ImageLoadingURLProtocolSpy.registerData(imageData, forURL: imageURL)
+        ImageLoadingURLProtocolSpy.registerData(imageData, forURL: self.imageURL)
 
-        downloader = ImageDownloader(sessionConfiguration: sessionConfig)
+        self.downloader = ImageDownloader(sessionConfiguration: self.sessionConfig)
     }
 
     override func tearDown() {
-        downloader = nil
+        self.downloader = nil
 
         super.tearDown()
     }
@@ -40,7 +40,7 @@ class ImageDownloaderTests: XCTestCase {
         var errorReturned: Error?
         let semaphore = DispatchSemaphore(value: 0)
 
-        downloader.downloadImage(with: imageURL) { image, data, error in
+        downloader.downloadImage(with: self.imageURL) { image, data, error in
             imageReturned = image
             dataReturned = data
             errorReturned = error
@@ -50,7 +50,7 @@ class ImageDownloaderTests: XCTestCase {
         XCTAssert(semaphoreResult == .success, "Semaphore timed out")
 
         // The ImageDownloader is meant to be used with an external caching mechanism
-        let request = ImageLoadingURLProtocolSpy.pastRequestForURL(imageURL)!
+        let request = ImageLoadingURLProtocolSpy.pastRequestForURL(self.imageURL)!
         XCTAssertEqual(request.cachePolicy, .reloadIgnoringCacheData)
 
         XCTAssertNotNil(imageReturned)
@@ -71,19 +71,19 @@ class ImageDownloaderTests: XCTestCase {
         // URL loading is delayed in order to simulate conditions under which multiple requests for the same asset would be made
         ImageLoadingURLProtocolSpy.delayImageLoading()
 
-        downloader.downloadImage(with: imageURL) { _, _, _ in
+        downloader.downloadImage(with: self.imageURL) { _, _, _ in
             firstCallbackCalled = true
         }
-        operation = downloader.activeOperation(with: imageURL)!
+        operation = downloader.activeOperation(with: self.imageURL)!
 
-        downloader.downloadImage(with: imageURL) { _, _, _ in
+        downloader.downloadImage(with: self.imageURL) { _, _, _ in
             secondCallbackCalled = true
         }
 
         ImageLoadingURLProtocolSpy.resumeImageLoading()
 
-        XCTAssertTrue(operation === downloader.activeOperation(with: imageURL)!,
-                      "Expected \(String(describing: operation)) to be identical to \(String(describing: downloader.activeOperation(with: imageURL)))")
+        XCTAssertTrue(operation === downloader.activeOperation(with: self.imageURL)!,
+                      "Expected \(String(describing: operation)) to be identical to \(String(describing: downloader.activeOperation(with: self.imageURL)))")
 
         var spinCount = 0
 
@@ -106,10 +106,10 @@ class ImageDownloaderTests: XCTestCase {
         var callbackCalled = false
         var spinCount = 0
 
-        downloader.downloadImage(with: imageURL) { _, _, _ in
+        downloader.downloadImage(with: self.imageURL) { _, _, _ in
             callbackCalled = true
         }
-        var operation = downloader.activeOperation(with: imageURL)!
+        var operation = downloader.activeOperation(with: self.imageURL)!
 
         runUntil {
             spinCount += 1
@@ -122,10 +122,10 @@ class ImageDownloaderTests: XCTestCase {
         callbackCalled = false
         spinCount = 0
 
-        downloader.downloadImage(with: imageURL) { _, _, _ in
+        downloader.downloadImage(with: self.imageURL) { _, _, _ in
             callbackCalled = true
         }
-        operation = downloader.activeOperation(with: imageURL)!
+        operation = downloader.activeOperation(with: self.imageURL)!
 
         runUntil {
             spinCount += 1

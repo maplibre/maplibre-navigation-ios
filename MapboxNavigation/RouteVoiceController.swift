@@ -86,11 +86,11 @@ open class RouteVoiceController: NSObject, AVSpeechSynthesizerDelegate {
     override public init() {
         super.init()
 
-        verifyBackgroundAudio()
+        self.verifyBackgroundAudio()
 
-        speechSynth.delegate = self
+        self.speechSynth.delegate = self
         
-        resumeNotifications()
+        self.resumeNotifications()
     }
 
     private func verifyBackgroundAudio() {
@@ -109,11 +109,11 @@ open class RouteVoiceController: NSObject, AVSpeechSynthesizerDelegate {
     }
     
     func resumeNotifications() {
-        NotificationCenter.default.addObserver(self, selector: #selector(didPassSpokenInstructionPoint(notification:)), name: .routeControllerDidPassSpokenInstructionPoint, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(pauseSpeechAndPlayReroutingDing(notification:)), name: .routeControllerWillReroute, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(didReroute(notification:)), name: .routeControllerDidReroute, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.didPassSpokenInstructionPoint(notification:)), name: .routeControllerDidPassSpokenInstructionPoint, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.pauseSpeechAndPlayReroutingDing(notification:)), name: .routeControllerWillReroute, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.didReroute(notification:)), name: .routeControllerDidReroute, object: nil)
         
-        muteToken = NavigationSettings.shared.observe(\.voiceMuted) { [weak self] settings, _ in
+        self.muteToken = NavigationSettings.shared.observe(\.voiceMuted) { [weak self] settings, _ in
             if settings.voiceMuted {
                 self?.speechSynth.stopSpeaking(at: .immediate)
             }
@@ -129,30 +129,30 @@ open class RouteVoiceController: NSObject, AVSpeechSynthesizerDelegate {
     @objc func didReroute(notification: NSNotification) {
         // Play reroute sound when a faster route is found
         if notification.userInfo?[RouteControllerNotificationUserInfoKey.isProactiveKey] as! Bool {
-            pauseSpeechAndPlayReroutingDing(notification: notification)
+            self.pauseSpeechAndPlayReroutingDing(notification: notification)
         }
     }
     
     @objc func pauseSpeechAndPlayReroutingDing(notification: NSNotification) {
-        speechSynth.stopSpeaking(at: .word)
+        self.speechSynth.stopSpeaking(at: .word)
         
-        guard playRerouteSound, !NavigationSettings.shared.voiceMuted else {
+        guard self.playRerouteSound, !NavigationSettings.shared.voiceMuted else {
             return
         }
         
         do {
-            try mixAudio()
+            try self.mixAudio()
         } catch {
-            voiceControllerDelegate?.voiceController?(self, spokenInstructionsDidFailWith: error)
+            self.voiceControllerDelegate?.voiceController?(self, spokenInstructionsDidFailWith: error)
         }
-        rerouteSoundPlayer.play()
+        self.rerouteSoundPlayer.play()
     }
     
     @objc public func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didFinish utterance: AVSpeechUtterance) {
         do {
-            try unDuckAudio()
+            try self.unDuckAudio()
         } catch {
-            voiceControllerDelegate?.voiceController?(self, spokenInstructionsDidFailWith: error)
+            self.voiceControllerDelegate?.voiceController?(self, spokenInstructionsDidFailWith: error)
         }
     }
     
@@ -175,14 +175,14 @@ open class RouteVoiceController: NSObject, AVSpeechSynthesizerDelegate {
     @objc open func didPassSpokenInstructionPoint(notification: NSNotification) {
         guard !NavigationSettings.shared.voiceMuted else { return }
         
-        routeProgress = notification.userInfo?[RouteControllerNotificationUserInfoKey.routeProgressKey] as? RouteProgress
-        assert(routeProgress != nil, "routeProgress should not be nil.")
+        self.routeProgress = notification.userInfo?[RouteControllerNotificationUserInfoKey.routeProgressKey] as? RouteProgress
+        assert(self.routeProgress != nil, "routeProgress should not be nil.")
 
         guard let instruction = routeProgress?.currentLegProgress.currentStepProgress.currentSpokenInstruction else { return }
-        let speechLocale = routeProgress?.route.routeOptions.locale
+        let speechLocale = self.routeProgress?.route.routeOptions.locale
         
-        lastSpokenInstruction = instruction
-        speak(instruction, with: speechLocale)
+        self.lastSpokenInstruction = instruction
+        self.speak(instruction, with: speechLocale)
     }
 
     /**
@@ -193,17 +193,17 @@ open class RouteVoiceController: NSObject, AVSpeechSynthesizerDelegate {
      - parameter ignoreProgress: A `Bool` that indicates if the routeProgress is added to the instruction.
      */
     open func speak(_ instruction: SpokenInstruction, with locale: Locale?, ignoreProgress: Bool = false) {
-        if speechSynth.isSpeaking, let lastSpokenInstruction {
-            voiceControllerDelegate?.voiceController?(self, didInterrupt: lastSpokenInstruction, with: instruction)
+        if self.speechSynth.isSpeaking, let lastSpokenInstruction {
+            self.voiceControllerDelegate?.voiceController?(self, didInterrupt: lastSpokenInstruction, with: instruction)
         }
         
         do {
-            try duckAudio()
+            try self.duckAudio()
         } catch {
-            voiceControllerDelegate?.voiceController?(self, spokenInstructionsDidFailWith: error)
+            self.voiceControllerDelegate?.voiceController?(self, spokenInstructionsDidFailWith: error)
         }
         
-        let modifiedInstruction = voiceControllerDelegate?.voiceController?(self, willSpeak: instruction, routeProgress: routeProgress) ?? instruction
+        let modifiedInstruction = self.voiceControllerDelegate?.voiceController?(self, willSpeak: instruction, routeProgress: self.routeProgress) ?? instruction
 
         let utterance: AVSpeechUtterance
 
@@ -222,7 +222,7 @@ open class RouteVoiceController: NSObject, AVSpeechSynthesizerDelegate {
             utterance.voice = AVSpeechSynthesisVoice(language: locale?.identifier ?? Locale.preferredLocalLanguageCountryCode)
         }
         
-        speechSynth.speak(utterance)
+        self.speechSynth.speak(utterance)
     }
 }
 

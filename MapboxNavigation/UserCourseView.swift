@@ -81,19 +81,19 @@ public class UserPuckCourseView: UIView, UserCourseView {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        commonInit()
+        self.commonInit()
     }
     
     public required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
-        commonInit()
+        self.commonInit()
     }
     
     func commonInit() {
-        puckView = UserPuckStyleKitView(frame: bounds)
+        self.puckView = UserPuckStyleKitView(frame: bounds)
         backgroundColor = .clear
-        puckView.backgroundColor = .clear
-        addSubview(puckView)
+        self.puckView.backgroundColor = .clear
+        addSubview(self.puckView)
     }
 }
 
@@ -118,7 +118,7 @@ class UserPuckStyleKitView: UIView {
     
     override func draw(_ rect: CGRect) {
         super.draw(rect)
-        drawNavigation_puck(fillColor: fillColor, puckColor: puckColor, shadowColor: shadowColor, circleColor: fillColor)
+        self.drawNavigation_puck(fillColor: self.fillColor, puckColor: self.puckColor, shadowColor: self.shadowColor, circleColor: self.fillColor)
     }
     
     func drawNavigation_puck(fillColor: UIColor = UIColor(red: 1.000, green: 1.000, blue: 1.000, alpha: 1.000), puckColor: UIColor = UIColor(red: 0.149, green: 0.239, blue: 0.341, alpha: 1.000), shadowColor: UIColor = UIColor(red: 0.149, green: 0.239, blue: 0.341, alpha: 0.160), circleColor: UIColor = UIColor(red: 1.000, green: 1.000, blue: 1.000, alpha: 1.000)) {

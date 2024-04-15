@@ -36,9 +36,9 @@ class TunnelIntersectionManagerTests: XCTestCase {
     }()
     
     func testUserWithinTunnelEntranceRadius() {
-        let routeController = tunnelSetup.routeController
+        let routeController = self.tunnelSetup.routeController
         
-        routeController.tunnelIntersectionManager = tunnelSetup.tunnelIntersectionManager
+        routeController.tunnelIntersectionManager = self.tunnelSetup.tunnelIntersectionManager
         
         let tunnelIntersectionManager = routeController.tunnelIntersectionManager
         
@@ -56,7 +56,7 @@ class TunnelIntersectionManagerTests: XCTestCase {
         var currentLocation = location(at: tunnelSetup.firstLocation.coordinate,
                                        for: routeController,
                                        intersection: tunnelIntersection,
-                                       distance: intersectionLocation.distance(to: tunnelSetup.firstLocation.coordinate))
+                                       distance: intersectionLocation.distance(to: self.tunnelSetup.firstLocation.coordinate))
         
         routeController.locationManager(routeController.locationManager, didUpdateLocations: [currentLocation])
         
@@ -68,12 +68,12 @@ class TunnelIntersectionManagerTests: XCTestCase {
         var userIsAtTunnelEntranceRadius = tunnelIntersectionManager.userWithinTunnelEntranceRadius(at: currentLocation, routeProgress: routeController.routeProgress)
         XCTAssertTrue(userIsAtTunnelEntranceRadius, "Location must be within the tunnel entrance radius")
         
-        let outsideTunnelEntranceRadius = intersectionLocation.coordinate(at: 200, facing: intersectionLocation.direction(to: tunnelSetup.firstLocation.coordinate))
+        let outsideTunnelEntranceRadius = intersectionLocation.coordinate(at: 200, facing: intersectionLocation.direction(to: self.tunnelSetup.firstLocation.coordinate))
         let outsideTunnelEntranceRadiusLocation = CLLocation(latitude: outsideTunnelEntranceRadius.latitude, longitude: outsideTunnelEntranceRadius.longitude)
         
         routeController.locationManager(routeController.locationManager, didUpdateLocations: [outsideTunnelEntranceRadiusLocation])
         
-        currentLocation = location(at: tunnelSetup.firstLocation.coordinate,
+        currentLocation = location(at: self.tunnelSetup.firstLocation.coordinate,
                                    for: routeController,
                                    intersection: tunnelIntersection,
                                    distance: 10)
@@ -83,9 +83,9 @@ class TunnelIntersectionManagerTests: XCTestCase {
     }
     
     func testTunnelDetected() {
-        let routeController = tunnelSetup.routeController
+        let routeController = self.tunnelSetup.routeController
         
-        routeController.tunnelIntersectionManager = tunnelSetup.tunnelIntersectionManager
+        routeController.tunnelIntersectionManager = self.tunnelSetup.tunnelIntersectionManager
         routeController.tunnelIntersectionManager.delegate = routeController
         
         // Step with a tunnel intersection
@@ -105,7 +105,7 @@ class TunnelIntersectionManagerTests: XCTestCase {
         // Step without a tunnel intersection
         routeController.advanceStepIndex(to: 2)
         
-        fakeLocation = location(at: tunnelSetup.firstLocation.coordinate, for: routeController, intersection: routeController.routeProgress.currentLegProgress.currentStep.intersections![0])
+        fakeLocation = location(at: self.tunnelSetup.firstLocation.coordinate, for: routeController, intersection: routeController.routeProgress.currentLegProgress.currentStep.intersections![0])
         routeController.locationManager(routeController.locationManager, didUpdateLocations: [fakeLocation])
         
         didDetectTunnel = routeController.tunnelIntersectionManager.userWithinTunnelEntranceRadius(at: routeController.location!, routeProgress: routeController.routeProgress)
@@ -114,9 +114,9 @@ class TunnelIntersectionManagerTests: XCTestCase {
     }
     
     func testTunnelSimulatedNavigationEnabled() {
-        let routeController = tunnelSetup.routeController
+        let routeController = self.tunnelSetup.routeController
         
-        routeController.tunnelIntersectionManager = tunnelSetup.tunnelIntersectionManager
+        routeController.tunnelIntersectionManager = self.tunnelSetup.tunnelIntersectionManager
         routeController.tunnelIntersectionManager.delegate = routeController
         
         // Step with a tunnel intersection
@@ -129,7 +129,7 @@ class TunnelIntersectionManagerTests: XCTestCase {
         let currentLocation = location(at: tunnelSetup.firstLocation.coordinate,
                                        for: routeController,
                                        intersection: tunnelIntersection,
-                                       distance: intersectionLocation.distance(to: tunnelSetup.firstLocation.coordinate))
+                                       distance: intersectionLocation.distance(to: self.tunnelSetup.firstLocation.coordinate))
         
         routeController.locationManager(routeController.locationManager, didUpdateLocations: [currentLocation])
         
@@ -144,9 +144,9 @@ class TunnelIntersectionManagerTests: XCTestCase {
     }
     
     func testTunnelSimulatedNavigationDisabled() {
-        let routeController = tunnelSetup.routeController
+        let routeController = self.tunnelSetup.routeController
         
-        routeController.tunnelIntersectionManager = tunnelSetup.tunnelIntersectionManager
+        routeController.tunnelIntersectionManager = self.tunnelSetup.tunnelIntersectionManager
         routeController.tunnelIntersectionManager.delegate = routeController
         
         // Step after a tunnel intersection
@@ -159,7 +159,7 @@ class TunnelIntersectionManagerTests: XCTestCase {
         let currentLocation = location(at: tunnelSetup.firstLocation.coordinate,
                                        for: routeController,
                                        intersection: tunnelExitIntersection,
-                                       distance: intersectionLocation.distance(to: tunnelSetup.firstLocation.coordinate))
+                                       distance: intersectionLocation.distance(to: self.tunnelSetup.firstLocation.coordinate))
         
         routeController.locationManager(routeController.locationManager, didUpdateLocations: [currentLocation])
         
@@ -192,7 +192,7 @@ private extension TunnelIntersectionManagerTests {
             at: distance!,
             facing: (polyline.coordinates.first?.direction(to: intersection.location))!
         )
-        return location(at: newLocation)
+        return self.location(at: newLocation)
     }
     
     func location(at coordinate: CLLocationCoordinate2D, horizontalAccuracy: CLLocationAccuracy? = 258.20) -> CLLocation {

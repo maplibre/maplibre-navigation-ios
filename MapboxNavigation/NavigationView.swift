@@ -74,9 +74,9 @@ open class NavigationView: UIView {
     
     lazy var mapView: NavigationMapView = {
         let map: NavigationMapView = .forAutoLayout(frame: self.bounds)
-        map.delegate = delegate
-        map.navigationMapDelegate = delegate
-        map.courseTrackingDelegate = delegate
+        map.delegate = self.delegate
+        map.navigationMapDelegate = self.delegate
+        map.courseTrackingDelegate = self.delegate
         map.showsUserLocation = true
         return map
     }()
@@ -85,7 +85,7 @@ open class NavigationView: UIView {
     
     lazy var instructionsBannerView: InstructionsBannerView = {
         let banner: InstructionsBannerView = .forAutoLayout()
-        banner.delegate = delegate
+        banner.delegate = self.delegate
         return banner
     }()
     
@@ -106,7 +106,7 @@ open class NavigationView: UIView {
     lazy var nextBannerView: NextBannerView = .forAutoLayout(hidden: true)
     lazy var statusView: StatusView = {
         let view: StatusView = .forAutoLayout()
-        view.delegate = delegate
+        view.delegate = self.delegate
         view.isHidden = true
         return view
     }()
@@ -129,7 +129,7 @@ open class NavigationView: UIView {
     
     weak var delegate: NavigationViewDelegate? {
         didSet {
-            updateDelegates()
+            self.updateDelegates()
         }
     }
     
@@ -141,7 +141,7 @@ open class NavigationView: UIView {
             
             oldValue?.removeFromSuperview()
             if let eor = endOfRouteView { addSubview(eor) }
-            endOfRouteView?.translatesAutoresizingMaskIntoConstraints = false
+            self.endOfRouteView?.translatesAutoresizingMaskIntoConstraints = false
         }
     }
     
@@ -150,36 +150,36 @@ open class NavigationView: UIView {
     convenience init(delegate: NavigationViewDelegate) {
         self.init(frame: .zero)
         self.delegate = delegate
-        updateDelegates() // this needs to be called because didSet's do not fire in init contexts.
+        self.updateDelegates() // this needs to be called because didSet's do not fire in init contexts.
     }
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        commonInit()
+        self.commonInit()
     }
     
     public required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
-        commonInit()
+        self.commonInit()
     }
     
     func commonInit() {
-        setupViews()
+        self.setupViews()
         setupConstraints()
     }
     
     func setupStackViews() {
-        setupInformationStackView()
-        floatingStackView.addArrangedSubviews([overviewButton, muteButton, reportButton])
+        self.setupInformationStackView()
+        self.floatingStackView.addArrangedSubviews([self.overviewButton, self.muteButton, self.reportButton])
     }
     
     func setupInformationStackView() {
         let informationChildren: [UIView] = [instructionsBannerView, lanesView, nextBannerView, statusView]
-        informationStackView.addArrangedSubviews(informationChildren)
+        self.informationStackView.addArrangedSubviews(informationChildren)
         
         for informationChild in informationChildren {
-            informationChild.leadingAnchor.constraint(equalTo: informationStackView.leadingAnchor).isActive = true
-            informationChild.trailingAnchor.constraint(equalTo: informationStackView.trailingAnchor).isActive = true
+            informationChild.leadingAnchor.constraint(equalTo: self.informationStackView.leadingAnchor).isActive = true
+            informationChild.trailingAnchor.constraint(equalTo: self.informationStackView.trailingAnchor).isActive = true
         }
     }
     
@@ -192,8 +192,8 @@ open class NavigationView: UIView {
     }
     
     func setupViews() {
-        setupStackViews()
-        setupContainers()
+        self.setupStackViews()
+        self.setupContainers()
         
         let subviews: [UIView] = [
             mapView,
@@ -211,22 +211,22 @@ open class NavigationView: UIView {
     override open func prepareForInterfaceBuilder() {
         super.prepareForInterfaceBuilder()
         DayStyle().apply()
-        [mapView, instructionsBannerView, lanesView, bottomBannerView, nextBannerView].forEach { $0.prepareForInterfaceBuilder() }
-        wayNameView.text = "Street Label"
+        [self.mapView, self.instructionsBannerView, self.lanesView, self.bottomBannerView, self.nextBannerView].forEach { $0.prepareForInterfaceBuilder() }
+        self.wayNameView.text = "Street Label"
     }
     
     @objc func cancelButtonTapped(_ sender: CancelButton) {
-        delegate?.navigationView(self, didTapCancelButton: bottomBannerView.cancelButton)
+        self.delegate?.navigationView(self, didTapCancelButton: self.bottomBannerView.cancelButton)
     }
     
     private func updateDelegates() {
-        mapView.delegate = delegate
-        mapView.navigationMapDelegate = delegate
-        mapView.courseTrackingDelegate = delegate
-        instructionsBannerView.delegate = delegate
-        instructionsBannerView.instructionDelegate = delegate
-        nextBannerView.instructionDelegate = delegate
-        statusView.delegate = delegate
+        self.mapView.delegate = self.delegate
+        self.mapView.navigationMapDelegate = self.delegate
+        self.mapView.courseTrackingDelegate = self.delegate
+        self.instructionsBannerView.delegate = self.delegate
+        self.instructionsBannerView.instructionDelegate = self.delegate
+        self.nextBannerView.instructionDelegate = self.delegate
+        self.statusView.delegate = self.delegate
     }
 }
 

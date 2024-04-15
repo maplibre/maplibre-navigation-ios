@@ -58,7 +58,7 @@ extension UIView {
     
     func constraints(affecting view: UIView?) -> [NSLayoutConstraint]? {
         guard let view else { return nil }
-        return constraints.filter { constraint in
+        return self.constraints.filter { constraint in
             if let first = constraint.firstItem as? UIView, first == view {
                 return true
             }
@@ -150,7 +150,7 @@ extension UIView {
 class RippleLayer: CAReplicatorLayer {
     var animationGroup: CAAnimationGroup? {
         didSet {
-            animationGroup?.delegate = self
+            self.animationGroup?.delegate = self
         }
     }
 
@@ -163,44 +163,44 @@ class RippleLayer: CAReplicatorLayer {
     
     override init() {
         super.init()
-        commonInit()
+        self.commonInit()
     }
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
-        commonInit()
+        self.commonInit()
     }
     
     func commonInit() {
-        setupRippleEffect()
-        repeatCount = Float(rippleRepeatCount)
+        self.setupRippleEffect()
+        repeatCount = Float(self.rippleRepeatCount)
     }
     
     override func layoutSublayers() {
         super.layoutSublayers()
         
-        rippleEffect?.bounds = CGRect(x: 0, y: 0, width: rippleRadius * 2, height: rippleRadius * 2)
-        rippleEffect?.cornerRadius = rippleRadius
+        self.rippleEffect?.bounds = CGRect(x: 0, y: 0, width: self.rippleRadius * 2, height: self.rippleRadius * 2)
+        self.rippleEffect?.cornerRadius = self.rippleRadius
         instanceCount = 3
         instanceDelay = 0.4
     }
     
     func setupRippleEffect() {
-        rippleEffect = CALayer()
-        rippleEffect?.borderWidth = CGFloat(rippleWidth)
-        rippleEffect?.borderColor = rippleColor.cgColor
-        rippleEffect?.opacity = 0
+        self.rippleEffect = CALayer()
+        self.rippleEffect?.borderWidth = CGFloat(self.rippleWidth)
+        self.rippleEffect?.borderColor = self.rippleColor.cgColor
+        self.rippleEffect?.opacity = 0
         
-        addSublayer(rippleEffect!)
+        addSublayer(self.rippleEffect!)
     }
     
     func startAnimation() {
-        animationGroup = rippleAnimationGroup()
-        rippleEffect?.add(animationGroup!, forKey: "ripple")
+        self.animationGroup = self.rippleAnimationGroup()
+        self.rippleEffect?.add(self.animationGroup!, forKey: "ripple")
     }
     
     func stopAnimation() {
-        rippleEffect?.removeAnimation(forKey: "ripple")
+        self.rippleEffect?.removeAnimation(forKey: "ripple")
     }
     
     func rippleAnimationGroup() -> CAAnimationGroup {
@@ -231,7 +231,7 @@ class RippleLayer: CAReplicatorLayer {
 extension RippleLayer: CAAnimationDelegate {
     func animationDidStop(_ anim: CAAnimation, finished flag: Bool) {
         if let count = rippleEffect?.animationKeys()?.count, count > 0 {
-            rippleEffect?.removeAllAnimations()
+            self.rippleEffect?.removeAllAnimations()
         }
     }
 }

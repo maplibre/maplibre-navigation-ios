@@ -56,7 +56,7 @@ public class CarPlayNavigationViewController: UIViewController, MLNMapViewDelega
                 interfaceController: CPInterfaceController) {
         self.routeController = routeController
         self.mapTemplate = mapTemplate
-        carInterfaceController = interfaceController
+        self.carInterfaceController = interfaceController
         
         super.init(nibName: nil, bundle: nil)
         routeController.delegate = self
@@ -84,23 +84,23 @@ public class CarPlayNavigationViewController: UIViewController, MLNMapViewDelega
         self.mapView = mapView
         view.addSubview(mapView)
         
-        styleManager = StyleManager(self)
-        styleManager.styles = [DayStyle(), NightStyle()]
+        self.styleManager = StyleManager(self)
+        self.styleManager.styles = [DayStyle(), NightStyle()]
         
-        resumeNotifications()
-        routeController.resume()
+        self.resumeNotifications()
+        self.routeController.resume()
         mapView.recenterMap()
     }
     
     override public func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        suspendNotifications()
+        self.suspendNotifications()
     }
     
     func resumeNotifications() {
-        NotificationCenter.default.addObserver(self, selector: #selector(progressDidChange(_:)), name: .routeControllerProgressDidChange, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(rerouted(_:)), name: .routeControllerDidReroute, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(visualInstructionDidChange(_:)), name: .routeControllerDidPassVisualInstructionPoint, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.progressDidChange(_:)), name: .routeControllerProgressDidChange, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.rerouted(_:)), name: .routeControllerDidReroute, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.visualInstructionDidChange(_:)), name: .routeControllerDidPassVisualInstructionPoint, object: nil)
     }
     
     func suspendNotifications() {
@@ -114,7 +114,7 @@ public class CarPlayNavigationViewController: UIViewController, MLNMapViewDelega
         
         if let previousSafeAreaInsets {
             let navigationBarIsOpen = view.safeAreaInsets > previousSafeAreaInsets
-            mapView?.compassView.isHidden = navigationBarIsOpen
+            self.mapView?.compassView.isHidden = navigationBarIsOpen
         }
         
         previousSafeAreaInsets = view.safeAreaInsets
@@ -127,7 +127,7 @@ public class CarPlayNavigationViewController: UIViewController, MLNMapViewDelega
      */
     @objc(startNavigationSessionForTrip:)
     public func startNavigationSession(for trip: CPTrip) {
-        carSession = mapTemplate.startNavigationSession(for: trip)
+        self.carSession = self.mapTemplate.startNavigationSession(for: trip)
     }
     
     /**
@@ -137,16 +137,16 @@ public class CarPlayNavigationViewController: UIViewController, MLNMapViewDelega
      */
     @objc(exitNavigationByCanceling:)
     public func exitNavigation(byCanceling canceled: Bool = false) {
-        carSession.finishTrip()
+        self.carSession.finishTrip()
         dismiss(animated: true, completion: nil)
-        carPlayNavigationDelegate?.carPlayNavigationViewControllerDidDismiss(self, byCanceling: canceled)
+        self.carPlayNavigationDelegate?.carPlayNavigationViewControllerDidDismiss(self, byCanceling: canceled)
     }
     
     /**
      Shows the interface for providing feedback about the route.
      */
     @objc public func showFeedback() {
-        carInterfaceController.pushTemplate(carFeedbackTemplate, animated: true)
+        self.carInterfaceController.pushTemplate(self.carFeedbackTemplate, animated: true)
     }
     
     /**
@@ -156,41 +156,41 @@ public class CarPlayNavigationViewController: UIViewController, MLNMapViewDelega
      */
     @objc public var tracksUserCourse: Bool {
         get {
-            mapView?.tracksUserCourse ?? false
+            self.mapView?.tracksUserCourse ?? false
         }
         set {
             if !tracksUserCourse, newValue {
-                mapView?.recenterMap()
-                mapView?.addArrow(route: routeController.routeProgress.route,
-                                  legIndex: routeController.routeProgress.legIndex,
-                                  stepIndex: routeController.routeProgress.currentLegProgress.stepIndex + 1)
+                self.mapView?.recenterMap()
+                self.mapView?.addArrow(route: self.routeController.routeProgress.route,
+                                       legIndex: self.routeController.routeProgress.legIndex,
+                                       stepIndex: self.routeController.routeProgress.currentLegProgress.stepIndex + 1)
             } else if tracksUserCourse, !newValue {
                 guard let userLocation = routeController.locationManager.location?.coordinate else {
                     return
                 }
-                mapView?.enableFrameByFrameCourseViewTracking(for: 3)
-                mapView?.setOverheadCameraView(from: userLocation, along: routeController.routeProgress.route.coordinates!, for: edgePadding)
+                self.mapView?.enableFrameByFrameCourseViewTracking(for: 3)
+                self.mapView?.setOverheadCameraView(from: userLocation, along: self.routeController.routeProgress.route.coordinates!, for: self.edgePadding)
             }
         }
     }
     
     public func beginPanGesture() {
-        mapView?.tracksUserCourse = false
-        mapView?.enableFrameByFrameCourseViewTracking(for: 1)
+        self.mapView?.tracksUserCourse = false
+        self.mapView?.enableFrameByFrameCourseViewTracking(for: 1)
     }
     
     public func mapView(_ mapView: MLNMapView, didFinishLoading style: MLNStyle) {
-        self.mapView?.addArrow(route: routeController.routeProgress.route, legIndex: routeController.routeProgress.legIndex, stepIndex: routeController.routeProgress.currentLegProgress.stepIndex + 1)
-        self.mapView?.showRoutes([routeController.routeProgress.route])
-        self.mapView?.showWaypoints(routeController.routeProgress.route)
+        self.mapView?.addArrow(route: self.routeController.routeProgress.route, legIndex: self.routeController.routeProgress.legIndex, stepIndex: self.routeController.routeProgress.currentLegProgress.stepIndex + 1)
+        self.mapView?.showRoutes([self.routeController.routeProgress.route])
+        self.mapView?.showWaypoints(self.routeController.routeProgress.route)
         self.mapView?.recenterMap()
     }
     
     @objc func visualInstructionDidChange(_ notification: NSNotification) {
         let routeProgress = notification.userInfo![RouteControllerNotificationUserInfoKey.routeProgressKey] as! RouteProgress
-        updateManeuvers(for: routeProgress)
-        mapView?.showWaypoints(routeProgress.route)
-        mapView?.addArrow(route: routeProgress.route, legIndex: routeProgress.legIndex, stepIndex: routeProgress.currentLegProgress.stepIndex + 1)
+        self.updateManeuvers(for: routeProgress)
+        self.mapView?.showWaypoints(routeProgress.route)
+        self.mapView?.addArrow(route: routeProgress.route, legIndex: routeProgress.legIndex, stepIndex: routeProgress.currentLegProgress.stepIndex + 1)
     }
     
     @objc func progressDidChange(_ notification: NSNotification) {
@@ -199,39 +199,39 @@ public class CarPlayNavigationViewController: UIViewController, MLNMapViewDelega
         
         // Update the user puck
         let camera = MLNMapCamera(lookingAtCenter: location.coordinate, acrossDistance: 120, pitch: 60, heading: location.course)
-        mapView?.updateCourseTracking(location: location, camera: camera, animated: true)
+        self.mapView?.updateCourseTracking(location: location, camera: camera, animated: true)
         
         let congestionLevel = routeProgress.averageCongestionLevelRemainingOnLeg ?? .unknown
         guard let maneuver = carSession.upcomingManeuvers.first else { return }
         
         let legProgress = routeProgress.currentLegProgress
-        let legDistance = distanceFormatter.measurement(of: legProgress.distanceRemaining)
+        let legDistance = self.distanceFormatter.measurement(of: legProgress.distanceRemaining)
         let legEstimates = CPTravelEstimates(distanceRemaining: legDistance, timeRemaining: legProgress.durationRemaining)
-        mapTemplate.update(legEstimates, for: carSession.trip, with: congestionLevel.asCPTimeRemainingColor)
+        self.mapTemplate.update(legEstimates, for: self.carSession.trip, with: congestionLevel.asCPTimeRemainingColor)
         
         let stepProgress = legProgress.currentStepProgress
-        let stepDistance = distanceFormatter.measurement(of: stepProgress.distanceRemaining)
+        let stepDistance = self.distanceFormatter.measurement(of: stepProgress.distanceRemaining)
         let stepEstimates = CPTravelEstimates(distanceRemaining: stepDistance, timeRemaining: stepProgress.durationRemaining)
-        carSession.updateEstimates(stepEstimates, for: maneuver)
+        self.carSession.updateEstimates(stepEstimates, for: maneuver)
     }
     
     @objc func rerouted(_ notification: NSNotification) {
-        updateRouteOnMap()
-        mapView?.recenterMap()
+        self.updateRouteOnMap()
+        self.mapView?.recenterMap()
     }
     
     func updateRouteOnMap() {
-        mapView?.addArrow(route: routeController.routeProgress.route, legIndex: routeController.routeProgress.legIndex, stepIndex: routeController.routeProgress.currentLegProgress.stepIndex + 1)
-        mapView?.showRoutes([routeController.routeProgress.route], legIndex: routeController.routeProgress.legIndex)
-        mapView?.showWaypoints(routeController.routeProgress.route, legIndex: routeController.routeProgress.legIndex)
+        self.mapView?.addArrow(route: self.routeController.routeProgress.route, legIndex: self.routeController.routeProgress.legIndex, stepIndex: self.routeController.routeProgress.currentLegProgress.stepIndex + 1)
+        self.mapView?.showRoutes([self.routeController.routeProgress.route], legIndex: self.routeController.routeProgress.legIndex)
+        self.mapView?.showWaypoints(self.routeController.routeProgress.route, legIndex: self.routeController.routeProgress.legIndex)
     }
     
     func updateManeuvers(for routeProgress: RouteProgress) {
         guard let visualInstruction = routeProgress.currentLegProgress.currentStepProgress.currentVisualInstruction else { return }
-        let step = routeController.routeProgress.currentLegProgress.currentStep
+        let step = self.routeController.routeProgress.currentLegProgress.currentStep
         
         let primaryManeuver = CPManeuver()
-        let distance = distanceFormatter.measurement(of: step.distance)
+        let distance = self.distanceFormatter.measurement(of: step.distance)
         primaryManeuver.initialTravelEstimates = CPTravelEstimates(distanceRemaining: distance, timeRemaining: step.expectedTravelTime)
         
         // Just incase, set some default text
@@ -279,14 +279,14 @@ public class CarPlayNavigationViewController: UIViewController, MLNMapViewDelega
             }
             
             if let upcomingStep = routeController.routeProgress.currentLegProgress.upComingStep {
-                let distance = distanceFormatter.measurement(of: upcomingStep.distance)
+                let distance = self.distanceFormatter.measurement(of: upcomingStep.distance)
                 tertiaryManeuver.initialTravelEstimates = CPTravelEstimates(distanceRemaining: distance, timeRemaining: upcomingStep.expectedTravelTime)
             }
             
             maneuvers.append(tertiaryManeuver)
         }
         
-        carSession.upcomingManeuvers = maneuvers
+        self.carSession.upcomingManeuvers = maneuvers
     }
     
     func endOfRouteFeedbackTemplate() -> CPGridTemplate {
@@ -321,7 +321,7 @@ public class CarPlayNavigationViewController: UIViewController, MLNMapViewDelega
         let arrivalTitle = NSLocalizedString("CARPLAY_ARRIVED", bundle: .mapboxNavigation, value: "You have arrived", comment: "Title on arrival action sheet")
         let arrivalMessage = NSLocalizedString("CARPLAY_ARRIVED_MESSAGE", bundle: .mapboxNavigation, value: "What would you like to do?", comment: "Message on arrival action sheet")
         let alert = CPActionSheetTemplate(title: arrivalTitle, message: arrivalMessage, actions: [rateAction, exitAction])
-        carInterfaceController.presentTemplate(alert, animated: true)
+        self.carInterfaceController.presentTemplate(alert, animated: true)
     }
     
     func presentWayointArrivalUI(for waypoint: Waypoint) {
@@ -338,25 +338,25 @@ public class CarPlayNavigationViewController: UIViewController, MLNMapViewDelega
         }
         
         let waypointArrival = CPAlertTemplate(titleVariants: [title], actions: [continueAlert])
-        carInterfaceController.presentTemplate(waypointArrival, animated: true)
+        self.carInterfaceController.presentTemplate(waypointArrival, animated: true)
     }
 }
 
 @available(iOS 12.0, *)
 extension CarPlayNavigationViewController: StyleManagerDelegate {
     public func locationFor(styleManager: StyleManager) -> CLLocation? {
-        routeController.locationManager.location
+        self.routeController.locationManager.location
     }
     
     public func styleManager(_ styleManager: StyleManager, didApply style: Style) {
-        if mapView?.styleURL != style.mapStyleURL {
-            mapView?.style?.transition = MLNTransition(duration: 0.5, delay: 0)
-            mapView?.styleURL = style.mapStyleURL
+        if self.mapView?.styleURL != style.mapStyleURL {
+            self.mapView?.style?.transition = MLNTransition(duration: 0.5, delay: 0)
+            self.mapView?.styleURL = style.mapStyleURL
         }
     }
     
     public func styleManagerDidRefreshAppearance(_ styleManager: StyleManager) {
-        mapView?.reloadStyle(self)
+        self.mapView?.reloadStyle(self)
     }
 }
 
@@ -364,10 +364,10 @@ extension CarPlayNavigationViewController: StyleManagerDelegate {
 extension CarPlayNavigationViewController: RouteControllerDelegate {
     public func routeController(_ routeController: RouteController, didArriveAt waypoint: Waypoint) -> Bool {
         if routeController.routeProgress.isFinalLeg {
-            presentArrivalUI()
-            carPlayNavigationDelegate?.carPlayNavigationViewControllerDidArrive(self)
+            self.presentArrivalUI()
+            self.carPlayNavigationDelegate?.carPlayNavigationViewControllerDidArrive(self)
         } else {
-            presentWayointArrivalUI(for: waypoint)
+            self.presentWayointArrivalUI(for: waypoint)
         }
         return false
     }

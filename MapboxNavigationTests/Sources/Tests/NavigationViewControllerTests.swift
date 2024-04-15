@@ -65,19 +65,19 @@ class NavigationViewControllerTests: XCTestCase {
     
     override func setUp() {
         super.setUp()
-        customRoadName.removeAll()
+        self.customRoadName.removeAll()
     }
     
     // Brief: navigationViewController(_:roadNameAt:) delegate method is implemented,
     //        with a road name provided and wayNameView label is visible.
     func testNavigationViewControllerDelegateRoadNameAtLocationImplemented() {
-        let navigationViewController = dependencies.navigationViewController
+        let navigationViewController = self.dependencies.navigationViewController
         let routeController = navigationViewController.routeController!
         
         // Identify a location to set the custom road name.
-        let taylorStreetLocation = dependencies.poi.first!
+        let taylorStreetLocation = self.dependencies.poi.first!
         let roadName = "Taylor Swift Street"
-        customRoadName[taylorStreetLocation.coordinate] = roadName
+        self.customRoadName[taylorStreetLocation.coordinate] = roadName
         
         routeController.locationManager(routeController.locationManager, didUpdateLocations: [taylorStreetLocation])
         
@@ -92,14 +92,14 @@ class NavigationViewControllerTests: XCTestCase {
         let routeController = navigationViewController.routeController!
         navigationViewController.styleManager.delegate = self
         
-        let someLocation = dependencies.poi.first!
+        let someLocation = self.dependencies.poi.first!
         
         routeController.locationManager(routeController.locationManager, didUpdateLocations: [someLocation])
         routeController.locationManager(routeController.locationManager, didUpdateLocations: [someLocation])
         routeController.locationManager(routeController.locationManager, didUpdateLocations: [someLocation])
         
-        XCTAssertEqual(updatedStyleNumberOfTimes, 0, "The style should not be updated.")
-        updatedStyleNumberOfTimes = 0
+        XCTAssertEqual(self.updatedStyleNumberOfTimes, 0, "The style should not be updated.")
+        self.updatedStyleNumberOfTimes = 0
     }
     
     // If tunnel flags are enabled and we need to switch styles, we should not force refresh the map style because we have only 1 style.
@@ -108,14 +108,14 @@ class NavigationViewControllerTests: XCTestCase {
         let routeController = navigationViewController.routeController!
         navigationViewController.styleManager.delegate = self
         
-        let someLocation = dependencies.poi.first!
+        let someLocation = self.dependencies.poi.first!
         
         routeController.locationManager(routeController.locationManager, didUpdateLocations: [someLocation])
         routeController.locationManager(routeController.locationManager, didUpdateLocations: [someLocation])
         routeController.locationManager(routeController.locationManager, didUpdateLocations: [someLocation])
         
-        XCTAssertEqual(updatedStyleNumberOfTimes, 0, "The style should not be updated.")
-        updatedStyleNumberOfTimes = 0
+        XCTAssertEqual(self.updatedStyleNumberOfTimes, 0, "The style should not be updated.")
+        self.updatedStyleNumberOfTimes = 0
     }
     
     func testNavigationShouldNotCallStyleManagerDidRefreshAppearanceMoreThanOnceWithTwoStyles() {
@@ -123,26 +123,26 @@ class NavigationViewControllerTests: XCTestCase {
         let routeController = navigationViewController.routeController!
         navigationViewController.styleManager.delegate = self
         
-        let someLocation = dependencies.poi.first!
+        let someLocation = self.dependencies.poi.first!
         
         routeController.locationManager(routeController.locationManager, didUpdateLocations: [someLocation])
         routeController.locationManager(routeController.locationManager, didUpdateLocations: [someLocation])
         routeController.locationManager(routeController.locationManager, didUpdateLocations: [someLocation])
         
-        XCTAssertEqual(updatedStyleNumberOfTimes, 0, "The style should not be updated.")
-        updatedStyleNumberOfTimes = 0
+        XCTAssertEqual(self.updatedStyleNumberOfTimes, 0, "The style should not be updated.")
+        self.updatedStyleNumberOfTimes = 0
     }
     
     // Brief: navigationViewController(_:roadNameAt:) delegate method is implemented,
     //        with a blank road name (empty string) provided and wayNameView label is hidden.
     func testNavigationViewControllerDelegateRoadNameAtLocationEmptyString() {
-        let navigationViewController = dependencies.navigationViewController
+        let navigationViewController = self.dependencies.navigationViewController
         let routeController = navigationViewController.routeController!
         
         // Identify a location to set the custom road name.
-        let turkStreetLocation = dependencies.poi[1]
+        let turkStreetLocation = self.dependencies.poi[1]
         let roadName = ""
-        customRoadName[turkStreetLocation.coordinate] = roadName
+        self.customRoadName[turkStreetLocation.coordinate] = roadName
         
         routeController.locationManager(routeController.locationManager, didUpdateLocations: [turkStreetLocation])
         
@@ -153,7 +153,7 @@ class NavigationViewControllerTests: XCTestCase {
     }
     
     func testNavigationViewControllerDelegateRoadNameAtLocationUmimplemented() {
-        let navigationViewController = dependencies.navigationViewController
+        let navigationViewController = self.dependencies.navigationViewController
         
         // We break the communication between CLLocation and MBRouteController
         // Intent: Prevent the routecontroller from being fed real location updates
@@ -162,7 +162,7 @@ class NavigationViewControllerTests: XCTestCase {
         let routeController = navigationViewController.routeController!
         
         // Identify a location without a custom road name.
-        let fultonStreetLocation = dependencies.poi[2]
+        let fultonStreetLocation = self.dependencies.poi[2]
         
         navigationViewController.mapViewController!.labelRoadNameCompletionHandler = { defaultRaodNameAssigned in
             XCTAssertTrue(defaultRaodNameAssigned, "label road name was not successfully set")
@@ -177,7 +177,7 @@ class NavigationViewControllerTests: XCTestCase {
         
         // wait for the style to load -- routes won't show without it.
         wait(for: [styleLoaded], timeout: 5)
-        navigationViewController.route = initialRoute
+        navigationViewController.route = self.initialRoute
 
         runUntil {
             !(navigationViewController.mapView!.annotations?.isEmpty ?? true)
@@ -185,18 +185,18 @@ class NavigationViewControllerTests: XCTestCase {
         
         guard let annotations = navigationViewController.mapView?.annotations else { return XCTFail("Annotations not found.") }
 
-        let firstDestination = initialRoute.routeOptions.waypoints.last!.coordinate
-        let destinations = annotations.filter(annotationFilter(matching: firstDestination))
+        let firstDestination = self.initialRoute.routeOptions.waypoints.last!.coordinate
+        let destinations = annotations.filter(self.annotationFilter(matching: firstDestination))
         XCTAssert(!destinations.isEmpty, "Destination annotation does not exist on map")
     
         // lets set the second route
-        navigationViewController.route = newRoute
+        navigationViewController.route = self.newRoute
         
         guard let newAnnotations = navigationViewController.mapView?.annotations else { return XCTFail("New annotations not found.") }
-        let secondDestination = newRoute.routeOptions.waypoints.last!.coordinate
+        let secondDestination = self.newRoute.routeOptions.waypoints.last!.coordinate
 
         // do we have a destination on the second route?
-        let newDestinations = newAnnotations.filter(annotationFilter(matching: secondDestination))
+        let newDestinations = newAnnotations.filter(self.annotationFilter(matching: secondDestination))
         XCTAssert(!newDestinations.isEmpty, "New destination annotation does not exist on map")
     }
     
@@ -211,15 +211,15 @@ class NavigationViewControllerTests: XCTestCase {
 
 extension NavigationViewControllerTests: NavigationViewControllerDelegate, StyleManagerDelegate {
     func locationFor(styleManager: StyleManager) -> CLLocation? {
-        dependencies.poi.first!
+        self.dependencies.poi.first!
     }
     
     func styleManagerDidRefreshAppearance(_ styleManager: StyleManager) {
-        updatedStyleNumberOfTimes += 1
+        self.updatedStyleNumberOfTimes += 1
     }
     
     func navigationViewController(_ navigationViewController: NavigationViewController, roadNameAt location: CLLocation) -> String? {
-        customRoadName[location.coordinate] ?? nil
+        self.customRoadName[location.coordinate] ?? nil
     }
 }
 
@@ -254,7 +254,7 @@ class NavigationViewControllerTestable: NavigationViewController {
                   styles: [Style]? = [DayStyle(), NightStyle()],
                   locationManager: NavigationLocationManager? = NavigationLocationManager(),
                   styleLoaded: XCTestExpectation) {
-        styleLoadedExpectation = styleLoaded
+        self.styleLoadedExpectation = styleLoaded
         super.init(for: route, directions: directions, styles: styles, locationManager: locationManager, voiceController: FakeVoiceController())
     }
     
@@ -264,7 +264,7 @@ class NavigationViewControllerTestable: NavigationViewController {
     }
     
     func mapView(_ mapView: MLNMapView, didFinishLoading style: MLNStyle) {
-        styleLoadedExpectation.fulfill()
+        self.styleLoadedExpectation.fulfill()
     }
     
     @available(*, unavailable)

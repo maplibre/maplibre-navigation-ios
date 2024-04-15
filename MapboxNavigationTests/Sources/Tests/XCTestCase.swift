@@ -11,7 +11,7 @@ extension XCTestCase {
     }
 
     func runUntil(_ condition: () -> Bool, testCase: String = #function) {
-        runUntil(condition: condition, testCase: testCase, pollingInterval: NavigationTests.pollingInterval, until: NavigationTests.timeout)
+        self.runUntil(condition: condition, testCase: testCase, pollingInterval: NavigationTests.pollingInterval, until: NavigationTests.timeout)
     }
 
     func runUntil(condition: () -> Bool, testCase: String, pollingInterval: TimeInterval, until timeout: DispatchTime) {
@@ -22,7 +22,7 @@ extension XCTestCase {
 
         if condition() == false {
             RunLoop.current.run(until: Date(timeIntervalSinceNow: pollingInterval))
-            runUntil(condition: condition, testCase: testCase, pollingInterval: pollingInterval, until: timeout)
+            self.runUntil(condition: condition, testCase: testCase, pollingInterval: pollingInterval, until: timeout)
         }
     }
 }

@@ -49,11 +49,11 @@ class CarPlayMapViewController: UIViewController, MLNMapViewDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        styleManager = StyleManager(self)
-        styleManager.styles = [DayStyle(), NightStyle()]
+        self.styleManager = StyleManager(self)
+        self.styleManager.styles = [DayStyle(), NightStyle()]
         
-        resetCamera(animated: false, altitude: CarPlayMapViewController.defaultAltitude)
-        mapView.setUserTrackingMode(.followWithCourse, animated: true, completionHandler: nil)
+        self.resetCamera(animated: false, altitude: CarPlayMapViewController.defaultAltitude)
+        self.mapView.setUserTrackingMode(.followWithCourse, animated: true, completionHandler: nil)
     }
     
     public func zoomInButton() -> CPMapButton {
@@ -89,18 +89,18 @@ class CarPlayMapViewController: UIViewController, MLNMapViewDelegate {
     }
     
     func resetCamera(animated: Bool = false, altitude: CLLocationDistance? = nil) {
-        let camera = mapView.camera
+        let camera = self.mapView.camera
         if let altitude {
             camera.altitude = altitude
         }
         camera.pitch = 60
-        mapView.setCamera(camera, animated: animated)
+        self.mapView.setCamera(camera, animated: animated)
     }
     
     override func viewSafeAreaInsetsDidChange() {
-        mapView.setContentInset(mapView.safeArea, animated: false, completionHandler: nil)
+        self.mapView.setContentInset(self.mapView.safeArea, animated: false, completionHandler: nil)
         
-        guard isOverviewingRoutes else {
+        guard self.isOverviewingRoutes else {
             super.viewSafeAreaInsetsDidChange()
             return
         }
@@ -111,26 +111,26 @@ class CarPlayMapViewController: UIViewController, MLNMapViewDelegate {
             return
         }
         
-        mapView.fit(to: active, animated: false)
+        self.mapView.fit(to: active, animated: false)
     }
 }
 
 @available(iOS 12.0, *)
 extension CarPlayMapViewController: StyleManagerDelegate {
     func locationFor(styleManager: StyleManager) -> CLLocation? {
-        mapView.userLocationForCourseTracking ?? mapView.userLocation?.location ?? coarseLocationManager.location
+        self.mapView.userLocationForCourseTracking ?? self.mapView.userLocation?.location ?? self.coarseLocationManager.location
     }
     
     func styleManager(_ styleManager: StyleManager, didApply style: Style) {
         let styleURL = style.previewMapStyleURL
-        if mapView.styleURL != styleURL {
-            mapView.style?.transition = MLNTransition(duration: 0.5, delay: 0)
-            mapView.styleURL = styleURL
+        if self.mapView.styleURL != styleURL {
+            self.mapView.style?.transition = MLNTransition(duration: 0.5, delay: 0)
+            self.mapView.styleURL = styleURL
         }
     }
     
     func styleManagerDidRefreshAppearance(_ styleManager: StyleManager) {
-        mapView.reloadStyle(self)
+        self.mapView.reloadStyle(self)
     }
 }
 #endif

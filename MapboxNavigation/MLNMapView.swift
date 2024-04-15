@@ -32,7 +32,7 @@ extension MLNMapView {
             return false
         }
         
-        let incidentsSourceIdentifiers = sourceIdentifiers(forTileSetIdentifier: tileSetIdentifier)
+        let incidentsSourceIdentifiers = self.sourceIdentifiers(forTileSetIdentifier: tileSetIdentifier)
         for layer in style.layers {
             if let layer = layer as? MLNVectorStyleLayer, let sourceIdentifier = layer.sourceIdentifier {
                 if incidentsSourceIdentifiers.contains(sourceIdentifier), layer.sourceLayerIdentifier == layerIdentifier {
@@ -54,7 +54,7 @@ extension MLNMapView {
             return
         }
         
-        let incidentsSourceIdentifiers = sourceIdentifiers(forTileSetIdentifier: tileSetIdentifier)
+        let incidentsSourceIdentifiers = self.sourceIdentifiers(forTileSetIdentifier: tileSetIdentifier)
         for layer in style.layers {
             if let layer = layer as? MLNVectorStyleLayer, let sourceIdentifier = layer.sourceIdentifier {
                 if incidentsSourceIdentifiers.contains(sourceIdentifier), layer.sourceLayerIdentifier == layerIdentifier {
@@ -69,10 +69,10 @@ extension MLNMapView {
      */
     public var showsTraffic: Bool {
         get {
-            showsTileSet(withIdentifier: "mapbox.mapbox-traffic-v1", layerIdentifier: "traffic")
+            self.showsTileSet(withIdentifier: "mapbox.mapbox-traffic-v1", layerIdentifier: "traffic")
         }
         set {
-            setShowsTileSet(newValue, withIdentifier: "mapbox.mapbox-traffic-v1", layerIdentifier: "traffic")
+            self.setShowsTileSet(newValue, withIdentifier: "mapbox.mapbox-traffic-v1", layerIdentifier: "traffic")
         }
     }
     
@@ -81,10 +81,10 @@ extension MLNMapView {
      */
     public var showsIncidents: Bool {
         get {
-            showsTileSet(withIdentifier: "mapbox.mapbox-incidents-v1", layerIdentifier: "closures")
+            self.showsTileSet(withIdentifier: "mapbox.mapbox-incidents-v1", layerIdentifier: "closures")
         }
         set {
-            setShowsTileSet(newValue, withIdentifier: "mapbox.mapbox-incidents-v1", layerIdentifier: "closures")
+            self.setShowsTileSet(newValue, withIdentifier: "mapbox.mapbox-incidents-v1", layerIdentifier: "closures")
         }
     }
 }

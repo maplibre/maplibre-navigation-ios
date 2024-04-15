@@ -23,7 +23,7 @@ extension String {
     }
     
     var addingXMLEscapes: String {
-        byReplacing([
+        self.byReplacing([
             ("&", "&amp;"),
             ("<", "&lt;"),
             ("\"", "&quot;"),
@@ -32,15 +32,15 @@ extension String {
     }
     
     var asSSMLAddress: String {
-        "<say-as interpret-as=\"address\">\(addingXMLEscapes)</say-as>"
+        "<say-as interpret-as=\"address\">\(self.addingXMLEscapes)</say-as>"
     }
     
     var asSSMLCharacters: String {
-        "<say-as interpret-as=\"characters\">\(addingXMLEscapes)</say-as>"
+        "<say-as interpret-as=\"characters\">\(self.addingXMLEscapes)</say-as>"
     }
     
     func withSSMLPhoneme(ipaNotation: String) -> String {
-        "<phoneme alphabet=\"ipa\" ph=\"\(ipaNotation.addingXMLEscapes)\">\(addingXMLEscapes)</phoneme>"
+        "<phoneme alphabet=\"ipa\" ph=\"\(ipaNotation.addingXMLEscapes)\">\(self.addingXMLEscapes)</phoneme>"
     }
     
     var isUppercased: Bool {

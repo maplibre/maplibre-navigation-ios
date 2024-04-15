@@ -18,11 +18,11 @@ class ImageDownloadOperation: Operation, ImageDownload {
     }
 
     override var isFinished: Bool {
-        _finished
+        self._finished
     }
 
     override var isExecuting: Bool {
-        _executing
+        self._executing
     }
 
     private var _finished = false {
@@ -57,7 +57,7 @@ class ImageDownloadOperation: Operation, ImageDownload {
     }
 
     func addCompletion(_ completion: @escaping ImageDownloadCompletionBlock) {
-        barrierQueue.async(flags: .barrier) {
+        self.barrierQueue.async(flags: .barrier) {
             self.completionBlocks.append(completion)
         }
     }
@@ -71,19 +71,19 @@ class ImageDownloadOperation: Operation, ImageDownload {
 
         if let dataTask {
             dataTask.cancel()
-            incomingData = nil
+            self.incomingData = nil
             self.dataTask = nil
         }
 
-        if isExecuting {
-            _executing = false
+        if self.isExecuting {
+            self._executing = false
         }
 
-        if !isFinished {
-            _finished = true
+        if !self.isFinished {
+            self._finished = true
         }
 
-        barrierQueue.async {
+        self.barrierQueue.async {
             self.completionBlocks.removeAll()
         }
     }
@@ -95,13 +95,13 @@ class ImageDownloadOperation: Operation, ImageDownload {
         }
 
         if isCancelled == true {
-            _finished = true
+            self._finished = true
             return
         }
 
-        dataTask = session.dataTask(with: request)
+        dataTask = self.session.dataTask(with: self.request)
         if let dataTask {
-            _executing = true
+            self._executing = true
             dataTask.resume()
         } else {
             // fail and bail; connection failed or bad URL (client-side error)
@@ -116,10 +116,10 @@ class ImageDownloadOperation: Operation, ImageDownload {
             return
         }
         if response.statusCode < 400 {
-            incomingData = Data()
+            self.incomingData = Data()
             completionHandler(.allow)
         } else {
-            fireAllCompletions(nil, data: nil, error: DownloadError.serverError)
+            self.fireAllCompletions(nil, data: nil, error: DownloadError.serverError)
             completionHandler(.cancel)
         }
     }
@@ -128,32 +128,32 @@ class ImageDownloadOperation: Operation, ImageDownload {
         if var localData: Data = incomingData {
             let bytes = [UInt8](data)
             localData.append(bytes, count: bytes.count)
-            incomingData = localData
+            self.incomingData = localData
         }
     }
 
     func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
         guard error == nil else {
-            fireAllCompletions(nil, data: nil, error: DownloadError.clientError)
+            self.fireAllCompletions(nil, data: nil, error: DownloadError.clientError)
             return
         }
 
         if let data = incomingData, let image = UIImage(data: data, scale: UIScreen.main.scale) {
-            fireAllCompletions(image, data: data, error: nil)
+            self.fireAllCompletions(image, data: data, error: nil)
         } else {
-            fireAllCompletions(nil, data: incomingData, error: DownloadError.noImageData)
+            self.fireAllCompletions(nil, data: self.incomingData, error: DownloadError.noImageData)
         }
-        _finished = true
-        _executing = false
-        dataTask = nil
-        barrierQueue.async {
+        self._finished = true
+        self._executing = false
+        self.dataTask = nil
+        self.barrierQueue.async {
             self.completionBlocks.removeAll()
         }
     }
 
     private func fireAllCompletions(_ image: UIImage?, data: Data?, error: Error?) {
-        barrierQueue.sync {
-            completionBlocks.forEach { $0(image, data, error) }
+        self.barrierQueue.sync {
+            self.completionBlocks.forEach { $0(image, data, error) }
         }
     }
 }

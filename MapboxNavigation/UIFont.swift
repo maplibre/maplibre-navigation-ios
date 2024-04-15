@@ -23,12 +23,12 @@ extension UIFont {
      Returns an adjusted font for the `preferredContentSizeCategory`.
      */
     @objc public var adjustedFont: UIFont {
-        let font = with(multiplier: fontSizeMultiplier)
+        let font = self.with(multiplier: self.fontSizeMultiplier)
         return font
     }
     
     func with(multiplier: CGFloat) -> UIFont {
-        let font = UIFont(descriptor: fontDescriptor, size: pointSize * fontSizeMultiplier)
+        let font = UIFont(descriptor: fontDescriptor, size: pointSize * self.fontSizeMultiplier)
         return font
     }
     

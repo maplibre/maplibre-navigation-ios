@@ -16,7 +16,7 @@ class NavigationMapViewTests: XCTestCase {
     func testNavigationMapViewCombineWithSimilarCongestions() {
         let navigationMapView = NavigationMapView(frame: CGRect(origin: .zero, size: .iPhone6Plus))
         
-        let congestionSegments = navigationMapView.combine(coordinates, with: [
+        let congestionSegments = navigationMapView.combine(self.coordinates, with: [
             .low,
             .low,
             .low,
@@ -32,7 +32,7 @@ class NavigationMapViewTests: XCTestCase {
     func testNavigationMapViewCombineWithDissimilarCongestions() {
         let navigationMapView = NavigationMapView(frame: CGRect(origin: .zero, size: .iPhone6Plus))
         
-        let congestionSegmentsSevere = navigationMapView.combine(coordinates, with: [
+        let congestionSegmentsSevere = navigationMapView.combine(self.coordinates, with: [
             .low,
             .low,
             .severe,

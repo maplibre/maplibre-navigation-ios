@@ -10,8 +10,8 @@ public class GenericRouteShield: StylableView {
     // The color to use for the text and border.
     @objc dynamic var foregroundColor: UIColor? {
         didSet {
-            layer.borderColor = foregroundColor?.cgColor
-            routeLabel.textColor = foregroundColor
+            layer.borderColor = self.foregroundColor?.cgColor
+            self.routeLabel.textColor = self.foregroundColor
             setNeedsDisplay()
         }
     }
@@ -19,9 +19,9 @@ public class GenericRouteShield: StylableView {
     // The label that contains the route code.
     lazy var routeLabel: UILabel = {
         let label: UILabel = .forAutoLayout()
-        label.text = routeText
+        label.text = self.routeText
         label.textColor = .black
-        label.font = UIFont.boldSystemFont(ofSize: pointSize * ExitView.labelFontSizeScaleFactor)
+        label.font = UIFont.boldSystemFont(ofSize: self.pointSize * ExitView.labelFontSizeScaleFactor)
         
         return label
     }()
@@ -29,7 +29,7 @@ public class GenericRouteShield: StylableView {
     // The text to put in the label
     var routeText: String? {
         didSet {
-            routeLabel.text = routeText
+            self.routeLabel.text = self.routeText
             invalidateIntrinsicContentSize()
         }
     }
@@ -37,32 +37,32 @@ public class GenericRouteShield: StylableView {
     // The size of the text the view attachment is contained within.
     var pointSize: CGFloat {
         didSet {
-            routeLabel.font = routeLabel.font.withSize(pointSize * ExitView.labelFontSizeScaleFactor)
-            rebuildConstraints()
+            self.routeLabel.font = self.routeLabel.font.withSize(self.pointSize * ExitView.labelFontSizeScaleFactor)
+            self.rebuildConstraints()
         }
     }
     
     convenience init(pointSize: CGFloat, text: String) {
         self.init(frame: .zero)
         self.pointSize = pointSize
-        routeText = text
-        commonInit()
+        self.routeText = text
+        self.commonInit()
     }
     
     override init(frame: CGRect) {
-        pointSize = 0.0
+        self.pointSize = 0.0
         super.init(frame: frame)
     }
     
     public required init?(coder aDecoder: NSCoder) {
-        pointSize = 0.0
+        self.pointSize = 0.0
         super.init(coder: aDecoder)
-        commonInit()
+        self.commonInit()
     }
     
     func rebuildConstraints() {
         NSLayoutConstraint.deactivate(constraints)
-        buildConstraints()
+        self.buildConstraints()
     }
     
     func commonInit() {
@@ -70,8 +70,8 @@ public class GenericRouteShield: StylableView {
         layer.masksToBounds = true
         
         // build view hierarchy
-        addSubview(routeLabel)
-        buildConstraints()
+        addSubview(self.routeLabel)
+        self.buildConstraints()
         
         setNeedsLayout()
         invalidateIntrinsicContentSize()
@@ -79,12 +79,12 @@ public class GenericRouteShield: StylableView {
     }
 
     func buildConstraints() {
-        let height = heightAnchor.constraint(equalToConstant: pointSize * 1.2)
+        let height = heightAnchor.constraint(equalToConstant: self.pointSize * 1.2)
         
-        let labelCenterY = routeLabel.centerYAnchor.constraint(equalTo: centerYAnchor)
+        let labelCenterY = self.routeLabel.centerYAnchor.constraint(equalTo: centerYAnchor)
         
-        let labelLeading = routeLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 8)
-        let labelTrailingSpacing = routeLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -8)
+        let labelLeading = self.routeLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 8)
+        let labelTrailingSpacing = self.routeLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -8)
         
         let constraints = [height, labelCenterY, labelLeading, labelTrailingSpacing]
         

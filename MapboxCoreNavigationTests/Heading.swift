@@ -5,8 +5,8 @@ class Heading: CLHeading {
     private var _accuracy: CLLocationDirection
     
     init(heading: CLLocationDirection, accuracy: CLLocationDirection) {
-        _heading = heading
-        _accuracy = accuracy
+        self._heading = heading
+        self._accuracy = accuracy
         super.init()
     }
     
@@ -17,19 +17,19 @@ class Heading: CLHeading {
     
     override open var trueHeading: CLLocationDirection {
         get {
-            _heading
+            self._heading
         }
         set {
-            _heading = newValue
+            self._heading = newValue
         }
     }
     
     override open var headingAccuracy: CLLocationDirection {
         get {
-            _accuracy
+            self._accuracy
         }
         set {
-            _accuracy = newValue
+            self._accuracy = newValue
         }
     }
 }

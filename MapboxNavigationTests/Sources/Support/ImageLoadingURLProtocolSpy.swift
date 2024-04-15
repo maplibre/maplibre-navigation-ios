@@ -13,11 +13,11 @@ class ImageLoadingURLProtocolSpy: URLProtocol {
     private var loadingStopped: Bool = false
 
     override class func canInit(with request: URLRequest) -> Bool {
-        responseData.keys.contains(request.url!)
+        self.responseData.keys.contains(request.url!)
     }
 
     override class func canInit(with task: URLSessionTask) -> Bool {
-        let keys = responseData.keys
+        let keys = self.responseData.keys
         return keys.contains(task.currentRequest!.url!) || keys.contains(task.originalRequest!.url!)
     }
 
@@ -71,37 +71,37 @@ class ImageLoadingURLProtocolSpy: URLProtocol {
     }
 
     override func stopLoading() {
-        loadingStopped = true
+        self.loadingStopped = true
     }
 
     /**
      * Registers data for a given URL
      */
     class func registerData(_ data: Data, forURL url: URL) {
-        responseData[url] = data
+        self.responseData[url] = data
     }
 
     /**
      * Reset stubbed data, active and past requests
      */
     class func reset() {
-        responseData = [:]
-        activeRequests = [:]
-        pastRequests = [:]
+        self.responseData = [:]
+        self.activeRequests = [:]
+        self.pastRequests = [:]
     }
 
     /**
      * Indicates whether a request for the given URL is in progress
      */
     class func hasActiveRequestForURL(_ url: URL) -> Bool {
-        activeRequests.keys.contains(url)
+        self.activeRequests.keys.contains(url)
     }
 
     /**
      * Returns the most recently completed request for the given URL
      */
     class func pastRequestForURL(_ url: URL) -> URLRequest? {
-        pastRequests[url]
+        self.pastRequests[url]
     }
 
     /**

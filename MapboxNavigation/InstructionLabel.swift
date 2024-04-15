@@ -18,7 +18,7 @@ open class InstructionLabel: StylableLabel, InstructionPresenterDataSource {
         didSet {
             guard let instruction else {
                 text = nil
-                instructionPresenter = nil
+                self.instructionPresenter = nil
                 return
             }
             let update: InstructionPresenter.ShieldDownloadCompletion = { [weak self] attributedText in
@@ -29,8 +29,8 @@ open class InstructionLabel: StylableLabel, InstructionPresenterDataSource {
             let presenter = InstructionPresenter(instruction, dataSource: self, imageRepository: imageRepository, downloadCompletion: update)
             
             let attributed = presenter.attributedText()
-            attributedText = instructionDelegate?.label?(self, willPresent: instruction, as: attributed) ?? attributed
-            instructionPresenter = presenter
+            attributedText = self.instructionDelegate?.label?(self, willPresent: instruction, as: attributed) ?? attributed
+            self.instructionPresenter = presenter
         }
     }
 

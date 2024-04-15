@@ -49,7 +49,7 @@ class InstructionsBannerViewIntegrationTests: XCTestCase {
     
     private func resetImageCache() {
         let semaphore = DispatchSemaphore(value: 0)
-        imageRepository.resetImageCache {
+        self.imageRepository.resetImageCache {
             semaphore.signal()
         }
         let semaphoreResult = semaphore.wait(timeout: XCTestCase.NavigationTests.timeout)
@@ -60,33 +60,33 @@ class InstructionsBannerViewIntegrationTests: XCTestCase {
         super.setUp()
         continueAfterFailure = false
 
-        imageRepository.disableDiskCache()
-        resetImageCache()
+        self.imageRepository.disableDiskCache()
+        self.resetImageCache()
 
         ImageDownloadOperationSpy.reset()
-        imageRepository.imageDownloader.setOperationType(ImageDownloadOperationSpy.self)
+        self.imageRepository.imageDownloader.setOperationType(ImageDownloadOperationSpy.self)
     }
 
     override func tearDown() {
-        imageRepository.imageDownloader.setOperationType(nil)
+        self.imageRepository.imageDownloader.setOperationType(nil)
 
         super.tearDown()
     }
     
     func testCustomVisualInstructionDelegate() {
         let view = instructionsView()
-        view.instructionDelegate = reverseDelegate
+        view.instructionDelegate = self.reverseDelegate
         
-        view.update(for: typicalInstruction)
+        view.update(for: self.typicalInstruction)
         
         XCTAssert(view.primaryLabel.attributedText?.string == "teertS niaM")
     }
     
     func testCustomDelegateReturningNilTriggersDefaultBehavior() {
         let view = instructionsView()
-        view.instructionDelegate = silentDelegate
+        view.instructionDelegate = self.silentDelegate
         
-        view.update(for: typicalInstruction)
+        view.update(for: self.typicalInstruction)
         
         XCTAssert(view.primaryLabel.attributedText?.string == "Main Street")
     }
@@ -94,7 +94,7 @@ class InstructionsBannerViewIntegrationTests: XCTestCase {
     func testDelimiterIsShownWhenShieldsNotLoaded() {
         let view = instructionsView()
 
-        view.update(for: makeVisualInstruction(primaryInstruction: instructions, secondaryInstruction: nil))
+        view.update(for: makeVisualInstruction(primaryInstruction: self.instructions, secondaryInstruction: nil))
 
         XCTAssertNotNil(view.primaryLabel.text!.firstIndex(of: "/"))
     }
@@ -104,17 +104,17 @@ class InstructionsBannerViewIntegrationTests: XCTestCase {
         let instruction1 = VisualInstructionComponent(type: .image, text: "I 280", imageURL: ShieldImage.i280.url, abbreviation: nil, abbreviationPriority: 0)
         let instruction2 = VisualInstructionComponent(type: .image, text: "US 101", imageURL: ShieldImage.us101.url, abbreviation: nil, abbreviationPriority: 0)
 
-        imageRepository.storeImage(ShieldImage.i280.image, forKey: instruction1.cacheKey!, toDisk: false)
-        imageRepository.storeImage(ShieldImage.us101.image, forKey: instruction2.cacheKey!, toDisk: false)
+        self.imageRepository.storeImage(ShieldImage.i280.image, forKey: instruction1.cacheKey!, toDisk: false)
+        self.imageRepository.storeImage(ShieldImage.us101.image, forKey: instruction2.cacheKey!, toDisk: false)
 
         let view = instructionsView()
-        view.update(for: makeVisualInstruction(primaryInstruction: instructions, secondaryInstruction: nil))
+        view.update(for: makeVisualInstruction(primaryInstruction: self.instructions, secondaryInstruction: nil))
 
         // the delimiter should NOT be present since both shields are already in the cache
         XCTAssertNil(view.primaryLabel.text!.firstIndex(of: "/"))
 
         // explicitly reset the cache
-        resetImageCache()
+        self.resetImageCache()
     }
 
     func testDelimiterDisappearsOnlyWhenAllShieldsHaveLoaded() {
@@ -130,14 +130,14 @@ class InstructionsBannerViewIntegrationTests: XCTestCase {
         }
         
         // set visual instructions on the view, which triggers the instruction image fetch
-        view.update(for: makeVisualInstruction(primaryInstruction: instructions, secondaryInstruction: nil))
+        view.update(for: makeVisualInstruction(primaryInstruction: self.instructions, secondaryInstruction: nil))
 
         // Slash should be present until an adjacent shield is downloaded
         XCTAssertNotNil(view.primaryLabel.text!.firstIndex(of: "/"))
 
         // simulate the downloads
-        let firstDestinationComponent: VisualInstructionComponent = instructions[0]
-        simulateDownloadingShieldForComponent(firstDestinationComponent)
+        let firstDestinationComponent: VisualInstructionComponent = self.instructions[0]
+        self.simulateDownloadingShieldForComponent(firstDestinationComponent)
 
         // ensure that first callback fires
         wait(for: [firstExpectation], timeout: 1)
@@ -145,8 +145,8 @@ class InstructionsBannerViewIntegrationTests: XCTestCase {
         // change the callback to track the second shield component
         view.primaryLabel.imageDownloadCompletion = secondExpectation.fulfill
         
-        let secondDestinationComponent = instructions[2]
-        simulateDownloadingShieldForComponent(secondDestinationComponent)
+        let secondDestinationComponent = self.instructions[2]
+        self.simulateDownloadingShieldForComponent(secondDestinationComponent)
 
         // ensure that second callback fires
         wait(for: [secondExpectation], timeout: 1)
@@ -195,7 +195,7 @@ class InstructionsBannerViewIntegrationTests: XCTestCase {
         }
         
         // set visual instructions on the view, which triggers the instruction image fetch
-        view.update(for: makeVisualInstruction(primaryInstruction: instructions, secondaryInstruction: nil))
+        view.update(for: makeVisualInstruction(primaryInstruction: self.instructions, secondaryInstruction: nil))
         
         let firstAttachmentRange = NSRange(location: 0, length: 1)
         let secondAttachmentRange = NSRange(location: 4, length: 1)
@@ -220,8 +220,8 @@ class InstructionsBannerViewIntegrationTests: XCTestCase {
                                                              })
         
         // simulate the downloads
-        let firstDestinationComponent: VisualInstructionComponent = instructions[0]
-        simulateDownloadingShieldForComponent(firstDestinationComponent)
+        let firstDestinationComponent: VisualInstructionComponent = self.instructions[0]
+        self.simulateDownloadingShieldForComponent(firstDestinationComponent)
         
         // ensure that first callback fires
         wait(for: [firstExpectation], timeout: 1)
@@ -246,8 +246,8 @@ class InstructionsBannerViewIntegrationTests: XCTestCase {
         // change the callback to track the second shield component
         view.primaryLabel.imageDownloadCompletion = secondExpectation.fulfill
         
-        let secondDestinationComponent = instructions[2]
-        simulateDownloadingShieldForComponent(secondDestinationComponent)
+        let secondDestinationComponent = self.instructions[2]
+        self.simulateDownloadingShieldForComponent(secondDestinationComponent)
         
         // ensure that second callback fires
         wait(for: [secondExpectation], timeout: 1)
@@ -290,7 +290,7 @@ class InstructionsBannerViewIntegrationTests: XCTestCase {
         let attributed = presenter.attributedText()
         
         let key = [exitCodeAttribute.cacheKey!, ExitView.criticalHash(side: .right, dataSource: label)].joined(separator: "-")
-        XCTAssertNotNil(imageRepository.cachedImageForKey(key), "Expected cached image")
+        XCTAssertNotNil(self.imageRepository.cachedImageForKey(key), "Expected cached image")
         
         let spaceRange = NSMakeRange(1, 1)
         let space = attributed.attributedSubstring(from: spaceRange)
@@ -309,7 +309,7 @@ class InstructionsBannerViewIntegrationTests: XCTestCase {
         let operation = ImageDownloadOperationSpy.operationForURL(component.imageURL!)!
         operation.fireAllCompletions(ShieldImage.i280.image, data: ShieldImage.i280.image.pngData(), error: nil)
 
-        XCTAssertNotNil(imageRepository.cachedImageForKey(component.cacheKey!))
+        XCTAssertNotNil(self.imageRepository.cachedImageForKey(component.cacheKey!))
     }
 }
 

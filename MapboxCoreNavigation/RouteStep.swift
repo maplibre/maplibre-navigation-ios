@@ -24,7 +24,7 @@ extension RouteStep {
      Returns true if the route travels on a motorway primarily identified by a route number rather than a road name.
      */
     var isNumberedMotorway: Bool {
-        guard isMotorway else { return false }
+        guard self.isMotorway else { return false }
         guard let codes, let digitRange = codes.first?.rangeOfCharacter(from: .decimalDigits) else {
             return false
         }

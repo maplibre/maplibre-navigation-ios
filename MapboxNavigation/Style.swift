@@ -94,12 +94,12 @@ open class FloatingButton: Button {
     var constrainedSize: CGSize? {
         didSet {
             guard let size = constrainedSize else {
-                NSLayoutConstraint.deactivate([widthConstraint, heightConstraint])
+                NSLayoutConstraint.deactivate([self.widthConstraint, self.heightConstraint])
                 return
             }
-            widthConstraint.constant = size.width
-            heightConstraint.constant = size.height
-            NSLayoutConstraint.activate([widthConstraint, heightConstraint])
+            self.widthConstraint.constant = size.width
+            self.heightConstraint.constant = size.height
+            NSLayoutConstraint.activate([self.widthConstraint, self.heightConstraint])
         }
     }
     
@@ -124,12 +124,12 @@ public class ReportButton: Button {
     
     public required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
-        commonInit()
+        self.commonInit()
     }
 
     override public init(frame: CGRect) {
         super.init(frame: frame)
-        commonInit()
+        self.commonInit()
     }
     
     private func commonInit() {
@@ -156,7 +156,7 @@ public class ReportButton: Button {
     }
     
     @objc func slideUp(constraint: NSLayoutConstraint) {
-        constraint.constant = upConstant
+        constraint.constant = self.upConstant
         setNeedsUpdateConstraints()
         UIView.defaultSpringAnimation(0.5, animations: {
             self.superview?.layoutIfNeeded()
@@ -180,8 +180,8 @@ public class HighlightedButton: Button {}
 public class ResumeButton: UIControl {
     override public dynamic var tintColor: UIColor! {
         didSet {
-            imageView.tintColor = tintColor
-            titleLabel.textColor = tintColor
+            self.imageView.tintColor = self.tintColor
+            self.titleLabel.textColor = self.tintColor
         }
     }
     
@@ -190,27 +190,27 @@ public class ResumeButton: UIControl {
     
     override public init(frame: CGRect) {
         super.init(frame: frame)
-        commonInit()
+        self.commonInit()
     }
     
     public required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
-        commonInit()
+        self.commonInit()
     }
 
     override public func prepareForInterfaceBuilder() {
         super.prepareForInterfaceBuilder()
-        commonInit()
+        self.commonInit()
     }
     
     func commonInit() {
-        titleLabel.text = NSLocalizedString("RESUME", bundle: .mapboxNavigation, value: "Resume", comment: "Button title for resume tracking")
-        titleLabel.sizeToFit()
-        addSubview(imageView)
-        addSubview(titleLabel)
+        self.titleLabel.text = NSLocalizedString("RESUME", bundle: .mapboxNavigation, value: "Resume", comment: "Button title for resume tracking")
+        self.titleLabel.sizeToFit()
+        addSubview(self.imageView)
+        addSubview(self.titleLabel)
         
-        titleLabel.translatesAutoresizingMaskIntoConstraints = false
-        imageView.translatesAutoresizingMaskIntoConstraints = false
+        self.titleLabel.translatesAutoresizingMaskIntoConstraints = false
+        self.imageView.translatesAutoresizingMaskIntoConstraints = false
         translatesAutoresizingMaskIntoConstraints = false
         
         let views = ["label": titleLabel, "imageView": imageView]
@@ -240,8 +240,8 @@ open class StepListIndicatorView: UIView {
         layer.cornerRadius = bounds.midY
         layer.masksToBounds = true
         layer.opacity = 0.25
-        applyGradient(colors: gradientColors)
-        addBlurredEffect(view: blurredEffectView, to: self)
+        applyGradient(colors: self.gradientColors)
+        self.addBlurredEffect(view: self.blurredEffectView, to: self)
     }
     
     fileprivate func addBlurredEffect(view: UIView, to parentView: UIView) {
@@ -257,13 +257,13 @@ open class StylableLabel: UILabel {
     // Workaround the fact that UILabel properties are not marked with UI_APPEARANCE_SELECTOR
     @objc open dynamic var normalTextColor: UIColor = .black {
         didSet {
-            textColor = normalTextColor
+            textColor = self.normalTextColor
         }
     }
     
     @objc open dynamic var normalFont: UIFont = .systemFont(ofSize: 16) {
         didSet {
-            font = normalFont
+            font = self.normalFont
         }
     }
 }
@@ -273,13 +273,13 @@ open class StylableLabel: UILabel {
 open class StylableView: UIView {
     @objc dynamic var borderWidth: CGFloat = 0.0 {
         didSet {
-            layer.borderWidth = borderWidth
+            layer.borderWidth = self.borderWidth
         }
     }
 
     @objc dynamic var cornerRadius: CGFloat = 0.0 {
         didSet {
-            layer.cornerRadius = cornerRadius
+            layer.cornerRadius = self.cornerRadius
         }
     }
 }
@@ -290,7 +290,7 @@ open class StylableTextView: UITextView {
     // Workaround the fact that UITextView properties are not marked with UI_APPEARANCE_SELECTOR
     @objc open dynamic var normalTextColor: UIColor = .black {
         didSet {
-            textColor = normalTextColor
+            textColor = self.normalTextColor
         }
     }
 }
@@ -307,11 +307,11 @@ open class DistanceLabel: StylableLabel {
     }
 
     @objc public dynamic var valueFont: UIFont = .systemFont(ofSize: 16, weight: .medium) {
-        didSet { update() }
+        didSet { self.update() }
     }
 
     @objc public dynamic var unitFont: UIFont = .systemFont(ofSize: 11, weight: .medium) {
-        didSet { update() }
+        didSet { self.update() }
     }
     
     /**
@@ -322,7 +322,7 @@ open class DistanceLabel: StylableLabel {
      */
     var attributedDistanceString: NSAttributedString? {
         didSet {
-            update()
+            self.update()
         }
     }
     
@@ -339,19 +339,19 @@ open class DistanceLabel: StylableLabel {
             let foregroundColor: UIColor
             let font: UIFont
             if emphasizedDistanceString.attribute(NSAttributedString.Key.quantity, at: range.location, effectiveRange: nil) != nil {
-                foregroundColor = valueTextColor
-                font = valueFont
+                foregroundColor = self.valueTextColor
+                font = self.valueFont
                 hasQuantity = true
             } else {
-                foregroundColor = unitTextColor
-                font = unitFont
+                foregroundColor = self.unitTextColor
+                font = self.unitFont
             }
             emphasizedDistanceString.addAttributes([.foregroundColor: foregroundColor, .font: font], range: range)
         }
         
         // As a failsafe, if no quantity was found, emphasize the entire string.
         if !hasQuantity {
-            emphasizedDistanceString.addAttributes([.foregroundColor: valueTextColor, .font: valueFont], range: wholeRange)
+            emphasizedDistanceString.addAttributes([.foregroundColor: self.valueTextColor, .font: self.valueFont], range: wholeRange)
         }
         
         // Replace spaces with hair spaces to economize on horizontal screen
@@ -417,19 +417,19 @@ open class WayNameView: UIView {
     
     var text: String? {
         get {
-            label.text
+            self.label.text
         }
         set {
-            label.text = newValue
+            self.label.text = newValue
         }
     }
     
     var attributedText: NSAttributedString? {
         get {
-            label.attributedText
+            self.label.attributedText
         }
         set {
-            label.attributedText = newValue
+            self.label.attributedText = newValue
         }
     }
     
@@ -445,18 +445,18 @@ open class WayNameView: UIView {
     
     override public init(frame: CGRect) {
         super.init(frame: frame)
-        commonInit()
+        self.commonInit()
     }
     
     public required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
-        commonInit()
+        self.commonInit()
     }
     
     func commonInit() {
-        addSubview(label)
+        addSubview(self.label)
         layoutMargins = WayNameView.textInsets
-        label.pinInSuperview(respectingMargins: true)
+        self.label.pinInSuperview(respectingMargins: true)
     }
     
     override open func layoutSubviews() {
@@ -486,13 +486,13 @@ public class ProgressBar: UIView {
     // Set the progress between 0.0-1.0
     var progress: CGFloat = 0 {
         didSet {
-            updateProgressBar()
+            self.updateProgressBar()
             layoutIfNeeded()
         }
     }
     
     override open var description: String {
-        super.description + "; progress = \(progress)"
+        super.description + "; progress = \(self.progress)"
     }
     
     func setProgress(_ progress: CGFloat, animated: Bool) {
@@ -504,11 +504,11 @@ public class ProgressBar: UIView {
     override public func layoutSubviews() {
         super.layoutSubviews()
         
-        if bar.superview == nil {
-            addSubview(bar)
+        if self.bar.superview == nil {
+            addSubview(self.bar)
         }
         
-        updateProgressBar()
+        self.updateProgressBar()
     }
     
     func updateProgressBar() {
@@ -518,11 +518,11 @@ public class ProgressBar: UIView {
             case .leftToRight:
                 origin = .zero
             case .rightToLeft:
-                origin = CGPoint(x: superview.bounds.width * (1 - progress), y: 0)
+                origin = CGPoint(x: superview.bounds.width * (1 - self.progress), y: 0)
             @unknown default:
                 fatalError("Unknown userInterfaceLayoutDirection")
             }
-            bar.frame = CGRect(origin: origin, size: CGSize(width: superview.bounds.width * progress, height: bounds.height))
+            self.bar.frame = CGRect(origin: origin, size: CGSize(width: superview.bounds.width * self.progress, height: bounds.height))
         }
     }
 }
@@ -549,35 +549,35 @@ open class StylableButton: UIButton {
     // Sets the font on the button’s titleLabel
     @objc open dynamic var textFont: UIFont = .systemFont(ofSize: 20, weight: .medium) {
         didSet {
-            titleLabel?.font = textFont
+            titleLabel?.font = self.textFont
         }
     }
     
     // Sets the text color for normal state
     @objc open dynamic var textColor: UIColor = .black {
         didSet {
-            setTitleColor(textColor, for: .normal)
+            setTitleColor(self.textColor, for: .normal)
         }
     }
     
     // Sets the border color
     @objc open dynamic var borderColor: UIColor = .clear {
         didSet {
-            layer.borderColor = borderColor.cgColor
+            layer.borderColor = self.borderColor.cgColor
         }
     }
     
     // Sets the border width
     @objc open dynamic var borderWidth: CGFloat = 0 {
         didSet {
-            layer.borderWidth = borderWidth
+            layer.borderWidth = self.borderWidth
         }
     }
     
     // Sets the corner radius
     @objc open dynamic var cornerRadius: CGFloat = 0 {
         didSet {
-            layer.cornerRadius = cornerRadius
+            layer.cornerRadius = self.cornerRadius
         }
     }
 }
@@ -589,7 +589,7 @@ open class ManeuverContainerView: UIView {
     
     @objc dynamic var height: CGFloat = 100 {
         didSet {
-            heightConstraint.constant = height
+            self.heightConstraint.constant = self.height
             setNeedsUpdateConstraints()
         }
     }
@@ -645,6 +645,6 @@ public class MarkerView: UIView {
     
     override public func draw(_ rect: CGRect) {
         super.draw(rect)
-        StyleKitMarker.drawMarker(innerColor: innerColor, shadowColor: shadowColor, pinColor: pinColor, strokeColor: strokeColor)
+        StyleKitMarker.drawMarker(innerColor: self.innerColor, shadowColor: self.shadowColor, pinColor: self.pinColor, strokeColor: self.strokeColor)
     }
 }
