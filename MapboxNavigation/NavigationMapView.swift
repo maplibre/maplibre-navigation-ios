@@ -361,7 +361,7 @@ open class NavigationMapView: MLNMapView, UIGestureRecognizerDelegate {
         }
     }
     
-    // MARK: -  Gesture Recognizers
+    // MARK: - Gesture Recognizers
     
     /**
      Fired when NavigationMapView detects a tap not handled elsewhere by other gesture recognizers.
