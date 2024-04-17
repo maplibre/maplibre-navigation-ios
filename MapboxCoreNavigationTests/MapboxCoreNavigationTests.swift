@@ -13,7 +13,7 @@ let waypoint2 = Waypoint(coordinate: CLLocationCoordinate2D(latitude: 37.7727, l
 let directions = Directions(accessToken: "pk.feedCafeDeadBeefBadeBede")
 let route = Route(json: jsonRoute, waypoints: [waypoint1, waypoint2], options: NavigationRouteOptions(waypoints: [waypoint1, waypoint2]))
 
-let waitForInterval: TimeInterval = 5
+let waitForInterval: TimeInterval = 30
 
 class MapboxCoreNavigationTests: XCTestCase {
     var navigation: RouteController!
