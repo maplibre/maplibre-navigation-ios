@@ -8,19 +8,20 @@ on:
 
 jobs:
   format:
+    name: Code Style
     runs-on: macos-14
     steps:
     - name: Install tools
       run: brew install swiftlint
       
-    - name: Checkout maplibre-swiftui-dsl-playground
+    - name: Checkout
       uses: actions/checkout@v4
       
     - name: Check format
       run: swiftlint lint . --reporter github-actions-logging
 
   test:
-    name: Build and Test using Xcode 15.3 on iPhone 15 Pro
+    name: Build and Test
     runs-on: macos-14
     steps:
       - name: Install tools
