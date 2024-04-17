@@ -46,15 +46,6 @@
       }
     },
     {
-      "identity" : "swiftlintplugin",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/patrick-kladek/SwiftLintPlugin",
-      "state" : {
-        "branch" : "feature/reduce-min-platform-requirements",
-        "revision" : "e892d86980c28d77e87caaeea81f7bcbc126b8bc"
-      }
-    },
-    {
       "identity" : "turf-swift",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/flitsmeister/turf-swift",
