@@ -9,7 +9,6 @@ import MapboxDirectionsObjc
  */
 @objc(MBNavigationRouteOptions)
 open class NavigationRouteOptions: RouteOptions {
-
     /**
      Initializes a navigation route options object for routes between the given waypoints and an optional profile identifier optimized for navigation.
 
@@ -66,7 +65,6 @@ open class NavigationRouteOptions: RouteOptions {
  */
 @objc(MBNavigationMatchOptions)
 open class NavigationMatchOptions: MatchOptions {
-    
     /**
      Initializes a navigation route options object for routes between the given waypoints and an optional profile identifier optimized for navigation.
      

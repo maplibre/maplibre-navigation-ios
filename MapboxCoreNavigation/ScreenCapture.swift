@@ -2,11 +2,9 @@ import Foundation
 #if os(iOS)
 import UIKit
 
-extension UIWindow {
-    
+public extension UIWindow {
     /// Returns a screenshot of the current window
-    public func capture() -> UIImage? {
-        
+    func capture() -> UIImage? {
         UIGraphicsBeginImageContextWithOptions(frame.size, isOpaque, UIScreen.main.scale)
         
         drawHierarchy(in: bounds, afterScreenUpdates: false)
@@ -20,9 +18,7 @@ extension UIWindow {
 }
 
 extension UIImage {
-    
     func scaled(toFit newWidth: CGFloat) -> UIImage? {
-        
         let factor = newWidth / size.width
         let newSize = CGSize(width: size.width * factor, height: size.height * factor)
         
@@ -42,10 +38,10 @@ extension UIImage {
 
 func captureScreen(scaledToFit width: CGFloat) -> Data? {
     #if os(iOS)
-        guard let image = UIApplication.shared.keyWindow?.capture()?.scaled(toFit: width) else { return nil }
-        return image.jpegData(compressionQuality: 0.2)
+    guard let image = UIApplication.shared.keyWindow?.capture()?.scaled(toFit: width) else { return nil }
+    return image.jpegData(compressionQuality: 0.2)
     #else
         
-        return nil // Not yet implemented for other platforms
+    return nil // Not yet implemented for other platforms
     #endif
 }

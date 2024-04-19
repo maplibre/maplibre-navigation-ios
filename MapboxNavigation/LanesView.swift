@@ -1,6 +1,6 @@
-import UIKit
 import MapboxCoreNavigation
 import MapboxDirections
+import UIKit
 
 /// :nodoc:
 @IBDesignable
@@ -11,20 +11,20 @@ open class LanesView: UIView {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        commonInit()
+        self.commonInit()
     }
     
-    required public init?(coder aDecoder: NSCoder) {
+    public required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
-        commonInit()
+        self.commonInit()
     }
     
-    open override func prepareForInterfaceBuilder() {
+    override open func prepareForInterfaceBuilder() {
         super.prepareForInterfaceBuilder()
 
-        for _ in 0...4 {
-            let laneView = laneArrowView()
-            stackView.addArrangedSubview(laneView)
+        for _ in 0 ... 4 {
+            let laneView = self.laneArrowView()
+            self.stackView.addArrangedSubview(laneView)
         }
     }
     
@@ -71,24 +71,24 @@ open class LanesView: UIView {
      */
     @objc(updateForVisualInstructionBanner:)
     public func update(for visualInstruction: VisualInstructionBanner?) {
-        clearLaneViews()
+        self.clearLaneViews()
         
         guard let tertiaryInstruction = visualInstruction?.tertiaryInstruction,
-                  tertiaryInstruction.containsLaneIndications else {
-                    hide()
-                    return
+              tertiaryInstruction.containsLaneIndications else {
+            self.hide()
+            return
         }
         
-        let laneIndications: [LaneIndicationComponent]? = tertiaryInstruction.components.compactMap({ $0 as? LaneIndicationComponent })
+        let laneIndications: [LaneIndicationComponent]? = tertiaryInstruction.components.compactMap { $0 as? LaneIndicationComponent }
         
         guard let lanes = laneIndications, !lanes.isEmpty else {
-            hide()
+            self.hide()
             return
         }
         
         let subviews = lanes.map { LaneView(component: $0) }
-        stackView.addArrangedSubviews(subviews)
-        show()
+        self.stackView.addArrangedSubviews(subviews)
+        self.show()
     }
     
     public func show(animated: Bool = true) {
@@ -98,7 +98,7 @@ open class LanesView: UIView {
                 self.isHidden = false
             }, completion: nil)
         } else {
-            self.isHidden = false
+            isHidden = false
         }
     }
     
@@ -110,10 +110,9 @@ open class LanesView: UIView {
     }
     
     fileprivate func clearLaneViews() {
-        stackView.arrangedSubviews.forEach {
-            stackView.removeArrangedSubview($0)
-            $0.removeFromSuperview()
+        for arrangedSubview in self.stackView.arrangedSubviews {
+            self.stackView.removeArrangedSubview(arrangedSubview)
+            arrangedSubview.removeFromSuperview()
         }
     }
-    
 }

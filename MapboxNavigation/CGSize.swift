@@ -13,6 +13,6 @@ extension CGSize: ExpressibleByFloatLiteral {
     }
     
     var aspectRatio: CGFloat {
-        return width / height
+        width / height
     }
 }

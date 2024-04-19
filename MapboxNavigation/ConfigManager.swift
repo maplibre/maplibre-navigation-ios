@@ -31,6 +31,5 @@ public struct MNConfig {
     public var routeArrowColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
     public var routeArrowCasingColor = #colorLiteral(red: 0, green: 0.4980392157, blue: 0.9098039216, alpha: 1)
     
-    public init() {
-    }
+    public init() {}
 }

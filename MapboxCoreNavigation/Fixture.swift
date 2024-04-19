@@ -1,7 +1,6 @@
 import Foundation
 
 public class Fixture: NSObject {
-    
     public class func stringFromFileNamed(name: String, bundle: Bundle) -> String {
         guard let path = bundle.path(forResource: name, ofType: "json") ?? bundle.path(forResource: name, ofType: "geojson") else {
             return ""

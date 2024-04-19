@@ -1,0 +1,6 @@
+#!/bin/bash
+
+# Will download all dependencies if not already existing
+swift package plugin --list
+
+./.tools/git-format-staged --formatter ".build/checkouts/SwiftFormat/CommandLineTool/swiftformat stdin --stdinpath '{}'" "*.swift"

@@ -5,32 +5,35 @@ public class DataCache: NSObject, BimodalDataCache {
     let memoryCache: NSCache<NSString, NSData>
     let fileCache = FileCache()
 
-    public override init() {
-        memoryCache = NSCache<NSString, NSData>()
-        memoryCache.name = "In-Memory Data Cache"
+    override public init() {
+        self.memoryCache = NSCache<NSString, NSData>()
+        self.memoryCache.name = "In-Memory Data Cache"
 
         super.init()
         
         NotificationCenter.default.addObserver(self, selector: #selector(DataCache.clearMemory), name: UIApplication.didReceiveMemoryWarningNotification, object: nil)
     }
 
-
     // MARK: Data cache
 
     /*
-     Stores data in the cache for the given key. If `toDisk` is set to `true`, the completion handler is called following writing the data to disk, otherwise it is called immediately upon storing the data in the memory cache.
-    */
+      Stores data in the cache for the given key. If `toDisk` is set to `true`, the completion handler is called following writing the data to disk, otherwise it is called immediately upon storing the data in the memory cache.
+     */
     public func store(_ data: Data, forKey key: String, toDisk: Bool, completion: CompletionHandler?) {
-        storeDataInMemoryCache(data, forKey: key)
+        self.storeDataInMemoryCache(data, forKey: key)
 
-        toDisk == true ? fileCache.store(data, forKey: key, completion: completion) : completion?()
+        if toDisk {
+            self.fileCache.store(data, forKey: key, completion: completion)
+        } else {
+            completion?()
+        }
     }
 
     /*
      Returns data from the cache for the given key, if any. The memory cache is consulted first, followed by the disk cache. If data is found on disk which isn't in memory, it is added to the memory cache.
      */
     public func data(forKey key: String?) -> Data? {
-        guard let key = key else {
+        guard let key else {
             return nil
         }
 
@@ -39,7 +42,7 @@ public class DataCache: NSObject, BimodalDataCache {
         }
 
         if let data = fileCache.dataFromFileCache(forKey: key) {
-            storeDataInMemoryCache(data, forKey: key)
+            self.storeDataInMemoryCache(data, forKey: key)
             return data
         }
 
@@ -50,18 +53,18 @@ public class DataCache: NSObject, BimodalDataCache {
      Clears out the memory cache.
      */
     public func clearMemory() {
-        memoryCache.removeAllObjects()
+        self.memoryCache.removeAllObjects()
     }
 
     /*
      Clears the disk cache and calls the completion handler when finished.
      */
     public func clearDisk(completion: CompletionHandler?) {
-        fileCache.clearDisk(completion: completion)
+        self.fileCache.clearDisk(completion: completion)
     }
 
     private func storeDataInMemoryCache(_ data: Data, forKey key: String) {
-        memoryCache.setObject(data as NSData, forKey: key as NSString)
+        self.memoryCache.setObject(data as NSData, forKey: key as NSString)
     }
 
     private func dataFromMemoryCache(forKey key: String) -> Data? {
@@ -70,5 +73,4 @@ public class DataCache: NSObject, BimodalDataCache {
         }
         return nil
     }
-
 }

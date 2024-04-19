@@ -29,10 +29,10 @@ public protocol BimodalDataCache: BimodalCache {
     func data(forKey: String?) -> Data?
 }
 
- /**
+/**
   A general purpose on-disk cache used by both the ImageCache and DataCache implementations
  */
-internal class FileCache {
+class FileCache {
     let diskCacheURL: URL = {
         let fileManager = FileManager.default
         let basePath = fileManager.urls(for: .cachesDirectory, in: .userDomainMask).first!
@@ -44,8 +44,8 @@ internal class FileCache {
     var fileManager: FileManager?
 
     init() {
-        diskAccessQueue.sync {
-            fileManager = FileManager()
+        self.diskAccessQueue.sync {
+            self.fileManager = FileManager()
         }
     }
 
@@ -53,12 +53,12 @@ internal class FileCache {
      Stores data in the file cache for the given key, and calls the completion handler when finished.
      */
     public func store(_ data: Data, forKey key: String, completion: CompletionHandler?) {
-        guard let fileManager = fileManager else {
+        guard let fileManager else {
             completion?()
             return
         }
 
-        diskAccessQueue.async {
+        self.diskAccessQueue.async {
             self.createCacheDirIfNeeded(self.diskCacheURL, fileManager: fileManager)
             let cacheURL = self.cacheURLWithKey(key)
 
@@ -69,19 +69,18 @@ internal class FileCache {
             }
             completion?()
         }
-
     }
 
     /*
      Returns data from the file cache for the given key, if any.
      */
     public func dataFromFileCache(forKey key: String?) -> Data? {
-        guard let key = key else {
+        guard let key else {
             return nil
         }
 
         do {
-            return try Data.init(contentsOf: cacheURLWithKey(key))
+            return try Data(contentsOf: self.cacheURLWithKey(key))
         } catch {
             return nil
         }
@@ -91,7 +90,7 @@ internal class FileCache {
      Clears the disk cache by removing and recreating the cache directory, and calls the completion handler when finished.
      */
     public func clearDisk(completion: CompletionHandler?) {
-        guard let fileManager = fileManager else {
+        guard let fileManager else {
             return
         }
 
@@ -110,17 +109,17 @@ internal class FileCache {
     }
 
     func cachePathWithKey(_ key: String) -> String {
-        let cacheKey = cacheKeyForKey(key)
-        return cacheURLWithKey(cacheKey).absoluteString
+        let cacheKey = self.cacheKeyForKey(key)
+        return self.cacheURLWithKey(cacheKey).absoluteString
     }
 
     func cacheURLWithKey(_ key: String) -> URL {
-        let cacheKey = cacheKeyForKey(key)
-        return diskCacheURL.appendingPathComponent(cacheKey)
+        let cacheKey = self.cacheKeyForKey(key)
+        return self.diskCacheURL.appendingPathComponent(cacheKey)
     }
 
     func cacheKeyForKey(_ key: String) -> String {
-        return key.md5()
+        key.md5()
     }
 
     private func createCacheDirIfNeeded(_ url: URL, fileManager: FileManager) {

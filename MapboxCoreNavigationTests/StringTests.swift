@@ -1,5 +1,5 @@
-import XCTest
 @testable import MapboxCoreNavigation
+import XCTest
 
 class StringTests: XCTestCase {
     func testMinimumEditDistance() {

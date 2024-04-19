@@ -1,9 +1,7 @@
-import XCTest
 @testable import MapboxNavigation
-
+import XCTest
 
 class ImageDownloaderTests: XCTestCase {
-
     lazy var sessionConfig: URLSessionConfiguration = {
         let config = URLSessionConfiguration.default
         config.protocolClasses = [ImageLoadingURLProtocolSpy.self]
@@ -16,24 +14,24 @@ class ImageDownloaderTests: XCTestCase {
 
     override func setUp() {
         super.setUp()
-        self.continueAfterFailure = false
+        continueAfterFailure = false
 
         ImageLoadingURLProtocolSpy.reset()
 
         let imageData = ShieldImage.i280.image.pngData()!
-        ImageLoadingURLProtocolSpy.registerData(imageData, forURL: imageURL)
+        ImageLoadingURLProtocolSpy.registerData(imageData, forURL: self.imageURL)
 
-        downloader = ImageDownloader(sessionConfiguration: sessionConfig)
+        self.downloader = ImageDownloader(sessionConfiguration: self.sessionConfig)
     }
 
     override func tearDown() {
-        downloader = nil
+        self.downloader = nil
 
         super.tearDown()
     }
 
     func testDownloadingAnImage() {
-        guard let downloader = downloader else {
+        guard let downloader else {
             XCTFail()
             return
         }
@@ -42,7 +40,7 @@ class ImageDownloaderTests: XCTestCase {
         var errorReturned: Error?
         let semaphore = DispatchSemaphore(value: 0)
 
-        downloader.downloadImage(with: imageURL) { (image, data, error) in
+        downloader.downloadImage(with: self.imageURL) { image, data, error in
             imageReturned = image
             dataReturned = data
             errorReturned = error
@@ -52,7 +50,7 @@ class ImageDownloaderTests: XCTestCase {
         XCTAssert(semaphoreResult == .success, "Semaphore timed out")
 
         // The ImageDownloader is meant to be used with an external caching mechanism
-        let request = ImageLoadingURLProtocolSpy.pastRequestForURL(imageURL)!
+        let request = ImageLoadingURLProtocolSpy.pastRequestForURL(self.imageURL)!
         XCTAssertEqual(request.cachePolicy, .reloadIgnoringCacheData)
 
         XCTAssertNotNil(imageReturned)
@@ -62,7 +60,7 @@ class ImageDownloaderTests: XCTestCase {
     }
 
     func testDownloadingImageWhileAlreadyInProgressAddsCallbacksWithoutAddingAnotherRequest() {
-        guard let downloader = downloader else {
+        guard let downloader else {
             XCTFail()
             return
         }
@@ -73,26 +71,26 @@ class ImageDownloaderTests: XCTestCase {
         // URL loading is delayed in order to simulate conditions under which multiple requests for the same asset would be made
         ImageLoadingURLProtocolSpy.delayImageLoading()
 
-        downloader.downloadImage(with: imageURL) { (image, data, error) in
+        downloader.downloadImage(with: self.imageURL) { _, _, _ in
             firstCallbackCalled = true
         }
-        operation = downloader.activeOperation(with: imageURL)!
+        operation = downloader.activeOperation(with: self.imageURL)!
 
-        downloader.downloadImage(with: imageURL) { (image, data, error) in
+        downloader.downloadImage(with: self.imageURL) { _, _, _ in
             secondCallbackCalled = true
         }
 
         ImageLoadingURLProtocolSpy.resumeImageLoading()
 
-        XCTAssertTrue(operation === downloader.activeOperation(with: imageURL)!,
-                      "Expected \(String(describing: operation)) to be identical to \(String(describing: downloader.activeOperation(with: imageURL)))")
+        XCTAssertTrue(operation === downloader.activeOperation(with: self.imageURL)!,
+                      "Expected \(String(describing: operation)) to be identical to \(String(describing: downloader.activeOperation(with: self.imageURL)))")
 
         var spinCount = 0
 
-        runUntil({
+        runUntil {
             spinCount += 1
             return operation.isFinished
-        })
+        }
 
         print("Succeeded after evaluating condition \(spinCount) times.")
 
@@ -101,22 +99,22 @@ class ImageDownloaderTests: XCTestCase {
     }
 
     func testDownloadingImageAgainAfterFirstDownloadCompletes() {
-        guard let downloader = downloader else {
+        guard let downloader else {
             XCTFail()
             return
         }
         var callbackCalled = false
         var spinCount = 0
 
-        downloader.downloadImage(with: imageURL) { (image, data, error) in
+        downloader.downloadImage(with: self.imageURL) { _, _, _ in
             callbackCalled = true
         }
-        var operation = downloader.activeOperation(with: imageURL)!
+        var operation = downloader.activeOperation(with: self.imageURL)!
 
-        runUntil({
+        runUntil {
             spinCount += 1
             return operation.isFinished
-        })
+        }
 
         print("Succeeded after evaluating first condition \(spinCount) times.")
         XCTAssertTrue(callbackCalled)
@@ -124,15 +122,15 @@ class ImageDownloaderTests: XCTestCase {
         callbackCalled = false
         spinCount = 0
 
-        downloader.downloadImage(with: imageURL) { (image, data, error) in
+        downloader.downloadImage(with: self.imageURL) { _, _, _ in
             callbackCalled = true
         }
-        operation = downloader.activeOperation(with: imageURL)!
+        operation = downloader.activeOperation(with: self.imageURL)!
 
-        runUntil({
+        runUntil {
             spinCount += 1
             return operation.isFinished
-        })
+        }
 
         print("Succeeded after evaluating second condition \(spinCount) times.")
         XCTAssertTrue(callbackCalled)

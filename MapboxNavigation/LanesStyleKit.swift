@@ -2,11 +2,9 @@ import UIKit
 
 @objc(MBLanesStyleKit)
 public class LanesStyleKit: NSObject {
-
     //// Drawing Methods
 
-    @objc dynamic public class func drawLane_straight_right(primaryColor: UIColor = UIColor(red: 0.000, green: 0.000, blue: 0.000, alpha: 1.000)) {
-
+    @objc public dynamic class func drawLane_straight_right(primaryColor: UIColor = UIColor(red: 0.000, green: 0.000, blue: 0.000, alpha: 1.000)) {
         //// Rectangle Drawing
         let rectanglePath = UIBezierPath(rect: CGRect(x: 9, y: 11.5, width: 4, height: 15.5))
         primaryColor.setFill()
@@ -82,8 +80,7 @@ public class LanesStyleKit: NSObject {
         bezier3Path.stroke()
     }
 
-    @objc dynamic public class func drawLane_straight_only(primaryColor: UIColor = UIColor(red: 0.000, green: 0.000, blue: 0.000, alpha: 1.000), secondaryColor: UIColor = UIColor(red: 0.618, green: 0.618, blue: 0.618, alpha: 1.000)) {
-
+    @objc public dynamic class func drawLane_straight_only(primaryColor: UIColor = UIColor(red: 0.000, green: 0.000, blue: 0.000, alpha: 1.000), secondaryColor: UIColor = UIColor(red: 0.618, green: 0.618, blue: 0.618, alpha: 1.000)) {
         //// Bezier 2 Drawing
         let bezier2Path = UIBezierPath()
         bezier2Path.move(to: CGPoint(x: 18.05, y: 14.59))
@@ -159,8 +156,7 @@ public class LanesStyleKit: NSObject {
         bezierPath.fill()
     }
 
-    @objc dynamic public class func drawLane_right_h(primaryColor: UIColor = UIColor(red: 0.000, green: 0.000, blue: 0.000, alpha: 1.000)) {
-
+    @objc public dynamic class func drawLane_right_h(primaryColor: UIColor = UIColor(red: 0.000, green: 0.000, blue: 0.000, alpha: 1.000)) {
         //// Bezier Drawing
         let bezierPath = UIBezierPath()
         bezierPath.move(to: CGPoint(x: 16.46, y: 4))
@@ -197,8 +193,7 @@ public class LanesStyleKit: NSObject {
         bezier2Path.stroke()
     }
 
-    @objc dynamic public class func drawLane_right_only(primaryColor: UIColor = UIColor(red: 0.000, green: 0.000, blue: 0.000, alpha: 1.000), secondaryColor: UIColor = UIColor(red: 0.618, green: 0.618, blue: 0.618, alpha: 1.000)) {
-
+    @objc public dynamic class func drawLane_right_only(primaryColor: UIColor = UIColor(red: 0.000, green: 0.000, blue: 0.000, alpha: 1.000), secondaryColor: UIColor = UIColor(red: 0.618, green: 0.618, blue: 0.618, alpha: 1.000)) {
         //// Rectangle Drawing
         let rectanglePath = UIBezierPath(rect: CGRect(x: 9, y: 11, width: 4, height: 16))
         secondaryColor.setFill()
@@ -274,8 +269,7 @@ public class LanesStyleKit: NSObject {
         bezier3Path.stroke()
     }
 
-    @objc dynamic public class func drawLane_straight(primaryColor: UIColor = UIColor(red: 0.000, green: 0.000, blue: 0.000, alpha: 1.000)) {
-
+    @objc public dynamic class func drawLane_straight(primaryColor: UIColor = UIColor(red: 0.000, green: 0.000, blue: 0.000, alpha: 1.000)) {
         //// Rectangle Drawing
         let rectanglePath = UIBezierPath(rect: CGRect(x: 13, y: 11, width: 4, height: 16))
         primaryColor.setFill()
@@ -315,8 +309,7 @@ public class LanesStyleKit: NSObject {
         bezierPath.fill()
     }
 
-    @objc dynamic public class func drawLane_uturn(primaryColor: UIColor = UIColor(red: 0.000, green: 0.000, blue: 0.000, alpha: 1.000)) {
-
+    @objc public dynamic class func drawLane_uturn(primaryColor: UIColor = UIColor(red: 0.000, green: 0.000, blue: 0.000, alpha: 1.000)) {
         //// Bezier Drawing
         let bezierPath = UIBezierPath()
         bezierPath.move(to: CGPoint(x: 19, y: 20))
@@ -356,7 +349,7 @@ public class LanesStyleKit: NSObject {
         bezier2Path.fill()
     }
 
-    @objc dynamic public class func drawLane_slight_right(primaryColor: UIColor = UIColor(red: 0.000, green: 0.000, blue: 0.000, alpha: 1.000), scale: CGFloat = 1) {
+    @objc public dynamic class func drawLane_slight_right(primaryColor: UIColor = UIColor(red: 0.000, green: 0.000, blue: 0.000, alpha: 1.000), scale: CGFloat = 1) {
         //// General Declarations
         let context = UIGraphicsGetCurrentContext()!
 
@@ -379,7 +372,7 @@ public class LanesStyleKit: NSObject {
         //// Bezier Drawing
         context.saveGState()
         context.translateBy(x: -2.25, y: -11.1)
-        context.rotate(by: 49 * CGFloat.pi/180)
+        context.rotate(by: 49 * CGFloat.pi / 180)
 
         let bezierPath = UIBezierPath()
         bezierPath.move(to: CGPoint(x: 4.01, y: 9.92))
@@ -417,5 +410,4 @@ public class LanesStyleKit: NSObject {
 
         context.restoreGState()
     }
-
 }

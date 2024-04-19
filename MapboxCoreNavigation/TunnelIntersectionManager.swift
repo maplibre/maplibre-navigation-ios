@@ -1,12 +1,11 @@
-import Foundation
 import CoreLocation
+import Foundation
 
 /**
  The `TunnelIntersectionManagerDelegate` protocol provides methods for responding to events where a user enters or exits a tunnel.
  */
 @objc(MBTunnelIntersectionManagerDelegate)
 public protocol TunnelIntersectionManagerDelegate: AnyObject {
-    
     /**
      Called immediately when the location manager detects a user will enter a tunnel.
      
@@ -28,7 +27,6 @@ public protocol TunnelIntersectionManagerDelegate: AnyObject {
 
 @objc(MBTunnelIntersectionManager)
 open class TunnelIntersectionManager: NSObject {
-    
     /**
      The associated delegate for tunnel intersection manager.
      */
@@ -55,14 +53,14 @@ open class TunnelIntersectionManager: NSObject {
     @objc public var tunnelSimulationEnabled: Bool = true
     
     func checkForTunnelIntersection(at location: CLLocation, routeProgress: RouteProgress) {
-        guard tunnelSimulationEnabled else { return }
+        guard self.tunnelSimulationEnabled else { return }
         
-        let tunnelDetected = userWithinTunnelEntranceRadius(at: location, routeProgress: routeProgress)
+        let tunnelDetected = self.userWithinTunnelEntranceRadius(at: location, routeProgress: routeProgress)
         
         if tunnelDetected {
-            delegate?.tunnelIntersectionManager?(self, willEnableAnimationAt: location)
-        } else if isAnimationEnabled {
-            delegate?.tunnelIntersectionManager?(self, willDisableAnimationAt: location)
+            self.delegate?.tunnelIntersectionManager?(self, willEnableAnimationAt: location)
+        } else if self.isAnimationEnabled {
+            self.delegate?.tunnelIntersectionManager?(self, willDisableAnimationAt: location)
         }
     }
 
@@ -86,9 +84,9 @@ open class TunnelIntersectionManager: NSObject {
         // Ensure the upcoming intersection is a tunnel intersection
         // OR the location speed is either at least 5 m/s or is considered a bad location update
         guard let upcomingIntersection = routeProgress.currentLegProgress.currentStepProgress.upcomingIntersection,
-            let roadClasses = upcomingIntersection.outletRoadClasses, roadClasses.contains(.tunnel),
-            (location.speed >= RouteControllerMinimumSpeedAtTunnelEntranceRadius || !location.isQualified) else {
-                return false
+              let roadClasses = upcomingIntersection.outletRoadClasses, roadClasses.contains(.tunnel),
+              location.speed >= RouteControllerMinimumSpeedAtTunnelEntranceRadius || !location.isQualified else {
+            return false
         }
         
         // Distance to the upcoming tunnel entrance
@@ -98,7 +96,7 @@ open class TunnelIntersectionManager: NSObject {
     }
     
     @objc public func enableTunnelAnimation(routeController: RouteController, routeProgress: RouteProgress) {
-        guard !isAnimationEnabled else { return }
+        guard !self.isAnimationEnabled else { return }
         
         self.animatedLocationManager = SimulatedLocationManager(routeProgress: routeProgress)
         self.animatedLocationManager?.delegate = routeController
@@ -106,27 +104,26 @@ open class TunnelIntersectionManager: NSObject {
         self.animatedLocationManager?.startUpdatingLocation()
         self.animatedLocationManager?.startUpdatingHeading()
         
-        isAnimationEnabled = true
+        self.isAnimationEnabled = true
     }
     
     @objc public func suspendTunnelAnimation(at location: CLLocation, routeController: RouteController) {
-        
-        guard isAnimationEnabled else { return }
+        guard self.isAnimationEnabled else { return }
         
         // Disable the tunnel animation after at least 3 good location updates.
         if location.isQualified {
-            tunnelExitLocations.append(location)
+            self.tunnelExitLocations.append(location)
         }
-        guard tunnelExitLocations.count >= 3 else {
+        guard self.tunnelExitLocations.count >= 3 else {
             return
         }
         
-        isAnimationEnabled = false
+        self.isAnimationEnabled = false
         
-        animatedLocationManager?.stopUpdatingLocation()
-        animatedLocationManager?.stopUpdatingHeading()
-        animatedLocationManager = nil
-        tunnelExitLocations.removeAll()
+        self.animatedLocationManager?.stopUpdatingLocation()
+        self.animatedLocationManager?.stopUpdatingHeading()
+        self.animatedLocationManager = nil
+        self.tunnelExitLocations.removeAll()
         
         routeController.rawLocation = location
     }

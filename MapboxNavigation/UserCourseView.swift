@@ -1,6 +1,6 @@
-import UIKit
-import Turf
 import MapLibre
+import Turf
+import UIKit
 
 let PuckSize: CGFloat = 45
 let ArrowSize = PuckSize * 0.6
@@ -39,14 +39,12 @@ extension UIView {
  */
 @objc(MBUserPuckCourseView)
 public class UserPuckCourseView: UIView, UserCourseView {
-    
     /**
      Transforms the location of the user puck.
      */
     public func update(location: CLLocation, pitch: CGFloat, direction: CLLocationDegrees, animated: Bool, tracksUserCourse: Bool) {
         let duration: TimeInterval = animated ? 1 : 0
         UIView.animate(withDuration: duration, delay: 0, options: [.beginFromCurrentState, .curveLinear], animations: {
-            
             let angle = tracksUserCourse ? 0 : CLLocationDegrees(direction - location.course)
             self.puckView.layer.setAffineTransform(CGAffineTransform.identity.rotated(by: -CGFloat(angle.toRadians())))
             
@@ -83,37 +81,36 @@ public class UserPuckCourseView: UIView, UserCourseView {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        commonInit()
+        self.commonInit()
     }
     
-    required public init?(coder aDecoder: NSCoder) {
+    public required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
-        commonInit()
+        self.commonInit()
     }
     
     func commonInit() {
-        puckView = UserPuckStyleKitView(frame: bounds)
+        self.puckView = UserPuckStyleKitView(frame: bounds)
         backgroundColor = .clear
-        puckView.backgroundColor = .clear
-        addSubview(puckView)
+        self.puckView.backgroundColor = .clear
+        addSubview(self.puckView)
     }
 }
 
 class UserPuckStyleKitView: UIView {
-    
-    var fillColor: UIColor = UIColor(red: 1.000, green: 1.000, blue: 1.000, alpha: 1.000) {
+    var fillColor: UIColor = .init(red: 1.000, green: 1.000, blue: 1.000, alpha: 1.000) {
         didSet {
             setNeedsDisplay()
         }
     }
     
-    var puckColor: UIColor = UIColor(red: 0.149, green: 0.239, blue: 0.341, alpha: 1.000) {
+    var puckColor: UIColor = .init(red: 0.149, green: 0.239, blue: 0.341, alpha: 1.000) {
         didSet {
             setNeedsDisplay()
         }
     }
     
-    var shadowColor: UIColor = UIColor(red: 0.149, green: 0.239, blue: 0.341, alpha: 0.160) {
+    var shadowColor: UIColor = .init(red: 0.149, green: 0.239, blue: 0.341, alpha: 0.160) {
         didSet {
             setNeedsDisplay()
         }
@@ -121,11 +118,10 @@ class UserPuckStyleKitView: UIView {
     
     override func draw(_ rect: CGRect) {
         super.draw(rect)
-        drawNavigation_puck(fillColor: fillColor, puckColor: puckColor, shadowColor: shadowColor, circleColor: fillColor)
+        self.drawNavigation_puck(fillColor: self.fillColor, puckColor: self.puckColor, shadowColor: self.shadowColor, circleColor: self.fillColor)
     }
     
     func drawNavigation_puck(fillColor: UIColor = UIColor(red: 1.000, green: 1.000, blue: 1.000, alpha: 1.000), puckColor: UIColor = UIColor(red: 0.149, green: 0.239, blue: 0.341, alpha: 1.000), shadowColor: UIColor = UIColor(red: 0.149, green: 0.239, blue: 0.341, alpha: 0.160), circleColor: UIColor = UIColor(red: 1.000, green: 1.000, blue: 1.000, alpha: 1.000)) {
-        
         //// Canvas 2
         //// navigation_pluck
         //// Oval 7

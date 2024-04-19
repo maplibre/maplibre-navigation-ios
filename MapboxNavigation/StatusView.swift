@@ -14,7 +14,6 @@ import UIKit
 @IBDesignable
 @objc(MBStatusView)
 public class StatusView: UIView {
-    
     weak var activityIndicatorView: UIActivityIndicatorView!
     weak var textLabel: UILabel!
     @objc public weak var delegate: StatusViewDelegate?
@@ -24,22 +23,26 @@ public class StatusView: UIView {
     @objc public var canChangeValue = false
     var value: Double = 0 {
         didSet {
-            delegate?.statusView?(self, valueChangedTo: value)
+            self.delegate?.statusView?(self, valueChangedTo: self.value)
         }
     }
     
-    @objc public override init(frame: CGRect) {
+    @objc override public init(frame: CGRect) {
         super.init(frame: frame)
-        commonInit()
+        self.commonInit()
     }
     
     @objc public required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
-        commonInit()
+        self.commonInit()
     }
     
     func commonInit() {
-        let activityIndicatorView = UIActivityIndicatorView(style: .white)
+        let activityIndicatorView = if #available(iOS 13.0, *) {
+            UIActivityIndicatorView(style: .medium)
+        } else {
+            UIActivityIndicatorView(style: .white)
+        }
         activityIndicatorView.translatesAutoresizingMaskIntoConstraints = false
         addSubview(activityIndicatorView)
         self.activityIndicatorView = activityIndicatorView
@@ -70,22 +73,22 @@ public class StatusView: UIView {
     }
     
     @objc func pan(_ sender: UIPanGestureRecognizer) {
-        guard canChangeValue else { return }
+        guard self.canChangeValue else { return }
         
         let location = sender.location(in: self)
         
         if sender.state == .began {
-            panStartPoint = location
+            self.panStartPoint = location
         } else if sender.state == .changed {
             guard let startPoint = panStartPoint else { return }
             let offsetX = location.x - startPoint.x
             let coefficient = (offsetX / bounds.width) / 20.0
-            value = Double(min(max(CGFloat(value) + coefficient, 0), 1))
+            self.value = Double(min(max(CGFloat(self.value) + coefficient, 0), 1))
         }
     }
     
     @objc func tap(_ sender: UITapGestureRecognizer) {
-        guard canChangeValue else { return }
+        guard self.canChangeValue else { return }
         
         let location = sender.location(in: self)
         
@@ -99,7 +102,7 @@ public class StatusView: UIView {
             @unknown default:
                 fatalError("Unknown userInterfaceLayoutDirection")
             }
-            value = min(max(value + incrementer, 0), 1)
+            self.value = min(max(self.value + incrementer, 0), 1)
         }
     }
     
@@ -107,21 +110,21 @@ public class StatusView: UIView {
      Shows the status view with an optional spinner.
      */
     public func show(_ title: String, showSpinner: Bool, interactive: Bool = false) {
-        canChangeValue = interactive
-        textLabel.text = title
-        activityIndicatorView.hidesWhenStopped = true
-        if (!showSpinner) { activityIndicatorView.stopAnimating() }
+        self.canChangeValue = interactive
+        self.textLabel.text = title
+        self.activityIndicatorView.hidesWhenStopped = true
+        if !showSpinner { self.activityIndicatorView.stopAnimating() }
 
-        guard isCurrentlyVisible == false, isHidden == true else { return }
+        guard self.isCurrentlyVisible == false, isHidden == true else { return }
                 
         let show = {
             self.isHidden = false
             self.textLabel.alpha = 1
-            if (showSpinner) { self.activityIndicatorView.isHidden = false }
+            if showSpinner { self.activityIndicatorView.isHidden = false }
             self.superview?.layoutIfNeeded()
         }
         
-        UIView.defaultAnimation(0.3, animations:show, completion:{ _ in
+        UIView.defaultAnimation(0.3, animations: show, completion: { _ in
             self.isCurrentlyVisible = true
             guard showSpinner else { return }
             self.activityIndicatorView.startAnimating()
@@ -132,7 +135,6 @@ public class StatusView: UIView {
      Hides the status view.
      */
     public func hide(delay: TimeInterval = 0, animated: Bool = true) {
-        
         let hide = {
             self.isHidden = true
             self.textLabel.alpha = 0
@@ -143,14 +145,14 @@ public class StatusView: UIView {
             guard self.isHidden == false else { return }
             
             let fireTime = DispatchTime.now() + delay
-            DispatchQueue.main.asyncAfter(deadline: fireTime, execute: {
+            DispatchQueue.main.asyncAfter(deadline: fireTime) {
                 self.activityIndicatorView.stopAnimating()
                 UIView.defaultAnimation(0.3, delay: 0, animations: hide, completion: { _ in
                     self.isCurrentlyVisible = false
                 })
-            })
+            }
         }
         
-        animated ? animate() : hide()
+        if animated { animate() } else { hide() }
     }
 }

@@ -1,6 +1,6 @@
-import UIKit
 import MapboxCoreNavigation
 import MapboxDirections
+import UIKit
 
 /// :nodoc:
 @objc(MBInstructionLabel)
@@ -16,22 +16,21 @@ open class InstructionLabel: StylableLabel, InstructionPresenterDataSource {
     
     var instruction: VisualInstruction? {
         didSet {
-            guard let instruction = instruction else {
+            guard let instruction else {
                 text = nil
-                instructionPresenter = nil
+                self.instructionPresenter = nil
                 return
             }
-            let update: InstructionPresenter.ShieldDownloadCompletion = { [weak self] (attributedText) in
+            let update: InstructionPresenter.ShieldDownloadCompletion = { [weak self] attributedText in
                 self?.attributedText = attributedText
                 self?.imageDownloadCompletion?()
             }
             
-            
             let presenter = InstructionPresenter(instruction, dataSource: self, imageRepository: imageRepository, downloadCompletion: update)
             
             let attributed = presenter.attributedText()
-            attributedText = instructionDelegate?.label?(self, willPresent: instruction, as: attributed) ?? attributed
-            instructionPresenter = presenter
+            attributedText = self.instructionDelegate?.label?(self, willPresent: instruction, as: attributed) ?? attributed
+            self.instructionPresenter = presenter
         }
     }
 
@@ -43,7 +42,6 @@ open class InstructionLabel: StylableLabel, InstructionPresenterDataSource {
  */
 @objc(MBVisualInstructionDelegate)
 public protocol VisualInstructionDelegate: AnyObject {
-    
     /**
      Called when an InstructionLabel will present a visual instruction.
      

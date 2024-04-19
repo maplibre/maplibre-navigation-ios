@@ -1,12 +1,11 @@
 #if canImport(CarPlay) && canImport(MapboxGeocoder)
-import Foundation
 import CarPlay
-import MapboxGeocoder
+import Foundation
 import MapboxDirections
+import MapboxGeocoder
 
 @available(iOS 12.0, *)
 extension CarPlayManager: CPSearchTemplateDelegate {
-    
     public static let CarPlayGeocodedPlacemarkKey: String = "MBGecodedPlacemark"
     static var recentItems = RecentItem.loadDefaults()
     
@@ -44,8 +43,7 @@ extension CarPlayManager: CPSearchTemplateDelegate {
     }
     
     func searchTemplateButton(searchTemplate: CPSearchTemplate, interfaceController: CPInterfaceController, traitCollection: UITraitCollection) -> CPBarButton {
-        
-        let searchTemplateButton = CPBarButton(type: .image) { [weak self] button in
+        let searchTemplateButton = CPBarButton(type: .image) { [weak self] _ in
             guard let strongSelf = self else {
                 return
             }
@@ -68,26 +66,25 @@ extension CarPlayManager: CPSearchTemplateDelegate {
         CarPlayManager.shared.recentSearchText = searchText
         
         // Append recent searches
-        var items = recentSearches(searchText)
+        var items = self.recentSearches(searchText)
         
         // Search for placemarks using MapboxGeocoder.swift
         let shouldSearch = searchText.count > 2
         if shouldSearch {
-            
             let options = CarPlayManager.forwardGeocodeOptions(searchText)
-            Geocoder.shared.geocode(options, completionHandler: { (placemarks, attribution, error) in
-                guard let placemarks = placemarks else {
-                    completionHandler(CarPlayManager.resultsOrNoResults(items, limit: MaximumInitialSearchResults))
+            Geocoder.shared.geocode(options, completionHandler: { placemarks, _, _ in
+                guard let placemarks else {
+                    completionHandler(CarPlayManager.resultsOrNoResults(items, limit: self.MaximumInitialSearchResults))
                     return
                 }
                 
                 let results = placemarks.map { $0.listItem() }
                 items.append(contentsOf: results)
-                completionHandler(CarPlayManager.resultsOrNoResults(results, limit: MaximumInitialSearchResults))
+                completionHandler(CarPlayManager.resultsOrNoResults(results, limit: self.MaximumInitialSearchResults))
             })
             
         } else {
-            completionHandler(CarPlayManager.resultsOrNoResults(items, limit: MaximumInitialSearchResults))
+            completionHandler(CarPlayManager.resultsOrNoResults(items, limit: self.MaximumInitialSearchResults))
         }
     }
     
@@ -106,16 +103,15 @@ extension CarPlayManager: CPSearchTemplateDelegate {
     
     @available(iOS 12.0, *)
     public static func carPlayManager(_ searchTemplate: CPSearchTemplate, selectedResult item: CPListItem, completionHandler: @escaping () -> Void) {
-        
         guard let userInfo = item.userInfo as? [String: Any],
-            let placemark = userInfo[CarPlayGeocodedPlacemarkKey] as? GeocodedPlacemark,
-            let location = placemark.location else {
-                completionHandler()
-                return
+              let placemark = userInfo[CarPlayGeocodedPlacemarkKey] as? GeocodedPlacemark,
+              let location = placemark.location else {
+            completionHandler()
+            return
         }
         
-        recentItems.add(RecentItem(placemark))
-        recentItems.save()
+        self.recentItems.add(RecentItem(placemark))
+        self.recentItems.save()
         
         let destinationWaypoint = Waypoint(location: location, heading: nil, name: placemark.formattedName)
         CarPlayManager.shared.calculateRouteAndStart(to: destinationWaypoint, completionHandler: completionHandler)
@@ -124,9 +120,9 @@ extension CarPlayManager: CPSearchTemplateDelegate {
     @available(iOS 12.0, *)
     static func recentSearches(_ searchText: String) -> [CPListItem] {
         if searchText.isEmpty {
-            return recentItems.map { $0.geocodedPlacemark.listItem() }
+            return self.recentItems.map { $0.geocodedPlacemark.listItem() }
         }
-        return recentItems.filter { $0.matches(searchText) }.map { $0.geocodedPlacemark.listItem() }
+        return self.recentItems.filter { $0.matches(searchText) }.map { $0.geocodedPlacemark.listItem() }
     }
     
     @available(iOS 12.0, *)
@@ -134,8 +130,8 @@ extension CarPlayManager: CPSearchTemplateDelegate {
         CarPlayManager.shared.recentSearchItems = items
         
         if items.count > 0 {
-            if let limit = limit {
-                return Array<CPListItem>(items.prefix(Int(limit)))
+            if let limit {
+                return [CPListItem](items.prefix(Int(limit)))
             }
             
             return items
@@ -148,7 +144,6 @@ extension CarPlayManager: CPSearchTemplateDelegate {
 }
 
 extension GeocodedPlacemark {
-    
     @available(iOS 12.0, *)
     func listItem() -> CPListItem {
         let item = CPListItem(text: formattedName, detailText: subtitle, image: nil, showsDisclosureIndicator: true)
@@ -157,7 +152,7 @@ extension GeocodedPlacemark {
     }
     
     var subtitle: String? {
-        if let addressDictionary = addressDictionary, var lines = addressDictionary["formattedAddressLines"] as? [String] {
+        if let addressDictionary, var lines = addressDictionary["formattedAddressLines"] as? [String] {
             // Chinese addresses have no commas and are reversed.
             if scope == .address {
                 if qualifiedName?.contains(", ") ?? false {
@@ -168,7 +163,7 @@ extension GeocodedPlacemark {
             }
             
             if let regionCode = administrativeRegion?.code,
-                let abbreviatedRegion = regionCode.components(separatedBy: "-").last, (abbreviatedRegion as NSString).intValue == 0 {
+               let abbreviatedRegion = regionCode.components(separatedBy: "-").last, (abbreviatedRegion as NSString).intValue == 0 {
                 // Cut off country and postal code and add abbreviated state/region code at the end.
                 
                 let stitle = lines.prefix(2).joined(separator: NSLocalizedString("ADDRESS_LINE_SEPARATOR", value: ", ", comment: "Delimiter between lines in an address when displayed inline"))

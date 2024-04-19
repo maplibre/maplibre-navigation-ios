@@ -43,24 +43,24 @@ class DialogViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupViews()
-        setupConstraints()
+        self.setupViews()
+        self.setupConstraints()
     }
     
     func setupViews() {
-        view.addGestureRecognizer(tapRecognizer)
-        view.addSubview(dialogView)
-        dialogView.addSubview(stackView)
-        stackView.addArrangedSubviews([imageView, label])
+        view.addGestureRecognizer(self.tapRecognizer)
+        view.addSubview(self.dialogView)
+        self.dialogView.addSubview(self.stackView)
+        self.stackView.addArrangedSubviews([self.imageView, self.label])
     }
 
     func setupConstraints() {
-        let dialogWidth = dialogView.widthAnchor.constraint(equalToConstant: Constants.dialogSize.width)
-        let dialogHeight = dialogView.heightAnchor.constraint(equalToConstant: Constants.dialogSize.height)
-        let dialogCenterX = dialogView.centerXAnchor.constraint(equalTo: view.centerXAnchor)
-        let dialogCenterY = dialogView.centerYAnchor.constraint(equalTo: view.centerYAnchor)
-        let stackCenterX = stackView.centerXAnchor.constraint(equalTo: dialogView.centerXAnchor)
-        let stackCenterY = stackView.centerYAnchor.constraint(equalTo: dialogView.centerYAnchor)
+        let dialogWidth = self.dialogView.widthAnchor.constraint(equalToConstant: Constants.dialogSize.width)
+        let dialogHeight = self.dialogView.heightAnchor.constraint(equalToConstant: Constants.dialogSize.height)
+        let dialogCenterX = self.dialogView.centerXAnchor.constraint(equalTo: view.centerXAnchor)
+        let dialogCenterY = self.dialogView.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+        let stackCenterX = self.stackView.centerXAnchor.constraint(equalTo: self.dialogView.centerXAnchor)
+        let stackCenterY = self.stackView.centerYAnchor.constraint(equalTo: self.dialogView.centerYAnchor)
         
         let constraints = [dialogWidth, dialogHeight,
                            dialogCenterX, dialogCenterY,
@@ -78,11 +78,11 @@ class DialogViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        perform(#selector(dismissAnimated), with: nil, afterDelay: 0.5)
+        perform(#selector(self.dismissAnimated), with: nil, afterDelay: 0.5)
     }
     
     @objc func dismissAnimated() {
-        NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(dismissAnimated), object: nil)
+        NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(self.dismissAnimated), object: nil)
         dismiss(animated: true, completion: nil)
     }
 }

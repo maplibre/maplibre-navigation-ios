@@ -5,11 +5,10 @@ class Interactor: UIPercentDrivenInteractiveTransition {
     var shouldFinish = false
 }
 
-class DismissAnimator: NSObject { }
+class DismissAnimator: NSObject {}
 extension DismissAnimator: UIViewControllerAnimatedTransitioning {
-    
     func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
-        return 0.5
+        0.5
     }
     
     func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
@@ -18,23 +17,23 @@ extension DismissAnimator: UIViewControllerAnimatedTransitioning {
         let containerView = transitionContext.containerView
         
         let point = CGPoint(x: 0, y: toVC.view.bounds.maxY)
-        let height = fromVC.view.bounds.height-toVC.view.frame.minY
+        let height = fromVC.view.bounds.height - toVC.view.frame.minY
         let finalFrame = CGRect(origin: point, size: CGSize(width: fromVC.view.bounds.width, height: height))
         
-        UIView.animate(withDuration: transitionDuration(using: transitionContext), delay: 0, options: [.curveEaseInOut], animations: {
+        UIView.animate(withDuration: self.transitionDuration(using: transitionContext), delay: 0, options: [.curveEaseInOut], animations: {
             fromVC.view.frame = finalFrame
             containerView.backgroundColor = .clear
-        }) { _ in
+        }, completion: { _ in
             transitionContext.completeTransition(!transitionContext.transitionWasCancelled)
-        }
+        })
     }
 }
 
-class PresentAnimator: NSObject { }
+class PresentAnimator: NSObject {}
 
 extension PresentAnimator: UIViewControllerAnimatedTransitioning {
     func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
-        return 0.5
+        0.5
     }
     
     func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
@@ -57,12 +56,12 @@ extension PresentAnimator: UIViewControllerAnimatedTransitioning {
         let finalFrame = CGRect(origin: CGPoint(x: 0, y: fromVC.view.bounds.height - height),
                                 size: CGSize(width: fromVC.view.bounds.width, height: height))
         
-        UIView.animate(withDuration: transitionDuration(using: transitionContext), delay: 0, options: [.curveEaseInOut], animations: {
+        UIView.animate(withDuration: self.transitionDuration(using: transitionContext), delay: 0, options: [.curveEaseInOut], animations: {
             toView.frame = finalFrame
             containerView.backgroundColor = UIColor.black.withAlphaComponent(0.5)
-        }) { _ in
+        }, completion: { _ in
             transitionContext.completeTransition(!transitionContext.transitionWasCancelled)
-        }
+        })
     }
 }
 
@@ -72,7 +71,7 @@ extension PresentAnimator: UIViewControllerAnimatedTransitioning {
     @objc optional func handleDismissPan(_ sender: UIPanGestureRecognizer)
 }
 
-fileprivate extension Selector {
+private extension Selector {
     static let handleDismissDrag = #selector(UIViewController.handleDismissPan(_:))
 }
 
@@ -83,8 +82,7 @@ extension DismissDraggable where Self: UIViewController {
     }
 }
 
-fileprivate extension UIViewController {
-    
+private extension UIViewController {
     @objc func handleDismissPan(_ sender: UIPanGestureRecognizer) {
         self.handlePan(sender)
     }
@@ -108,7 +106,11 @@ fileprivate extension UIViewController {
             vc.interactor.cancel()
         case .ended:
             vc.interactor.hasStarted = false
-            vc.interactor.shouldFinish ? vc.interactor.finish() : vc.interactor.cancel()
+            if vc.interactor.shouldFinish {
+                vc.interactor.finish()
+            } else {
+                vc.interactor.cancel()
+            }
         default:
             break
         }

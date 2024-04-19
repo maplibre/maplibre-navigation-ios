@@ -12,24 +12,16 @@ extension Bundle {
     }
     
     var locationAlwaysAndWhenInUseUsageDescription: String? {
-        get {
-            return object(forInfoDictionaryKey: "NSLocationAlwaysAndWhenInUseUsageDescription") as? String
-        }
+        object(forInfoDictionaryKey: "NSLocationAlwaysAndWhenInUseUsageDescription") as? String
     }
     
     var locationWhenInUseUsageDescription: String? {
-        get {
-            return object(forInfoDictionaryKey: "NSLocationWhenInUseUsageDescription") as? String
-        }
+        object(forInfoDictionaryKey: "NSLocationWhenInUseUsageDescription") as? String
     }
     
     var locationAlwaysUsageDescription: String? {
-        get {
-            return object(forInfoDictionaryKey: "NSLocationAlwaysUsageDescription") as? String
-        }
+        object(forInfoDictionaryKey: "NSLocationAlwaysUsageDescription") as? String
     }
     
-    class var mapboxCoreNavigation: Bundle {
-        get { return Bundle(for: RouteController.self) }
-    }
+    class var mapboxCoreNavigation: Bundle { Bundle(for: RouteController.self) }
 }

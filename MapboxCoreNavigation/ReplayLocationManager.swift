@@ -1,5 +1,5 @@
-import Foundation
 import CoreLocation
+import Foundation
 
 /**
  `ReplayLocationManager` replays an array of locations exactly as they were
@@ -8,7 +8,6 @@ import CoreLocation
  */
 @objc(MBReplayLocationManager)
 open class ReplayLocationManager: NavigationLocationManager {
-    
     /**
      `speedMultiplier` adjusts the speed of the replay.
      */
@@ -23,14 +22,12 @@ open class ReplayLocationManager: NavigationLocationManager {
      */
     @objc public var locations: [CLLocation]! {
         didSet {
-            currentIndex = 0
+            self.currentIndex = 0
         }
     }
     
     @objc override open var location: CLLocation? {
-        get {
-            return lastKnownLocation
-        }
+        lastKnownLocation
     }
     
     public init(locations: [CLLocation]) {
@@ -43,34 +40,34 @@ open class ReplayLocationManager: NavigationLocationManager {
     }
     
     override open func startUpdatingLocation() {
-        startDate = Date()
-        tick()
+        self.startDate = Date()
+        self.tick()
     }
     
     override open func stopUpdatingLocation() {
-        startDate = nil
-        NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(tick), object: nil)
+        self.startDate = nil
+        NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(self.tick), object: nil)
     }
     
     @objc fileprivate func tick() {
-        guard let startDate = startDate else { return }
-        let location = locations[currentIndex]
+        guard let startDate else { return }
+        let location = self.locations[self.currentIndex]
         lastKnownLocation = location
         delegate?.locationManager?(self, didUpdateLocations: [location])
-        NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(tick), object: nil)
+        NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(self.tick), object: nil)
         
-        if currentIndex < locations.count - 1 {
-            let nextLocation = locations[currentIndex+1]
-            let interval = nextLocation.timestamp.timeIntervalSince(location.timestamp) / TimeInterval(speedMultiplier)
-            let intervalSinceStart = Date().timeIntervalSince(startDate)+interval
-            let actualInterval = nextLocation.timestamp.timeIntervalSince(locations.first!.timestamp)
-            let diff = min(max(0, intervalSinceStart-actualInterval), 0.9) // Don't try to resync more than 0.9 seconds per location update
-            let syncedInterval = interval-diff
+        if self.currentIndex < self.locations.count - 1 {
+            let nextLocation = self.locations[self.currentIndex + 1]
+            let interval = nextLocation.timestamp.timeIntervalSince(location.timestamp) / TimeInterval(self.speedMultiplier)
+            let intervalSinceStart = Date().timeIntervalSince(startDate) + interval
+            let actualInterval = nextLocation.timestamp.timeIntervalSince(self.locations.first!.timestamp)
+            let diff = min(max(0, intervalSinceStart - actualInterval), 0.9) // Don't try to resync more than 0.9 seconds per location update
+            let syncedInterval = interval - diff
             
-            perform(#selector(tick), with: nil, afterDelay: syncedInterval)
-            currentIndex += 1
+            perform(#selector(self.tick), with: nil, afterDelay: syncedInterval)
+            self.currentIndex += 1
         } else {
-            currentIndex = 0
+            self.currentIndex = 0
         }
     }
 }

@@ -1,11 +1,10 @@
 import Foundation
 import UIKit
 
-
 class FeedbackCollectionViewCell: UICollectionViewCell {
     static let defaultIdentifier = "MapboxFeedbackCell"
     
-    struct Constants {
+    enum Constants {
         static let imageSize: CGSize = 70.0
         static let padding: CGFloat = 8
         static let titleFont: UIFont = .systemFont(ofSize: 18.0)
@@ -26,23 +25,23 @@ class FeedbackCollectionViewCell: UICollectionViewCell {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        commonInit()
+        self.commonInit()
     }
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
-        commonInit()
+        self.commonInit()
     }
     
     func commonInit() {
-        setupViews()
-        setupConstraints()
+        self.setupViews()
+        self.setupConstraints()
     }
     
     override var isHighlighted: Bool {
         didSet {
-            if originalTransform == nil {
-                originalTransform = self.imageView.transform
+            if self.originalTransform == nil {
+                self.originalTransform = self.imageView.transform
             }
             
             UIView.defaultSpringAnimation(0.3, animations: {
@@ -57,17 +56,17 @@ class FeedbackCollectionViewCell: UICollectionViewCell {
     }
     
     func setupViews() {
-        addSubview(imageView)
-        addSubview(titleLabel)
+        addSubview(self.imageView)
+        addSubview(self.titleLabel)
     }
     
     func setupConstraints() {
-        imageView.topAnchor.constraint(equalTo: topAnchor, constant: Constants.padding).isActive = true
-        imageView.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
-        imageView.heightAnchor.constraint(equalToConstant: Constants.imageSize.height).isActive = true
-        imageView.widthAnchor.constraint(equalToConstant: Constants.imageSize.width).isActive = true
+        self.imageView.topAnchor.constraint(equalTo: topAnchor, constant: Constants.padding).isActive = true
+        self.imageView.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
+        self.imageView.heightAnchor.constraint(equalToConstant: Constants.imageSize.height).isActive = true
+        self.imageView.widthAnchor.constraint(equalToConstant: Constants.imageSize.width).isActive = true
         
-        titleLabel.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
-        titleLabel.topAnchor.constraint(equalTo: imageView.bottomAnchor, constant: Constants.padding).isActive = true
+        self.titleLabel.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
+        self.titleLabel.topAnchor.constraint(equalTo: self.imageView.bottomAnchor, constant: Constants.padding).isActive = true
     }
 }

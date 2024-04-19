@@ -1,7 +1,6 @@
 import UIKit
 
-struct HighwayShield {
-    
+enum HighwayShield {
     enum RoadClass: String {
         case alternate, duplex, business, truck, bypass, b
         case oneB = "1b", twoA = "2a", twoB = "2b"
@@ -49,7 +48,7 @@ struct HighwayShield {
             case let .communal(locale):
                 return "\(locale)-communal"
             case let .interstate(locale, roadClass):
-                guard let currentRoadClass = roadClass else { return "\(locale.rawValue)-interstate"}
+                guard let currentRoadClass = roadClass else { return "\(locale.rawValue)-interstate" }
                 return "\(locale.rawValue)-interstate-\(currentRoadClass.rawValue)"
             case let .metropolitan(locale):
                 return "\(locale.rawValue)-metropolitan"
@@ -59,7 +58,7 @@ struct HighwayShield {
         }
         
         init?(rawValue: RawValue) {
-            let fields  = rawValue.split(separator: "-").compactMap(String.init(_:))
+            let fields = rawValue.split(separator: "-").compactMap(String.init(_:))
             switch fields.count {
             case 1 where rawValue == "default":
                 self = .generic
@@ -83,49 +82,49 @@ struct HighwayShield {
         private static func type(for identifier: String) -> RoadTypeForLocaleRoadClassClosure? {
             switch identifier {
             case "motorway":
-                return localeOnlyTransform(RoadType.motorway)
+                self.localeOnlyTransform(RoadType.motorway)
             case "expressway":
-                return localeOnlyTransform(RoadType.expressway)
+                self.localeOnlyTransform(RoadType.expressway)
             case "national":
-                return localeOnlyTransform(RoadType.national)
+                self.localeOnlyTransform(RoadType.national)
             case "federal":
-                return localeOnlyTransform(RoadType.federal)
+                self.localeOnlyTransform(RoadType.federal)
             case "main":
-                return localeOnlyTransform(RoadType.main)
+                self.localeOnlyTransform(RoadType.main)
             case "road":
-                return localeOnlyTransform(RoadType.road)
+                self.localeOnlyTransform(RoadType.road)
             case "primary":
-                return localeOnlyTransform(RoadType.primary)
+                self.localeOnlyTransform(RoadType.primary)
             case "secondary":
-                return localeOnlyTransform(RoadType.secondary)
+                self.localeOnlyTransform(RoadType.secondary)
             case "trunk":
-                return localeOnlyTransform(RoadType.trunk)
+                self.localeOnlyTransform(RoadType.trunk)
             case "regional":
-                return localeOnlyTransform(RoadType.regional)
+                self.localeOnlyTransform(RoadType.regional)
             case "voivodeship":
-                return localeOnlyTransform(RoadType.voivodeship)
+                self.localeOnlyTransform(RoadType.voivodeship)
             case "county":
-                return localeOnlyTransform(RoadType.county)
+                self.localeOnlyTransform(RoadType.county)
             case "communal":
-                return localeOnlyTransform(RoadType.communal)
+                self.localeOnlyTransform(RoadType.communal)
             case "provincial":
-                return localeOnlyTransform(RoadType.provincial)
+                self.localeOnlyTransform(RoadType.provincial)
             case "metropolitan":
-                return localeOnlyTransform(RoadType.metropolitan)
+                self.localeOnlyTransform(RoadType.metropolitan)
             case "state":
-                return RoadType.state
+                RoadType.state
             case "highway":
-                return RoadType.highway
+                RoadType.highway
             case "interstate":
-                return RoadType.interstate
+                RoadType.interstate
             default:
-                return nil
+                nil
             }
         }
         
         static func localeOnlyTransform(_ closure: @escaping RoadTypeForLocaleClosure) -> RoadTypeForLocaleRoadClassClosure {
-            return { locale, _ in
-                return closure(locale)
+            { locale, _ in
+                closure(locale)
             }
         }
         

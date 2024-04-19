@@ -41,12 +41,11 @@ extension NavigationView {
     }
 
     func constrainEndOfRoute() {
-        self.endOfRouteHideConstraint?.isActive = true
+        endOfRouteHideConstraint?.isActive = true
         
         endOfRouteView?.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
         endOfRouteView?.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
         
-        self.endOfRouteHeightConstraint?.isActive = true
-        
+        endOfRouteHeightConstraint?.isActive = true
     }
 }

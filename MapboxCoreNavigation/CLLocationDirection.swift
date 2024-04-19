@@ -1,5 +1,5 @@
-import Foundation
 import CoreLocation
+import Foundation
 
 extension CLLocationDirection {
     func clockwiseDifference(from otherDirection: CLLocationDirection) -> CLLocationDirection {
@@ -14,6 +14,6 @@ extension CLLocationDirection {
     }
     
     var isQualified: Bool {
-        return self > -1
+        self > -1
     }
 }

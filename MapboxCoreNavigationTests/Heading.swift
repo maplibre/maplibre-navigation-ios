@@ -1,7 +1,6 @@
 import CoreLocation
 
 class Heading: CLHeading {
-    
     private var _heading: CLLocationDirection
     private var _accuracy: CLLocationDirection
     
@@ -11,25 +10,26 @@ class Heading: CLHeading {
         super.init()
     }
     
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    open override var trueHeading: CLLocationDirection {
+    override open var trueHeading: CLLocationDirection {
         get {
-            return _heading
+            self._heading
         }
         set {
-            _heading = newValue
+            self._heading = newValue
         }
     }
     
-    open override var headingAccuracy: CLLocationDirection {
+    override open var headingAccuracy: CLLocationDirection {
         get {
-            return _accuracy
+            self._accuracy
         }
         set {
-            _accuracy = newValue
+            self._accuracy = newValue
         }
     }
 }

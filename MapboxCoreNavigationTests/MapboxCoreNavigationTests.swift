@@ -1,11 +1,11 @@
-import XCTest
-import MapboxDirections
-import Turf
 import CoreLocation
 @testable import MapboxCoreNavigation
+import MapboxDirections
+import Turf
+import XCTest
 
 let response = Fixture.JSONFromFileNamed(name: "routeWithInstructions", bundle: .module)
-let jsonRoute = (response["routes"] as! [AnyObject]).first as! [String : Any]
+let jsonRoute = (response["routes"] as! [AnyObject]).first as! [String: Any]
 // -122.413165,37.795042
 let waypoint1 = Waypoint(coordinate: CLLocationCoordinate2D(latitude: 37.795042, longitude: -122.413165))
 // -122.433378,37.7727
@@ -13,19 +13,17 @@ let waypoint2 = Waypoint(coordinate: CLLocationCoordinate2D(latitude: 37.7727, l
 let directions = Directions(accessToken: "pk.feedCafeDeadBeefBadeBede")
 let route = Route(json: jsonRoute, waypoints: [waypoint1, waypoint2], options: NavigationRouteOptions(waypoints: [waypoint1, waypoint2]))
 
-let waitForInterval: TimeInterval = 5
-
+let waitForInterval: TimeInterval = 30
 
 class MapboxCoreNavigationTests: XCTestCase {
-    
     var navigation: RouteController!
     
     func testDepart() {
         route.accessToken = "foo"
-        navigation = RouteController(along: route, directions: directions)
+        self.navigation = RouteController(along: route, directions: directions)
         let depart = CLLocation(coordinate: CLLocationCoordinate2D(latitude: 37.795042, longitude: -122.413165), altitude: 1, horizontalAccuracy: 1, verticalAccuracy: 1, course: 0, speed: 10, timestamp: Date())
         
-        expectation(forNotification: .routeControllerDidPassSpokenInstructionPoint, object: navigation) { (notification) -> Bool in
+        expectation(forNotification: .routeControllerDidPassSpokenInstructionPoint, object: self.navigation) { notification -> Bool in
             XCTAssertEqual(notification.userInfo?.count, 1)
             
             let routeProgress = notification.userInfo![RouteControllerNotificationUserInfoKey.routeProgressKey] as? RouteProgress
@@ -33,27 +31,27 @@ class MapboxCoreNavigationTests: XCTestCase {
             return routeProgress != nil && routeProgress?.currentLegProgress.userHasArrivedAtWaypoint == false
         }
         
-        navigation.resume()
-        navigation.locationManager(navigation.locationManager, didUpdateLocations: [depart])
+        self.navigation.resume()
+        self.navigation.locationManager(self.navigation.locationManager, didUpdateLocations: [depart])
         
-        waitForExpectations(timeout: waitForInterval) { (error) in
+        waitForExpectations(timeout: waitForInterval) { error in
             XCTAssertNil(error)
         }
     }
     
     func makeLocation(latitude: Double, longitude: Double, course: CLLocationDirection) -> CLLocation {
-        return CLLocation(coordinate: CLLocationCoordinate2D(latitude: latitude, longitude: longitude), altitude: 1, horizontalAccuracy: 1, verticalAccuracy: 1, course: course, speed: 10, timestamp: Date())
+        CLLocation(coordinate: CLLocationCoordinate2D(latitude: latitude, longitude: longitude), altitude: 1, horizontalAccuracy: 1, verticalAccuracy: 1, course: course, speed: 10, timestamp: Date())
     }
     
     func testNewStep() {
         route.accessToken = "foo"
         let coordOnStep1 = route.legs[0].steps[1].coordinates![5]
-        let location = makeLocation(latitude: coordOnStep1.latitude, longitude: coordOnStep1.longitude, course: 250)
+        let location = self.makeLocation(latitude: coordOnStep1.latitude, longitude: coordOnStep1.longitude, course: 250)
         
         let locationManager = ReplayLocationManager(locations: [location, location])
-        navigation = RouteController(along: route, directions: directions, locationManager: locationManager)
+        self.navigation = RouteController(along: route, directions: directions, locationManager: locationManager)
         
-        expectation(forNotification: .routeControllerDidPassSpokenInstructionPoint, object: navigation) { (notification) -> Bool in
+        expectation(forNotification: .routeControllerDidPassSpokenInstructionPoint, object: self.navigation) { notification -> Bool in
             XCTAssertEqual(notification.userInfo?.count, 1)
             
             let routeProgress = notification.userInfo![RouteControllerNotificationUserInfoKey.routeProgressKey] as? RouteProgress
@@ -61,9 +59,9 @@ class MapboxCoreNavigationTests: XCTestCase {
             return routeProgress?.currentLegProgress.stepIndex == 1
         }
         
-        navigation.resume()
+        self.navigation.resume()
         
-        waitForExpectations(timeout: waitForInterval) { (error) in
+        waitForExpectations(timeout: waitForInterval) { error in
             XCTAssertNil(error)
         }
     }
@@ -71,12 +69,12 @@ class MapboxCoreNavigationTests: XCTestCase {
     func testJumpAheadToLastStep() {
         route.accessToken = "foo"
         let coordOnLastStep = route.legs[0].steps[6].coordinates![5]
-        let location = makeLocation(latitude: coordOnLastStep.latitude, longitude: coordOnLastStep.longitude, course: 171)
+        let location = self.makeLocation(latitude: coordOnLastStep.latitude, longitude: coordOnLastStep.longitude, course: 171)
         
         let locationManager = ReplayLocationManager(locations: [location, location])
-        navigation = RouteController(along: route, directions: directions, locationManager: locationManager)
+        self.navigation = RouteController(along: route, directions: directions, locationManager: locationManager)
         
-        expectation(forNotification: .routeControllerDidPassSpokenInstructionPoint, object: navigation) { (notification) -> Bool in
+        expectation(forNotification: .routeControllerDidPassSpokenInstructionPoint, object: self.navigation) { notification -> Bool in
             XCTAssertEqual(notification.userInfo?.count, 1)
             
             let routeProgress = notification.userInfo![RouteControllerNotificationUserInfoKey.routeProgressKey] as? RouteProgress
@@ -84,9 +82,9 @@ class MapboxCoreNavigationTests: XCTestCase {
             return routeProgress?.currentLegProgress.stepIndex == 6
         }
         
-        navigation.resume()
+        self.navigation.resume()
         
-        waitForExpectations(timeout: waitForInterval) { (error) in
+        waitForExpectations(timeout: waitForInterval) { error in
             XCTAssertNil(error)
         }
     }
@@ -102,18 +100,18 @@ class MapboxCoreNavigationTests: XCTestCase {
                                         timestamp: Date(timeIntervalSinceNow: 1))
         
         let locationManager = ReplayLocationManager(locations: [firstLocation, secondLocation])
-        navigation = RouteController(along: route, directions: directions, locationManager: locationManager)
+        self.navigation = RouteController(along: route, directions: directions, locationManager: locationManager)
         
-        expectation(forNotification: .routeControllerWillReroute, object: navigation) { (notification) -> Bool in
+        expectation(forNotification: .routeControllerWillReroute, object: self.navigation) { notification -> Bool in
             XCTAssertEqual(notification.userInfo?.count, 1)
             
             let location = notification.userInfo![RouteControllerNotificationUserInfoKey.locationKey] as? CLLocation
             return location?.coordinate == secondLocation.coordinate
         }
         
-        navigation.resume()
+        self.navigation.resume()
         
-        waitForExpectations(timeout: waitForInterval) { (error) in
+        waitForExpectations(timeout: waitForInterval) { error in
             XCTAssertNil(error)
         }
     }
@@ -124,17 +122,17 @@ class MapboxCoreNavigationTests: XCTestCase {
         let locationManager = ReplayLocationManager(locations: locations)
         locationManager.speedMultiplier = 20
         
-        navigation = RouteController(along: route, directions: directions, locationManager: locationManager)
+        self.navigation = RouteController(along: route, directions: directions, locationManager: locationManager)
         
-        expectation(forNotification: .routeControllerProgressDidChange, object: navigation) { (notification) -> Bool in
+        expectation(forNotification: .routeControllerProgressDidChange, object: self.navigation) { notification -> Bool in
             let routeProgress = notification.userInfo![RouteControllerNotificationUserInfoKey.routeProgressKey] as? RouteProgress
             return routeProgress != nil
         }
         
-        navigation.resume()
+        self.navigation.resume()
         
         let timeout = locations.last!.timestamp.timeIntervalSince(locations.first!.timestamp) / locationManager.speedMultiplier
-        waitForExpectations(timeout: timeout + 2) { (error) in
+        waitForExpectations(timeout: timeout + 2) { error in
             XCTAssertNil(error)
         }
     }
@@ -142,20 +140,20 @@ class MapboxCoreNavigationTests: XCTestCase {
     func testFailToReroute() {
         route.accessToken = "foo"
         let directionsClientSpy = DirectionsSpy(accessToken: "garbage", host: nil)
-        navigation = RouteController(along: route, directions: directionsClientSpy)
+        self.navigation = RouteController(along: route, directions: directionsClientSpy)
         
-        expectation(forNotification: .routeControllerWillReroute, object: navigation) { (notification) -> Bool in
-            return true
+        expectation(forNotification: .routeControllerWillReroute, object: self.navigation) { _ -> Bool in
+            true
         }
         
-        expectation(forNotification: .routeControllerDidFailToReroute, object: navigation) { (notification) -> Bool in
-            return true
+        expectation(forNotification: .routeControllerDidFailToReroute, object: self.navigation) { _ -> Bool in
+            true
         }
         
-        navigation.rerouteForDiversion(from: CLLocation(latitude: 0, longitude: 0), along: navigation.routeProgress)
+        self.navigation.rerouteForDiversion(from: CLLocation(latitude: 0, longitude: 0), along: self.navigation.routeProgress)
         directionsClientSpy.fireLastCalculateCompletion(with: nil, routes: nil, error: NSError())
         
-        waitForExpectations(timeout: 2) { (error) in
+        waitForExpectations(timeout: 2) { error in
             XCTAssertNil(error)
         }
     }

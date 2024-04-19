@@ -1,9 +1,9 @@
 import XCTest
 
 extension CGSize {
-    static let iPhone5      : CGSize    = CGSize(width: 320, height: 568)
-    static let iPhone6Plus  : CGSize    = CGSize(width: 414, height: 736)
-    static let iPhoneX      : CGSize    = CGSize(width: 375, height: 812)
+    static let iPhone5: CGSize = .init(width: 320, height: 568)
+    static let iPhone6Plus: CGSize = .init(width: 414, height: 736)
+    static let iPhoneX: CGSize = .init(width: 375, height: 812)
 }
 
 struct ShieldImage {

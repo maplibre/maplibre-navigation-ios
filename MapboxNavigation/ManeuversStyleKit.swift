@@ -2,10 +2,9 @@ import UIKit
 
 @objc(MBManeuversStyleKit)
 public class ManeuversStyleKit: NSObject {
-
     //// Drawing Methods
 
-    @objc dynamic public class func drawArrow180right(frame targetFrame: CGRect = CGRect(x: 0, y: 0, width: 32, height: 32), resizing: ResizingBehavior = .aspectFit, primaryColor: UIColor = UIColor(red: 0.000, green: 0.000, blue: 0.000, alpha: 1.000), size: CGSize = CGSize(width: 32, height: 32)) {
+    @objc public dynamic class func drawArrow180right(frame targetFrame: CGRect = CGRect(x: 0, y: 0, width: 32, height: 32), resizing: ResizingBehavior = .aspectFit, primaryColor: UIColor = UIColor(red: 0.000, green: 0.000, blue: 0.000, alpha: 1.000), size: CGSize = CGSize(width: 32, height: 32)) {
         //// General Declarations
         let context = UIGraphicsGetCurrentContext()!
         
@@ -22,7 +21,7 @@ public class ManeuversStyleKit: NSObject {
 
         //// Group 2
         context.saveGState()
-        context.translateBy(x: x, y: (y + 1))
+        context.translateBy(x: x, y: y + 1)
         context.scaleBy(x: scale, y: scale)
 
         //// Bezier Drawing
@@ -64,10 +63,9 @@ public class ManeuversStyleKit: NSObject {
         context.restoreGState()
         
         context.restoreGState()
-
     }
 
-    @objc dynamic public class func drawArrowright(frame targetFrame: CGRect = CGRect(x: 0, y: 0, width: 32, height: 32), resizing: ResizingBehavior = .aspectFit, primaryColor: UIColor = UIColor(red: 0.000, green: 0.000, blue: 0.000, alpha: 1.000), size: CGSize = CGSize(width: 32, height: 32)) {
+    @objc public dynamic class func drawArrowright(frame targetFrame: CGRect = CGRect(x: 0, y: 0, width: 32, height: 32), resizing: ResizingBehavior = .aspectFit, primaryColor: UIColor = UIColor(red: 0.000, green: 0.000, blue: 0.000, alpha: 1.000), size: CGSize = CGSize(width: 32, height: 32)) {
         //// General Declarations
         let context = UIGraphicsGetCurrentContext()!
         
@@ -84,7 +82,7 @@ public class ManeuversStyleKit: NSObject {
 
         //// Bezier Drawing
         context.saveGState()
-        context.translateBy(x: x, y: (y + 1))
+        context.translateBy(x: x, y: y + 1)
         context.scaleBy(x: scale, y: scale)
 
         let bezierPath = UIBezierPath()
@@ -115,10 +113,9 @@ public class ManeuversStyleKit: NSObject {
         context.restoreGState()
         
         context.restoreGState()
-
     }
 
-    @objc dynamic public class func drawArrowslightright(frame targetFrame: CGRect = CGRect(x: 0, y: 0, width: 32, height: 32), resizing: ResizingBehavior = .aspectFit, primaryColor: UIColor = UIColor(red: 0.000, green: 0.000, blue: 0.000, alpha: 1.000), size: CGSize = CGSize(width: 32, height: 32)) {
+    @objc public dynamic class func drawArrowslightright(frame targetFrame: CGRect = CGRect(x: 0, y: 0, width: 32, height: 32), resizing: ResizingBehavior = .aspectFit, primaryColor: UIColor = UIColor(red: 0.000, green: 0.000, blue: 0.000, alpha: 1.000), size: CGSize = CGSize(width: 32, height: 32)) {
         //// General Declarations
         let context = UIGraphicsGetCurrentContext()!
         
@@ -135,7 +132,7 @@ public class ManeuversStyleKit: NSObject {
 
         //// Group 3
         context.saveGState()
-        context.translateBy(x: (x + 1), y: (y + 1))
+        context.translateBy(x: x + 1, y: y + 1)
         context.scaleBy(x: scale, y: scale)
 
         //// Bezier 3 Drawing
@@ -179,10 +176,9 @@ public class ManeuversStyleKit: NSObject {
         context.restoreGState()
         
         context.restoreGState()
-
     }
 
-    @objc dynamic public class func drawArrowstraight(frame targetFrame: CGRect = CGRect(x: 0, y: 0, width: 32, height: 32), resizing: ResizingBehavior = .aspectFit, primaryColor: UIColor = UIColor(red: 0.000, green: 0.000, blue: 0.000, alpha: 1.000), size: CGSize = CGSize(width: 32, height: 32)) {
+    @objc public dynamic class func drawArrowstraight(frame targetFrame: CGRect = CGRect(x: 0, y: 0, width: 32, height: 32), resizing: ResizingBehavior = .aspectFit, primaryColor: UIColor = UIColor(red: 0.000, green: 0.000, blue: 0.000, alpha: 1.000), size: CGSize = CGSize(width: 32, height: 32)) {
         //// General Declarations
         let context = UIGraphicsGetCurrentContext()!
         
@@ -199,7 +195,7 @@ public class ManeuversStyleKit: NSObject {
 
         //// Bezier Drawing
         context.saveGState()
-        context.translateBy(x: x, y: (y + 1))
+        context.translateBy(x: x, y: y + 1)
         context.scaleBy(x: scale, y: scale)
 
         let bezierPath = UIBezierPath()
@@ -228,10 +224,9 @@ public class ManeuversStyleKit: NSObject {
         context.restoreGState()
         
         context.restoreGState()
-
     }
 
-    @objc dynamic public class func drawArrowsharpright(frame targetFrame: CGRect = CGRect(x: 0, y: 0, width: 32, height: 32), resizing: ResizingBehavior = .aspectFit, primaryColor: UIColor = UIColor(red: 0.000, green: 0.000, blue: 0.000, alpha: 1.000), size: CGSize = CGSize(width: 32, height: 32)) {
+    @objc public dynamic class func drawArrowsharpright(frame targetFrame: CGRect = CGRect(x: 0, y: 0, width: 32, height: 32), resizing: ResizingBehavior = .aspectFit, primaryColor: UIColor = UIColor(red: 0.000, green: 0.000, blue: 0.000, alpha: 1.000), size: CGSize = CGSize(width: 32, height: 32)) {
         //// General Declarations
         let context = UIGraphicsGetCurrentContext()!
         
@@ -296,10 +291,9 @@ public class ManeuversStyleKit: NSObject {
         context.restoreGState()
         
         context.restoreGState()
-
     }
 
-    @objc dynamic public class func drawArrive(frame targetFrame: CGRect = CGRect(x: 0, y: 0, width: 32, height: 32), resizing: ResizingBehavior = .aspectFit, primaryColor: UIColor = UIColor(red: 0.000, green: 0.000, blue: 0.000, alpha: 1.000), size: CGSize = CGSize(width: 32, height: 32)) {
+    @objc public dynamic class func drawArrive(frame targetFrame: CGRect = CGRect(x: 0, y: 0, width: 32, height: 32), resizing: ResizingBehavior = .aspectFit, primaryColor: UIColor = UIColor(red: 0.000, green: 0.000, blue: 0.000, alpha: 1.000), size: CGSize = CGSize(width: 32, height: 32)) {
         //// General Declarations
         let context = UIGraphicsGetCurrentContext()!
         
@@ -316,7 +310,7 @@ public class ManeuversStyleKit: NSObject {
 
         //// Group 2
         context.saveGState()
-        context.translateBy(x: x, y: (y + 1))
+        context.translateBy(x: x, y: y + 1)
         context.scaleBy(x: scale, y: scale)
 
         //// Bezier Drawing
@@ -363,10 +357,9 @@ public class ManeuversStyleKit: NSObject {
         context.restoreGState()
         
         context.restoreGState()
-
     }
 
-    @objc dynamic public class func drawStarting(frame targetFrame: CGRect = CGRect(x: 0, y: 0, width: 32, height: 32), resizing: ResizingBehavior = .aspectFit, primaryColor: UIColor = UIColor(red: 0.000, green: 0.000, blue: 0.000, alpha: 1.000), size: CGSize = CGSize(width: 32, height: 32)) {
+    @objc public dynamic class func drawStarting(frame targetFrame: CGRect = CGRect(x: 0, y: 0, width: 32, height: 32), resizing: ResizingBehavior = .aspectFit, primaryColor: UIColor = UIColor(red: 0.000, green: 0.000, blue: 0.000, alpha: 1.000), size: CGSize = CGSize(width: 32, height: 32)) {
         //// General Declarations
         let context = UIGraphicsGetCurrentContext()!
         
@@ -400,10 +393,9 @@ public class ManeuversStyleKit: NSObject {
         context.restoreGState()
         
         context.restoreGState()
-
     }
 
-    @objc dynamic public class func drawDestination(frame targetFrame: CGRect = CGRect(x: 0, y: 0, width: 32, height: 32), resizing: ResizingBehavior = .aspectFit, primaryColor: UIColor = UIColor(red: 0.000, green: 0.000, blue: 0.000, alpha: 1.000), size: CGSize = CGSize(width: 32, height: 32)) {
+    @objc public dynamic class func drawDestination(frame targetFrame: CGRect = CGRect(x: 0, y: 0, width: 32, height: 32), resizing: ResizingBehavior = .aspectFit, primaryColor: UIColor = UIColor(red: 0.000, green: 0.000, blue: 0.000, alpha: 1.000), size: CGSize = CGSize(width: 32, height: 32)) {
         //// General Declarations
         let context = UIGraphicsGetCurrentContext()!
         
@@ -445,10 +437,9 @@ public class ManeuversStyleKit: NSObject {
         context.restoreGState()
         
         context.restoreGState()
-
     }
 
-    @objc dynamic public class func drawMerge(frame targetFrame: CGRect = CGRect(x: 0, y: 0, width: 32, height: 32), resizing: ResizingBehavior = .aspectFit, primaryColor: UIColor = UIColor(red: 0.000, green: 0.000, blue: 0.000, alpha: 1.000), secondaryColor: UIColor = UIColor(red: 0.618, green: 0.618, blue: 0.618, alpha: 1.000), size: CGSize = CGSize(width: 32, height: 32)) {
+    @objc public dynamic class func drawMerge(frame targetFrame: CGRect = CGRect(x: 0, y: 0, width: 32, height: 32), resizing: ResizingBehavior = .aspectFit, primaryColor: UIColor = UIColor(red: 0.000, green: 0.000, blue: 0.000, alpha: 1.000), secondaryColor: UIColor = UIColor(red: 0.618, green: 0.618, blue: 0.618, alpha: 1.000), size: CGSize = CGSize(width: 32, height: 32)) {
         //// General Declarations
         let context = UIGraphicsGetCurrentContext()!
         
@@ -465,7 +456,7 @@ public class ManeuversStyleKit: NSObject {
 
         //// Group 3
         context.saveGState()
-        context.translateBy(x: x, y: (y + 1))
+        context.translateBy(x: x, y: y + 1)
         context.scaleBy(x: scale, y: scale)
 
         //// Bezier Drawing
@@ -522,10 +513,9 @@ public class ManeuversStyleKit: NSObject {
         context.restoreGState()
         
         context.restoreGState()
-
     }
 
-    @objc dynamic public class func drawFork(frame targetFrame: CGRect = CGRect(x: 0, y: 0, width: 32, height: 32), resizing: ResizingBehavior = .aspectFit, primaryColor: UIColor = UIColor(red: 0.000, green: 0.000, blue: 0.000, alpha: 1.000), secondaryColor: UIColor = UIColor(red: 0.618, green: 0.618, blue: 0.618, alpha: 1.000), size: CGSize = CGSize(width: 32, height: 32)) {
+    @objc public dynamic class func drawFork(frame targetFrame: CGRect = CGRect(x: 0, y: 0, width: 32, height: 32), resizing: ResizingBehavior = .aspectFit, primaryColor: UIColor = UIColor(red: 0.000, green: 0.000, blue: 0.000, alpha: 1.000), secondaryColor: UIColor = UIColor(red: 0.618, green: 0.618, blue: 0.618, alpha: 1.000), size: CGSize = CGSize(width: 32, height: 32)) {
         //// General Declarations
         let context = UIGraphicsGetCurrentContext()!
         
@@ -542,7 +532,7 @@ public class ManeuversStyleKit: NSObject {
 
         //// Group 3
         context.saveGState()
-        context.translateBy(x: (x + 2.99260816186), y: y)
+        context.translateBy(x: x + 2.99260816186, y: y)
         context.scaleBy(x: scale, y: scale)
 
         //// Bezier Drawing
@@ -597,10 +587,9 @@ public class ManeuversStyleKit: NSObject {
         context.restoreGState()
         
         context.restoreGState()
-
     }
 
-    @objc dynamic public class func drawOfframp(frame targetFrame: CGRect = CGRect(x: 0, y: 0, width: 32, height: 32), resizing: ResizingBehavior = .aspectFit, primaryColor: UIColor = UIColor(red: 0.000, green: 0.000, blue: 0.000, alpha: 1.000), secondaryColor: UIColor = UIColor(red: 0.618, green: 0.618, blue: 0.618, alpha: 1.000), size: CGSize = CGSize(width: 32, height: 32)) {
+    @objc public dynamic class func drawOfframp(frame targetFrame: CGRect = CGRect(x: 0, y: 0, width: 32, height: 32), resizing: ResizingBehavior = .aspectFit, primaryColor: UIColor = UIColor(red: 0.000, green: 0.000, blue: 0.000, alpha: 1.000), secondaryColor: UIColor = UIColor(red: 0.618, green: 0.618, blue: 0.618, alpha: 1.000), size: CGSize = CGSize(width: 32, height: 32)) {
         //// General Declarations
         let context = UIGraphicsGetCurrentContext()!
         
@@ -617,7 +606,7 @@ public class ManeuversStyleKit: NSObject {
 
         //// Group 3
         context.saveGState()
-        context.translateBy(x: (x + 3.38000011444), y: y)
+        context.translateBy(x: x + 3.38000011444, y: y)
         context.scaleBy(x: scale, y: scale)
 
         //// Bezier Drawing
@@ -669,10 +658,9 @@ public class ManeuversStyleKit: NSObject {
         context.restoreGState()
         
         context.restoreGState()
-
     }
 
-    @objc dynamic public class func drawArriveright(frame targetFrame: CGRect = CGRect(x: 0, y: 0, width: 32, height: 32), resizing: ResizingBehavior = .aspectFit, primaryColor: UIColor = UIColor(red: 0.000, green: 0.000, blue: 0.000, alpha: 1.000), size: CGSize = CGSize(width: 32, height: 32)) {
+    @objc public dynamic class func drawArriveright(frame targetFrame: CGRect = CGRect(x: 0, y: 0, width: 32, height: 32), resizing: ResizingBehavior = .aspectFit, primaryColor: UIColor = UIColor(red: 0.000, green: 0.000, blue: 0.000, alpha: 1.000), size: CGSize = CGSize(width: 32, height: 32)) {
         //// General Declarations
         let context = UIGraphicsGetCurrentContext()!
         
@@ -736,10 +724,9 @@ public class ManeuversStyleKit: NSObject {
         context.restoreGState()
         
         context.restoreGState()
-
     }
 
-    @objc dynamic public class func drawRoundabout(frame targetFrame: CGRect = CGRect(x: 0, y: 0, width: 32, height: 32), resizing: ResizingBehavior = .aspectFit, primaryColor: UIColor = UIColor(red: 0.000, green: 0.000, blue: 0.000, alpha: 1.000), secondaryColor: UIColor = UIColor(red: 0.618, green: 0.618, blue: 0.618, alpha: 1.000), size: CGSize = CGSize(width: 32, height: 32), roundabout_angle: CGFloat = 90, roundabout_radius: CGFloat = 6.5) {
+    @objc public dynamic class func drawRoundabout(frame targetFrame: CGRect = CGRect(x: 0, y: 0, width: 32, height: 32), resizing: ResizingBehavior = .aspectFit, primaryColor: UIColor = UIColor(red: 0.000, green: 0.000, blue: 0.000, alpha: 1.000), secondaryColor: UIColor = UIColor(red: 0.618, green: 0.618, blue: 0.618, alpha: 1.000), size: CGSize = CGSize(width: 32, height: 32), roundabout_angle: CGFloat = 90, roundabout_radius: CGFloat = 6.5) {
         //// General Declarations
         let context = UIGraphicsGetCurrentContext()!
         
@@ -751,15 +738,15 @@ public class ManeuversStyleKit: NSObject {
 
         //// Variable Declarations
         let scale: CGFloat = min(size.width / 32.0, size.height / 32.0)
-        let roundabout_arrow_height: CGFloat = scale * cos((roundabout_angle - 180) * CGFloat.pi/180) * 20
-        let roundabout_arrow_width: CGFloat = scale * 0.75 * sin((roundabout_angle - 180) * CGFloat.pi/180) * 16
+        let roundabout_arrow_height: CGFloat = scale * cos((roundabout_angle - 180) * CGFloat.pi / 180) * 20
+        let roundabout_arrow_width: CGFloat = scale * 0.75 * sin((roundabout_angle - 180) * CGFloat.pi / 180) * 16
         let roundabout_x: CGFloat = size.width / 2.0 + roundabout_arrow_width / 2.0
         let roundabout_percentage: CGFloat = roundabout_angle / 360.0 * 2 * CGFloat.pi * roundabout_radius
         let roundabout_y: CGFloat = size.height - scale * (roundabout_radius * 2 + 4) + 1 + roundabout_arrow_height / 4.0
 
         //// Group 3
         context.saveGState()
-        context.translateBy(x: (roundabout_x - 0.00234436950684), y: (roundabout_y - 0.995999313354))
+        context.translateBy(x: roundabout_x - 0.00234436950684, y: roundabout_y - 0.995999313354)
         context.scaleBy(x: scale, y: scale)
 
         //// Bezier Drawing
@@ -789,7 +776,7 @@ public class ManeuversStyleKit: NSObject {
         //// Bezier 2 Drawing
         context.saveGState()
         context.translateBy(x: 0, y: 1)
-        context.rotate(by: -(roundabout_angle + 90) * CGFloat.pi/180)
+        context.rotate(by: -(roundabout_angle + 90) * CGFloat.pi / 180)
 
         let bezier2Path = UIBezierPath()
         bezier2Path.move(to: CGPoint(x: -9.47, y: -7.49))
@@ -821,7 +808,7 @@ public class ManeuversStyleKit: NSObject {
         //// Bezier 3 Drawing
         context.saveGState()
         context.translateBy(x: 1, y: 2)
-        context.rotate(by: -90 * CGFloat.pi/180)
+        context.rotate(by: -90 * CGFloat.pi / 180)
         context.scaleBy(x: -1, y: 1)
 
         let bezier3Path = UIBezierPath()
@@ -848,10 +835,9 @@ public class ManeuversStyleKit: NSObject {
         context.restoreGState()
         
         context.restoreGState()
-
     }
 
-    @objc dynamic public class func drawArriveright2(frame targetFrame: CGRect = CGRect(x: 0, y: 0, width: 32, height: 32), resizing: ResizingBehavior = .aspectFit, primaryColor: UIColor = UIColor(red: 0.000, green: 0.000, blue: 0.000, alpha: 1.000), size: CGSize = CGSize(width: 32, height: 32)) {
+    @objc public dynamic class func drawArriveright2(frame targetFrame: CGRect = CGRect(x: 0, y: 0, width: 32, height: 32), resizing: ResizingBehavior = .aspectFit, primaryColor: UIColor = UIColor(red: 0.000, green: 0.000, blue: 0.000, alpha: 1.000), size: CGSize = CGSize(width: 32, height: 32)) {
         //// General Declarations
         let context = UIGraphicsGetCurrentContext()!
         
@@ -930,7 +916,6 @@ public class ManeuversStyleKit: NSObject {
         context.restoreGState()
         
         context.restoreGState()
-
     }
 
     @objc(ManeuversStyleKitResizingBehavior)
@@ -950,17 +935,17 @@ public class ManeuversStyleKit: NSObject {
             scales.height = abs(target.height / rect.height)
 
             switch self {
-                case .aspectFit:
-                    scales.width = min(scales.width, scales.height)
-                    scales.height = scales.width
-                case .aspectFill:
-                    scales.width = max(scales.width, scales.height)
-                    scales.height = scales.width
-                case .stretch:
-                    break
-                case .center:
-                    scales.width = 1
-                    scales.height = 1
+            case .aspectFit:
+                scales.width = min(scales.width, scales.height)
+                scales.height = scales.width
+            case .aspectFill:
+                scales.width = max(scales.width, scales.height)
+                scales.height = scales.width
+            case .stretch:
+                break
+            case .center:
+                scales.width = 1
+                scales.height = 1
             }
 
             var result = rect.standardized

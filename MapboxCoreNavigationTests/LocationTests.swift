@@ -1,9 +1,8 @@
-import XCTest
 import CoreLocation
 @testable import MapboxCoreNavigation
+import XCTest
 
 class LocationTests: XCTestCase {
-    
     var setup: (progress: RouteProgress, firstLocation: CLLocation) {
         let progress = RouteProgress(route: route)
         let firstCoord = progress.currentLegProgress.nearbyCoordinates.first!
@@ -11,7 +10,6 @@ class LocationTests: XCTestCase {
         
         return (progress, firstLocation)
     }
-    
     
     func testSerializeAndDeserializeLocation() {
         let coordinate = CLLocationCoordinate2D(latitude: 1.1, longitude: 2.2)
@@ -22,7 +20,7 @@ class LocationTests: XCTestCase {
         let course: CLLocationDirection = 7.7
         let timestamp = Date().ISO8601
         
-        var locationDictionary:[String: Any] = [:]
+        var locationDictionary: [String: Any] = [:]
         locationDictionary["lat"] = coordinate.latitude
         locationDictionary["lng"] = coordinate.longitude
         locationDictionary["altitude"] = altitude
@@ -41,8 +39,8 @@ class LocationTests: XCTestCase {
     }
     
     func testSnappedLocation100MetersAlongRoute() {
-        let progress = setup.progress
-        let firstLocation = setup.firstLocation
+        let progress = self.setup.progress
+        let firstLocation = self.setup.firstLocation
         
         let initialHeadingOnFirstStep = progress.currentLegProgress.currentStep.finalHeading!
         let coordinateAlongFirstStep = firstLocation.coordinate.coordinate(at: 100, facing: initialHeadingOnFirstStep)
@@ -51,24 +49,21 @@ class LocationTests: XCTestCase {
             return XCTFail("Location should have snapped to route")
         }
         
-        
         XCTAssertTrue(locationAlongFirstStep.distance(from: snapped) < 1, "The location is less than 1 meter away from the calculated snapped location")
- 
     }
     
     func testInterpolatedCourse() {
-        let progress = setup.progress
-        let firstLocation = setup.firstLocation
+        let progress = self.setup.progress
+        let firstLocation = self.setup.firstLocation
         
         let calculatedCourse = firstLocation.interpolatedCourse(along: progress.currentLegProgress.currentStepProgress.step.coordinates!)!
         let initialHeadingOnFirstStep = progress.currentLegProgress.currentStepProgress.step.finalHeading!
         XCTAssertTrue(calculatedCourse - initialHeadingOnFirstStep < 1, "At the beginning of the route, the final heading of the departure step should be very similar to the caclulated course of the first location update.")
     }
 
-    
     func testShouldSnap() {
-        let progress = setup.progress
-        let firstLocation = setup.firstLocation
+        let progress = self.setup.progress
+        let firstLocation = self.setup.firstLocation
         
         let initialHeadingOnFirstStep = progress.currentLegProgress.currentStepProgress.step.finalHeading!
         
@@ -78,5 +73,4 @@ class LocationTests: XCTestCase {
         
         XCTAssertFalse(differentCourseAndAccurateLocation.shouldSnapCourse(toRouteWith: initialHeadingOnFirstStep), "Should not snap when user course is different, the location is accurate and moving")
     }
-    
 }

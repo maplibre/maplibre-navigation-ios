@@ -1,9 +1,8 @@
-import Foundation
 import CoreLocation
+import Foundation
 import MapboxDirections
 
-extension Array {
-    
+public extension Array {
     /**
      Initializes a [CLLocation] from a JSON string at a given filePath.
      
@@ -22,7 +21,7 @@ extension Array {
      - parameter filePath: The file’s path.
      - returns: A [CLLocation].
      */
-    public static func locations(from filePath: String) -> [CLLocation]! {
+    static func locations(from filePath: String) -> [CLLocation]! {
         let url = URL(fileURLWithPath: filePath)
         
         do {
@@ -45,11 +44,10 @@ extension Array {
 extension Array where Element: MapboxDirections.Route {
     func mostSimilar(to route: Route) -> Route? {
         let target = route.description
-        return self.min { (left, right) -> Bool in
+        return self.min { left, right -> Bool in
             let leftDistance = left.description.minimumEditDistance(to: target)
             let rightDistance = right.description.minimumEditDistance(to: target)
             return leftDistance < rightDistance
         }
-        
     }
 }

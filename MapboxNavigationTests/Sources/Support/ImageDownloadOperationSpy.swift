@@ -1,18 +1,17 @@
 import Foundation
-import UIKit
 @testable import MapboxNavigation
+import UIKit
 
 /**
  * This class can be used as a replacement for the `ImageDownloader`'s default download operation class, for spying on url download requests as well as returning canned responses ad hoc.
  */
 class ImageDownloadOperationSpy: Operation, ImageDownload {
-
     private static var operations: [URL: ImageDownloadOperationSpy] = [:]
 
     private(set) var request: URLRequest?
-    weak private var session: URLSession?
+    private weak var session: URLSession?
 
-    private var completionBlocks: Array<ImageDownloadCompletionBlock> = []
+    private var completionBlocks: [ImageDownloadCompletionBlock] = []
 
     required init(request: URLRequest, in session: URLSession) {
         self.request = request
@@ -24,14 +23,14 @@ class ImageDownloadOperationSpy: Operation, ImageDownload {
     }
 
     static func reset() {
-        operations.removeAll()
+        self.operations.removeAll()
     }
 
     /**
      * Retrieve an operation spy instance for the given URL, which can then be used to inspect and/or execute completion handlers
      */
     static func operationForURL(_ URL: URL) -> ImageDownloadOperationSpy? {
-        return operations[URL]
+        self.operations[URL]
     }
 
     func addCompletion(_ completion: @escaping ImageDownloadCompletionBlock) {
@@ -44,21 +43,19 @@ class ImageDownloadOperationSpy: Operation, ImageDownload {
     }
 
     func shouldDecompressImages() -> Bool {
-        return false
+        false
     }
 
-    func setShouldDecompressImages(_ value: Bool) {
-    }
+    func setShouldDecompressImages(_ value: Bool) {}
 
     func credential() -> URLCredential? {
         fatalError("credential() has not been implemented")
     }
 
-    func setCredential(_ value: URLCredential?) {
-    }
+    func setCredential(_ value: URLCredential?) {}
 
     func fireAllCompletions(_ image: UIImage, data: Data?, error: Error?) {
-        completionBlocks.forEach { completion in
+        for completion in self.completionBlocks {
             completion(image, data, error)
         }
     }

@@ -1,9 +1,10 @@
-import Foundation
 import CoreLocation
+import Foundation
 import MapboxCoreNavigationObjC
 import MapboxDirections
 
 // MARK: - RouteController
+
 /**
  Maximum number of meters the user can travel away from step before `RouteControllerShouldReroute` is emitted.
  */
@@ -56,7 +57,7 @@ public var RouteSnappingMinimumSpeed: CLLocationSpeed = 3
 /**
  The minimum distance threshold used for giving a "Continue" type instructions.
  */
-public var RouteControllerMinimumDistanceForContinueInstruction: CLLocationDistance = 2_000
+public var RouteControllerMinimumDistanceForContinueInstruction: CLLocationDistance = 2000
 
 /**
  The minimum distance in the opposite direction of travel that triggers rerouting.
@@ -75,7 +76,8 @@ public var RouteControllerNumberOfSecondsForRerouteFeedback: TimeInterval = 10
 
 let FasterRouteFoundEvent = "navigation.fasterRoute"
 
-//MARK: - Route Snapping (CLLocation)
+// MARK: - Route Snapping (CLLocation)
+
 /**
  Accepted deviation excluding horizontal accuracy before the user is considered to be off route.
  */
@@ -122,46 +124,46 @@ public var RouteControllerMaximumSpeedForUsingCurrentStep: CLLocationSpeed = 1
  */
 public typealias RouteControllerNotificationUserInfoKey = MBRouteControllerNotificationUserInfoKey
 
-extension Notification.Name {
+public extension Notification.Name {
     /**
      Posted when `RouteController` fails to reroute the user after the user diverges from the expected route.
      
      The user info dictionary contains the key `RouteControllerNotificationUserInfoKey.errorKey`.
      */
-    public static let routeControllerDidFailToReroute = MBRouteControllerDidFailToReroute
+    static let routeControllerDidFailToReroute = MBRouteControllerDidFailToReroute
     
     /**
      Posted after the user diverges from the expected route, just before `RouteController` attempts to calculate a new route.
      
      The user info dictionary contains the key `RouteControllerNotificationUserInfoKey.locationKey`.
      */
-    public static let routeControllerWillReroute = MBRouteControllerWillReroute
+    static let routeControllerWillReroute = MBRouteControllerWillReroute
     
     /**
      Posted when `RouteController` obtains a new route in response to the user diverging from a previous route.
      
      The user info dictionary contains the keys `RouteControllerNotificationUserInfoKey.locationKey` and `RouteControllerNotificationUserInfoKey.isProactiveKey`.
      */
-    public static let routeControllerDidReroute = MBRouteControllerDidReroute
+    static let routeControllerDidReroute = MBRouteControllerDidReroute
     
     /**
      Posted when `RouteController` receives a user location update representing movement along the expected route.
      
      The user info dictionary contains the keys `RouteControllerNotificationUserInfoKey.routeProgressKey`, `RouteControllerNotificationUserInfoKey.locationKey`, and `RouteControllerNotificationUserInfoKey.rawLocationKey`.
      */
-    public static let routeControllerProgressDidChange = MBRouteControllerProgressDidChange
+    static let routeControllerProgressDidChange = MBRouteControllerProgressDidChange
     
     /**
      Posted when `RouteController` detects that the user has passed an ideal point for saying an instruction aloud.
      
      The user info dictionary contains the key `RouteControllerNotificationUserInfoKey.routeProgressKey`.
      */
-    public static let routeControllerDidPassSpokenInstructionPoint = MBRouteControllerDidPassSpokenInstructionPoint
+    static let routeControllerDidPassSpokenInstructionPoint = MBRouteControllerDidPassSpokenInstructionPoint
     
     /**
      Posted when `RouteController` detects that the user has passed an ideal point for displaying an instruction.
      
      The user info dictionary contains the key `RouteControllerNotificationUserInfoKey.routeProgressKey`.
      */
-    public static let routeControllerDidPassVisualInstructionPoint = MBRouteControllerDidPassVisualInstructionPoint
+    static let routeControllerDidPassVisualInstructionPoint = MBRouteControllerDidPassVisualInstructionPoint
 }

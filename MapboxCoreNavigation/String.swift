@@ -2,53 +2,53 @@ import Foundation
 
 extension String {
     var ISO8601Date: Date? {
-        return Date.ISO8601Formatter.date(from: self)
+        Date.ISO8601Formatter.date(from: self)
     }
     
     /**
      Check if the current string is empty. If the string is empty, `nil` is returned, otherwise, the string is returned.
      */
     public var nonEmptyString: String? {
-        return isEmpty ? nil : self
+        isEmpty ? nil : self
     }
     
     var wholeRange: Range<String.Index> {
-        return startIndex..<endIndex
+        startIndex ..< endIndex
     }
     
     public typealias Replacement = (of: String, with: String)
     
     public func byReplacing(_ replacements: [Replacement]) -> String {
-        return replacements.reduce(self) { $0.replacingOccurrences(of: $1.of, with: $1.with) }
+        replacements.reduce(self) { $0.replacingOccurrences(of: $1.of, with: $1.with) }
     }
     
     var addingXMLEscapes: String {
-        return byReplacing([
+        self.byReplacing([
             ("&", "&amp;"),
             ("<", "&lt;"),
             ("\"", "&quot;"),
             ("'", "&apos;")
-            ])
+        ])
     }
     
     var asSSMLAddress: String {
-        return "<say-as interpret-as=\"address\">\(self.addingXMLEscapes)</say-as>"
+        "<say-as interpret-as=\"address\">\(self.addingXMLEscapes)</say-as>"
     }
     
     var asSSMLCharacters: String {
-        return "<say-as interpret-as=\"characters\">\(self.addingXMLEscapes)</say-as>"
+        "<say-as interpret-as=\"characters\">\(self.addingXMLEscapes)</say-as>"
     }
     
     func withSSMLPhoneme(ipaNotation: String) -> String {
-        return "<phoneme alphabet=\"ipa\" ph=\"\(ipaNotation.addingXMLEscapes)\">\(self.addingXMLEscapes)</phoneme>"
+        "<phoneme alphabet=\"ipa\" ph=\"\(ipaNotation.addingXMLEscapes)\">\(self.addingXMLEscapes)</phoneme>"
     }
     
     var isUppercased: Bool {
-        return self == uppercased() && self != lowercased()
+        self == uppercased() && self != lowercased()
     }
     
     var containsDecimalDigit: Bool {
-        return self.rangeOfCharacter(from: CharacterSet.decimalDigits) != nil
+        rangeOfCharacter(from: CharacterSet.decimalDigits) != nil
     }
     
     // Adapted from https://github.com/raywenderlich/swift-algorithm-club/blob/master/Minimum%20Edit%20Distance/MinimumEditDistance.playground/Contents.swift
@@ -62,12 +62,12 @@ extension String {
         var matrix = [[Int]](repeating: [Int](repeating: 0, count: toWordCount + 1), count: fromWordCount + 1)
         
         // initialize matrix
-        for index in 1...fromWordCount {
+        for index in 1 ... fromWordCount {
             // the distance of any first string to an empty second string
             matrix[index][0] = index
         }
         
-        for index in 1...toWordCount {
+        for index in 1 ... toWordCount {
             // the distance of any second string to an empty first string
             matrix[0][index] = index
         }

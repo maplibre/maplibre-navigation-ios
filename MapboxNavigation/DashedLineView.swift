@@ -4,29 +4,28 @@ import UIKit
 @IBDesignable
 @objc(MBDashedLineView)
 public class DashedLineView: LineView {
-
-    @IBInspectable public var dashedLength: CGFloat = 4 { didSet { updateProperties() } }
-    @IBInspectable public var dashedGap: CGFloat = 4 { didSet { updateProperties() } }
+    @IBInspectable public var dashedLength: CGFloat = 4 { didSet { self.updateProperties() } }
+    @IBInspectable public var dashedGap: CGFloat = 4 { didSet { self.updateProperties() } }
 
     let dashedLineLayer = CAShapeLayer()
 
     override public func layoutSubviews() {
-        if dashedLineLayer.superlayer == nil {
-            layer.addSublayer(dashedLineLayer)
+        if self.dashedLineLayer.superlayer == nil {
+            layer.addSublayer(self.dashedLineLayer)
         }
-        updateProperties()
+        self.updateProperties()
     }
 
     func updateProperties() {
         let path = UIBezierPath()
-        path.move(to: CGPoint(x: 0, y: bounds.height/2))
-        path.addLine(to: CGPoint(x: bounds.width, y: bounds.height/2))
-        dashedLineLayer.path = path.cgPath
+        path.move(to: CGPoint(x: 0, y: bounds.height / 2))
+        path.addLine(to: CGPoint(x: bounds.width, y: bounds.height / 2))
+        self.dashedLineLayer.path = path.cgPath
 
-        dashedLineLayer.frame = bounds
-        dashedLineLayer.fillColor = UIColor.clear.cgColor
-        dashedLineLayer.strokeColor = lineColor.cgColor
-        dashedLineLayer.lineWidth = bounds.height
-        dashedLineLayer.lineDashPattern = [dashedLength as NSNumber, dashedGap as NSNumber]
+        self.dashedLineLayer.frame = bounds
+        self.dashedLineLayer.fillColor = UIColor.clear.cgColor
+        self.dashedLineLayer.strokeColor = lineColor.cgColor
+        self.dashedLineLayer.lineWidth = bounds.height
+        self.dashedLineLayer.lineDashPattern = [self.dashedLength as NSNumber, self.dashedGap as NSNumber]
     }
 }

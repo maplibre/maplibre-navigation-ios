@@ -3,17 +3,15 @@ import UIKit
 typealias ImageDownloadCompletionBlock = (UIImage?, Data?, Error?) -> Void
 
 protocol ReentrantImageDownloader {
-    func downloadImage(with url: URL, completion: ImageDownloadCompletionBlock?) -> Void
+    func downloadImage(with url: URL, completion: ImageDownloadCompletionBlock?)
     func activeOperation(with url: URL) -> ImageDownload?
     func setOperationType(_ operationType: ImageDownload.Type?)
 }
 
 class ImageDownloader: NSObject, ReentrantImageDownloader, URLSessionDataDelegate {
-    private var sessionConfiguration: URLSessionConfiguration = URLSessionConfiguration.default
+    private var sessionConfiguration: URLSessionConfiguration = .default
 
-    lazy private var urlSession: URLSession = {
-        return URLSession.init(configuration: sessionConfiguration, delegate: self, delegateQueue: nil)
-    }()
+    private lazy var urlSession: URLSession = .init(configuration: sessionConfiguration, delegate: self, delegateQueue: nil)
 
     private var downloadQueue: OperationQueue
     private var accessQueue: DispatchQueue
@@ -46,7 +44,7 @@ class ImageDownloader: NSObject, ReentrantImageDownloader, URLSessionDataDelegat
     }
 
     func downloadImage(with url: URL, completion: ImageDownloadCompletionBlock?) {
-        accessQueue.sync(flags: .barrier) {
+        self.accessQueue.sync(flags: .barrier) {
             let request: URLRequest = self.urlRequest(with: url)
             var operation: ImageDownload
             if let activeOperation = self.activeOperation(with: url) {
@@ -58,7 +56,7 @@ class ImageDownloader: NSObject, ReentrantImageDownloader, URLSessionDataDelegat
                     self.downloadQueue.addOperation(operation)
                 }
             }
-            if let completion = completion {
+            if let completion {
                 operation.addCompletion(completion)
             }
         }
@@ -82,7 +80,7 @@ class ImageDownloader: NSObject, ReentrantImageDownloader, URLSessionDataDelegat
     }
 
     func setOperationType(_ operationType: ImageDownload.Type?) {
-        if let operationType = operationType {
+        if let operationType {
             self.operationType = operationType
         } else {
             self.operationType = ImageDownloadOperation.self
@@ -111,9 +109,8 @@ class ImageDownloader: NSObject, ReentrantImageDownloader, URLSessionDataDelegat
             return
         }
         operation.urlSession?(session, task: task, didCompleteWithError: error)
-        accessQueue.async {
+        self.accessQueue.async {
             self.operations[url] = nil
         }
     }
-
 }

@@ -1,15 +1,13 @@
-import XCTest
 @testable import MapboxNavigation
-
+import XCTest
 
 class ImageCacheTests: XCTestCase {
-
-    let cache: ImageCache = ImageCache()
+    let cache: ImageCache = .init()
     let asyncTimeout: TimeInterval = 10.0
 
     private func clearDiskCache() {
         let semaphore = DispatchSemaphore(value: 0)
-        cache.clearDisk {
+        self.cache.clearDisk {
             semaphore.signal()
         }
         let semaphoreResult = semaphore.wait(timeout: XCTestCase.NavigationTests.timeout)
@@ -18,17 +16,17 @@ class ImageCacheTests: XCTestCase {
 
     override func setUp() {
         super.setUp()
-        self.continueAfterFailure = false
+        continueAfterFailure = false
 
-        cache.clearMemory()
-        clearDiskCache()
+        self.cache.clearMemory()
+        self.clearDiskCache()
     }
 
     let imageKey = "imageKey"
 
     private func storeImageInMemory() {
         let semaphore = DispatchSemaphore(value: 0)
-        cache.store(ShieldImage.i280.image, forKey: imageKey, toDisk: false) {
+        self.cache.store(ShieldImage.i280.image, forKey: self.imageKey, toDisk: false) {
             semaphore.signal()
         }
         let semaphoreResult = semaphore.wait(timeout: XCTestCase.NavigationTests.timeout)
@@ -37,7 +35,7 @@ class ImageCacheTests: XCTestCase {
 
     private func storeImageOnDisk() {
         let semaphore = DispatchSemaphore(value: 0)
-        cache.store(ShieldImage.i280.image, forKey: imageKey, toDisk: true) {
+        self.cache.store(ShieldImage.i280.image, forKey: self.imageKey, toDisk: true) {
             semaphore.signal()
         }
         let semaphoreResult = semaphore.wait(timeout: XCTestCase.NavigationTests.timeout)
@@ -48,82 +46,82 @@ class ImageCacheTests: XCTestCase {
 
     func testUsingURLStringAsCacheKey() {
         let cacheKeyURLString = "https://zombo.com/lulz/shieldKey.xyz"
-        let expectation = self.expectation(description: "Storing image in disk cache")
-        cache.store(ShieldImage.i280.image, forKey: cacheKeyURLString, toDisk: true) {
+        let expectation = expectation(description: "Storing image in disk cache")
+        self.cache.store(ShieldImage.i280.image, forKey: cacheKeyURLString, toDisk: true) {
             expectation.fulfill()
         }
-        self.wait(for: [expectation], timeout: asyncTimeout)
+        wait(for: [expectation], timeout: self.asyncTimeout)
 
-        let returnedImage = cache.image(forKey: cacheKeyURLString)
+        let returnedImage = self.cache.image(forKey: cacheKeyURLString)
         XCTAssertTrue((returnedImage?.isKind(of: UIImage.self))!)
     }
 
     func testUsingPathStringAsCacheKey() {
         let cacheKeyURLString = "/path/to/something.xyz"
-        let expectation = self.expectation(description: "Storing image in disk cache")
-        cache.store(ShieldImage.i280.image, forKey: cacheKeyURLString, toDisk: true) {
+        let expectation = expectation(description: "Storing image in disk cache")
+        self.cache.store(ShieldImage.i280.image, forKey: cacheKeyURLString, toDisk: true) {
             expectation.fulfill()
         }
-        self.wait(for: [expectation], timeout: asyncTimeout)
+        wait(for: [expectation], timeout: self.asyncTimeout)
 
-        let returnedImage = cache.image(forKey: cacheKeyURLString)
+        let returnedImage = self.cache.image(forKey: cacheKeyURLString)
         XCTAssertTrue((returnedImage?.isKind(of: UIImage.self))!)
     }
 
     func testStoringImageInMemoryOnly() {
-        storeImageInMemory()
+        self.storeImageInMemory()
 
-        let returnedImage = cache.image(forKey: imageKey)
+        let returnedImage = self.cache.image(forKey: self.imageKey)
         XCTAssertTrue((returnedImage?.isKind(of: UIImage.self))!)
     }
 
     func testStoringImageOnDisk() {
-        storeImageOnDisk()
+        self.storeImageOnDisk()
 
-        var returnedImage = cache.image(forKey: imageKey)
+        var returnedImage = self.cache.image(forKey: self.imageKey)
         XCTAssertTrue((returnedImage?.isKind(of: UIImage.self))!)
 
-        cache.clearMemory()
+        self.cache.clearMemory()
 
-        returnedImage = cache.image(forKey: imageKey)
+        returnedImage = self.cache.image(forKey: self.imageKey)
         XCTAssertNotNil(returnedImage)
         XCTAssertTrue((returnedImage?.isKind(of: UIImage.self))!)
     }
 
     func testResettingCache() {
-        storeImageInMemory()
+        self.storeImageInMemory()
 
-        cache.clearMemory()
+        self.cache.clearMemory()
 
-        XCTAssertNil(cache.image(forKey: imageKey))
+        XCTAssertNil(self.cache.image(forKey: self.imageKey))
 
-        storeImageOnDisk()
+        self.storeImageOnDisk()
 
-        cache.clearMemory()
-        clearDiskCache()
+        self.cache.clearMemory()
+        self.clearDiskCache()
 
-        XCTAssertNil(cache.image(forKey: imageKey))
+        XCTAssertNil(self.cache.image(forKey: self.imageKey))
     }
 
     func testClearingMemoryCacheOnMemoryWarning() {
-        storeImageInMemory()
+        self.storeImageInMemory()
         
         NotificationCenter.default.post(name: UIApplication.didReceiveMemoryWarningNotification, object: nil)
 
-        XCTAssertNil(cache.image(forKey: imageKey))
+        XCTAssertNil(self.cache.image(forKey: self.imageKey))
     }
 
     func testJPEGSupport() {
         let imageJPEGData = ShieldImage.i280.image.jpegData(compressionQuality: 9.0)!
-        let image = UIImage.init(data: imageJPEGData)!
+        let image = UIImage(data: imageJPEGData)!
 
-        let expectation = self.expectation(description: "Storing image in disk cache")
-        cache.store(image, forKey: "JPEG Test", toDisk: true) {
+        let expectation = expectation(description: "Storing image in disk cache")
+        self.cache.store(image, forKey: "JPEG Test", toDisk: true) {
             expectation.fulfill()
         }
-        wait(for: [expectation], timeout: asyncTimeout)
+        wait(for: [expectation], timeout: self.asyncTimeout)
 
-        let retrievedImage = cache.image(forKey: "JPEG Test")!
+        let retrievedImage = self.cache.image(forKey: "JPEG Test")!
         XCTAssertTrue(retrievedImage.isKind(of: UIImage.self))
     }
 

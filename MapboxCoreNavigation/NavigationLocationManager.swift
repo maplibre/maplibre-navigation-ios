@@ -1,5 +1,5 @@
-import Foundation
 import CoreLocation
+import Foundation
 #if os(iOS)
 import UIKit
 #endif
@@ -9,13 +9,11 @@ import UIKit
  */
 @objc(MBNavigationLocationManager)
 open class NavigationLocationManager: CLLocationManager, NSCopying {
-    
     public func copy(with zone: NSZone? = nil) -> Any {
         let copy = NavigationLocationManager()
-        copy.lastKnownLocation = lastKnownLocation
+        copy.lastKnownLocation = self.lastKnownLocation
         return copy
     }
-    
     
     var lastKnownLocation: CLLocation?
     

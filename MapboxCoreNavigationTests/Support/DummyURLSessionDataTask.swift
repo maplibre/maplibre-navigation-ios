@@ -6,6 +6,6 @@ class DummyURLSessionDataTask: URLSessionDataTask {
     }
     
     override func cancel() {
-        // 
+        //
     }
 }

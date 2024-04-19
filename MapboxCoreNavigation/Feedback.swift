@@ -63,27 +63,27 @@ public enum FeedbackType: Int, CustomStringConvertible {
     public var description: String {
         switch self {
         case .general:
-            return "general"
+            "general"
         case .accident:
-            return "accident"
+            "accident"
         case .hazard:
-            return "hazard"
+            "hazard"
         case .roadClosed:
-            return "road_closed"
+            "road_closed"
         case .notAllowed:
-            return "not_allowed"
+            "not_allowed"
         case .missingRoad:
-            return "missing_road"
+            "missing_road"
         case .missingExit:
-            return "missing_exit"
+            "missing_exit"
         case .routingError:
-            return "routing_error"
+            "routing_error"
         case .confusingInstruction:
-            return "confusing_instruction"
+            "confusing_instruction"
         case .reportTraffic:
-            return "report_traffic"
+            "report_traffic"
         case .mapIssue:
-            return "other_map_issue"
+            "other_map_issue"
         }
     }
 }
@@ -97,11 +97,11 @@ public enum FeedbackSource: Int, CustomStringConvertible {
     public var description: String {
         switch self {
         case .user:
-            return "user"
+            "user"
         case .reroute:
-            return "reroute"
+            "reroute"
         case .unknown:
-            return "unknown"
+            "unknown"
         }
     }
 }

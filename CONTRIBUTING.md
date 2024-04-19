@@ -15,16 +15,19 @@ When reporting a bug in the navigation SDK itself, please indicate:
 
 ## Building the SDK
 
-To build this SDK, you need Xcode 14 and [Carthage](https://github.com/Carthage/Carthage/):
+To build this SDK, you need Xcode 15. Simply open Package.swift, it will open in Xcode and download all required dependencies.
 
-1. Run `carthage bootstrap --platform iOS --cache-builds`.
-1. Once the Carthage build finishes, open `MapboxNavigation.xcodeproj` in Xcode and build the MapboxNavigation scheme.
+## Enable automatic code formatting
 
-See [the README](./README.md#running-the-example-project) for instructions on building and running the included Swift and Objective-C example projects.
+We use SwiftFormat via a commit hook which allows us to reformat the changed files on commit. This ensures a conistent code style. The repo is prepared for this, however you need to enable this manually via:
+
+```bash
+git config core.hooksPath .githooks
+```
 
 ## Testing the SDK
 
-It is important to test the SDK using the `iPhone 8 Plus` simulator for the `FBSnapshotter` tests.
+You can run tests locally in Xcode. As a safety measure tests are run via GitHub Actions when you submitt a PR. If you are a first time contributor a member of maplibre needs to approve the GitHub Actions runs first, for this please tag someone either in GitHub or in the OpenStreetMap Slack.
 
 ## Opening a pull request
 

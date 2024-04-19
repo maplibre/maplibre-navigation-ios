@@ -37,6 +37,15 @@
       }
     },
     {
+      "identity" : "swiftformat",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/nicklockwood/SwiftFormat",
+      "state" : {
+        "revision" : "9df3b01f477163b33d5e63c5e2e5b9f946a49c56",
+        "version" : "0.53.6"
+      }
+    },
+    {
       "identity" : "turf-swift",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/flitsmeister/turf-swift",
