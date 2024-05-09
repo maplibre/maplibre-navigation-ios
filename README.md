@@ -22,31 +22,14 @@ All issues are covered with this SDK.
 
 If you are looking to include this inside your project, you have to follow the the following steps:
 
-1. Install Carthage
-   - Open terminal
-   - [optional] On M1 Mac change terminal to bash: `chsh -s /bin/bash`
-   - [Install Homebrew](https://brew.sh/): `/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"`
-   - [Install Carthage](https://formulae.brew.sh/formula/carthage): `brew install carthage`
-1. Create a new XCode project
-1. Create Cartfile
-   - Open terminal
-   - Change location to root of XCode project: `cd path/to/Project`
-    - Create the Cartfile: `touch Cartfile`
-   - New file will be added: `Cartfile`
-1. Add Maplibre Maps SPM (Swift Package Manager) depedency by going to your app's project file -> Package Dependencies -> Press the '+' -> https://github.com/maplibre/maplibre-gl-native-distribution -> 'Exact' 6.0.0 
-1. Add dependencies to Cartfile
-   ```
-   github "maplibre/maplibre-navigation-ios" ~> 2.0.0
-   ```
-1. Build the frameworks
-   - Open terminal
-   - Change location to root of XCode project: `cd path/to/Project`
-   - Run: `carthage bootstrap --platform iOS --use-xcframeworks`
-   - New files will be added
-     - Cartfile.resolved = Indicates which frameworks have been fetched/built
-     - Carthage folder = Contains all builded frameworks
-1. Drag frameworks into project: `TARGETS -> General -> Frameworks, Libraries..`
-   - All xcframeworks
+Install this package using the [Swift Package Manager](https://www.swift.org/documentation/package-manager/).
+
+1. Open your project in Xcode.
+1. -> File -> Add Package Dependencies
+1. Enter the URL of this repository into the search field: https://github.com/maplibre/maplibre-navigation-ios
+  1. Press "Add Package".
+  1. In the modal, update "Add to Target" to include your application.
+  1. Complete the installation by pressing "Add Package".
 1. Add properties to `Info.plist`
    - MGLMapboxAccessToken / String / Leave empty = Ensures that the SDK doesn't crash
    - MGLMapboxAPIBaseURL / String / Add url = Url that is being used to GET the navigation JSON
