@@ -197,16 +197,20 @@ open class NavigationViewController: UIViewController {
      
      In cases where you need to update the route after navigation has started you can set a new `route` here and `NavigationViewController` will update its UI accordingly.
      */
-    @objc public var route: Route! {
+    @objc public var route: Route? {
         didSet {
-            if self.routeController == nil {
-                self.routeController = RouteController(along: self.route, directions: self.directions, locationManager: self.locationManager)
-                self.routeController.delegate = self
+            if let route {
+                if self.routeController == nil {
+                    self.routeController = RouteController(along: route, directions: self.directions, locationManager: self.locationManager)
+                    self.routeController?.delegate = self
+                } else {
+                    self.routeController?.routeProgress = RouteProgress(route: route)
+                }
+                NavigationSettings.shared.distanceUnit = route.routeOptions.locale.usesMetric ? .kilometer : .mile
+                self.mapViewController?.notifyDidReroute(route: route)
             } else {
-                self.routeController.routeProgress = RouteProgress(route: self.route)
+                self.routeController = nil
             }
-            NavigationSettings.shared.distanceUnit = self.route.routeOptions.locale.usesMetric ? .kilometer : .mile
-            self.mapViewController?.notifyDidReroute(route: self.route)
         }
     }
     
@@ -242,7 +246,7 @@ open class NavigationViewController: UIViewController {
 
      See `RouteController` for more information.
      */
-    @objc public var routeController: RouteController! {
+    @objc public var routeController: RouteController? {
         didSet {
             self.mapViewController?.routeController = self.routeController
         }
@@ -351,7 +355,7 @@ open class NavigationViewController: UIViewController {
      See [Mapbox Directions](https://mapbox.github.io/mapbox-navigation-ios/directions/) for further information.
      */
     @objc(initWithRoute:directions:styles:routeController:locationManager:voiceController:)
-    public required init(for route: Route,
+    public required init(for route: Route?,
                          directions: Directions = Directions.shared,
                          styles: [Style]? = [DayStyle(), NightStyle()],
                          routeController: RouteController? = nil,
@@ -360,36 +364,43 @@ open class NavigationViewController: UIViewController {
         super.init(nibName: nil, bundle: nil)
         
         self.locationManager = locationManager ?? NavigationLocationManager()
-        let routeController = routeController ?? RouteController(along: route, directions: directions, locationManager: self.locationManager)
+        if let routeController {
+            self.routeController = routeController
+        } else if let route {
+            let routeController = RouteController(along: route, directions: directions, locationManager: self.locationManager)
+            self.routeController = routeController
+            NavigationSettings.shared.distanceUnit = route.routeOptions.locale.usesMetric ? .kilometer : .mile
+        }
         self.routeController = routeController
-        self.routeController.usesDefaultUserInterface = true
-        self.routeController.delegate = self
-        self.routeController.tunnelIntersectionManager.delegate = self
+        self.routeController?.usesDefaultUserInterface = true
+        self.routeController?.delegate = self
+        self.routeController?.tunnelIntersectionManager.delegate = self
 
         self.voiceController = voiceController ?? RouteVoiceController()
 
         self.directions = directions
         self.route = route
-        NavigationSettings.shared.distanceUnit = route.routeOptions.locale.usesMetric ? .kilometer : .mile
-        routeController.resume()
         
-        let mapViewController = RouteMapViewController(routeController: self.routeController, delegate: self)
+        self.routeController?.resume()
+        
+        let mapViewController = RouteMapViewController(routeController: routeController, delegate: self)
         self.mapViewController = mapViewController
-        mapViewController.destination = route.legs.last?.destination
+        mapViewController.destination = route?.legs.last?.destination
         mapViewController.willMove(toParent: self)
-        addChild(mapViewController)
+        self.addChild(mapViewController)
         mapViewController.didMove(toParent: self)
-        let mapSubview: UIView = mapViewController.view
-        mapSubview.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(mapSubview)
-        
-        mapSubview.pinInSuperview()
+        if let mapSubview: UIView = mapViewController.view {
+            mapSubview.translatesAutoresizingMaskIntoConstraints = false
+            self.view.addSubview(mapSubview)
+			
+            mapSubview.pinInSuperview()
+        }
         mapViewController.reportButton.isHidden = !self.showsReportFeedback
-        
+			
         self.styleManager = StyleManager(self)
         self.styleManager.styles = styles ?? [DayStyle(), NightStyle()]
         
-        if !(route.routeOptions is NavigationRouteOptions) {
+        if !(route?.routeOptions is NavigationRouteOptions) {
             print("`Route` was created using `RouteOptions` and not `NavigationRouteOptions`. Although not required, this may lead to a suboptimal navigation experience. Without `NavigationRouteOptions`, it is not guaranteed you will get congestion along the route line, better ETAs and ETA label color dependent on congestion.")
         }
     }
@@ -414,7 +425,7 @@ open class NavigationViewController: UIViewController {
             UIApplication.shared.isIdleTimerDisabled = true
         }
         
-        if self.routeController.locationManager is SimulatedLocationManager {
+        if self.routeController?.locationManager is SimulatedLocationManager {
             let localized = String.Localized.simulationStatus(speed: 1)
             self.mapViewController?.statusView.show(localized, showSpinner: false, interactive: true)
         }
@@ -427,7 +438,7 @@ open class NavigationViewController: UIViewController {
             UIApplication.shared.isIdleTimerDisabled = false
         }
         
-        self.routeController.suspendLocationUpdates()
+        self.routeController?.suspendLocationUpdates()
     }
     
     // MARK: Route controller notifications
@@ -449,11 +460,13 @@ open class NavigationViewController: UIViewController {
 
         self.mapViewController?.notifyDidChange(routeProgress: routeProgress, location: location, secondsRemaining: secondsRemaining)
         
+        guard let routeController else { return }
+		
         // If the user has arrived, don't snap the user puck.
         // In the case the user drives beyond the waypoint,
         // we should accurately depict this.
-        let shouldPreventReroutesWhenArrivingAtWaypoint = self.routeController.delegate?.routeController?(self.routeController, shouldPreventReroutesWhenArrivingAt: self.routeController.routeProgress.currentLeg.destination) ?? true
-        let userHasArrivedAndShouldPreventRerouting = shouldPreventReroutesWhenArrivingAtWaypoint && !self.routeController.routeProgress.currentLegProgress.userHasArrivedAtWaypoint
+        let shouldPreventReroutesWhenArrivingAtWaypoint = routeController.delegate?.routeController?(routeController, shouldPreventReroutesWhenArrivingAt: routeController.routeProgress.currentLeg.destination) ?? true
+        let userHasArrivedAndShouldPreventRerouting = shouldPreventReroutesWhenArrivingAtWaypoint && !routeController.routeProgress.currentLegProgress.userHasArrivedAtWaypoint
         
         if self.snapsUserLocationAnnotationToRoute,
            userHasArrivedAndShouldPreventRerouting {
@@ -661,21 +674,21 @@ extension NavigationViewController: RouteControllerDelegate {
 
 extension NavigationViewController: TunnelIntersectionManagerDelegate {
     public func tunnelIntersectionManager(_ manager: TunnelIntersectionManager, willEnableAnimationAt location: CLLocation) {
-        self.routeController.tunnelIntersectionManager(manager, willEnableAnimationAt: location)
+        self.routeController?.tunnelIntersectionManager(manager, willEnableAnimationAt: location)
         self.styleManager.applyStyle(type: .night)
     }
     
     public func tunnelIntersectionManager(_ manager: TunnelIntersectionManager, willDisableAnimationAt location: CLLocation) {
-        self.routeController.tunnelIntersectionManager(manager, willDisableAnimationAt: location)
+        self.routeController?.tunnelIntersectionManager(manager, willDisableAnimationAt: location)
         self.styleManager.timeOfDayChanged()
     }
 }
 
 extension NavigationViewController: StyleManagerDelegate {
     public func locationFor(styleManager: StyleManager) -> CLLocation? {
-        if let location = routeController.location {
+        if let location = routeController?.location {
             location
-        } else if let firstCoord = routeController.routeProgress.route.coordinates?.first {
+        } else if let firstCoord = routeController?.routeProgress.route.coordinates?.first {
             CLLocation(latitude: firstCoord.latitude, longitude: firstCoord.longitude)
         } else {
             nil
