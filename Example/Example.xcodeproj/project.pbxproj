@@ -15,6 +15,7 @@
 		CD958B572BF6156200501F93 /* Base in Resources */ = {isa = PBXBuildFile; fileRef = CD958B562BF6156200501F93 /* Base */; };
 		CD958B622BF615D200501F93 /* Terrain.json in Resources */ = {isa = PBXBuildFile; fileRef = CD958B612BF615D200501F93 /* Terrain.json */; };
 		CD958B642BF6184900501F93 /* Toursprung.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD958B632BF6184900501F93 /* Toursprung.swift */; };
+		CD958B682BF63B3500501F93 /* MapboxNavigation in Frameworks */ = {isa = PBXBuildFile; productRef = CD958B672BF63B3500501F93 /* MapboxNavigation */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -36,6 +37,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CD958B682BF63B3500501F93 /* MapboxNavigation in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -48,6 +50,7 @@
 				CD958B652BF63A6700501F93 /* maplibre-navigation-ios */,
 				CD958B492BF6156100501F93 /* example */,
 				CD958B482BF6156100501F93 /* Products */,
+				CD958B662BF63B3500501F93 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -75,6 +78,13 @@
 			path = example;
 			sourceTree = "<group>";
 		};
+		CD958B662BF63B3500501F93 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -92,6 +102,7 @@
 			);
 			name = Example;
 			packageProductDependencies = (
+				CD958B672BF63B3500501F93 /* MapboxNavigation */,
 			);
 			productName = "navigation sample";
 			productReference = CD958B472BF6156100501F93 /* Example.app */;
@@ -377,6 +388,13 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		CD958B672BF63B3500501F93 /* MapboxNavigation */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = MapboxNavigation;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = CD958B3F2BF6156100501F93 /* Project object */;
 }
