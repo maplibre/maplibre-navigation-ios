@@ -30,6 +30,7 @@
 		CD958B612BF615D200501F93 /* Terrain.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Terrain.json; sourceTree = "<group>"; };
 		CD958B632BF6184900501F93 /* Toursprung.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Toursprung.swift; sourceTree = "<group>"; };
 		CD958B652BF63A6700501F93 /* maplibre-navigation-ios */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = "maplibre-navigation-ios"; path = ..; sourceTree = "<group>"; };
+		CD958B692BF651F400501F93 /* Secrets.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Secrets.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -68,6 +69,7 @@
 				CD958B4A2BF6156100501F93 /* AppDelegate.swift */,
 				CD958B4C2BF6156100501F93 /* SceneDelegate.swift */,
 				CD958B4E2BF6156100501F93 /* ViewController.swift */,
+				CD958B692BF651F400501F93 /* Secrets.xcconfig */,
 				CD958B632BF6184900501F93 /* Toursprung.swift */,
 				CD958B612BF615D200501F93 /* Terrain.json */,
 				CD958B502BF6156100501F93 /* Main.storyboard */,
@@ -312,6 +314,7 @@
 		};
 		CD958B5C2BF6156200501F93 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = CD958B692BF651F400501F93 /* Secrets.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -340,6 +343,7 @@
 		};
 		CD958B5D2BF6156200501F93 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = CD958B692BF651F400501F93 /* Secrets.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;

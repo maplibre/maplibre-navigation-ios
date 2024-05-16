@@ -37,35 +37,38 @@ class ViewController: UIViewController {
             CLLocation(latitude: 51.768686, longitude: 4.6827956)
         ].map { Waypoint(location: $0) }
 		
-        Task {
-            do {
-                let routeOptions = NavigationRouteOptions(waypoints: waypoints)
-                let result = try await Toursprung.shared.calculate(routeOptions)
-                guard let route = result.routes.first else { return }
-				
-                await MainActor.run {
-                    let simulatedLocationManager = SimulatedLocationManager(route: route)
-                    simulatedLocationManager.speedMultiplier = 2
-					
-                    //					let viewController = NavigationViewController(for: route, locationManager: simulatedLocationManager)
-                    //					viewController.mapView?.styleURL = self.styleURL
-                    //					self.present(viewController, animated: true)
-//
-                    let mapboxRouteController = RouteController(along: route,
-                                                                directions: Directions.shared,
-                                                                locationManager: simulatedLocationManager)
-                    self.mapboxRouteController = mapboxRouteController
-                    mapboxRouteController.delegate = self
-                    mapboxRouteController.resume()
-					
-                    NotificationCenter.default.addObserver(self, selector: #selector(self.didPassVisualInstructionPoint(notification:)), name: .routeControllerDidPassVisualInstructionPoint, object: nil)
-                    NotificationCenter.default.addObserver(self, selector: #selector(self.didPassSpokenInstructionPoint(notification:)), name: .routeControllerDidPassSpokenInstructionPoint, object: nil)
-					
-                    navigationView.showRoutes([route], legIndex: 0)
-                }
-            } catch {
-                print(error)
-            }
+        navigationView.zoomLevel = 12
+        navigationView.centerCoordinate = waypoints[0].coordinate
+		
+        let options = NavigationRouteOptions(waypoints: waypoints, profileIdentifier: .automobileAvoidingTraffic)
+        options.shapeFormat = .polyline6
+        options.distanceMeasurementSystem = .metric
+        options.attributeOptions = []
+		
+        print("[\(type(of: self))] Calculating routes with URL: \(Directions.shared.url(forCalculating: options))")
+		
+        Directions.shared.calculate(options) { _, routes, _ in
+            guard let route = routes?.first else { return }
+			
+            let simulatedLocationManager = SimulatedLocationManager(route: route)
+            simulatedLocationManager.speedMultiplier = 2
+			
+            //			let viewController = NavigationViewController(for: route, locationManager: simulatedLocationManager)
+            //			viewController.mapView?.styleURL = self.styleURL
+            //			self.present(viewController, animated: true)
+
+            let mapboxRouteController = RouteController(along: route,
+                                                        directions: Directions.shared,
+                                                        locationManager: simulatedLocationManager)
+            self.mapboxRouteController = mapboxRouteController
+            mapboxRouteController.delegate = self
+            mapboxRouteController.resume()
+			
+            NotificationCenter.default.addObserver(self, selector: #selector(self.didPassVisualInstructionPoint(notification:)), name: .routeControllerDidPassVisualInstructionPoint, object: nil)
+            NotificationCenter.default.addObserver(self, selector: #selector(self.didPassSpokenInstructionPoint(notification:)), name: .routeControllerDidPassSpokenInstructionPoint, object: nil)
+			
+            navigationView.showRoutes([route], legIndex: 0)
+            navigationView.tracksUserCourse = true
         }
     }
 }
