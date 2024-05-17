@@ -436,10 +436,14 @@ open class NavigationViewController: UIViewController {
     
     // MARK: - NavigationViewController
 	
-    public func begin(with route: Route, locationManager: NavigationLocationManager? = nil) {
+    public func start(with route: Route, locationManager: NavigationLocationManager? = nil) {
         self.locationManager = locationManager
         self.route = route
         self.routeController?.resume()
+    }
+	
+    public func endRoute() {
+        // TODO: Dismiss
     }
 	
     #if canImport(CarPlay)

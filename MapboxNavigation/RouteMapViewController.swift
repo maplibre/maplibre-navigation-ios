@@ -9,6 +9,19 @@ class ArrowFillPolyline: MLNPolylineFeature {}
 class ArrowStrokePolyline: ArrowFillPolyline {}
 
 class RouteMapViewController: UIViewController {
+    typealias LabelRoadNameCompletionHandler = (_ defaultRaodNameAssigned: Bool) -> Void
+	
+    private enum Actions {
+        static let overview: Selector = #selector(RouteMapViewController.toggleOverview(_:))
+        static let mute: Selector = #selector(RouteMapViewController.toggleMute(_:))
+        static let recenter: Selector = #selector(RouteMapViewController.recenter(_:))
+    }
+	
+    private lazy var geocoder: CLGeocoder = .init()
+	
+    // MARK: - Properties
+	
+    let distanceFormatter = DistanceFormatter(approximate: true)
     var navigationView: NavigationView { view as! NavigationView }
     var mapView: NavigationMapView { self.navigationView.mapView }
     var statusView: StatusView { self.navigationView.statusView }
@@ -17,26 +30,13 @@ class RouteMapViewController: UIViewController {
     var nextBannerView: NextBannerView { self.navigationView.nextBannerView }
     var instructionsBannerView: InstructionsBannerView { self.navigationView.instructionsBannerView }
     var instructionsBannerContentView: InstructionsBannerContentView { self.navigationView.instructionsBannerContentView }
-
-    lazy var endOfRouteViewController: EndOfRouteViewController = {
-        let storyboard = UIStoryboard(name: "Navigation", bundle: .mapboxNavigation)
-        let viewController = storyboard.instantiateViewController(withIdentifier: "EndOfRouteViewController") as! EndOfRouteViewController
-        return viewController
-    }()
-
-    private enum Actions {
-        static let overview: Selector = #selector(RouteMapViewController.toggleOverview(_:))
-        static let mute: Selector = #selector(RouteMapViewController.toggleMute(_:))
-        static let recenter: Selector = #selector(RouteMapViewController.recenter(_:))
-    }
-
     var route: Route? { self.routeController?.routeProgress.route }
     var updateETATimer: Timer?
     var previewInstructionsView: StepInstructionsView?
     var lastTimeUserRerouted: Date?
     var stepsViewController: StepsViewController?
-    private lazy var geocoder: CLGeocoder = .init()
     var destination: Waypoint?
+    var showsEndOfRoute: Bool = true
     var isUsedInConjunctionWithCarPlayWindow = false {
         didSet {
             if self.isUsedInConjunctionWithCarPlayWindow {
@@ -46,8 +46,6 @@ class RouteMapViewController: UIViewController {
             }
         }
     }
-
-    var showsEndOfRoute: Bool = true
 
     var pendingCamera: MLNMapCamera? {
         guard let parent = parent as? NavigationViewController else {
@@ -63,7 +61,6 @@ class RouteMapViewController: UIViewController {
         return camera
     }
 
-    weak var delegate: RouteMapViewControllerDelegate?
     var routeController: Router? {
         didSet {
             self.navigationView.statusView.canChangeValue = self.routeController?.locationManager is SimulatedLocationManager
@@ -73,7 +70,7 @@ class RouteMapViewController: UIViewController {
         }
     }
 
-    let distanceFormatter = DistanceFormatter(approximate: true)
+    weak var delegate: RouteMapViewControllerDelegate?
     var arrowCurrentStep: RouteStep?
     var isInOverviewMode = false {
         didSet {
@@ -92,20 +89,27 @@ class RouteMapViewController: UIViewController {
 
     var currentLegIndexMapped = 0
     var currentStepIndexMapped = 0
-
+    var labelRoadNameCompletionHandler: LabelRoadNameCompletionHandler?
     /**
      A Boolean value that determines whether the map annotates the locations at which instructions are spoken for debugging purposes.
      */
     var annotatesSpokenInstructions = false
 
     var overheadInsets: UIEdgeInsets {
-        UIEdgeInsets(top: self.navigationView.instructionsBannerView.bounds.height, left: 20, bottom: self.navigationView.bottomBannerView.bounds.height, right: 20)
+        UIEdgeInsets(top: self.navigationView.instructionsBannerView.bounds.height,
+                     left: 20,
+                     bottom: self.navigationView.bottomBannerView.bounds.height,
+                     right: 20)
     }
+	
+    lazy var endOfRouteViewController: EndOfRouteViewController = {
+        let storyboard = UIStoryboard(name: "Navigation", bundle: .mapboxNavigation)
+        let viewController = storyboard.instantiateViewController(withIdentifier: "EndOfRouteViewController") as! EndOfRouteViewController
+        return viewController
+    }()
 
-    typealias LabelRoadNameCompletionHandler = (_ defaultRaodNameAssigned: Bool) -> Void
-
-    var labelRoadNameCompletionHandler: LabelRoadNameCompletionHandler?
-
+    // MARK: - Lifecycle
+	
     convenience init(routeController: RouteController?, delegate: RouteMapViewControllerDelegate? = nil) {
         self.init()
         self.routeController = routeController
@@ -113,16 +117,23 @@ class RouteMapViewController: UIViewController {
         self.automaticallyAdjustsScrollViewInsets = false
     }
 
+    deinit {
+        self.suspendNotifications()
+        self.removeTimer()
+    }
+
+    // MARK: - UIViewController
+	
     override func loadView() {
-        view = NavigationView(delegate: self)
-        view.frame = parent?.view.bounds ?? UIScreen.main.bounds
+        self.view = NavigationView(delegate: self)
+        self.view.frame = self.parent?.view.bounds ?? UIScreen.main.bounds
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
         self.mapView.contentInset = self.contentInsets
-        view.layoutIfNeeded()
+        self.view.layoutIfNeeded()
 
         self.mapView.tracksUserCourse = true
 
@@ -135,15 +146,10 @@ class RouteMapViewController: UIViewController {
         self.notifyUserAboutLowVolume()
     }
 
-    deinit {
-        suspendNotifications()
-        removeTimer()
-    }
-
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        resetETATimer()
+        self.resetETATimer()
 
         self.navigationView.muteButton.isSelected = NavigationSettings.shared.voiceMuted
         self.mapView.compassView.isHidden = true
@@ -167,7 +173,7 @@ class RouteMapViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         self.annotatesSpokenInstructions = self.delegate?.mapViewControllerShouldAnnotateSpokenInstructions(self) ?? false
-        showRouteIfNeeded()
+        self.showRouteIfNeeded()
         self.currentLegIndexMapped = self.routeController?.routeProgress.legIndex ?? 0
         self.currentStepIndexMapped = self.routeController?.routeProgress.currentLegProgress.stepIndex ?? 0
     }
@@ -176,27 +182,7 @@ class RouteMapViewController: UIViewController {
         super.viewWillDisappear(animated)
         self.removeTimer()
     }
-
-    func resumeNotifications() {
-        NotificationCenter.default.addObserver(self, selector: #selector(self.willReroute(notification:)), name: .routeControllerWillReroute, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.didReroute(notification:)), name: .routeControllerDidReroute, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.rerouteDidFail(notification:)), name: .routeControllerDidFailToReroute, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.applicationWillEnterForeground(notification:)), name: UIApplication.willEnterForegroundNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.removeTimer), name: UIApplication.didEnterBackgroundNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.updateInstructionsBanner(notification:)), name: .routeControllerDidPassVisualInstructionPoint, object: self.routeController)
-        subscribeToKeyboardNotifications()
-    }
-
-    func suspendNotifications() {
-        NotificationCenter.default.removeObserver(self, name: .routeControllerWillReroute, object: nil)
-        NotificationCenter.default.removeObserver(self, name: .routeControllerDidReroute, object: nil)
-        NotificationCenter.default.removeObserver(self, name: .routeControllerDidFailToReroute, object: nil)
-        NotificationCenter.default.removeObserver(self, name: UIApplication.willEnterForegroundNotification, object: nil)
-        NotificationCenter.default.removeObserver(self, name: UIApplication.didEnterBackgroundNotification, object: nil)
-        NotificationCenter.default.removeObserver(self, name: .routeControllerDidPassVisualInstructionPoint, object: nil)
-        unsubscribeFromKeyboardNotifications()
-    }
-
+    
     @objc func recenter(_ sender: AnyObject) {
         self.mapView.tracksUserCourse = true
         self.mapView.enableFrameByFrameCourseViewTracking(for: 3)
@@ -367,17 +353,6 @@ class RouteMapViewController: UIViewController {
         }
     }
 
-    private func showStatus(title: String, withSpinner spin: Bool = false, for time: TimeInterval, animated: Bool = true, interactive: Bool = false) {
-        self.statusView.show(title, showSpinner: spin, interactive: interactive)
-        guard time < .infinity else { return }
-        self.statusView.hide(delay: time, animated: animated)
-    }
-
-    private func setCamera(altitude: Double) {
-        guard self.mapView.altitude != altitude else { return }
-        self.mapView.altitude = altitude
-    }
-
     func mapView(_ mapView: MLNMapView, imageFor annotation: MLNAnnotation) -> MLNAnnotationImage? {
         navigationMapView(mapView, imageFor: annotation)
     }
@@ -503,15 +478,6 @@ class RouteMapViewController: UIViewController {
 
         guard duration > 0.0 else { return noAnimation() }
         UIView.animate(withDuration: duration, delay: 0.0, options: [.curveLinear], animations: animate, completion: complete)
-    }
-
-    fileprivate func populateName(for waypoint: Waypoint, populated: @escaping (Waypoint) -> Void) {
-        guard waypoint.name == nil else { return populated(waypoint) }
-        CLGeocoder().reverseGeocodeLocation(waypoint.location) { places, error in
-            guard let place = places?.first, let placeName = place.name, error == nil else { return }
-            let named = Waypoint(coordinate: waypoint.coordinate, name: placeName)
-            return populated(named)
-        }
     }
 }
 
@@ -959,6 +925,46 @@ private extension RouteMapViewController {
         self.navigationView.endOfRouteShowConstraint?.constant = 0
 
         UIView.animate(withDuration: options.duration, delay: 0, options: options.curve, animations: view.layoutIfNeeded, completion: nil)
+    }
+	
+    func resumeNotifications() {
+        NotificationCenter.default.addObserver(self, selector: #selector(self.willReroute(notification:)), name: .routeControllerWillReroute, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.didReroute(notification:)), name: .routeControllerDidReroute, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.rerouteDidFail(notification:)), name: .routeControllerDidFailToReroute, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.applicationWillEnterForeground(notification:)), name: UIApplication.willEnterForegroundNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.removeTimer), name: UIApplication.didEnterBackgroundNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.updateInstructionsBanner(notification:)), name: .routeControllerDidPassVisualInstructionPoint, object: self.routeController)
+        self.subscribeToKeyboardNotifications()
+    }
+
+    func suspendNotifications() {
+        NotificationCenter.default.removeObserver(self, name: .routeControllerWillReroute, object: nil)
+        NotificationCenter.default.removeObserver(self, name: .routeControllerDidReroute, object: nil)
+        NotificationCenter.default.removeObserver(self, name: .routeControllerDidFailToReroute, object: nil)
+        NotificationCenter.default.removeObserver(self, name: UIApplication.willEnterForegroundNotification, object: nil)
+        NotificationCenter.default.removeObserver(self, name: UIApplication.didEnterBackgroundNotification, object: nil)
+        NotificationCenter.default.removeObserver(self, name: .routeControllerDidPassVisualInstructionPoint, object: nil)
+        self.unsubscribeFromKeyboardNotifications()
+    }
+
+    func showStatus(title: String, withSpinner spin: Bool = false, for time: TimeInterval, animated: Bool = true, interactive: Bool = false) {
+        self.statusView.show(title, showSpinner: spin, interactive: interactive)
+        guard time < .infinity else { return }
+        self.statusView.hide(delay: time, animated: animated)
+    }
+
+    func setCamera(altitude: Double) {
+        guard self.mapView.altitude != altitude else { return }
+        self.mapView.altitude = altitude
+    }
+
+    func populateName(for waypoint: Waypoint, populated: @escaping (Waypoint) -> Void) {
+        guard waypoint.name == nil else { return populated(waypoint) }
+        CLGeocoder().reverseGeocodeLocation(waypoint.location) { places, error in
+            guard let place = places?.first, let placeName = place.name, error == nil else { return }
+            let named = Waypoint(coordinate: waypoint.coordinate, name: placeName)
+            return populated(named)
+        }
     }
 }
 

@@ -5,16 +5,57 @@
 //  Created by Patrick Kladek on 16.05.24.
 //
 
+import MapboxCoreNavigation
+import MapboxDirections
+import MapboxNavigation
+import MapLibre
 import UIKit
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
+    private let styleURL = Bundle.main.url(forResource: "Terrain", withExtension: "json")! // swiftlint:disable:this force_unwrapping
+	
     var window: UIWindow?
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
         // If using a storyboard, the `window` property will automatically be initialized and attached to the scene.
         // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
-        guard let _ = (scene as? UIWindowScene) else { return }
+        guard let windowScene = (scene as? UIWindowScene) else { return }
+		
+        self.window = UIWindow(windowScene: windowScene)
+        let viewController = NavigationViewController()
+        viewController.mapView?.styleURL = self.styleURL
+
+        let waypoints = [
+            CLLocation(latitude: 52.032407, longitude: 5.580310),
+            CLLocation(latitude: 51.768686, longitude: 4.6827956)
+        ].map { Waypoint(location: $0) }
+        
+        viewController.mapView?.tracksUserCourse = false
+        viewController.mapView?.showsUserLocation = true
+        viewController.mapView?.zoomLevel = 12
+        viewController.mapView?.centerCoordinate = waypoints[0].coordinate
+        
+        self.window?.rootViewController = viewController
+        self.window?.makeKeyAndVisible()
+		
+        return ()
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(3)) {
+            let options = NavigationRouteOptions(waypoints: waypoints, profileIdentifier: .automobileAvoidingTraffic)
+            options.shapeFormat = .polyline6
+            options.distanceMeasurementSystem = .metric
+            options.attributeOptions = []
+			
+            Directions.shared.calculate(options) { _, routes, _ in
+                guard let route = routes?.first else { return }
+				
+                let simulatedLocationManager = SimulatedLocationManager(route: route)
+                simulatedLocationManager.speedMultiplier = 2
+				
+                viewController.start(with: route, locationManager: simulatedLocationManager)
+            }
+        }
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {

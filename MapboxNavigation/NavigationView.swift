@@ -165,7 +165,7 @@ open class NavigationView: UIView {
     
     func commonInit() {
         self.setupViews()
-        setupConstraints()
+        self.setupConstraints()
     }
     
     func setupStackViews() {
