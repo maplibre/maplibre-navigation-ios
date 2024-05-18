@@ -682,31 +682,12 @@ extension RouteMapViewController: NavigationViewDelegate {
     }
 
     func labelCurrentRoadFeature(at location: CLLocation) {
-        guard let style = mapView.style, let stepCoordinates = routeController.routeProgress.currentLegProgress.currentStep.coordinates else {
+        guard let stepCoordinates = routeController.routeProgress.currentLegProgress.currentStep.coordinates else {
             return
         }
 
         let closestCoordinate = location.coordinate
         let roadLabelLayerIdentifier = "roadLabelLayer"
-        var streetsSources: [MLNVectorTileSource] = style.sources.compactMap {
-            $0 as? MLNVectorTileSource
-        }.filter(\.isMapboxStreets)
-
-        // Add Mapbox Streets if the map does not already have it
-        if streetsSources.isEmpty {
-            let source = MLNVectorTileSource(identifier: "mapboxStreetsv7", configurationURL: URL(string: "mapbox://mapbox.mapbox-streets-v7")!)
-            style.addSource(source)
-            streetsSources.append(source)
-        }
-
-        if let mapboxSteetsSource = streetsSources.first, style.layer(withIdentifier: roadLabelLayerIdentifier) == nil {
-            let streetLabelLayer = MLNLineStyleLayer(identifier: roadLabelLayerIdentifier, source: mapboxSteetsSource)
-            streetLabelLayer.sourceLayerIdentifier = "road_label"
-            streetLabelLayer.lineOpacity = NSExpression(forConstantValue: 1)
-            streetLabelLayer.lineWidth = NSExpression(forConstantValue: 20)
-            streetLabelLayer.lineColor = NSExpression(forConstantValue: UIColor.white)
-            style.insertLayer(streetLabelLayer, at: 0)
-        }
 
         let userPuck = self.mapView.convert(closestCoordinate, toPointTo: self.mapView)
         let features = self.mapView.visibleFeatures(at: userPuck, styleLayerIdentifiers: Set([roadLabelLayerIdentifier]))
