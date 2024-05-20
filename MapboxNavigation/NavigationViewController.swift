@@ -450,8 +450,32 @@ open class NavigationViewController: UIViewController {
         self.mapViewController?.navigationView.bottomBannerView.traitCollectionDidChange(self.traitCollection)
     }
 	
-    public func endRoute() {
-        // TODO: Dismiss
+    public func endRoute(animated: Bool = true) {
+        let route = self.route!
+		
+        self.routeController?.endNavigation()
+        self.mapView?.removeRoutes()
+        self.voiceController = nil
+        self.route = nil
+		
+        UIView.animate(withDuration: CATransaction.animationDuration()) {
+            self.mapViewController?.navigationView.instructionsBannerContentView.alpha = 0
+            self.mapViewController?.navigationView.lanesView.alpha = 0
+            self.mapViewController?.navigationView.bottomBannerContentView.alpha = 0
+        } completion: { _ in
+            self.mapViewController?.navigationView.instructionsBannerContentView.isHidden = true
+            self.mapViewController?.navigationView.lanesView.isHidden = true
+            self.mapViewController?.navigationView.bottomBannerContentView.isHidden = true
+            self.mapViewController?.navigationView.bottomBannerView.traitCollectionDidChange(self.traitCollection)
+			
+            self.mapViewController?.navigationView.instructionsBannerContentView.alpha = 1
+            self.mapViewController?.navigationView.lanesView.alpha = 1
+            self.mapViewController?.navigationView.bottomBannerContentView.alpha = 1
+        }
+		
+        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(5)) {
+            self.start(with: route, locationManager: SimulatedLocationManager(route: route))
+        }
     }
 	
     #if canImport(CarPlay)
@@ -537,11 +561,7 @@ extension NavigationViewController: RouteMapViewControllerDelegate {
     }
     
     func mapViewControllerDidDismiss(_ mapViewController: RouteMapViewController, byCanceling canceled: Bool) {
-        if self.delegate?.navigationViewControllerDidDismiss?(self, byCanceling: canceled) != nil {
-            // The receiver should handle dismissal of the NavigationViewController
-        } else {
-            dismiss(animated: true, completion: nil)
-        }
+        self.endRoute()
     }
     
     public func navigationMapViewUserAnchorPoint(_ mapView: NavigationMapView) -> CGPoint {
