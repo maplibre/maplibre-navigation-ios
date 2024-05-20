@@ -39,7 +39,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         self.window?.rootViewController = viewController
         self.window?.makeKeyAndVisible()
 		
-        return ()
+//        return ()
         
         DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(3)) {
             let options = NavigationRouteOptions(waypoints: waypoints, profileIdentifier: .automobileAvoidingTraffic)

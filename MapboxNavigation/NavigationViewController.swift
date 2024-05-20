@@ -375,11 +375,16 @@ open class NavigationViewController: UIViewController {
         self.mapViewController = mapViewController
         mapViewController.destination = route?.legs.last?.destination
         mapViewController.willMove(toParent: self)
-        addChild(mapViewController)
+        self.addChild(mapViewController)
         mapViewController.didMove(toParent: self)
         let mapSubview: UIView = mapViewController.view
         mapSubview.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(mapSubview)
+        self.view.addSubview(mapSubview)
+		
+        if route == nil {
+            self.mapViewController?.navigationView.instructionsBannerContentView.isHidden = true
+            self.mapViewController?.navigationView.bottomBannerContentView.isHidden = true
+        }
         
         mapSubview.pinInSuperview()
         mapViewController.reportButton.isHidden = !self.showsReportFeedback
@@ -440,6 +445,9 @@ open class NavigationViewController: UIViewController {
         self.locationManager = locationManager
         self.route = route
         self.routeController?.resume()
+        self.mapViewController?.navigationView.instructionsBannerContentView.isHidden = false
+        self.mapViewController?.navigationView.bottomBannerContentView.isHidden = false
+        self.mapViewController?.navigationView.bottomBannerView.traitCollectionDidChange(self.traitCollection)
     }
 	
     public func endRoute() {

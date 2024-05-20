@@ -8,6 +8,22 @@ import UIKit
 class ArrowFillPolyline: MLNPolylineFeature {}
 class ArrowStrokePolyline: ArrowFillPolyline {}
 
+@objc protocol RouteMapViewControllerDelegate: NavigationMapViewDelegate, MLNMapViewDelegate, VisualInstructionDelegate {
+    func mapViewControllerDidDismiss(_ mapViewController: RouteMapViewController, byCanceling canceled: Bool)
+    func mapViewControllerShouldAnnotateSpokenInstructions(_ routeMapViewController: RouteMapViewController) -> Bool
+
+    /**
+     Called to allow the delegate to customize the contents of the road name label that is displayed towards the bottom of the map view.
+
+     This method is called on each location update. By default, the label displays the name of the road the user is currently traveling on.
+
+     - parameter mapViewController: The route map view controller that will display the road name.
+     - parameter location: The user’s current location.
+     - return: The road name to display in the label, or the empty string to hide the label, or nil to query the map’s vector tiles for the road name.
+     */
+    @objc func mapViewController(_ mapViewController: RouteMapViewController, roadNameAt location: CLLocation) -> String?
+}
+
 class RouteMapViewController: UIViewController {
     typealias LabelRoadNameCompletionHandler = (_ defaultRaodNameAssigned: Bool) -> Void
 	
@@ -37,6 +53,14 @@ class RouteMapViewController: UIViewController {
     var stepsViewController: StepsViewController?
     var destination: Waypoint?
     var showsEndOfRoute: Bool = true
+    var arrowCurrentStep: RouteStep?
+	
+    var contentInsets: UIEdgeInsets {
+        let top = self.navigationView.instructionsBannerContentView.bounds.height
+        let bottom = self.navigationView.bottomBannerView.bounds.height
+        return UIEdgeInsets(top: top, left: 0, bottom: bottom, right: 0)
+    }
+	
     var isUsedInConjunctionWithCarPlayWindow = false {
         didSet {
             if self.isUsedInConjunctionWithCarPlayWindow {
@@ -69,9 +93,7 @@ class RouteMapViewController: UIViewController {
             self.populateName(for: destination, populated: { self.destination = $0 })
         }
     }
-
-    weak var delegate: RouteMapViewControllerDelegate?
-    var arrowCurrentStep: RouteStep?
+    
     var isInOverviewMode = false {
         didSet {
             if self.isInOverviewMode {
@@ -90,6 +112,7 @@ class RouteMapViewController: UIViewController {
     var currentLegIndexMapped = 0
     var currentStepIndexMapped = 0
     var labelRoadNameCompletionHandler: LabelRoadNameCompletionHandler?
+   
     /**
      A Boolean value that determines whether the map annotates the locations at which instructions are spoken for debugging purposes.
      */
@@ -101,13 +124,15 @@ class RouteMapViewController: UIViewController {
                      bottom: self.navigationView.bottomBannerView.bounds.height,
                      right: 20)
     }
-	
+    
     lazy var endOfRouteViewController: EndOfRouteViewController = {
         let storyboard = UIStoryboard(name: "Navigation", bundle: .mapboxNavigation)
         let viewController = storyboard.instantiateViewController(withIdentifier: "EndOfRouteViewController") as! EndOfRouteViewController
         return viewController
     }()
 
+    weak var delegate: RouteMapViewControllerDelegate?
+	
     // MARK: - Lifecycle
 	
     convenience init(routeController: RouteController?, delegate: RouteMapViewControllerDelegate? = nil) {
@@ -182,51 +207,6 @@ class RouteMapViewController: UIViewController {
         super.viewWillDisappear(animated)
         self.removeTimer()
     }
-    
-    @objc func recenter(_ sender: AnyObject) {
-        self.mapView.tracksUserCourse = true
-        self.mapView.enableFrameByFrameCourseViewTracking(for: 3)
-        self.isInOverviewMode = false
-        guard let routeController else { return }
-		
-        self.updateCameraAltitude(for: routeController.routeProgress)
-
-        self.mapView.addArrow(route: routeController.routeProgress.route,
-                              legIndex: routeController.routeProgress.legIndex,
-                              stepIndex: routeController.routeProgress.currentLegProgress.stepIndex + 1)
-
-        self.removePreviewInstructions()
-    }
-
-    @objc func removeTimer() {
-        self.updateETATimer?.invalidate()
-        self.updateETATimer = nil
-    }
-
-    func removePreviewInstructions() {
-        if let view = previewInstructionsView {
-            view.removeFromSuperview()
-            self.navigationView.instructionsBannerContentView.backgroundColor = InstructionsBannerView.appearance().backgroundColor
-            self.navigationView.instructionsBannerView.delegate = self
-            self.previewInstructionsView = nil
-        }
-    }
-
-    @objc func toggleOverview(_ sender: Any) {
-        self.mapView.enableFrameByFrameCourseViewTracking(for: 3)
-        if let coordinates = self.routeController?.routeProgress.route.coordinates,
-           let userLocation = self.routeController?.locationManager.location?.coordinate {
-            self.mapView.setOverheadCameraView(from: userLocation, along: coordinates, for: self.overheadInsets)
-        }
-        self.isInOverviewMode = true
-    }
-
-    @objc func toggleMute(_ sender: UIButton) {
-        sender.isSelected = !sender.isSelected
-
-        let muted = sender.isSelected
-        NavigationSettings.shared.voiceMuted = muted
-    }
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
@@ -238,7 +218,17 @@ class RouteMapViewController: UIViewController {
         self.mapView.setContentInset(self.contentInsets, animated: true, completionHandler: nil)
         self.mapView.setNeedsUpdateConstraints()
     }
+	
+    // MARK: - UIContentContainer
+	
+    override func preferredContentSizeDidChange(forChildContentContainer container: UIContentContainer) {
+        self.navigationView.endOfRouteHeightConstraint?.constant = container.preferredContentSize.height
 
+        UIView.animate(withDuration: 0.3, animations: view.layoutIfNeeded)
+    }
+
+    // MARK: - RouteMapViewController
+	
     func notifyDidReroute(route: Route) {
         self.updateETA()
         self.currentStepIndexMapped = 0
@@ -270,21 +260,6 @@ class RouteMapViewController: UIViewController {
         }
     }
 
-    @objc func applicationWillEnterForeground(notification: NSNotification) {
-        self.mapView.updateCourseTracking(location: self.routeController?.location, animated: false)
-        resetETATimer()
-    }
-
-    @objc func willReroute(notification: NSNotification) {
-        let title = NSLocalizedString("REROUTING", bundle: .mapboxNavigation, value: "Rerouting…", comment: "Indicates that rerouting is in progress")
-        self.lanesView.hide()
-        self.statusView.show(title, showSpinner: true)
-    }
-
-    @objc func rerouteDidFail(notification: NSNotification) {
-        self.statusView.hide()
-    }
-
     func notifyUserAboutLowVolume() {
         guard !(self.routeController?.locationManager is SimulatedLocationManager) else { return }
         guard !NavigationSettings.shared.voiceMuted else { return }
@@ -293,29 +268,6 @@ class RouteMapViewController: UIViewController {
         let title = String.localizedStringWithFormat(NSLocalizedString("DEVICE_VOLUME_LOW", bundle: .mapboxNavigation, value: "%@ Volume Low", comment: "Format string for indicating the device volume is low; 1 = device model"), UIDevice.current.model)
         self.statusView.show(title, showSpinner: false)
         self.statusView.hide(delay: 3, animated: true)
-    }
-
-    @objc func didReroute(notification: NSNotification) {
-        guard isViewLoaded else { return }
-
-        if let locationManager = self.routeController?.locationManager as? SimulatedLocationManager {
-            let localized = String.Localized.simulationStatus(speed: Int(locationManager.speedMultiplier))
-            self.showStatus(title: localized, for: .infinity, interactive: true)
-        } else {
-            self.statusView.hide(delay: 2, animated: true)
-        }
-
-        if notification.userInfo![RouteControllerNotificationUserInfoKey.isProactiveKey] as! Bool {
-            let title = NSLocalizedString("FASTER_ROUTE_FOUND", bundle: .mapboxNavigation, value: "Faster Route Found", comment: "Indicates a faster route was found")
-            self.showStatus(title: title, withSpinner: true, for: 3)
-        }
-    }
-
-    @objc func updateInstructionsBanner(notification: NSNotification) {
-        guard let routeProgress = notification.userInfo?[RouteControllerNotificationUserInfoKey.routeProgressKey] as? RouteProgress else { return }
-        self.instructionsBannerView.update(for: routeProgress.currentLegProgress.currentStepProgress.currentVisualInstruction)
-        self.lanesView.update(for: routeProgress.currentLegProgress.currentStepProgress.currentVisualInstruction)
-        self.nextBannerView.update(for: routeProgress.currentLegProgress.currentStepProgress.currentVisualInstruction)
     }
 
     func updateMapOverlays(for routeProgress: RouteProgress) {
@@ -353,14 +305,6 @@ class RouteMapViewController: UIViewController {
         }
     }
 
-    func mapView(_ mapView: MLNMapView, imageFor annotation: MLNAnnotation) -> MLNAnnotationImage? {
-        navigationMapView(mapView, imageFor: annotation)
-    }
-
-    func mapView(_ mapView: MLNMapView, viewFor annotation: MLNAnnotation) -> MLNAnnotationView? {
-        navigationMapView(mapView, viewFor: annotation)
-    }
-
     func notifyDidChange(routeProgress: RouteProgress, location: CLLocation, secondsRemaining: TimeInterval) {
         resetETATimer()
         updateETA()
@@ -382,250 +326,6 @@ class RouteMapViewController: UIViewController {
         if self.annotatesSpokenInstructions, let routeController {
             self.mapView.showVoiceInstructionsOnMap(route: routeController.routeProgress.route)
         }
-    }
-
-    var contentInsets: UIEdgeInsets {
-        let top = self.navigationView.instructionsBannerContentView.bounds.height
-        let bottom = self.navigationView.bottomBannerView.bounds.height
-        return UIEdgeInsets(top: top, left: 0, bottom: bottom, right: 0)
-    }
-
-    // MARK: End Of Route
-
-    func embedEndOfRoute() {
-        let endOfRoute = self.endOfRouteViewController
-        addChild(endOfRoute)
-        self.navigationView.endOfRouteView = endOfRoute.view
-        self.navigationView.constrainEndOfRoute()
-        endOfRoute.didMove(toParent: self)
-
-        endOfRoute.dismissHandler = { [weak self] _, _ in
-            self?.routeController?.endNavigation()
-            self?.delegate?.mapViewControllerDidDismiss(self!, byCanceling: false)
-        }
-    }
-
-    func unembedEndOfRoute() {
-        let endOfRoute = self.endOfRouteViewController
-        endOfRoute.willMove(toParent: nil)
-        endOfRoute.removeFromParent()
-    }
-
-    func showEndOfRoute(duration: TimeInterval = 1.0, completion: ((Bool) -> Void)? = nil) {
-        self.embedEndOfRoute()
-        self.endOfRouteViewController.destination = self.destination
-        self.navigationView.endOfRouteView?.isHidden = false
-
-        view.layoutIfNeeded() // flush layout queue
-        NSLayoutConstraint.deactivate(self.navigationView.bannerShowConstraints)
-        NSLayoutConstraint.activate(self.navigationView.bannerHideConstraints)
-        self.navigationView.endOfRouteHideConstraint?.isActive = false
-        self.navigationView.endOfRouteShowConstraint?.isActive = true
-
-        self.mapView.enableFrameByFrameCourseViewTracking(for: duration)
-        self.mapView.setNeedsUpdateConstraints()
-
-        let animate = {
-            self.view.layoutIfNeeded()
-            self.navigationView.floatingStackView.alpha = 0.0
-        }
-
-        let noAnimation = { animate(); completion?(true) }
-
-        guard duration > 0.0 else { return noAnimation() }
-
-        self.navigationView.mapView.tracksUserCourse = false
-        UIView.animate(withDuration: duration, delay: 0.0, options: [.curveLinear], animations: animate, completion: completion)
-
-        guard let height = navigationView.endOfRouteHeightConstraint?.constant else { return }
-        let insets = UIEdgeInsets(top: navigationView.instructionsBannerView.bounds.height, left: 20, bottom: height + 20, right: 20)
-
-        if let coordinates = self.routeController?.routeProgress.route.coordinates, let userLocation = routeController?.locationManager.location?.coordinate {
-            let slicedLine = Polyline(coordinates).sliced(from: userLocation).coordinates
-            let line = MLNPolyline(coordinates: slicedLine, count: UInt(slicedLine.count))
-
-            let camera = self.navigationView.mapView.cameraThatFitsShape(line, direction: self.navigationView.mapView.camera.heading, edgePadding: insets)
-            camera.pitch = 0
-            camera.altitude = self.navigationView.mapView.camera.altitude
-            self.navigationView.mapView.setCamera(camera, animated: true)
-        }
-    }
-
-    func hideEndOfRoute(duration: TimeInterval = 0.3, completion: ((Bool) -> Void)? = nil) {
-        view.layoutIfNeeded() // flush layout queue
-        self.navigationView.endOfRouteHideConstraint?.isActive = true
-        self.navigationView.endOfRouteShowConstraint?.isActive = false
-        view.clipsToBounds = true
-
-        self.mapView.enableFrameByFrameCourseViewTracking(for: duration)
-        self.mapView.setNeedsUpdateConstraints()
-
-        let animate = {
-            self.view.layoutIfNeeded()
-            self.navigationView.floatingStackView.alpha = 1.0
-        }
-
-        let complete: (Bool) -> Void = {
-            self.navigationView.endOfRouteView?.isHidden = true
-            self.unembedEndOfRoute()
-            completion?($0)
-        }
-
-        let noAnimation = {
-            animate()
-            complete(true)
-        }
-
-        guard duration > 0.0 else { return noAnimation() }
-        UIView.animate(withDuration: duration, delay: 0.0, options: [.curveLinear], animations: animate, completion: complete)
-    }
-}
-
-// MARK: - UIContentContainer
-
-extension RouteMapViewController {
-    override func preferredContentSizeDidChange(forChildContentContainer container: UIContentContainer) {
-        self.navigationView.endOfRouteHeightConstraint?.constant = container.preferredContentSize.height
-
-        UIView.animate(withDuration: 0.3, animations: view.layoutIfNeeded)
-    }
-}
-
-// MARK: - NavigationViewDelegate
-
-extension RouteMapViewController: NavigationViewDelegate {
-    // MARK: NavigationViewDelegate
-
-    func navigationView(_ view: NavigationView, didTapCancelButton: CancelButton) {
-        self.delegate?.mapViewControllerDidDismiss(self, byCanceling: true)
-    }
-
-    // MARK: MLNMapViewDelegate
-
-    func mapView(_ mapView: MLNMapView, regionDidChangeAnimated animated: Bool) {
-        var userTrackingMode = mapView.userTrackingMode
-        if let mapView = mapView as? NavigationMapView, mapView.tracksUserCourse {
-            userTrackingMode = .followWithCourse
-        }
-        if userTrackingMode == .none, !self.isInOverviewMode {
-            self.navigationView.wayNameView.isHidden = true
-        }
-    }
-
-    func mapView(_ mapView: MLNMapView, didFinishLoading style: MLNStyle) {
-        // This method is called before the view is added to a window
-        // (if the style is cached) preventing UIAppearance to apply the style.
-        self.showRouteIfNeeded()
-        self.mapView.localizeLabels()
-        self.delegate?.mapView?(mapView, didFinishLoading: style)
-    }
-
-    func mapViewDidFinishLoadingMap(_ mapView: MLNMapView) {
-        self.delegate?.mapViewDidFinishLoadingMap?(mapView)
-    }
-
-    func label(_ label: InstructionLabel, willPresent instruction: VisualInstruction, as presented: NSAttributedString) -> NSAttributedString? {
-        self.delegate?.label?(label, willPresent: instruction, as: presented)
-    }
-
-    // MARK: NavigationMapViewCourseTrackingDelegate
-
-    func navigationMapViewDidStartTrackingCourse(_ mapView: NavigationMapView) {
-        self.navigationView.resumeButton.isHidden = true
-        mapView.logoView.isHidden = false
-    }
-
-    func navigationMapViewDidStopTrackingCourse(_ mapView: NavigationMapView) {
-        self.navigationView.resumeButton.isHidden = false
-        self.navigationView.wayNameView.isHidden = true
-        mapView.logoView.isHidden = true
-    }
-
-    // MARK: InstructionsBannerViewDelegate
-
-    func didDragInstructionsBanner(_ sender: BaseInstructionsBannerView) {
-        self.displayPreviewInstructions()
-    }
-
-    func didTapInstructionsBanner(_ sender: BaseInstructionsBannerView) {
-        self.displayPreviewInstructions()
-    }
-    
-    private func displayPreviewInstructions() {
-        self.removePreviewInstructions()
-
-        if let controller = stepsViewController {
-            self.stepsViewController = nil
-            controller.dismiss()
-        } else if let routeController {
-            let controller = StepsViewController(routeProgress: routeController.routeProgress)
-            controller.delegate = self
-            addChild(controller)
-            view.insertSubview(controller.view, belowSubview: self.navigationView.instructionsBannerContentView)
-
-            controller.view.topAnchor.constraint(equalTo: self.navigationView.instructionsBannerContentView.bottomAnchor).isActive = true
-            controller.view.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
-            controller.view.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
-            controller.view.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
-
-            controller.didMove(toParent: self)
-            controller.dropDownAnimation()
-
-            self.stepsViewController = controller
-            return
-        }
-    }
-
-    // MARK: NavigationMapViewDelegate
-
-    func navigationMapView(_ mapView: NavigationMapView, routeStyleLayerWithIdentifier identifier: String, source: MLNSource) -> MLNStyleLayer? {
-        self.delegate?.navigationMapView?(mapView, routeStyleLayerWithIdentifier: identifier, source: source)
-    }
-
-    func navigationMapView(_ mapView: NavigationMapView, routeCasingStyleLayerWithIdentifier identifier: String, source: MLNSource) -> MLNStyleLayer? {
-        self.delegate?.navigationMapView?(mapView, routeCasingStyleLayerWithIdentifier: identifier, source: source)
-    }
-
-    func navigationMapView(_ mapView: NavigationMapView, waypointStyleLayerWithIdentifier identifier: String, source: MLNSource) -> MLNStyleLayer? {
-        self.delegate?.navigationMapView?(mapView, waypointStyleLayerWithIdentifier: identifier, source: source)
-    }
-
-    func navigationMapView(_ mapView: NavigationMapView, waypointSymbolStyleLayerWithIdentifier identifier: String, source: MLNSource) -> MLNStyleLayer? {
-        self.delegate?.navigationMapView?(mapView, waypointSymbolStyleLayerWithIdentifier: identifier, source: source)
-    }
-
-    func navigationMapView(_ mapView: NavigationMapView, shapeFor waypoints: [Waypoint], legIndex: Int) -> MLNShape? {
-        self.delegate?.navigationMapView?(mapView, shapeFor: waypoints, legIndex: legIndex)
-    }
-
-    func navigationMapView(_ mapView: NavigationMapView, shapeFor routes: [Route]) -> MLNShape? {
-        self.delegate?.navigationMapView?(mapView, shapeFor: routes)
-    }
-
-    func navigationMapView(_ mapView: NavigationMapView, didSelect route: Route) {
-        self.delegate?.navigationMapView?(mapView, didSelect: route)
-    }
-
-    func navigationMapView(_ mapView: NavigationMapView, simplifiedShapeFor route: Route) -> MLNShape? {
-        self.delegate?.navigationMapView?(mapView, simplifiedShapeFor: route)
-    }
-
-    func navigationMapView(_ mapView: MLNMapView, imageFor annotation: MLNAnnotation) -> MLNAnnotationImage? {
-        self.delegate?.navigationMapView?(mapView, imageFor: annotation)
-    }
-
-    func navigationMapView(_ mapView: MLNMapView, viewFor annotation: MLNAnnotation) -> MLNAnnotationView? {
-        self.delegate?.navigationMapView?(mapView, viewFor: annotation)
-    }
-
-    func navigationMapViewUserAnchorPoint(_ mapView: NavigationMapView) -> CGPoint {
-        // If the end of route component is showing, then put the anchor point slightly above the middle of the map
-        if self.navigationView.endOfRouteView != nil, let show = navigationView.endOfRouteShowConstraint, show.isActive {
-            return CGPoint(x: mapView.bounds.midX, y: mapView.bounds.height * 0.4)
-        }
-
-        // otherwise, ask the delegate or return .zero
-        return self.delegate?.navigationMapViewUserAnchorPoint?(mapView) ?? .zero
     }
 
     /**
@@ -740,86 +440,210 @@ extension RouteMapViewController: NavigationViewDelegate {
             self.navigationView.wayNameView.isHidden = true
         }
     }
+	
+    // MARK: End Of Route
 
-    private func roadFeature(for line: MLNPolylineFeature) -> (roadName: String?, shieldName: NSAttributedString?) {
-        let roadNameRecord = self.roadFeatureHelper(ref: line.attribute(forKey: "ref"),
-                                                    shield: line.attribute(forKey: "shield"),
-                                                    reflen: line.attribute(forKey: "reflen"),
-                                                    name: line.attribute(forKey: "name"))
+    func embedEndOfRoute() {
+        let endOfRoute = self.endOfRouteViewController
+        addChild(endOfRoute)
+        self.navigationView.endOfRouteView = endOfRoute.view
+        self.navigationView.constrainEndOfRoute()
+        endOfRoute.didMove(toParent: self)
 
-        return (roadName: roadNameRecord.roadName, shieldName: roadNameRecord.shieldName)
+        endOfRoute.dismissHandler = { [weak self] _, _ in
+            self?.routeController?.endNavigation()
+            self?.delegate?.mapViewControllerDidDismiss(self!, byCanceling: false)
+        }
     }
 
-    private func roadFeature(for line: MLNMultiPolylineFeature) -> (roadName: String?, shieldName: NSAttributedString?) {
-        let roadNameRecord = self.roadFeatureHelper(ref: line.attribute(forKey: "ref"),
-                                                    shield: line.attribute(forKey: "shield"),
-                                                    reflen: line.attribute(forKey: "reflen"),
-                                                    name: line.attribute(forKey: "name"))
-
-        return (roadName: roadNameRecord.roadName, shieldName: roadNameRecord.shieldName)
+    func unembedEndOfRoute() {
+        let endOfRoute = self.endOfRouteViewController
+        endOfRoute.willMove(toParent: nil)
+        endOfRoute.removeFromParent()
     }
 
-    private func roadFeatureHelper(ref: Any?, shield: Any?, reflen: Any?, name: Any?) -> (roadName: String?, shieldName: NSAttributedString?) {
-        var currentShieldName: NSAttributedString?, currentRoadName: String?
+    func showEndOfRoute(duration: TimeInterval = 1.0, completion: ((Bool) -> Void)? = nil) {
+        self.embedEndOfRoute()
+        self.endOfRouteViewController.destination = self.destination
+        self.navigationView.endOfRouteView?.isHidden = false
 
-        if let text = ref as? String, let shieldID = shield as? String, let reflenDigit = reflen as? Int {
-            currentShieldName = self.roadShieldName(for: text, shield: shieldID, reflen: reflenDigit)
+        view.layoutIfNeeded() // flush layout queue
+        NSLayoutConstraint.deactivate(self.navigationView.bannerShowConstraints)
+        NSLayoutConstraint.activate(self.navigationView.bannerHideConstraints)
+        self.navigationView.endOfRouteHideConstraint?.isActive = false
+        self.navigationView.endOfRouteShowConstraint?.isActive = true
+
+        self.mapView.enableFrameByFrameCourseViewTracking(for: duration)
+        self.mapView.setNeedsUpdateConstraints()
+
+        let animate = {
+            self.view.layoutIfNeeded()
+            self.navigationView.floatingStackView.alpha = 0.0
         }
 
-        if let roadName = name as? String {
-            currentRoadName = roadName
-        }
+        let noAnimation = { animate(); completion?(true) }
 
-        if let compositeShieldImage = currentShieldName, let roadName = currentRoadName {
-            let compositeShield = NSMutableAttributedString(string: " \(roadName)")
-            compositeShield.insert(compositeShieldImage, at: 0)
-            currentShieldName = compositeShield
-        }
+        guard duration > 0.0 else { return noAnimation() }
 
-        return (roadName: currentRoadName, shieldName: currentShieldName)
+        self.navigationView.mapView.tracksUserCourse = false
+        UIView.animate(withDuration: duration, delay: 0.0, options: [.curveLinear], animations: animate, completion: completion)
+
+        guard let height = navigationView.endOfRouteHeightConstraint?.constant else { return }
+        let insets = UIEdgeInsets(top: navigationView.instructionsBannerView.bounds.height, left: 20, bottom: height + 20, right: 20)
+
+        if let coordinates = self.routeController?.routeProgress.route.coordinates, let userLocation = routeController?.locationManager.location?.coordinate {
+            let slicedLine = Polyline(coordinates).sliced(from: userLocation).coordinates
+            let line = MLNPolyline(coordinates: slicedLine, count: UInt(slicedLine.count))
+
+            let camera = self.navigationView.mapView.cameraThatFitsShape(line, direction: self.navigationView.mapView.camera.heading, edgePadding: insets)
+            camera.pitch = 0
+            camera.altitude = self.navigationView.mapView.camera.altitude
+            self.navigationView.mapView.setCamera(camera, animated: true)
+        }
     }
 
-    private func roadShieldName(for text: String?, shield: String?, reflen: Int?) -> NSAttributedString? {
-        guard let text, let shield, let reflen else { return nil }
+    func hideEndOfRoute(duration: TimeInterval = 0.3, completion: ((Bool) -> Void)? = nil) {
+        view.layoutIfNeeded() // flush layout queue
+        self.navigationView.endOfRouteHideConstraint?.isActive = true
+        self.navigationView.endOfRouteShowConstraint?.isActive = false
+        view.clipsToBounds = true
 
-        let currentShield = HighwayShield.RoadType(rawValue: shield)
-        let textColor = currentShield?.textColor ?? .black
-        let imageName = "\(shield)-\(reflen)"
+        self.mapView.enableFrameByFrameCourseViewTracking(for: duration)
+        self.mapView.setNeedsUpdateConstraints()
 
-        guard let image = mapView.style?.image(forName: imageName) else {
-            return nil
+        let animate = {
+            self.view.layoutIfNeeded()
+            self.navigationView.floatingStackView.alpha = 1.0
         }
 
-        let attachment = RoadNameLabelAttachment(image: image, text: text, color: textColor, font: UIFont.boldSystemFont(ofSize: UIFont.systemFontSize), scale: UIScreen.main.scale)
-        return NSAttributedString(attachment: attachment)
-    }
-
-    @objc func updateETA() {
-        guard isViewLoaded, let routeController else { return }
-		
-        self.navigationView.bottomBannerView.updateETA(routeProgress: routeController.routeProgress)
-    }
-
-    func resetETATimer() {
-        self.removeTimer()
-        self.updateETATimer = Timer.scheduledTimer(timeInterval: 30, target: self, selector: #selector(self.updateETA), userInfo: nil, repeats: true)
-    }
-
-    func showRouteIfNeeded() {
-        guard self.isViewLoaded, self.view.window != nil else { return }
-        guard !self.mapView.showsRoute else { return }
-        guard let routeController else { return }
-		
-        self.mapView.showRoutes([routeController.routeProgress.route], legIndex: routeController.routeProgress.legIndex)
-        self.mapView.showWaypoints(routeController.routeProgress.route, legIndex: routeController.routeProgress.legIndex)
-
-        if routeController.routeProgress.currentLegProgress.stepIndex + 1 <= routeController.routeProgress.currentLegProgress.leg.steps.count {
-            self.mapView.addArrow(route: routeController.routeProgress.route, legIndex: routeController.routeProgress.legIndex, stepIndex: routeController.routeProgress.currentLegProgress.stepIndex + 1)
+        let complete: (Bool) -> Void = {
+            self.navigationView.endOfRouteView?.isHidden = true
+            self.unembedEndOfRoute()
+            completion?($0)
         }
 
-        if self.annotatesSpokenInstructions {
-            self.mapView.showVoiceInstructionsOnMap(route: routeController.routeProgress.route)
+        let noAnimation = {
+            animate()
+            complete(true)
         }
+
+        guard duration > 0.0 else { return noAnimation() }
+        UIView.animate(withDuration: duration, delay: 0.0, options: [.curveLinear], animations: animate, completion: complete)
+    }
+}
+
+// MARK: - NavigationViewDelegate
+
+extension RouteMapViewController: NavigationViewDelegate {
+    // MARK: NavigationViewDelegate
+
+    func navigationView(_ view: NavigationView, didTapCancelButton: CancelButton) {
+        self.delegate?.mapViewControllerDidDismiss(self, byCanceling: true)
+    }
+
+    // MARK: MLNMapViewDelegate
+
+    func mapView(_ mapView: MLNMapView, regionDidChangeAnimated animated: Bool) {
+        var userTrackingMode = mapView.userTrackingMode
+        if let mapView = mapView as? NavigationMapView, mapView.tracksUserCourse {
+            userTrackingMode = .followWithCourse
+        }
+        if userTrackingMode == .none, !self.isInOverviewMode {
+            self.navigationView.wayNameView.isHidden = true
+        }
+    }
+
+    func mapView(_ mapView: MLNMapView, didFinishLoading style: MLNStyle) {
+        // This method is called before the view is added to a window
+        // (if the style is cached) preventing UIAppearance to apply the style.
+        self.showRouteIfNeeded()
+        self.mapView.localizeLabels()
+        self.delegate?.mapView?(mapView, didFinishLoading: style)
+    }
+
+    func mapViewDidFinishLoadingMap(_ mapView: MLNMapView) {
+        self.delegate?.mapViewDidFinishLoadingMap?(mapView)
+    }
+
+    // MARK: - VisualInstructionDelegate
+	
+    func label(_ label: InstructionLabel, willPresent instruction: VisualInstruction, as presented: NSAttributedString) -> NSAttributedString? {
+        self.delegate?.label?(label, willPresent: instruction, as: presented)
+    }
+
+    // MARK: NavigationMapViewCourseTrackingDelegate
+
+    func navigationMapViewDidStartTrackingCourse(_ mapView: NavigationMapView) {
+        self.navigationView.resumeButton.isHidden = true
+        mapView.logoView.isHidden = false
+    }
+
+    func navigationMapViewDidStopTrackingCourse(_ mapView: NavigationMapView) {
+        self.navigationView.resumeButton.isHidden = false
+        self.navigationView.wayNameView.isHidden = true
+        mapView.logoView.isHidden = true
+    }
+
+    // MARK: InstructionsBannerViewDelegate
+
+    func didDragInstructionsBanner(_ sender: BaseInstructionsBannerView) {
+        self.displayPreviewInstructions()
+    }
+
+    func didTapInstructionsBanner(_ sender: BaseInstructionsBannerView) {
+        self.displayPreviewInstructions()
+    }
+
+    // MARK: NavigationMapViewDelegate
+
+    func navigationMapView(_ mapView: NavigationMapView, routeStyleLayerWithIdentifier identifier: String, source: MLNSource) -> MLNStyleLayer? {
+        self.delegate?.navigationMapView?(mapView, routeStyleLayerWithIdentifier: identifier, source: source)
+    }
+
+    func navigationMapView(_ mapView: NavigationMapView, routeCasingStyleLayerWithIdentifier identifier: String, source: MLNSource) -> MLNStyleLayer? {
+        self.delegate?.navigationMapView?(mapView, routeCasingStyleLayerWithIdentifier: identifier, source: source)
+    }
+
+    func navigationMapView(_ mapView: NavigationMapView, waypointStyleLayerWithIdentifier identifier: String, source: MLNSource) -> MLNStyleLayer? {
+        self.delegate?.navigationMapView?(mapView, waypointStyleLayerWithIdentifier: identifier, source: source)
+    }
+
+    func navigationMapView(_ mapView: NavigationMapView, waypointSymbolStyleLayerWithIdentifier identifier: String, source: MLNSource) -> MLNStyleLayer? {
+        self.delegate?.navigationMapView?(mapView, waypointSymbolStyleLayerWithIdentifier: identifier, source: source)
+    }
+
+    func navigationMapView(_ mapView: NavigationMapView, shapeFor waypoints: [Waypoint], legIndex: Int) -> MLNShape? {
+        self.delegate?.navigationMapView?(mapView, shapeFor: waypoints, legIndex: legIndex)
+    }
+
+    func navigationMapView(_ mapView: NavigationMapView, shapeFor routes: [Route]) -> MLNShape? {
+        self.delegate?.navigationMapView?(mapView, shapeFor: routes)
+    }
+
+    func navigationMapView(_ mapView: NavigationMapView, didSelect route: Route) {
+        self.delegate?.navigationMapView?(mapView, didSelect: route)
+    }
+
+    func navigationMapView(_ mapView: NavigationMapView, simplifiedShapeFor route: Route) -> MLNShape? {
+        self.delegate?.navigationMapView?(mapView, simplifiedShapeFor: route)
+    }
+
+    func navigationMapView(_ mapView: MLNMapView, imageFor annotation: MLNAnnotation) -> MLNAnnotationImage? {
+        self.delegate?.navigationMapView?(mapView, imageFor: annotation)
+    }
+
+    func navigationMapView(_ mapView: MLNMapView, viewFor annotation: MLNAnnotation) -> MLNAnnotationView? {
+        self.delegate?.navigationMapView?(mapView, viewFor: annotation)
+    }
+
+    func navigationMapViewUserAnchorPoint(_ mapView: NavigationMapView) -> CGPoint {
+        // If the end of route component is showing, then put the anchor point slightly above the middle of the map
+        if self.navigationView.endOfRouteView != nil, let show = navigationView.endOfRouteShowConstraint, show.isActive {
+            return CGPoint(x: mapView.bounds.midX, y: mapView.bounds.height * 0.4)
+        }
+
+        // otherwise, ask the delegate or return .zero
+        return self.delegate?.navigationMapViewUserAnchorPoint?(mapView) ?? .zero
     }
 }
 
@@ -884,17 +708,8 @@ extension RouteMapViewController: StepsViewControllerDelegate {
 // MARK: - Keyboard Handling
 
 private extension RouteMapViewController {
-    func subscribeToKeyboardNotifications() {
-        NotificationCenter.default.addObserver(self, selector: #selector(RouteMapViewController.keyboardWillShow(notification:)), name: UIResponder.keyboardWillShowNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(RouteMapViewController.keyboardWillHide(notification:)), name: UIResponder.keyboardWillHideNotification, object: nil)
-    }
-
-    func unsubscribeFromKeyboardNotifications() {
-        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
-        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
-    }
-
-    @objc func keyboardWillShow(notification: NSNotification) {
+    @objc
+    func keyboardWillShow(notification: NSNotification) {
         guard self.navigationView.endOfRouteView != nil else { return }
         guard let userInfo = notification.userInfo else { return }
         guard let curveValue = userInfo[UIResponder.keyboardAnimationCurveUserInfoKey] as? Int else { return }
@@ -915,7 +730,8 @@ private extension RouteMapViewController {
         UIView.animate(withDuration: options.duration, delay: 0, options: opts, animations: view.layoutIfNeeded, completion: nil)
     }
 
-    @objc func keyboardWillHide(notification: NSNotification) {
+    @objc
+    func keyboardWillHide(notification: NSNotification) {
         guard self.navigationView.endOfRouteView != nil else { return }
         guard let userInfo = notification.userInfo else { return }
         let curve = UIView.AnimationCurve(rawValue: userInfo[UIResponder.keyboardAnimationCurveUserInfoKey] as! Int)
@@ -925,6 +741,106 @@ private extension RouteMapViewController {
         self.navigationView.endOfRouteShowConstraint?.constant = 0
 
         UIView.animate(withDuration: options.duration, delay: 0, options: options.curve, animations: view.layoutIfNeeded, completion: nil)
+    }
+	
+    @objc
+    func recenter(_ sender: AnyObject) {
+        self.mapView.tracksUserCourse = true
+        self.mapView.enableFrameByFrameCourseViewTracking(for: 3)
+        self.isInOverviewMode = false
+        guard let routeController else { return }
+		
+        self.updateCameraAltitude(for: routeController.routeProgress)
+
+        self.mapView.addArrow(route: routeController.routeProgress.route,
+                              legIndex: routeController.routeProgress.legIndex,
+                              stepIndex: routeController.routeProgress.currentLegProgress.stepIndex + 1)
+
+        self.removePreviewInstructions()
+    }
+
+    @objc
+    func removeTimer() {
+        self.updateETATimer?.invalidate()
+        self.updateETATimer = nil
+    }
+	
+    @objc
+    func toggleOverview(_ sender: Any) {
+        self.mapView.enableFrameByFrameCourseViewTracking(for: 3)
+        if let coordinates = self.routeController?.routeProgress.route.coordinates,
+           let userLocation = self.routeController?.locationManager.location?.coordinate {
+            self.mapView.setOverheadCameraView(from: userLocation, along: coordinates, for: self.overheadInsets)
+        }
+        self.isInOverviewMode = true
+    }
+
+    @objc
+    func toggleMute(_ sender: UIButton) {
+        sender.isSelected = !sender.isSelected
+
+        let muted = sender.isSelected
+        NavigationSettings.shared.voiceMuted = muted
+    }
+	
+    @objc
+    func applicationWillEnterForeground(notification: NSNotification) {
+        self.mapView.updateCourseTracking(location: self.routeController?.location, animated: false)
+        self.resetETATimer()
+    }
+
+    @objc
+    func willReroute(notification: NSNotification) {
+        let title = NSLocalizedString("REROUTING", bundle: .mapboxNavigation, value: "Rerouting…", comment: "Indicates that rerouting is in progress")
+        self.lanesView.hide()
+        self.statusView.show(title, showSpinner: true)
+    }
+
+    @objc
+    func rerouteDidFail(notification: NSNotification) {
+        self.statusView.hide()
+    }
+	
+    @objc
+    func didReroute(notification: NSNotification) {
+        guard isViewLoaded else { return }
+
+        if let locationManager = self.routeController?.locationManager as? SimulatedLocationManager {
+            let localized = String.Localized.simulationStatus(speed: Int(locationManager.speedMultiplier))
+            self.showStatus(title: localized, for: .infinity, interactive: true)
+        } else {
+            self.statusView.hide(delay: 2, animated: true)
+        }
+
+        if notification.userInfo![RouteControllerNotificationUserInfoKey.isProactiveKey] as! Bool {
+            let title = NSLocalizedString("FASTER_ROUTE_FOUND", bundle: .mapboxNavigation, value: "Faster Route Found", comment: "Indicates a faster route was found")
+            self.showStatus(title: title, withSpinner: true, for: 3)
+        }
+    }
+
+    @objc
+    func updateInstructionsBanner(notification: NSNotification) {
+        guard let routeProgress = notification.userInfo?[RouteControllerNotificationUserInfoKey.routeProgressKey] as? RouteProgress else { return }
+        self.instructionsBannerView.update(for: routeProgress.currentLegProgress.currentStepProgress.currentVisualInstruction)
+        self.lanesView.update(for: routeProgress.currentLegProgress.currentStepProgress.currentVisualInstruction)
+        self.nextBannerView.update(for: routeProgress.currentLegProgress.currentStepProgress.currentVisualInstruction)
+    }
+	
+    @objc
+    func updateETA() {
+        guard isViewLoaded, let routeController else { return }
+		
+        self.navigationView.bottomBannerView.updateETA(routeProgress: routeController.routeProgress)
+    }
+	
+    func subscribeToKeyboardNotifications() {
+        NotificationCenter.default.addObserver(self, selector: #selector(RouteMapViewController.keyboardWillShow(notification:)), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(RouteMapViewController.keyboardWillHide(notification:)), name: UIResponder.keyboardWillHideNotification, object: nil)
+    }
+
+    func unsubscribeFromKeyboardNotifications() {
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
     }
 	
     func resumeNotifications() {
@@ -966,6 +882,115 @@ private extension RouteMapViewController {
             return populated(named)
         }
     }
+	
+    func removePreviewInstructions() {
+        if let view = previewInstructionsView {
+            view.removeFromSuperview()
+            self.navigationView.instructionsBannerContentView.backgroundColor = InstructionsBannerView.appearance().backgroundColor
+            self.navigationView.instructionsBannerView.delegate = self
+            self.previewInstructionsView = nil
+        }
+    }
+	
+    func displayPreviewInstructions() {
+        self.removePreviewInstructions()
+
+        if let controller = stepsViewController {
+            self.stepsViewController = nil
+            controller.dismiss()
+        } else if let routeController {
+            let controller = StepsViewController(routeProgress: routeController.routeProgress)
+            controller.delegate = self
+            addChild(controller)
+            view.insertSubview(controller.view, belowSubview: self.navigationView.instructionsBannerContentView)
+
+            controller.view.topAnchor.constraint(equalTo: self.navigationView.instructionsBannerContentView.bottomAnchor).isActive = true
+            controller.view.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+            controller.view.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+            controller.view.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+
+            controller.didMove(toParent: self)
+            controller.dropDownAnimation()
+
+            self.stepsViewController = controller
+            return
+        }
+    }
+	
+    func roadFeature(for line: MLNPolylineFeature) -> (roadName: String?, shieldName: NSAttributedString?) {
+        let roadNameRecord = self.roadFeatureHelper(ref: line.attribute(forKey: "ref"),
+                                                    shield: line.attribute(forKey: "shield"),
+                                                    reflen: line.attribute(forKey: "reflen"),
+                                                    name: line.attribute(forKey: "name"))
+
+        return (roadName: roadNameRecord.roadName, shieldName: roadNameRecord.shieldName)
+    }
+
+    func roadFeature(for line: MLNMultiPolylineFeature) -> (roadName: String?, shieldName: NSAttributedString?) {
+        let roadNameRecord = self.roadFeatureHelper(ref: line.attribute(forKey: "ref"),
+                                                    shield: line.attribute(forKey: "shield"),
+                                                    reflen: line.attribute(forKey: "reflen"),
+                                                    name: line.attribute(forKey: "name"))
+
+        return (roadName: roadNameRecord.roadName, shieldName: roadNameRecord.shieldName)
+    }
+
+    func roadFeatureHelper(ref: Any?, shield: Any?, reflen: Any?, name: Any?) -> (roadName: String?, shieldName: NSAttributedString?) {
+        var currentShieldName: NSAttributedString?, currentRoadName: String?
+
+        if let text = ref as? String, let shieldID = shield as? String, let reflenDigit = reflen as? Int {
+            currentShieldName = self.roadShieldName(for: text, shield: shieldID, reflen: reflenDigit)
+        }
+
+        if let roadName = name as? String {
+            currentRoadName = roadName
+        }
+
+        if let compositeShieldImage = currentShieldName, let roadName = currentRoadName {
+            let compositeShield = NSMutableAttributedString(string: " \(roadName)")
+            compositeShield.insert(compositeShieldImage, at: 0)
+            currentShieldName = compositeShield
+        }
+
+        return (roadName: currentRoadName, shieldName: currentShieldName)
+    }
+
+    func roadShieldName(for text: String?, shield: String?, reflen: Int?) -> NSAttributedString? {
+        guard let text, let shield, let reflen else { return nil }
+
+        let currentShield = HighwayShield.RoadType(rawValue: shield)
+        let textColor = currentShield?.textColor ?? .black
+        let imageName = "\(shield)-\(reflen)"
+
+        guard let image = mapView.style?.image(forName: imageName) else {
+            return nil
+        }
+
+        let attachment = RoadNameLabelAttachment(image: image, text: text, color: textColor, font: UIFont.boldSystemFont(ofSize: UIFont.systemFontSize), scale: UIScreen.main.scale)
+        return NSAttributedString(attachment: attachment)
+    }
+
+    func resetETATimer() {
+        self.removeTimer()
+        self.updateETATimer = Timer.scheduledTimer(timeInterval: 30, target: self, selector: #selector(self.updateETA), userInfo: nil, repeats: true)
+    }
+
+    func showRouteIfNeeded() {
+        guard self.isViewLoaded, self.view.window != nil else { return }
+        guard !self.mapView.showsRoute else { return }
+        guard let routeController else { return }
+		
+        self.mapView.showRoutes([routeController.routeProgress.route], legIndex: routeController.routeProgress.legIndex)
+        self.mapView.showWaypoints(routeController.routeProgress.route, legIndex: routeController.routeProgress.legIndex)
+
+        if routeController.routeProgress.currentLegProgress.stepIndex + 1 <= routeController.routeProgress.currentLegProgress.leg.steps.count {
+            self.mapView.addArrow(route: routeController.routeProgress.route, legIndex: routeController.routeProgress.legIndex, stepIndex: routeController.routeProgress.currentLegProgress.stepIndex + 1)
+        }
+
+        if self.annotatesSpokenInstructions {
+            self.mapView.showVoiceInstructionsOnMap(route: routeController.routeProgress.route)
+        }
+    }
 }
 
 private extension UIView.AnimationOptions {
@@ -983,20 +1008,4 @@ private extension UIView.AnimationOptions {
             fatalError("Unknown curve")
         }
     }
-}
-
-@objc protocol RouteMapViewControllerDelegate: NavigationMapViewDelegate, MLNMapViewDelegate, VisualInstructionDelegate {
-    func mapViewControllerDidDismiss(_ mapViewController: RouteMapViewController, byCanceling canceled: Bool)
-    func mapViewControllerShouldAnnotateSpokenInstructions(_ routeMapViewController: RouteMapViewController) -> Bool
-
-    /**
-     Called to allow the delegate to customize the contents of the road name label that is displayed towards the bottom of the map view.
-
-     This method is called on each location update. By default, the label displays the name of the road the user is currently traveling on.
-
-     - parameter mapViewController: The route map view controller that will display the road name.
-     - parameter location: The user’s current location.
-     - return: The road name to display in the label, or the empty string to hide the label, or nil to query the map’s vector tiles for the road name.
-     */
-    @objc func mapViewController(_ mapViewController: RouteMapViewController, roadNameAt location: CLLocation) -> String?
 }
