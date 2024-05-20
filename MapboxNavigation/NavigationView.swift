@@ -2,6 +2,10 @@ import MapboxDirections
 import MapLibre
 import UIKit
 
+protocol NavigationViewDelegate: NavigationMapViewDelegate, MLNMapViewDelegate, StatusViewDelegate, InstructionsBannerViewDelegate, NavigationMapViewCourseTrackingDelegate, VisualInstructionDelegate {
+    func navigationView(_ view: NavigationView, didTapCancelButton: CancelButton)
+}
+
 /**
  A view that represents the root view of the MapboxNavigation drop-in UI.
  
@@ -145,7 +149,7 @@ open class NavigationView: UIView {
         }
     }
     
-    // MARK: - Initializers
+    // MARK: - Lifecycle
     
     convenience init(delegate: NavigationViewDelegate) {
         self.init(frame: .zero)
@@ -163,26 +167,74 @@ open class NavigationView: UIView {
         self.commonInit()
     }
     
+    // MARK: - NavigationView
+    
+    override open func prepareForInterfaceBuilder() {
+        super.prepareForInterfaceBuilder()
+        DayStyle().apply()
+        [self.mapView, self.instructionsBannerView, self.lanesView, self.bottomBannerView, self.nextBannerView].forEach { $0.prepareForInterfaceBuilder() }
+        self.wayNameView.text = "Street Label"
+    }
+	
+    func showUI(animated: Bool = true) {
+        UIView.animate(withDuration: animated ? CATransaction.animationDuration() : 0) {
+            self.instructionsBannerContentView.alpha = 1
+            self.lanesView.alpha = 1
+            self.bottomBannerContentView.alpha = 1
+            self.floatingStackView.alpha = 1
+        } completion: { _ in
+            self.instructionsBannerContentView.isHidden = false
+            self.lanesView.isHidden = false
+            self.bottomBannerContentView.isHidden = false
+            self.floatingStackView.isHidden = false
+            self.bottomBannerView.traitCollectionDidChange(self.traitCollection)
+        }
+    }
+	
+    func hideUI(animated: Bool = true) {
+        UIView.animate(withDuration: animated ? CATransaction.animationDuration() : 0) {
+            self.instructionsBannerContentView.alpha = 0
+            self.lanesView.alpha = 0
+            self.bottomBannerContentView.alpha = 0
+            self.floatingStackView.alpha = 0
+        } completion: { _ in
+            self.instructionsBannerContentView.isHidden = true
+            self.lanesView.isHidden = true
+            self.bottomBannerContentView.isHidden = true
+            self.floatingStackView.isHidden = true
+            self.bottomBannerView.traitCollectionDidChange(self.traitCollection)
+        }
+    }
+}
+
+// MARK: - Private
+
+private extension NavigationView {
+    @objc
+    func cancelButtonTapped(_ sender: CancelButton) {
+        self.delegate?.navigationView(self, didTapCancelButton: self.bottomBannerView.cancelButton)
+    }
+	
     func commonInit() {
         self.setupViews()
         self.setupConstraints()
     }
-    
+	
     func setupStackViews() {
         self.setupInformationStackView()
         self.floatingStackView.addArrangedSubviews([self.overviewButton, self.muteButton, self.reportButton])
     }
-    
+	
     func setupInformationStackView() {
         let informationChildren: [UIView] = [instructionsBannerView, lanesView, nextBannerView, statusView]
         self.informationStackView.addArrangedSubviews(informationChildren)
-        
+		
         for informationChild in informationChildren {
             informationChild.leadingAnchor.constraint(equalTo: self.informationStackView.leadingAnchor).isActive = true
             informationChild.trailingAnchor.constraint(equalTo: self.informationStackView.trailingAnchor).isActive = true
         }
     }
-    
+	
     func setupContainers() {
         let containers: [(UIView, UIView)] = [
             (instructionsBannerContentView, instructionsBannerView),
@@ -190,11 +242,11 @@ open class NavigationView: UIView {
         ]
         containers.forEach { $0.addSubview($1) }
     }
-    
+	
     func setupViews() {
         self.setupStackViews()
         self.setupContainers()
-        
+		
         let subviews: [UIView] = [
             mapView,
             informationStackView,
@@ -204,22 +256,11 @@ open class NavigationView: UIView {
             bottomBannerContentView,
             instructionsBannerContentView
         ]
-        
+		
         subviews.forEach(addSubview(_:))
     }
-    
-    override open func prepareForInterfaceBuilder() {
-        super.prepareForInterfaceBuilder()
-        DayStyle().apply()
-        [self.mapView, self.instructionsBannerView, self.lanesView, self.bottomBannerView, self.nextBannerView].forEach { $0.prepareForInterfaceBuilder() }
-        self.wayNameView.text = "Street Label"
-    }
-    
-    @objc func cancelButtonTapped(_ sender: CancelButton) {
-        self.delegate?.navigationView(self, didTapCancelButton: self.bottomBannerView.cancelButton)
-    }
-    
-    private func updateDelegates() {
+	
+    func updateDelegates() {
         self.mapView.delegate = self.delegate
         self.mapView.navigationMapDelegate = self.delegate
         self.mapView.courseTrackingDelegate = self.delegate
@@ -228,8 +269,4 @@ open class NavigationView: UIView {
         self.nextBannerView.instructionDelegate = self.delegate
         self.statusView.delegate = self.delegate
     }
-}
-
-protocol NavigationViewDelegate: NavigationMapViewDelegate, MLNMapViewDelegate, StatusViewDelegate, InstructionsBannerViewDelegate, NavigationMapViewCourseTrackingDelegate, VisualInstructionDelegate {
-    func navigationView(_ view: NavigationView, didTapCancelButton: CancelButton)
 }

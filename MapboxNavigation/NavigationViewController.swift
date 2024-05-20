@@ -382,8 +382,7 @@ open class NavigationViewController: UIViewController {
         self.view.addSubview(mapSubview)
 		
         if route == nil {
-            self.mapViewController?.navigationView.instructionsBannerContentView.isHidden = true
-            self.mapViewController?.navigationView.bottomBannerContentView.isHidden = true
+            self.mapViewController?.navigationView.hideUI(animated: false)
         }
         
         mapSubview.pinInSuperview()
@@ -445,9 +444,8 @@ open class NavigationViewController: UIViewController {
         self.locationManager = locationManager
         self.route = route
         self.routeController?.resume()
-        self.mapViewController?.navigationView.instructionsBannerContentView.isHidden = false
-        self.mapViewController?.navigationView.bottomBannerContentView.isHidden = false
-        self.mapViewController?.navigationView.bottomBannerView.traitCollectionDidChange(self.traitCollection)
+		
+        self.mapViewController?.navigationView.showUI(animated: true)
     }
 	
     public func endRoute(animated: Bool = true) {
@@ -458,20 +456,7 @@ open class NavigationViewController: UIViewController {
         self.voiceController = nil
         self.route = nil
 		
-        UIView.animate(withDuration: CATransaction.animationDuration()) {
-            self.mapViewController?.navigationView.instructionsBannerContentView.alpha = 0
-            self.mapViewController?.navigationView.lanesView.alpha = 0
-            self.mapViewController?.navigationView.bottomBannerContentView.alpha = 0
-        } completion: { _ in
-            self.mapViewController?.navigationView.instructionsBannerContentView.isHidden = true
-            self.mapViewController?.navigationView.lanesView.isHidden = true
-            self.mapViewController?.navigationView.bottomBannerContentView.isHidden = true
-            self.mapViewController?.navigationView.bottomBannerView.traitCollectionDidChange(self.traitCollection)
-			
-            self.mapViewController?.navigationView.instructionsBannerContentView.alpha = 1
-            self.mapViewController?.navigationView.lanesView.alpha = 1
-            self.mapViewController?.navigationView.bottomBannerContentView.alpha = 1
-        }
+        self.mapViewController?.navigationView.hideUI(animated: animated)
 		
         DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(5)) {
             self.start(with: route, locationManager: SimulatedLocationManager(route: route))
