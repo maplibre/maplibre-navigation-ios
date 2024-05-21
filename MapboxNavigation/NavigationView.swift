@@ -177,31 +177,34 @@ open class NavigationView: UIView {
     }
 	
     func showUI(animated: Bool = true) {
+        let views: [UIView] = [
+            self.instructionsBannerContentView,
+            self.lanesView,
+            self.bottomBannerContentView,
+            self.floatingStackView
+        ]
+		
         UIView.animate(withDuration: animated ? CATransaction.animationDuration() : 0) {
-            self.instructionsBannerContentView.alpha = 1
-            self.lanesView.alpha = 1
-            self.bottomBannerContentView.alpha = 1
-            self.floatingStackView.alpha = 1
+            views.forEach { $0.alpha = 1 }
         } completion: { _ in
-            self.instructionsBannerContentView.isHidden = false
-            self.lanesView.isHidden = false
-            self.bottomBannerContentView.isHidden = false
-            self.floatingStackView.isHidden = false
+            views.forEach { $0.isHidden = false }
             self.bottomBannerView.traitCollectionDidChange(self.traitCollection)
         }
     }
 	
     func hideUI(animated: Bool = true) {
+        let views: [UIView] = [
+            self.instructionsBannerContentView,
+            self.lanesView,
+            self.bottomBannerContentView,
+            self.floatingStackView,
+            self.resumeButton
+        ]
+		
         UIView.animate(withDuration: animated ? CATransaction.animationDuration() : 0) {
-            self.instructionsBannerContentView.alpha = 0
-            self.lanesView.alpha = 0
-            self.bottomBannerContentView.alpha = 0
-            self.floatingStackView.alpha = 0
+            views.forEach { $0.alpha = 0 }
         } completion: { _ in
-            self.instructionsBannerContentView.isHidden = true
-            self.lanesView.isHidden = true
-            self.bottomBannerContentView.isHidden = true
-            self.floatingStackView.isHidden = true
+            views.forEach { $0.isHidden = true }
             self.bottomBannerView.traitCollectionDidChange(self.traitCollection)
         }
     }

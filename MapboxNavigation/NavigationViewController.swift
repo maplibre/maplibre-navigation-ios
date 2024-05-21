@@ -444,9 +444,9 @@ open class NavigationViewController: UIViewController {
     public func start(with route: Route, locationManager: NavigationLocationManager? = nil) {
         self.locationManager = locationManager
         self.route = route
-        self.routeController?.resume()
 		
         self.mapViewController?.navigationView.showUI(animated: true)
+        self.routeController?.resume()
     }
 	
     public func endRoute(animated: Bool = true) {
