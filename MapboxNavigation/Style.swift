@@ -54,8 +54,32 @@ open class Style: NSObject {
      Applies the style for all changed properties.
      */
     @objc open func apply() {}
-    
-    @objc override public required init() {}
+  
+    @available(*, deprecated, message: "Use `init(mapStyleURL:)` to specify your map style. If you want to try the demo maplibre tiles, use init(demoStyle: ()).")
+    @objc override public convenience init() {
+        self.init(demoStyle: ())
+    }
+
+    @objc public required init(mapStyleURL: URL) {
+        self.mapStyleURL = mapStyleURL
+    }
+
+    @objc public convenience init(demoStyle: ()) {
+        self.init(mapStyleURL: MLNStyle.defaultStyle().url)
+    }
+}
+
+extension Style: NSCopying {
+    public func copy(with zone: NSZone? = nil) -> Any {
+        let copy = Self(mapStyleURL: self.mapStyleURL)
+        copy.tintColor = self.tintColor
+        copy.statusBarStyle = self.statusBarStyle
+        copy.fontFamily = self.fontFamily
+        copy.styleType = self.styleType
+        copy.mapStyleURL = self.mapStyleURL
+        copy.previewMapStyleURL = self.previewMapStyleURL
+        return copy
+    }
 }
 
 /**

@@ -17,6 +17,7 @@ class NavigationViewControllerTests: XCTestCase {
     lazy var dependencies: (navigationViewController: NavigationViewController, startLocation: CLLocation, poi: [CLLocation], endLocation: CLLocation, voice: RouteVoiceController) = {
         let voice = FakeVoiceController()
         let nav = NavigationViewController(for: initialRoute,
+                                           dayStyle: DayStyle(demoStyle: ()),
                                            directions: Directions(accessToken: "garbage", host: nil),
                                            voiceController: voice)
         
@@ -88,7 +89,10 @@ class NavigationViewControllerTests: XCTestCase {
     }
     
     func testNavigationShouldNotCallStyleManagerDidRefreshAppearanceMoreThanOnceWithOneStyle() {
-        let navigationViewController = NavigationViewController(for: initialRoute, directions: fakeDirections, styles: [DayStyle()], voiceController: FakeVoiceController())
+        let navigationViewController = NavigationViewController(for: initialRoute,
+                                                                dayStyle: DayStyle(demoStyle: ()),
+                                                                directions: fakeDirections,
+                                                                voiceController: FakeVoiceController())
         let routeController = navigationViewController.routeController!
         navigationViewController.styleManager.delegate = self
         
@@ -104,7 +108,9 @@ class NavigationViewControllerTests: XCTestCase {
     
     // If tunnel flags are enabled and we need to switch styles, we should not force refresh the map style because we have only 1 style.
     func testNavigationShouldNotCallStyleManagerDidRefreshAppearanceWhenOnlyOneStyle() {
-        let navigationViewController = NavigationViewController(for: initialRoute, directions: fakeDirections, styles: [NightStyle()], voiceController: FakeVoiceController())
+        // REVIEW: is this right? Does it make sense that there would ever be *only* a night style?
+        // let navigationViewController = NavigationViewController(for: initialRoute, directions: fakeDirections, styles: [NightStyle()], voiceController: FakeVoiceController())
+        let navigationViewController = NavigationViewController(for: initialRoute, dayStyle: DayStyle(demoStyle: ()), directions: fakeDirections, voiceController: FakeVoiceController())
         let routeController = navigationViewController.routeController!
         navigationViewController.styleManager.delegate = self
         
@@ -119,7 +125,7 @@ class NavigationViewControllerTests: XCTestCase {
     }
     
     func testNavigationShouldNotCallStyleManagerDidRefreshAppearanceMoreThanOnceWithTwoStyles() {
-        let navigationViewController = NavigationViewController(for: initialRoute, directions: fakeDirections, styles: [DayStyle(), NightStyle()], voiceController: FakeVoiceController())
+        let navigationViewController = NavigationViewController(for: initialRoute, dayStyle: DayStyle(demoStyle: ()), nightStyle: NightStyle(demoStyle: ()), directions: fakeDirections, voiceController: FakeVoiceController())
         let routeController = navigationViewController.routeController!
         navigationViewController.styleManager.delegate = self
         
@@ -173,8 +179,8 @@ class NavigationViewControllerTests: XCTestCase {
     
     func testDestinationAnnotationUpdatesUponReroute() {
         let styleLoaded = XCTestExpectation(description: "Style Loaded")
-        let navigationViewController = NavigationViewControllerTestable(for: initialRoute, styles: [TestableDayStyle()], styleLoaded: styleLoaded)
-        
+        let navigationViewController = NavigationViewControllerTestable(for: initialRoute, dayStyle: DayStyle.blankStyleForTesting, styleLoaded: styleLoaded)
+
         // wait for the style to load -- routes won't show without it.
         wait(for: [styleLoaded], timeout: 5)
         navigationViewController.route = self.initialRoute
@@ -248,21 +254,19 @@ private extension NavigationViewControllerTests {
 
 class NavigationViewControllerTestable: NavigationViewController {
     var styleLoadedExpectation: XCTestExpectation
-    
+   
     required init(for route: Route,
-                  directions: Directions = Directions(accessToken: "abc", host: ""),
-                  styles: [Style]? = [DayStyle(), NightStyle()],
-                  locationManager: NavigationLocationManager? = NavigationLocationManager(),
+                  dayStyle: Style,
                   styleLoaded: XCTestExpectation) {
         self.styleLoadedExpectation = styleLoaded
-        super.init(for: route, directions: directions, styles: styles, locationManager: locationManager, voiceController: FakeVoiceController())
+        super.init(for: route, dayStyle: dayStyle, directions: Directions(accessToken: "abc", host: ""), voiceController: FakeVoiceController())
     }
     
-    @objc(initWithRoute:directions:styles:routeController:locationManager:voiceController:)
-    required init(for route: Route, directions: Directions, styles: [Style]?, routeController: RouteController?, locationManager: NavigationLocationManager?, voiceController: RouteVoiceController?) {
-        fatalError("init(for:directions:styles:routeController:locationManager:voiceController:) is not supported in this testing subclass.")
+    @objc(initWithRoute:dayStyle:nightStyle:directions:routeController:locationManager:voiceController:)
+    required init(for route: Route, dayStyle: Style, nightStyle: Style? = nil, directions: Directions = Directions.shared, routeController: RouteController? = nil, locationManager: NavigationLocationManager? = nil, voiceController: RouteVoiceController? = nil) {
+        fatalError("init(for:directions:dayStyle:nightStyle:routeController:locationManager:voiceController:) has not been implemented")
     }
-    
+
     func mapView(_ mapView: MLNMapView, didFinishLoading style: MLNStyle) {
         self.styleLoadedExpectation.fulfill()
     }
@@ -273,10 +277,9 @@ class NavigationViewControllerTestable: NavigationViewController {
     }
 }
 
-class TestableDayStyle: DayStyle {
-    required init() {
-        super.init()
-        mapStyleURL = Fixture.blankStyle
+extension DayStyle {
+    static var blankStyleForTesting: Self {
+        Self(mapStyleURL: Fixture.blankStyle)
     }
 }
 

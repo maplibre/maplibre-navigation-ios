@@ -45,13 +45,12 @@ private extension UIFont {
  */
 @objc(MBDayStyle)
 open class DayStyle: Style {
-    public required init() {
-        super.init()
-        mapStyleURL = MLNStyle.defaultStyle().url
+    @objc public required init(mapStyleURL: URL) {
+        super.init(mapStyleURL: mapStyleURL)
         styleType = .day
         statusBarStyle = .default
     }
-    
+
     override open func apply() {
         super.apply()
         
@@ -166,10 +165,8 @@ open class DayStyle: Style {
  */
 @objc(MBNightStyle)
 open class NightStyle: DayStyle {
-    public required init() {
-        super.init()
-        mapStyleURL = MLNStyle.defaultStyle().url
-        previewMapStyleURL = MLNStyle.defaultStyle().url
+    public required init(mapStyleURL: URL) {
+        super.init(mapStyleURL: mapStyleURL)
         styleType = .night
         statusBarStyle = .lightContent
     }
