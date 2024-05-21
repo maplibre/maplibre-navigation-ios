@@ -345,11 +345,23 @@ open class NavigationViewController: UIViewController {
         super.init(coder: aDecoder)
     }
     
-    /**
-     Initializes a `NavigationViewController` that provides turn by turn navigation for the given route. A optional `direction` object is needed for  potential rerouting.
-
-     See [Mapbox Directions](https://mapbox.github.io/mapbox-navigation-ios/directions/) for further information.
-     */
+    /// Initializes a `NavigationViewController` that provides turn by turn navigation for the given route. A optional `directions` object is needed for  potential rerouting.
+    ///
+    /// ```
+    /// var dayStyle = DayStyle()
+    /// dayStyle.mapStyleURL = styleURL
+    /// let vc = NavigationViewController(route: route, styles: [dayStyle])
+    /// self.presentViewController(vc, animated: true)
+    /// ```
+    /// - Parameters:
+    ///   - route: The route to follow.
+    ///   - directions: Used when recomputing a new route, for example if the user takes a wrong turn and needs re-routing.
+    ///   - styles: The `[dayStyle]` or `[dayStyle, nightStyle]` styles used to render the map. If nil, the default styles will be used.
+    ///   - routeController: Used to monitor the route and notify of changes to the route. If nil, a default will be used.
+    ///   - locationManager: Tracks the users location along the route. If nil, a default will be used.
+    ///   - voiceController: Produces voice instructions for route navigation. If nil, a default will be used.
+    ///
+    /// See [Mapbox Directions](https://mapbox.github.io/mapbox-navigation-ios/directions/) for further information.
     @objc(initWithRoute:directions:styles:routeController:locationManager:voiceController:)
     public required init(for route: Route,
                          directions: Directions = Directions.shared,
