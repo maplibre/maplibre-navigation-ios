@@ -25,10 +25,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         self.window = UIWindow(windowScene: windowScene)
         let viewController = NavigationViewController()
         viewController.mapView?.styleURL = self.styleURL
+        viewController.showsEndOfRouteFeedback = false
 
         let waypoints = [
             CLLocation(latitude: 52.032407, longitude: 5.580310),
-            CLLocation(latitude: 51.768686, longitude: 4.6827956)
+            CLLocation(latitude: 52.04, longitude: 5.580310)
+//            CLLocation(latitude: 51.768686, longitude: 4.6827956)
         ].map { Waypoint(location: $0) }
         
         viewController.mapView?.tracksUserCourse = false
@@ -38,9 +40,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         self.window?.rootViewController = viewController
         self.window?.makeKeyAndVisible()
-		
-//        return ()
-        
+
         DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(3)) {
             let options = NavigationRouteOptions(waypoints: waypoints, profileIdentifier: .automobileAvoidingTraffic)
             options.shapeFormat = .polyline6
