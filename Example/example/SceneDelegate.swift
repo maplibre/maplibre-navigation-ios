@@ -37,6 +37,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         viewController.mapView?.showsUserLocation = true
         viewController.mapView?.zoomLevel = 12
         viewController.mapView?.centerCoordinate = waypoints[0].coordinate
+        viewController.delegate = self
         
         self.window?.rootViewController = viewController
         self.window?.makeKeyAndVisible()
@@ -84,5 +85,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // Called as the scene transitions from the foreground to the background.
         // Use this method to save data, release shared resources, and store enough scene-specific state information
         // to restore the scene back to its current state.
+    }
+}
+
+extension SceneDelegate: NavigationViewControllerDelegate {
+    func navigationViewControllerDidArriveAtDestination(_ navigationViewController: NavigationViewController) {
+        navigationViewController.endRoute()
+        
+        print(#function)
     }
 }

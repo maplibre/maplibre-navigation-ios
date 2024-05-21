@@ -18,6 +18,14 @@ public protocol NavigationViewControllerDelegate: VisualInstructionDelegate {
      - parameter canceled: True if the user dismissed the navigation view controller by tapping the Cancel button; false if the navigation view controller dismissed by some other means.
      */
     @objc optional func navigationViewControllerDidDismiss(_ navigationViewController: NavigationViewController, byCanceling canceled: Bool)
+	
+    /**
+     Called when user arrived at the destination of the trip.
+	 
+     - parameter navigationViewController: The navigation view controller that finished navigation.
+     */
+    @objc
+    optional func navigationViewControllerDidArriveAtDestination(_ navigationViewController: NavigationViewController)
     
     /**
      Called when the user arrives at the destination waypoint for a route leg.
@@ -615,8 +623,13 @@ extension NavigationViewController: RouteControllerDelegate {
         let advancesToNextLeg = self.delegate?.navigationViewController?(self, didArriveAt: waypoint) ?? true
         
         if !self.isConnectedToCarPlay, // CarPlayManager shows rating on CarPlay if it's connected
-           routeController.routeProgress.isFinalLeg, advancesToNextLeg, self.showsEndOfRouteFeedback {
-            self.mapViewController?.showEndOfRoute { _ in }
+           routeController.routeProgress.isFinalLeg, advancesToNextLeg {
+            if self.showsEndOfRouteFeedback {
+                self.mapViewController?.showEndOfRoute { _ in }
+            } else {
+                self.mapViewController?.transitionToEndNavigation(with: 1)
+                self.delegate?.navigationViewControllerDidArriveAtDestination?(self)
+            }
         }
         return advancesToNextLeg
     }

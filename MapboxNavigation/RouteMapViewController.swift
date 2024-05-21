@@ -467,7 +467,24 @@ class RouteMapViewController: UIViewController {
         self.endOfRouteViewController.destination = self.destination
         self.navigationView.endOfRouteView?.isHidden = false
 
-        view.layoutIfNeeded() // flush layout queue
+        self.transitionToEndNavigation(with: duration, completion: completion)
+		
+        guard let height = navigationView.endOfRouteHeightConstraint?.constant else { return }
+        let insets = UIEdgeInsets(top: navigationView.instructionsBannerView.bounds.height, left: 20, bottom: height + 20, right: 20)
+
+        if let coordinates = self.routeController?.routeProgress.route.coordinates, let userLocation = routeController?.locationManager.location?.coordinate {
+            let slicedLine = Polyline(coordinates).sliced(from: userLocation).coordinates
+            let line = MLNPolyline(coordinates: slicedLine, count: UInt(slicedLine.count))
+
+            let camera = self.navigationView.mapView.cameraThatFitsShape(line, direction: self.navigationView.mapView.camera.heading, edgePadding: insets)
+            camera.pitch = 0
+            camera.altitude = self.navigationView.mapView.camera.altitude
+            self.navigationView.mapView.setCamera(camera, animated: true)
+        }
+    }
+	
+    func transitionToEndNavigation(with duration: TimeInterval, completion: ((Bool) -> Void)? = nil) {
+        self.view.layoutIfNeeded() // flush layout queue
         NSLayoutConstraint.deactivate(self.navigationView.bannerShowConstraints)
         NSLayoutConstraint.activate(self.navigationView.bannerHideConstraints)
         self.navigationView.endOfRouteHideConstraint?.isActive = false
@@ -487,19 +504,6 @@ class RouteMapViewController: UIViewController {
 
         self.navigationView.mapView.tracksUserCourse = false
         UIView.animate(withDuration: duration, delay: 0.0, options: [.curveLinear], animations: animate, completion: completion)
-
-        guard let height = navigationView.endOfRouteHeightConstraint?.constant else { return }
-        let insets = UIEdgeInsets(top: navigationView.instructionsBannerView.bounds.height, left: 20, bottom: height + 20, right: 20)
-
-        if let coordinates = self.routeController?.routeProgress.route.coordinates, let userLocation = routeController?.locationManager.location?.coordinate {
-            let slicedLine = Polyline(coordinates).sliced(from: userLocation).coordinates
-            let line = MLNPolyline(coordinates: slicedLine, count: UInt(slicedLine.count))
-
-            let camera = self.navigationView.mapView.cameraThatFitsShape(line, direction: self.navigationView.mapView.camera.heading, edgePadding: insets)
-            camera.pitch = 0
-            camera.altitude = self.navigationView.mapView.camera.altitude
-            self.navigationView.mapView.setCamera(camera, animated: true)
-        }
     }
 
     func hideEndOfRoute(duration: TimeInterval = 0.3, completion: ((Bool) -> Void)? = nil) {
