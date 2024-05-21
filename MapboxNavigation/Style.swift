@@ -34,20 +34,20 @@ open class Style: NSObject {
     /**
      URL of the style to display on the map during turn-by-turn navigation.
      */
-    @objc open var mapStyleURL: URL = MLNStyle.navigationGuidanceDayStyleURL
-    
+    @objc open var mapStyleURL: URL = MLNStyle.defaultStyle().url
+
     #if canImport(CarPlay)
     /**
      URL of the style to display on the map when previewing a route, for example on CarPlay.
      */
-    @objc open var previewMapStyleURL = MLNStyle.navigationPreviewDayStyleURL
+    @objc open var previewMapStyleURL = MLNStyle.defaultStyle().url
     #else
     /**
      URL of the style to display on the map when previewing a route.
      
      This property is currently unused by default, but you can use it to present your own route preview map.
      */
-    @objc open var previewMapStyleURL = MLNStyle.navigationPreviewDayStyleURL
+    @objc open var previewMapStyleURL = MLNStyle.defaultStyle().url
     #endif
     
     /**

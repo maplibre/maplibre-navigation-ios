@@ -47,7 +47,7 @@ private extension UIFont {
 open class DayStyle: Style {
     public required init() {
         super.init()
-        mapStyleURL = MLNStyle.navigationGuidanceDayStyleURL
+        mapStyleURL = MLNStyle.defaultStyle().url
         styleType = .day
         statusBarStyle = .default
     }
@@ -168,8 +168,8 @@ open class DayStyle: Style {
 open class NightStyle: DayStyle {
     public required init() {
         super.init()
-        mapStyleURL = MLNStyle.navigationGuidanceNightStyleURL
-        previewMapStyleURL = MLNStyle.navigationPreviewNightStyleURL
+        mapStyleURL = MLNStyle.defaultStyle().url
+        previewMapStyleURL = MLNStyle.defaultStyle().url
         styleType = .night
         statusBarStyle = .lightContent
     }
