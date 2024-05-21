@@ -383,6 +383,7 @@ open class NavigationViewController: UIViewController {
 		
         if route == nil {
             self.mapViewController?.navigationView.hideUI(animated: false)
+            self.mapView?.tracksUserCourse = false
         }
         
         mapSubview.pinInSuperview()

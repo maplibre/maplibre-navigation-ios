@@ -160,7 +160,7 @@ class RouteMapViewController: UIViewController {
         self.mapView.contentInset = self.contentInsets
         self.view.layoutIfNeeded()
 
-        self.mapView.tracksUserCourse = true
+        self.mapView.tracksUserCourse = self.route != nil
 
         self.distanceFormatter.numberFormatter.locale = .nationalizedCurrent
 
@@ -179,7 +179,7 @@ class RouteMapViewController: UIViewController {
         self.navigationView.muteButton.isSelected = NavigationSettings.shared.voiceMuted
         self.mapView.compassView.isHidden = true
 
-        self.mapView.tracksUserCourse = true
+        self.mapView.tracksUserCourse = self.route != nil
 
         if let camera = pendingCamera {
             self.mapView.camera = camera
