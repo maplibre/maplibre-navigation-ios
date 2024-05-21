@@ -80,7 +80,8 @@ class StyleManagerTests: XCTestCase {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "hh:mm a"
         dateFormatter.timeZone = TimeZone(identifier: "PST")
-        
+        dateFormatter.locale = Locale(identifier: "en_US")
+
         NSTimeZone.default = NSTimeZone(abbreviation: "PST")! as TimeZone
         
         let beforeSunrise = dateFormatter.date(from: "05:00 AM")!
