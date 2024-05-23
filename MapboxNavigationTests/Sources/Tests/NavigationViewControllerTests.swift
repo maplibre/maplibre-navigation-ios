@@ -28,6 +28,7 @@ class NavigationViewControllerTests: XCTestCase {
         let firstLocation = location(at: firstCoord)
         
         var poi = [CLLocation]()
+        // REVIEW: What are these variable names? They seem completely unrelated to the intersections in the route.
         let taylorStreetIntersection = routeController.routeProgress.route.legs.first!.steps.first!.intersections!.first!
         let turkStreetIntersection = routeController.routeProgress.route.legs.first!.steps[3].intersections!.first!
         let fultonStreetIntersection = routeController.routeProgress.route.legs.first!.steps[5].intersections!.first!
@@ -88,6 +89,7 @@ class NavigationViewControllerTests: XCTestCase {
         XCTAssertFalse(wayNameView.isHidden, "WayNameView should be visible.")
     }
     
+    // TODO: This test doesn't seem to be testing anything. Adding a test where `updatedStyleNumberOfTimes = 1` might be illuminating
     func testNavigationShouldNotCallStyleManagerDidRefreshAppearanceMoreThanOnceWithOneStyle() {
         let navigationViewController = NavigationViewController(for: initialRoute,
                                                                 dayStyle: DayStyle(demoStyle: ()),
@@ -98,6 +100,7 @@ class NavigationViewControllerTests: XCTestCase {
         
         let someLocation = self.dependencies.poi.first!
         
+        // TODO: Why are we updating with the same location 3 times?
         routeController.locationManager(routeController.locationManager, didUpdateLocations: [someLocation])
         routeController.locationManager(routeController.locationManager, didUpdateLocations: [someLocation])
         routeController.locationManager(routeController.locationManager, didUpdateLocations: [someLocation])
@@ -106,16 +109,16 @@ class NavigationViewControllerTests: XCTestCase {
         self.updatedStyleNumberOfTimes = 0
     }
     
+    // TODO: This test doesn't seem to be testing anything. The route does not actually go through a tunnel.
     // If tunnel flags are enabled and we need to switch styles, we should not force refresh the map style because we have only 1 style.
     func testNavigationShouldNotCallStyleManagerDidRefreshAppearanceWhenOnlyOneStyle() {
-        // REVIEW: is this right? Does it make sense that there would ever be *only* a night style?
-        // let navigationViewController = NavigationViewController(for: initialRoute, directions: fakeDirections, styles: [NightStyle()], voiceController: FakeVoiceController())
         let navigationViewController = NavigationViewController(for: initialRoute, dayStyle: DayStyle(demoStyle: ()), directions: fakeDirections, voiceController: FakeVoiceController())
         let routeController = navigationViewController.routeController!
         navigationViewController.styleManager.delegate = self
         
         let someLocation = self.dependencies.poi.first!
         
+        // TODO: Why are we updating with the same location 3 times?
         routeController.locationManager(routeController.locationManager, didUpdateLocations: [someLocation])
         routeController.locationManager(routeController.locationManager, didUpdateLocations: [someLocation])
         routeController.locationManager(routeController.locationManager, didUpdateLocations: [someLocation])
@@ -124,6 +127,8 @@ class NavigationViewControllerTests: XCTestCase {
         self.updatedStyleNumberOfTimes = 0
     }
     
+    // TODO: This test doesn't seem to be testing anything. The route does not actually go through a tunnel or do anything
+    //       that would cause the style to change. Maybe having a positive test where the style *does* change exactly once would be helpful
     func testNavigationShouldNotCallStyleManagerDidRefreshAppearanceMoreThanOnceWithTwoStyles() {
         let navigationViewController = NavigationViewController(for: initialRoute, dayStyle: DayStyle(demoStyle: ()), nightStyle: NightStyle(demoStyle: ()), directions: fakeDirections, voiceController: FakeVoiceController())
         let routeController = navigationViewController.routeController!
@@ -131,6 +136,7 @@ class NavigationViewControllerTests: XCTestCase {
         
         let someLocation = self.dependencies.poi.first!
         
+        // TODO: Why are we updating with the same location 3 times?
         routeController.locationManager(routeController.locationManager, didUpdateLocations: [someLocation])
         routeController.locationManager(routeController.locationManager, didUpdateLocations: [someLocation])
         routeController.locationManager(routeController.locationManager, didUpdateLocations: [someLocation])
