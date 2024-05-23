@@ -337,8 +337,9 @@ open class NavigationViewController: UIViewController {
 
      See [Mapbox Directions](https://mapbox.github.io/mapbox-navigation-ios/directions/) for further information.
      */
-    @objc(initWithDirections:styles:voiceController:)
-    public required init(directions: Directions = Directions.shared,
+    @objc(initWithStyleURL:directions:styles:voiceController:)
+    public required init(styleURL: URL? = nil,
+                         directions: Directions = Directions.shared,
                          styles: [Style] = [DayStyle(), NightStyle()],
                          voiceController: RouteVoiceController = RouteVoiceController()) {
         self.directions = directions
@@ -354,14 +355,14 @@ open class NavigationViewController: UIViewController {
         let mapSubview: UIView = mapViewController.view
         mapSubview.translatesAutoresizingMaskIntoConstraints = false
         self.view.addSubview(mapSubview)
-		
-        self.mapViewController?.navigationView.hideUI(animated: false)
-        self.mapView?.tracksUserCourse = false
-        
         mapSubview.pinInSuperview()
         
         self.styleManager = StyleManager(self)
         self.styleManager.styles = styles
+		
+        self.mapViewController?.navigationView.hideUI(animated: false)
+        self.mapView?.tracksUserCourse = false
+        self.mapView?.styleURL = styleURL
     }
     
     deinit {

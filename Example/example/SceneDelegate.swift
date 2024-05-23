@@ -23,8 +23,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = (scene as? UIWindowScene) else { return }
 		
         self.window = UIWindow(windowScene: windowScene)
-        let viewController = NavigationViewController()
-        viewController.mapView?.styleURL = self.styleURL
+        let viewController = NavigationViewController(styleURL: self.styleURL)
 
         let waypoints = [
             CLLocation(latitude: 52.032407, longitude: 5.580310),
