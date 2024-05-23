@@ -337,32 +337,17 @@ open class NavigationViewController: UIViewController {
 
      See [Mapbox Directions](https://mapbox.github.io/mapbox-navigation-ios/directions/) for further information.
      */
-    @objc(initWithRoute:directions:styles:routeController:locationManager:voiceController:)
-    public required init(for route: Route? = nil,
-                         directions: Directions = Directions.shared,
-                         styles: [Style]? = [DayStyle(), NightStyle()],
-                         routeController: RouteController? = nil,
-                         locationManager: NavigationLocationManager? = nil,
-                         voiceController: RouteVoiceController? = nil) {
-        self.route = route
+    @objc(initWithDirections:styles:voiceController:)
+    public required init(directions: Directions = Directions.shared,
+                         styles: [Style] = [DayStyle(), NightStyle()],
+                         voiceController: RouteVoiceController = RouteVoiceController()) {
         self.directions = directions
-        self.locationManager = locationManager ?? NavigationLocationManager()
-        if let route {
-            self.routeController = routeController ?? RouteController(along: route, directions: directions, locationManager: self.locationManager)
-            NavigationSettings.shared.distanceUnit = route.routeOptions.locale.usesMetric ? .kilometer : .mile
-        }
-        self.voiceController = voiceController ?? RouteVoiceController()
+        self.voiceController = voiceController
 		
         super.init(nibName: nil, bundle: nil)
         
-        self.routeController?.usesDefaultUserInterface = true
-        self.routeController?.delegate = self
-        self.routeController?.tunnelIntersectionManager.delegate = self
-        self.routeController?.resume()
-        
         let mapViewController = RouteMapViewController(routeController: self.routeController, delegate: self)
         self.mapViewController = mapViewController
-        mapViewController.destination = route?.legs.last?.destination
         mapViewController.willMove(toParent: self)
         self.addChild(mapViewController)
         mapViewController.didMove(toParent: self)
@@ -370,19 +355,13 @@ open class NavigationViewController: UIViewController {
         mapSubview.translatesAutoresizingMaskIntoConstraints = false
         self.view.addSubview(mapSubview)
 		
-        if route == nil {
-            self.mapViewController?.navigationView.hideUI(animated: false)
-            self.mapView?.tracksUserCourse = false
-        }
+        self.mapViewController?.navigationView.hideUI(animated: false)
+        self.mapView?.tracksUserCourse = false
         
         mapSubview.pinInSuperview()
         
         self.styleManager = StyleManager(self)
-        self.styleManager.styles = styles ?? [DayStyle(), NightStyle()]
-        
-        if !(route?.routeOptions is NavigationRouteOptions) {
-            print("`Route` was created using `RouteOptions` and not `NavigationRouteOptions`. Although not required, this may lead to a suboptimal navigation experience. Without `NavigationRouteOptions`, it is not guaranteed you will get congestion along the route line, better ETAs and ETA label color dependent on congestion.")
-        }
+        self.styleManager.styles = styles
     }
     
     deinit {
@@ -429,12 +408,21 @@ open class NavigationViewController: UIViewController {
     
     // MARK: - NavigationViewController
 	
-    public func start(with route: Route, locationManager: NavigationLocationManager? = nil) {
+    public func start(with route: Route, routeController: RouteController? = nil, locationManager: NavigationLocationManager? = nil) {
         self.locationManager = locationManager
         self.route = route
 		
         self.mapViewController?.navigationView.showUI(animated: true)
+        self.mapViewController?.destination = route.legs.last?.destination
+
+        self.routeController?.usesDefaultUserInterface = true
+        self.routeController?.delegate = self
+        self.routeController?.tunnelIntersectionManager.delegate = self
         self.routeController?.resume()
+		
+        if !(route.routeOptions is NavigationRouteOptions) {
+            print("`Route` was created using `RouteOptions` and not `NavigationRouteOptions`. Although not required, this may lead to a suboptimal navigation experience. Without `NavigationRouteOptions`, it is not guaranteed you will get congestion along the route line, better ETAs and ETA label color dependent on congestion.")
+        }
     }
 	
     public func endRoute(animated: Bool = true) {
@@ -470,7 +458,8 @@ open class NavigationViewController: UIViewController {
                 let locationManager = routeController.locationManager.copy() as! NavigationLocationManager
                 let directions = routeController.directions
                 let route = routeController.routeProgress.route
-                let navigationViewController = NavigationViewController(for: route, directions: directions, routeController: routeController, locationManager: locationManager)
+                let navigationViewController = NavigationViewController(directions: directions)
+                navigationViewController.start(with: route, routeController: routeController, locationManager: locationManager)
                 
                 window.rootViewController?.topMostViewController()?.present(navigationViewController, animated: true, completion: {
                     navigationViewController.isUsedInConjunctionWithCarPlayWindow = true
