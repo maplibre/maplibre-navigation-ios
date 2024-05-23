@@ -361,7 +361,7 @@ open class NavigationViewController: UIViewController {
     ///   - voiceController: Produces voice instructions for route navigation. If nil, a default will be used.
     ///
     /// See [Mapbox Directions](https://mapbox.github.io/mapbox-navigation-ios/directions/) for further information.
-    @available(*, deprecated, message: "Use `init(for:directions:dayStyle:...) or init(for:directions:dayStyleURL:...)` instead.")
+    @available(*, deprecated, message: "Use `init(for:dayStyle:...) or init(for:dayStyleURL:...)` instead.")
     @objc(initWithRoute:directions:styles:routeController:locationManager:voiceController:)
     public convenience init(for route: Route,
                             directions: Directions = Directions.shared,
