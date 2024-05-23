@@ -40,13 +40,4 @@ extension NavigationView {
         ])
         NSLayoutConstraint.activate(self.bannerShowConstraints)
     }
-    
-    func constrainEndOfRoute() {
-        self.endOfRouteHideConstraint?.isActive = true
-        
-        self.endOfRouteView?.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
-        self.endOfRouteView?.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
-        
-        self.endOfRouteHeightConstraint?.isActive = true
-    }
 }

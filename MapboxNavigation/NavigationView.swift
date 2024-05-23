@@ -59,12 +59,6 @@ open class NavigationView: UIView {
         self.instructionsBannerContentView.topAnchor.constraint(equalTo: self.instructionsBannerView.topAnchor)
     ]
     
-    lazy var endOfRouteShowConstraint: NSLayoutConstraint? = self.endOfRouteView?.bottomAnchor.constraint(equalTo: self.safeAreaLayoutGuide.bottomAnchor)
-    
-    lazy var endOfRouteHideConstraint: NSLayoutConstraint? = self.endOfRouteView?.topAnchor.constraint(equalTo: self.bottomAnchor)
-    
-    lazy var endOfRouteHeightConstraint: NSLayoutConstraint? = self.endOfRouteView?.heightAnchor.constraint(equalToConstant: Constants.endOfRouteHeight)
-    
     private enum Images {
         static let overview = UIImage(named: "overview", in: .mapboxNavigation, compatibleWith: nil)!.withRenderingMode(.alwaysTemplate)
         static let volumeUp = UIImage(named: "volume_up", in: .mapboxNavigation, compatibleWith: nil)!.withRenderingMode(.alwaysTemplate)
@@ -104,7 +98,6 @@ open class NavigationView: UIView {
     
     lazy var overviewButton = FloatingButton.rounded(image: Images.overview)
     lazy var muteButton = FloatingButton.rounded(image: Images.volumeUp, selectedImage: Images.volumeOff)
-    lazy var reportButton = FloatingButton.rounded(image: Images.feedback)
     
     lazy var lanesView: LanesView = .forAutoLayout(hidden: true)
     lazy var nextBannerView: NextBannerView = .forAutoLayout(hidden: true)
@@ -134,18 +127,6 @@ open class NavigationView: UIView {
     weak var delegate: NavigationViewDelegate? {
         didSet {
             self.updateDelegates()
-        }
-    }
-    
-    var endOfRouteView: UIView? {
-        didSet {
-            if let active: [NSLayoutConstraint] = constraints(affecting: oldValue) {
-                NSLayoutConstraint.deactivate(active)
-            }
-            
-            oldValue?.removeFromSuperview()
-            if let eor = endOfRouteView { addSubview(eor) }
-            self.endOfRouteView?.translatesAutoresizingMaskIntoConstraints = false
         }
     }
     
@@ -186,8 +167,6 @@ open class NavigationView: UIView {
 		
         NSLayoutConstraint.activate(self.bannerShowConstraints)
         NSLayoutConstraint.deactivate(self.bannerHideConstraints)
-        self.endOfRouteHideConstraint?.isActive = true
-        self.endOfRouteShowConstraint?.isActive = false
 		
         UIView.animate(withDuration: animated ? CATransaction.animationDuration() : 0) {
             views.forEach { $0.alpha = 1 }
@@ -206,10 +185,8 @@ open class NavigationView: UIView {
             self.resumeButton
         ]
 		
-        //		NSLayoutConstraint.deactivate(self.navigationView.bannerShowConstraints)
-        //		NSLayoutConstraint.activate(self.navigationView.bannerHideConstraints)
-        //		self.navigationView.endOfRouteHideConstraint?.isActive = false
-        //		self.navigationView.endOfRouteShowConstraint?.isActive = true
+        NSLayoutConstraint.deactivate(self.bannerShowConstraints)
+        NSLayoutConstraint.activate(self.bannerHideConstraints)
 		
         UIView.animate(withDuration: animated ? CATransaction.animationDuration() : 0) {
             views.forEach { $0.alpha = 0 }
@@ -235,11 +212,11 @@ private extension NavigationView {
 	
     func setupStackViews() {
         self.setupInformationStackView()
-        self.floatingStackView.addArrangedSubviews([self.overviewButton, self.muteButton, self.reportButton])
+        self.floatingStackView.addArrangedSubviews([self.overviewButton, self.muteButton])
     }
 	
     func setupInformationStackView() {
-        let informationChildren: [UIView] = [instructionsBannerView, lanesView, nextBannerView, statusView]
+        let informationChildren: [UIView] = [self.instructionsBannerView, self.lanesView, self.nextBannerView, self.statusView]
         self.informationStackView.addArrangedSubviews(informationChildren)
 		
         for informationChild in informationChildren {
@@ -250,8 +227,8 @@ private extension NavigationView {
 	
     func setupContainers() {
         let containers: [(UIView, UIView)] = [
-            (instructionsBannerContentView, instructionsBannerView),
-            (bottomBannerContentView, bottomBannerView)
+            (self.instructionsBannerContentView, self.instructionsBannerView),
+            (self.bottomBannerContentView, self.bottomBannerView)
         ]
         containers.forEach { $0.addSubview($1) }
     }
@@ -261,13 +238,13 @@ private extension NavigationView {
         self.setupContainers()
 		
         let subviews: [UIView] = [
-            mapView,
-            informationStackView,
-            floatingStackView,
-            resumeButton,
-            wayNameView,
-            bottomBannerContentView,
-            instructionsBannerContentView
+            self.mapView,
+            self.informationStackView,
+            self.floatingStackView,
+            self.resumeButton,
+            self.wayNameView,
+            self.bottomBannerContentView,
+            self.instructionsBannerContentView
         ]
 		
         subviews.forEach(addSubview(_:))

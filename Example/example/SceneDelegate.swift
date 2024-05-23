@@ -25,7 +25,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         self.window = UIWindow(windowScene: windowScene)
         let viewController = NavigationViewController()
         viewController.mapView?.styleURL = self.styleURL
-        viewController.showsEndOfRouteFeedback = false
 
         let waypoints = [
             CLLocation(latitude: 52.032407, longitude: 5.580310),

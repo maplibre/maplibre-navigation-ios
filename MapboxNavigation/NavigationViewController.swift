@@ -298,25 +298,6 @@ open class NavigationViewController: UIViewController {
     public var sendsNotifications: Bool = true
     
     /**
-     Shows a button that allows drivers to report feedback such as accidents, closed roads,  poor instructions, etc. Defaults to `true`.
-     */
-    public var showsReportFeedback: Bool = true {
-        didSet {
-            self.mapViewController?.reportButton.isHidden = !self.showsReportFeedback
-            self.showsEndOfRouteFeedback = self.showsReportFeedback
-        }
-    }
-    
-    /**
-     Shows End of route Feedback UI when the route controller arrives at the final destination. Defaults to `true.`
-     */
-    public var showsEndOfRouteFeedback: Bool = true {
-        didSet {
-            self.mapViewController?.showsEndOfRoute = self.showsEndOfRouteFeedback
-        }
-    }
-    
-    /**
      If true, the map style and UI will automatically be updated given the time of day.
      */
     public var automaticallyAdjustsStyleForTimeOfDay = true {
@@ -395,7 +376,6 @@ open class NavigationViewController: UIViewController {
         }
         
         mapSubview.pinInSuperview()
-        mapViewController.reportButton.isHidden = !self.showsReportFeedback
         
         self.styleManager = StyleManager(self)
         self.styleManager.styles = styles ?? [DayStyle(), NightStyle()]
@@ -624,12 +604,8 @@ extension NavigationViewController: RouteControllerDelegate {
         
         if !self.isConnectedToCarPlay, // CarPlayManager shows rating on CarPlay if it's connected
            routeController.routeProgress.isFinalLeg, advancesToNextLeg {
-            if self.showsEndOfRouteFeedback {
-                self.mapViewController?.showEndOfRoute { _ in }
-            } else {
-                self.mapViewController?.transitionToEndNavigation(with: 1)
-                self.delegate?.navigationViewControllerDidArriveAtDestination?(self)
-            }
+            self.mapViewController?.transitionToEndNavigation(with: 1)
+            self.delegate?.navigationViewControllerDidArriveAtDestination?(self)
         }
         return advancesToNextLeg
     }
