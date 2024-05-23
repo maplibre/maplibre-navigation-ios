@@ -184,6 +184,11 @@ open class NavigationView: UIView {
             self.floatingStackView
         ]
 		
+        NSLayoutConstraint.activate(self.bannerShowConstraints)
+        NSLayoutConstraint.deactivate(self.bannerHideConstraints)
+        self.endOfRouteHideConstraint?.isActive = true
+        self.endOfRouteShowConstraint?.isActive = false
+		
         UIView.animate(withDuration: animated ? CATransaction.animationDuration() : 0) {
             views.forEach { $0.alpha = 1 }
         } completion: { _ in
@@ -200,6 +205,11 @@ open class NavigationView: UIView {
             self.floatingStackView,
             self.resumeButton
         ]
+		
+        //		NSLayoutConstraint.deactivate(self.navigationView.bannerShowConstraints)
+        //		NSLayoutConstraint.activate(self.navigationView.bannerHideConstraints)
+        //		self.navigationView.endOfRouteHideConstraint?.isActive = false
+        //		self.navigationView.endOfRouteShowConstraint?.isActive = true
 		
         UIView.animate(withDuration: animated ? CATransaction.animationDuration() : 0) {
             views.forEach { $0.alpha = 0 }

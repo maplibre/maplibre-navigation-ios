@@ -507,10 +507,10 @@ class RouteMapViewController: UIViewController {
     }
 
     func hideEndOfRoute(duration: TimeInterval = 0.3, completion: ((Bool) -> Void)? = nil) {
-        view.layoutIfNeeded() // flush layout queue
+        self.view.layoutIfNeeded() // flush layout queue
         self.navigationView.endOfRouteHideConstraint?.isActive = true
         self.navigationView.endOfRouteShowConstraint?.isActive = false
-        view.clipsToBounds = true
+        self.view.clipsToBounds = true
 
         self.mapView.enableFrameByFrameCourseViewTracking(for: duration)
         self.mapView.setNeedsUpdateConstraints()
