@@ -15,6 +15,14 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     private let styleURL = Bundle.main.url(forResource: "Terrain", withExtension: "json")! // swiftlint:disable:this force_unwrapping
 	
     var window: UIWindow?
+    var viewController: NavigationViewController!
+    var route: Route!
+    
+    let waypoints = [
+        CLLocation(latitude: 52.032407, longitude: 5.580310),
+        CLLocation(latitude: 52.04, longitude: 5.580310),
+        CLLocation(latitude: 51.768686, longitude: 4.6827956)
+    ].map { Waypoint(location: $0) }
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
@@ -23,73 +31,80 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = (scene as? UIWindowScene) else { return }
 		
         self.window = UIWindow(windowScene: windowScene)
-        let viewController = NavigationViewController(styleURL: self.styleURL)
-
-        let waypoints = [
-            CLLocation(latitude: 52.032407, longitude: 5.580310),
-            CLLocation(latitude: 52.04, longitude: 5.580310)
-//            CLLocation(latitude: 51.768686, longitude: 4.6827956)
-        ].map { Waypoint(location: $0) }
+        self.viewController = NavigationViewController(styleURL: self.styleURL)
+        self.viewController.mapView?.tracksUserCourse = false
+        self.viewController.mapView?.showsUserLocation = true
+        self.viewController.mapView?.zoomLevel = 12
+        self.viewController.mapView?.centerCoordinate = self.waypoints[0].coordinate
+        self.viewController.delegate = self
         
-        viewController.mapView?.tracksUserCourse = false
-        viewController.mapView?.showsUserLocation = true
-        viewController.mapView?.zoomLevel = 12
-        viewController.mapView?.centerCoordinate = waypoints[0].coordinate
-        viewController.delegate = self
-        
-        self.window?.rootViewController = viewController
+        self.window?.rootViewController = self.viewController
         self.window?.makeKeyAndVisible()
 
         DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(3)) {
-            let options = NavigationRouteOptions(waypoints: waypoints, profileIdentifier: .automobileAvoidingTraffic)
-            options.shapeFormat = .polyline6
-            options.distanceMeasurementSystem = .metric
-            options.attributeOptions = []
-			
-            Directions.shared.calculate(options) { _, routes, _ in
-                guard let route = routes?.first else { return }
-				
-                let simulatedLocationManager = SimulatedLocationManager(route: route)
-                simulatedLocationManager.speedMultiplier = 2
-				
-                viewController.start(with: route, locationManager: simulatedLocationManager)
-            }
+            self.startNavigation(for: Array(self.waypoints[0 ... 1]))
         }
-    }
-
-    func sceneDidDisconnect(_ scene: UIScene) {
-        // Called as the scene is being released by the system.
-        // This occurs shortly after the scene enters the background, or when its session is discarded.
-        // Release any resources associated with this scene that can be re-created the next time the scene connects.
-        // The scene may re-connect later, as its session was not necessarily discarded (see `application:didDiscardSceneSessions` instead).
-    }
-
-    func sceneDidBecomeActive(_ scene: UIScene) {
-        // Called when the scene has moved from an inactive state to an active state.
-        // Use this method to restart any tasks that were paused (or not yet started) when the scene was inactive.
-    }
-
-    func sceneWillResignActive(_ scene: UIScene) {
-        // Called when the scene will move from an active state to an inactive state.
-        // This may occur due to temporary interruptions (ex. an incoming phone call).
-    }
-
-    func sceneWillEnterForeground(_ scene: UIScene) {
-        // Called as the scene transitions from the background to the foreground.
-        // Use this method to undo the changes made on entering the background.
-    }
-
-    func sceneDidEnterBackground(_ scene: UIScene) {
-        // Called as the scene transitions from the foreground to the background.
-        // Use this method to save data, release shared resources, and store enough scene-specific state information
-        // to restore the scene back to its current state.
+        
+        let button = UIButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setImage(UIImage(systemName: "globe"), for: .normal)
+        button.addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)
+        button.backgroundColor = .white
+        button.layer.cornerRadius = 8
+        self.viewController.view.addSubview(button)
+        NSLayoutConstraint.activate([
+            button.trailingAnchor.constraint(equalTo: self.viewController.view.layoutMarginsGuide.trailingAnchor),
+            button.centerYAnchor.constraint(equalTo: self.viewController.view.centerYAnchor),
+            button.widthAnchor.constraint(equalTo: button.heightAnchor),
+            button.widthAnchor.constraint(equalToConstant: 44)
+        ])
     }
 }
 
 extension SceneDelegate: NavigationViewControllerDelegate {
-    func navigationViewControllerDidArriveAtDestination(_ navigationViewController: NavigationViewController) {
+    func navigationViewControllerDidFinish(_ navigationViewController: NavigationViewController) {
         navigationViewController.endRoute()
         
-        print(#function)
+        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(5)) {
+            navigationViewController.start(with: self.route, locationManager: SimulatedLocationManager(route: self.route))
+        }
+    }
+}
+
+// MARK: - Private
+
+private extension SceneDelegate {
+    func startNavigation(for waypoints: [Waypoint]) {
+        let options = NavigationRouteOptions(waypoints: waypoints, profileIdentifier: .automobileAvoidingTraffic)
+        options.shapeFormat = .polyline6
+        options.distanceMeasurementSystem = .metric
+        options.attributeOptions = []
+        
+        Directions.shared.calculate(options) { _, routes, _ in
+            guard let route = routes?.first else { return }
+            
+            self.route = route
+            
+            let simulatedLocationManager = SimulatedLocationManager(route: route)
+            simulatedLocationManager.speedMultiplier = 2
+            
+            self.viewController.start(with: route, locationManager: simulatedLocationManager)
+        }
+    }
+    
+    @objc
+    func buttonTapped() {
+        guard let waypoint = self.waypoints.randomElement() else { return }
+        
+        func randomCLLocationDistance(min: CLLocationDistance, max: CLLocationDistance) -> CLLocationDistance {
+            CLLocationDistance(arc4random_uniform(UInt32(max - min)) + UInt32(min))
+        }
+
+        let distance = randomCLLocationDistance(min: 10, max: 100_000)
+        
+        self.viewController.mapView?.camera = .init(lookingAtCenter: waypoint.coordinate,
+                                                    acrossDistance: distance,
+                                                    pitch: 0,
+                                                    heading: 0)
     }
 }

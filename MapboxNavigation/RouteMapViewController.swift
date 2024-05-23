@@ -9,7 +9,7 @@ class ArrowFillPolyline: MLNPolylineFeature {}
 class ArrowStrokePolyline: ArrowFillPolyline {}
 
 @objc protocol RouteMapViewControllerDelegate: NavigationMapViewDelegate, MLNMapViewDelegate, VisualInstructionDelegate {
-    func mapViewControllerDidDismiss(_ mapViewController: RouteMapViewController, byCanceling canceled: Bool)
+    func mapViewControllerDidFinish(_ mapViewController: RouteMapViewController, byCanceling canceled: Bool)
     func mapViewControllerShouldAnnotateSpokenInstructions(_ routeMapViewController: RouteMapViewController) -> Bool
 
     /**
@@ -490,7 +490,7 @@ extension RouteMapViewController: NavigationViewDelegate {
     // MARK: NavigationViewDelegate
 
     func navigationView(_ view: NavigationView, didTapCancelButton: CancelButton) {
-        self.delegate?.mapViewControllerDidDismiss(self, byCanceling: true)
+        self.delegate?.mapViewControllerDidFinish(self, byCanceling: true)
     }
 
     // MARK: MLNMapViewDelegate
@@ -527,11 +527,13 @@ extension RouteMapViewController: NavigationViewDelegate {
 
     func navigationMapViewDidStartTrackingCourse(_ mapView: NavigationMapView) {
         self.navigationView.resumeButton.isHidden = true
+        self.navigationView.resumeButton.alpha = 0
         mapView.logoView.isHidden = false
     }
 
     func navigationMapViewDidStopTrackingCourse(_ mapView: NavigationMapView) {
         self.navigationView.resumeButton.isHidden = false
+        self.navigationView.resumeButton.alpha = 1
         self.navigationView.wayNameView.isHidden = true
         mapView.logoView.isHidden = true
     }

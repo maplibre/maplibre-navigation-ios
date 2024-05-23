@@ -25,7 +25,7 @@ public protocol NavigationViewControllerDelegate: VisualInstructionDelegate {
      - parameter navigationViewController: The navigation view controller that finished navigation.
      */
     @objc
-    optional func navigationViewControllerDidArriveAtDestination(_ navigationViewController: NavigationViewController)
+    optional func navigationViewControllerDidFinish(_ navigationViewController: NavigationViewController)
     
     /**
      Called when the user arrives at the destination waypoint for a route leg.
@@ -427,18 +427,12 @@ open class NavigationViewController: UIViewController {
     }
 	
     public func endRoute(animated: Bool = true) {
-        let route = self.route!
-		
         self.routeController?.endNavigation()
         self.mapView?.removeRoutes()
         self.voiceController = nil
         self.route = nil
 		
         self.mapViewController?.navigationView.hideUI(animated: animated)
-		
-        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(5)) {
-            self.start(with: route, locationManager: SimulatedLocationManager(route: route))
-        }
     }
 	
     #if canImport(CarPlay)
@@ -524,8 +518,9 @@ extension NavigationViewController: RouteMapViewControllerDelegate {
         self.delegate?.navigationViewController?(self, viewFor: annotation)
     }
     
-    func mapViewControllerDidDismiss(_ mapViewController: RouteMapViewController, byCanceling canceled: Bool) {
+    func mapViewControllerDidFinish(_ mapViewController: RouteMapViewController, byCanceling canceled: Bool) {
         self.endRoute()
+        self.delegate?.navigationViewControllerDidFinish?(self)
     }
     
     public func navigationMapViewUserAnchorPoint(_ mapView: NavigationMapView) -> CGPoint {
@@ -595,7 +590,7 @@ extension NavigationViewController: RouteControllerDelegate {
         if !self.isConnectedToCarPlay, // CarPlayManager shows rating on CarPlay if it's connected
            routeController.routeProgress.isFinalLeg, advancesToNextLeg {
             self.mapViewController?.transitionToEndNavigation(with: 1)
-            self.delegate?.navigationViewControllerDidArriveAtDestination?(self)
+            self.delegate?.navigationViewControllerDidFinish?(self)
         }
         return advancesToNextLeg
     }
