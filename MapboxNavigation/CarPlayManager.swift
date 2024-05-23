@@ -574,7 +574,7 @@ extension CarPlayManager: CPMapTemplateDelegate {
         topDownCamera.pitch = 0
         mapView.setCamera(topDownCamera, animated: false)
 
-        let padding = NavigationMapView.defaultPadding + mapView.safeArea
+        let padding = NavigationMapView.defaultPadding + mapView.safeAreaInsets
         mapView.showcase([route], padding: padding)
     }
 
@@ -628,7 +628,7 @@ extension CarPlayManager: CPMapTemplateDelegate {
             return
         }
         
-        mapView.setContentInset(mapView.safeArea, animated: false, completionHandler: nil) // make sure this is always up to date in-case safe area changes during gesture
+        mapView.setContentInset(mapView.safeAreaInsets, animated: false, completionHandler: nil) // make sure this is always up to date in-case safe area changes during gesture
         self.updatePan(by: translation, mapTemplate: mapTemplate, animated: false)
     }
     
@@ -647,7 +647,7 @@ extension CarPlayManager: CPMapTemplateDelegate {
     }
 
     func coordinate(of offset: CGPoint, in mapView: NavigationMapView) -> CLLocationCoordinate2D {
-        let contentFrame = mapView.bounds.inset(by: mapView.safeArea)
+        let contentFrame = mapView.bounds.inset(by: mapView.safeAreaInsets)
         let centerPoint = CGPoint(x: contentFrame.midX, y: contentFrame.midY)
         let endCameraPoint = CGPoint(x: centerPoint.x - offset.x, y: centerPoint.y - offset.y)
 
@@ -661,7 +661,7 @@ extension CarPlayManager: CPMapTemplateDelegate {
 
         // Determine the screen distance to pan by based on the distance from the visual center to the closest side.
         let mapView = carPlayMapViewController.mapView
-        let contentFrame = mapView.bounds.inset(by: mapView.safeArea)
+        let contentFrame = mapView.bounds.inset(by: mapView.safeAreaInsets)
         let increment = min(mapView.bounds.width, mapView.bounds.height) / 2.0
         
         // Calculate the distance in physical units from the visual center to where it would be after panning downwards.

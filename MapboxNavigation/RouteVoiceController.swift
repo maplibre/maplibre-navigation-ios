@@ -212,7 +212,7 @@ open class RouteVoiceController: NSObject, AVSpeechSynthesizerDelegate {
             utterance = AVSpeechUtterance(string: modifiedInstruction.text)
             utterance.voice = AVSpeechSynthesisVoice(identifier: AVSpeechSynthesisVoiceIdentifierAlex)
         } else {
-            if #available(iOS 10.0, *), !ignoreProgress, let routeProgress {
+            if !ignoreProgress, let routeProgress {
                 utterance = AVSpeechUtterance(attributedString: modifiedInstruction.attributedText(for: routeProgress.currentLegProgress))
             } else {
                 utterance = AVSpeechUtterance(string: modifiedInstruction.text)

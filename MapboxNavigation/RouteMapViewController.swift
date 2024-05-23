@@ -724,11 +724,7 @@ private extension RouteMapViewController {
         let options = (duration: duration, curve: curve)
         let keyboardHeight = keyBoardRect.size.height
 
-        if #available(iOS 11.0, *) {
-            navigationView.endOfRouteShowConstraint?.constant = -1 * (keyboardHeight - view.safeAreaInsets.bottom) // subtract the safe area, which is part of the keyboard's frame
-        } else {
-            self.navigationView.endOfRouteShowConstraint?.constant = -1 * keyboardHeight
-        }
+        self.navigationView.endOfRouteShowConstraint?.constant = -1 * (keyboardHeight - view.safeAreaInsets.bottom) // subtract the safe area, which is part of the keyboard's frame
 
         let opts = UIView.AnimationOptions(curve: options.curve)
         UIView.animate(withDuration: options.duration, delay: 0, options: opts, animations: view.layoutIfNeeded, completion: nil)

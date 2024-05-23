@@ -132,7 +132,7 @@ open class NavigationMapView: MLNMapView, UIGestureRecognizerDelegate {
             return anchorPoint
         }
         
-        let contentFrame = bounds.inset(by: safeArea)
+        let contentFrame = bounds.inset(by: safeAreaInsets)
         let courseViewWidth = self.userCourseView?.frame.width ?? 0
         let courseViewHeight = self.userCourseView?.frame.height ?? 0
         let edgePadding = UIEdgeInsets(top: 50 + courseViewHeight / 2,

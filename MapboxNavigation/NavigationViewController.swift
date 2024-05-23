@@ -681,11 +681,7 @@ extension NavigationViewController: StyleManagerDelegate {
 
 private extension NavigationViewController {
     var isConnectedToCarPlay: Bool {
-        if #available(iOS 12.0, *) {
-            CarPlayManager.shared.isConnectedToCarPlay
-        } else {
-            false
-        }
+        CarPlayManager.shared.isConnectedToCarPlay
     }
 	
     func resumeNotifications() {

@@ -50,7 +50,7 @@ open class NavigationView: UIView {
     }
     
     lazy var bannerShowConstraints: [NSLayoutConstraint] = [
-        self.instructionsBannerView.topAnchor.constraint(equalTo: self.safeTopAnchor),
+        self.instructionsBannerView.topAnchor.constraint(equalTo: self.safeAreaLayoutGuide.topAnchor),
         self.instructionsBannerContentView.topAnchor.constraint(equalTo: self.topAnchor)
     ]
     
@@ -59,7 +59,7 @@ open class NavigationView: UIView {
         self.instructionsBannerContentView.topAnchor.constraint(equalTo: self.instructionsBannerView.topAnchor)
     ]
     
-    lazy var endOfRouteShowConstraint: NSLayoutConstraint? = self.endOfRouteView?.bottomAnchor.constraint(equalTo: self.safeBottomAnchor)
+    lazy var endOfRouteShowConstraint: NSLayoutConstraint? = self.endOfRouteView?.bottomAnchor.constraint(equalTo: self.safeAreaLayoutGuide.bottomAnchor)
     
     lazy var endOfRouteHideConstraint: NSLayoutConstraint? = self.endOfRouteView?.topAnchor.constraint(equalTo: self.bottomAnchor)
     

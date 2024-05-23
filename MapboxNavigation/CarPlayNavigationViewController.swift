@@ -246,7 +246,7 @@ public class CarPlayNavigationViewController: UIViewController, MLNMapViewDelega
         
         // Estimating the width of Apple's maneuver view
         let bounds: () -> (CGRect) = {
-            let widthOfManeuverView = min(self.view.bounds.width - self.view.safeArea.left, self.view.bounds.width - self.view.safeArea.right)
+            let widthOfManeuverView = min(self.view.bounds.width - self.view.safeAreaInsets.left, self.view.bounds.width - self.view.safeAreaInsets.right)
             return CGRect(x: 0, y: 0, width: widthOfManeuverView, height: 30)
         }
         
