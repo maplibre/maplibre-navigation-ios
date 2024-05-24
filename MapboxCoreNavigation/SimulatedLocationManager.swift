@@ -22,6 +22,36 @@ private class SimulatedLocation: CLLocation {
     }
 }
 
+/// Provides methods for modifying the locations along the `SimulatedLocationManager`'s route.
+@objc public protocol SimulatedLocationManagerDelegate: AnyObject {
+    /// Offers the delegate an opportunity to modify the next location along the route. This can be useful when testing re-routing.
+    ///
+    /// - Parameters:
+    ///   - simulatedLocationManager: The location manager simulating locations along a given route.
+    ///   - originalLocation: The next coordinate along the route.
+    /// - Returns: The next coordinate that the location manager will return as the "current" location. Return the `originalLocation` to follow the route, or modify it to go off route.
+    ///
+    /// ## Examples
+    /// ```
+    /// extension MyDelegate: SimulatedLocationManagerDelegate {
+    ///     func simulatedLocationManager(_ simulatedLocationManager: SimulatedLocationManager, locationFor originalLocation: CLLocation) -> CLLocation {
+    ///         // go off track by 10 meters east
+    ///         let offsetByMeters = 10
+    ///         let bearing = 90
+    ///
+    ///         let distRadians = meters / 6_372_797.6 // earth radius in meters
+    ///         let lat1 = location.coordinate.latitude * .pi / 180
+    ///         let lon1 = location.coordinate.longitude * .pi / 180
+    ///         let lat2 = asin(sin(lat1) * cos(distRadians) + cos(lat1) * sin(distRadians) * cos(bearing))
+    ///         let lon2 = lon1 + atan2(sin(bearing) * sin(distRadians) * cos(lat1), cos(distRadians) - sin(lat1) * sin(lat2))
+    ///         return CLLocation(latitude: lat2 * 180 / .pi, longitude: lon2 * 180 / .pi)
+    ///     }
+    /// }
+    /// ```
+    @objc
+    func simulatedLocationManager(_ simulatedLocationManager: SimulatedLocationManager, locationFor originalLocation: CLLocation) -> CLLocation
+}
+
 /**
  The `SimulatedLocationManager` class simulates location updates along a given route.
  
@@ -40,7 +70,10 @@ open class SimulatedLocationManager: NavigationLocationManager {
      Specify the multiplier to use when calculating speed based on the RouteLeg’s `expectedSegmentTravelTimes`.
      */
     @objc public var speedMultiplier: Double = 1
-    
+
+    /// Instead of following the given route, go slightly off route. Useful for testing rerouting.
+    @objc public weak var simulatedLocationManagerDelegate: SimulatedLocationManagerDelegate?
+
     @objc override open var location: CLLocation? {
         self.currentLocation
     }
@@ -165,13 +198,18 @@ open class SimulatedLocationManager: NavigationLocationManager {
             self.currentSpeed = self.calculateCurrentSpeed(distance: distance, coordinatesNearby: coordinatesNearby, closestLocation: closestLocation)
         }
         
-        let location = CLLocation(coordinate: newCoordinate,
+        var location = CLLocation(coordinate: newCoordinate,
                                   altitude: 0,
                                   horizontalAccuracy: horizontalAccuracy,
                                   verticalAccuracy: verticalAccuracy,
                                   course: newCoordinate.direction(to: lookAheadCoordinate).wrap(min: 0, max: 360),
                                   speed: self.currentSpeed,
                                   timestamp: Date())
+
+        if let delegate = self.simulatedLocationManagerDelegate {
+            location = delegate.simulatedLocationManager(self, locationFor: location)
+        }
+
         self.currentLocation = location
         lastKnownLocation = location
         
