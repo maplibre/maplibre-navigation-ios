@@ -19,6 +19,8 @@
    - Added `Day/NightStyle(demoStyle: ())` as an explicit alternative when the user doesn't have a tileserver handy. This uses MapLibre's demo style and is intended for testing and demonstration use only.
    - Deprecated `DayStyle()`/`NightStyle()` initializers because they were backed by an implicit tile service. If these default styles *are* still used, they'll now use the MapLibre demo style.
    - `NavigationViewController` now expects explicit style URLs with `NavigationViewController(route:dayStyleURL:nightStyleURL:...)` or NavigationViewController(route:dayStyle:nightStyle:...)` and the existing initializer, which allowed "default" styles, is deprecated and uses the MapLibre demo styles.
+ - Fix: NavigationViewController was not re-routing when the user went off route.
+   - Merged in <https://github.com/maplibre/maplibre-navigation-ios/pull/47>.
 
 ## v2.0.0 (May 23, 2023)
  - Upgrade minimum iOS version from 11.0 to 12.0.
