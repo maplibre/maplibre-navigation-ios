@@ -695,7 +695,7 @@ extension NavigationViewController: RouteControllerDelegate {
         self.delegate?.navigationViewController?(self, willRerouteFrom: location)
     }
     
-    @objc public func routeController(_ routeController: RouteController, didRerouteAlong route: Route) {
+    @objc public func routeController(_ routeController: RouteController, didRerouteAlong route: Route, reason: RouteController.RerouteReason) {
         self.mapViewController?.notifyDidReroute(route: route)
         self.delegate?.navigationViewController?(self, didRerouteAlong: route)
     }

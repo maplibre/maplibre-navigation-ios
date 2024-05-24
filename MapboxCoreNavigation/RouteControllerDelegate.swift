@@ -22,8 +22,8 @@ public protocol RouteControllerDelegate: AnyObject {
     /**
      Called immediately before the route controller calculates a new route.
      
-     This method is called after `routeController(_:shouldRerouteFrom:)` is called, simultaneously with the `RouteControllerWillReroute` notification being posted, and before `routeController(_:didRerouteAlong:)` is called.
-     
+     This method is called after `routeController(_:shouldRerouteFrom:)` is called, simultaneously with the `RouteControllerWillReroute` notification being posted, and before `routeController(_:didRerouteAlong:reason:)` is called.
+
      - parameter routeController: The route controller that will calculate a new route.
      - parameter location: The user’s current location.
      */

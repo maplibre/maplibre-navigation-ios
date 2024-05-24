@@ -310,7 +310,7 @@ class RouteControllerTests: XCTestCase {
         XCTAssertTrue(self.delegate.recentMessages.contains("routeController(_:shouldPreventReroutesWhenArrivingAt:)"))
         
         // We should not reroute here because the user has arrived.
-        XCTAssertFalse(self.delegate.recentMessages.contains("routeController(_:didRerouteAlong:)"))
+        XCTAssertFalse(self.delegate.recentMessages.contains("routeController(_:didRerouteAlong:reason:)"))
     }
 
     func testRouteControllerDoesNotHaveRetainCycle() {
