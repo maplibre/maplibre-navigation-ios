@@ -50,7 +50,7 @@ open class DayStyle: Style {
         styleType = .day
         statusBarStyle = .default
     }
-
+    
     override open func apply() {
         super.apply()
         
