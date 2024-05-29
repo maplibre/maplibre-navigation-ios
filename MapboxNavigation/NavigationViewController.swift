@@ -429,10 +429,21 @@ open class NavigationViewController: UIViewController {
     public func endRoute(animated: Bool = true) {
         self.routeController?.endNavigation()
         self.mapView?.removeRoutes()
+        self.mapView?.removeWaypoints()
+        self.mapView?.removeArrow()
+
         self.voiceController = nil
         self.route = nil
 		
         self.mapViewController?.navigationView.hideUI(animated: animated)
+        self.mapView?.tracksUserCourse = false
+        self.mapView?.userLocationForCourseTracking = nil
+        self.mapView?.showsUserLocation = true
+		
+        if let camera = self.mapView?.camera {
+            camera.pitch = 0
+            self.mapView?.setCamera(camera, animated: false)
+        }
     }
 	
     #if canImport(CarPlay)
