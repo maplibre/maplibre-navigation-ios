@@ -35,16 +35,9 @@ private class SimulatedLocation: CLLocation {
     /// ```
     /// extension MyDelegate: SimulatedLocationManagerDelegate {
     ///     func simulatedLocationManager(_ simulatedLocationManager: SimulatedLocationManager, locationFor originalLocation: CLLocation) -> CLLocation {
-    ///         // go off track by 10 meters east
-    ///         let offsetByMeters = 10
-    ///         let bearing = 90
-    ///
-    ///         let distRadians = meters / 6_372_797.6 // earth radius in meters
-    ///         let lat1 = location.coordinate.latitude * .pi / 180
-    ///         let lon1 = location.coordinate.longitude * .pi / 180
-    ///         let lat2 = asin(sin(lat1) * cos(distRadians) + cos(lat1) * sin(distRadians) * cos(bearing))
-    ///         let lon2 = lon1 + atan2(sin(bearing) * sin(distRadians) * cos(lat1), cos(distRadians) - sin(lat1) * sin(lat2))
-    ///         return CLLocation(latitude: lat2 * 180 / .pi, longitude: lon2 * 180 / .pi)
+    ///         // go off track 100 meters East of the original route
+    ///         let offsetCoordinate = originalLocation.coordinate.coordinate(at: 100, facing: 90)
+    ///         return CLLocation(latitude: offsetCoordinate.latitude, longitude: offsetCoordinate.longitude)
     ///     }
     /// }
     /// ```
