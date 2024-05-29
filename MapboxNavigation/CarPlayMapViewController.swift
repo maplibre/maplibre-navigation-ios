@@ -50,8 +50,8 @@ class CarPlayMapViewController: UIViewController, MLNMapViewDelegate {
         super.viewDidLoad()
 
         self.styleManager = StyleManager(self)
-        self.styleManager.styles = [DayStyle(), NightStyle()]
-        
+        self.styleManager.styles = [DayStyle(demoStyle: ()), NightStyle(demoStyle: ())]
+
         self.resetCamera(animated: false, altitude: CarPlayMapViewController.defaultAltitude)
         self.mapView.setUserTrackingMode(.followWithCourse, animated: true, completionHandler: nil)
     }

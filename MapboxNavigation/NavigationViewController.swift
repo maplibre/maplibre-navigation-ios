@@ -345,20 +345,97 @@ open class NavigationViewController: UIViewController {
         super.init(coder: aDecoder)
     }
     
-    /**
-     Initializes a `NavigationViewController` that provides turn by turn navigation for the given route. A optional `direction` object is needed for  potential rerouting.
-
-     See [Mapbox Directions](https://mapbox.github.io/mapbox-navigation-ios/directions/) for further information.
-     */
+    /// Initializes a `NavigationViewController` that provides turn by turn navigation for the given route.
+    ///
+    /// ```
+    /// let dayStyle = DayStyle(mapStyleURL: styleURL)
+    /// let vc = NavigationViewController(route: route, styles: [dayStyle])
+    /// self.presentViewController(vc, animated: true)
+    /// ```
+    /// - Parameters:
+    ///   - route: The route to follow.
+    ///   - directions: Used when recomputing a new route, for example if the user takes a wrong turn and needs re-routing. If unspecified, a default will be used.
+    ///   - styles: The `[dayStyle]` or `[dayStyle, nightStyle]` styles used to render the map. If nil, the default styles will be used.
+    ///   - routeController: Used to monitor the route and notify of changes to the route. If nil, a default will be used.
+    ///   - locationManager: Tracks the users location along the route. If nil, a default will be used.
+    ///   - voiceController: Produces voice instructions for route navigation. If nil, a default will be used.
+    ///
+    /// See [Mapbox Directions](https://mapbox.github.io/mapbox-navigation-ios/directions/) for further information.
+    @available(*, deprecated, message: "Use `init(for:dayStyle:...) or init(for:dayStyleURL:...)` instead.")
     @objc(initWithRoute:directions:styles:routeController:locationManager:voiceController:)
+    public convenience init(for route: Route,
+                            directions: Directions = Directions.shared,
+                            styles: [Style]? = [DayStyle(), NightStyle()],
+                            routeController: RouteController? = nil,
+                            locationManager: NavigationLocationManager? = nil,
+                            voiceController: RouteVoiceController? = nil) {
+        let styles = styles ?? []
+        assert(styles.count <= 2, "Having more than two styles is undefined.")
+        let dayStyle = styles.first ?? DayStyle(demoStyle: ())
+        let nightStyle = styles.count > 1 ? styles[1] : NightStyle(mapStyleURL: dayStyle.mapStyleURL)
+
+        self.init(for: route, dayStyle: dayStyle, nightStyle: nightStyle, directions: directions, routeController: routeController, locationManager: locationManager, voiceController: voiceController)
+    }
+
+    /// Initializes a `NavigationViewController` that provides turn by turn navigation for the given route.
+    ///
+    /// - Parameters:
+    ///   - route: The route to follow.
+    ///   - dayStyleURL: URL for the style rules used to render the map during daylight hours.
+    ///   - nightStyleURL: URL for the style rules used to render the map during nighttime hours. If nil, `dayStyleURL` will be used at night as well.
+    ///   - directions: Used when recomputing a new route, for example if the user takes a wrong turn and needs re-routing. If unspecified, a default will be used.
+    ///   - routeController: Used to monitor the route and notify of changes to the route. If nil, a default will be used.
+    ///   - locationManager: Tracks the users location along the route. If nil, a default will be used.
+    ///   - voiceController: Produces voice instructions for route navigation. If nil, a default will be used.
+    ///
+    /// See [Mapbox Directions](https://mapbox.github.io/mapbox-navigation-ios/directions/) for further information.
+    @objc(initWithRoute:dayStyleURL:nightStyleURL:directions:routeController:locationManager:voiceController:)
+    public convenience init(for route: Route,
+                            dayStyleURL: URL,
+                            nightStyleURL: URL? = nil,
+                            directions: Directions = Directions.shared,
+                            routeController: RouteController? = nil,
+                            locationManager: NavigationLocationManager? = nil,
+                            voiceController: RouteVoiceController? = nil) {
+        let dayStyle = DayStyle(mapStyleURL: dayStyleURL)
+        let nightStyle = NightStyle(mapStyleURL: nightStyleURL ?? dayStyleURL)
+        self.init(for: route, dayStyle: dayStyle, nightStyle: nightStyle, directions: directions, routeController: routeController, locationManager: locationManager, voiceController: voiceController)
+    }
+
+    /// Initializes a `NavigationViewController` that provides turn by turn navigation for the given route.
+    ///
+    /// - Parameters:
+    ///   - route: The route to follow.
+    ///   - dayStyle: Style used to render the map during daylight hours.
+    ///   - nightStyle: Style used to render the map during nighttime hours. If nil, `dayStyle` will be used at night as well.
+    ///   - directions: Used when recomputing a new route, for example if the user takes a wrong turn and needs re-routing. If unspecified, a default will be used.
+    ///   - routeController: Used to monitor the route and notify of changes to the route. If nil, a default will be used.
+    ///   - locationManager: Tracks the users location along the route. If nil, a default will be used.
+    ///   - voiceController: Produces voice instructions for route navigation. If nil, a default will be used.
+    ///
+    /// See [Mapbox Directions](https://mapbox.github.io/mapbox-navigation-ios/directions/) for further information.
+    @objc(initWithRoute:dayStyle:nightStyle:directions:routeController:locationManager:voiceController:)
     public required init(for route: Route,
+                         dayStyle: Style,
+                         nightStyle: Style? = nil,
                          directions: Directions = Directions.shared,
-                         styles: [Style]? = [DayStyle(), NightStyle()],
                          routeController: RouteController? = nil,
                          locationManager: NavigationLocationManager? = nil,
                          voiceController: RouteVoiceController? = nil) {
+        let nightStyle = {
+            if let nightStyle {
+                return nightStyle
+            }
+
+            let dayCopy: Style = dayStyle.copy() as! Style
+            dayCopy.styleType = .night
+            return dayCopy
+        }()
+
+        assert(dayStyle.styleType == .day)
+        assert(nightStyle.styleType == .night)
+
         super.init(nibName: nil, bundle: nil)
-        
         self.locationManager = locationManager ?? NavigationLocationManager()
         let routeController = routeController ?? RouteController(along: route, directions: directions, locationManager: self.locationManager)
         self.routeController = routeController
@@ -387,8 +464,8 @@ open class NavigationViewController: UIViewController {
         mapViewController.reportButton.isHidden = !self.showsReportFeedback
         
         self.styleManager = StyleManager(self)
-        self.styleManager.styles = styles ?? [DayStyle(), NightStyle()]
-        
+        self.styleManager.styles = [dayStyle, nightStyle]
+
         if !(route.routeOptions is NavigationRouteOptions) {
             print("`Route` was created using `RouteOptions` and not `NavigationRouteOptions`. Although not required, this may lead to a suboptimal navigation experience. Without `NavigationRouteOptions`, it is not guaranteed you will get congestion along the route line, better ETAs and ETA label color dependent on congestion.")
         }
@@ -515,8 +592,8 @@ open class NavigationViewController: UIViewController {
                 let locationManager = routeController.locationManager.copy() as! NavigationLocationManager
                 let directions = routeController.directions
                 let route = routeController.routeProgress.route
-                let navigationViewController = NavigationViewController(for: route, directions: directions, routeController: routeController, locationManager: locationManager)
-                
+                let navigationViewController = NavigationViewController(for: route, dayStyle: DayStyle(demoStyle: ()), directions: directions, routeController: routeController, locationManager: locationManager)
+
                 window.rootViewController?.topMostViewController()?.present(navigationViewController, animated: true, completion: {
                     navigationViewController.isUsedInConjunctionWithCarPlayWindow = true
                 })
