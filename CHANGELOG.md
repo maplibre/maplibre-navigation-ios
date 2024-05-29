@@ -12,6 +12,13 @@
  - Updated MapLibre Native dependency to ios-v6.0.0 (https://github.com/maplibre/maplibre-native/releases/tag/ios-v6.0.0). Implementers need to change the prefix MGL to MLN for all MapLibre Native classes that are referenced.
  - Only snap location to route if the location is within the `RouteControllerUserLocationSnappingDistance`
  - Add support for Swift Package Manager while dropping Carthage and Cocoapods.
+ - Removed implicit default dependencies on MapBox tileservers by requiring explicit styles URLs in more places.
+   - Merged in <https://github.com/maplibre/maplibre-navigation-ios/pull/45>.
+   - BREAKING: Removed `MLNStyle` extensions referencing non-functioning MapBox styles, e.g. `MLNStyle.navigationGuidanceDayStyleURL`.
+   - Added `Day/NightStyle(styleURL:)` which takes an explicit URL to a hosting tileserver style.
+   - Added `Day/NightStyle(demoStyle: ())` as an explicit alternative when the user doesn't have a tileserver handy. This uses MapLibre's demo style and is intended for testing and demonstration use only.
+   - Deprecated `DayStyle()`/`NightStyle()` initializers because they were backed by an implicit tile service. If these default styles *are* still used, they'll now use the MapLibre demo style.
+   - `NavigationViewController` now expects explicit style URLs with `NavigationViewController(route:dayStyleURL:nightStyleURL:...)` or NavigationViewController(route:dayStyle:nightStyle:...)` and the existing initializer, which allowed "default" styles, is deprecated and uses the MapLibre demo styles.
 
 ## v2.0.0 (May 23, 2023)
  - Upgrade minimum iOS version from 11.0 to 12.0.
