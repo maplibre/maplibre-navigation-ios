@@ -12,6 +12,7 @@
  - Updated MapLibre Native dependency to ios-v6.0.0 (https://github.com/maplibre/maplibre-native/releases/tag/ios-v6.0.0). Implementers need to change the prefix MGL to MLN for all MapLibre Native classes that are referenced.
  - Only snap location to route if the location is within the `RouteControllerUserLocationSnappingDistance`
  - Add support for Swift Package Manager while dropping Carthage and Cocoapods.
+ - Initialization no longer tries to add mapbox://mapbox.mapbox-streets-v7 to all mapstyles.
  - Removed implicit default dependencies on MapBox tileservers by requiring explicit styles URLs in more places.
    - Merged in <https://github.com/maplibre/maplibre-navigation-ios/pull/45>.
    - BREAKING: Removed `MLNStyle` extensions referencing non-functioning MapBox styles, e.g. `MLNStyle.navigationGuidanceDayStyleURL`.
