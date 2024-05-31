@@ -25,13 +25,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     ].map { Waypoint(location: $0) }
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-        // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
-        // If using a storyboard, the `window` property will automatically be initialized and attached to the scene.
-        // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
         guard let windowScene = (scene as? UIWindowScene) else { return }
 		
         self.window = UIWindow(windowScene: windowScene)
-        self.viewController = NavigationViewController(styleURL: self.styleURL)
+        
+        // NOTE: You will need your own tile server, this uses a demo style that only shows country borders
+        // this is not useful to evaluate the navigation, please change accordingly
+        self.viewController = NavigationViewController(dayStyle: DayStyle(demoStyle: ()), nightStyle: NightStyle(demoStyle: ()))
         self.viewController.mapView?.tracksUserCourse = false
         self.viewController.mapView?.showsUserLocation = true
         self.viewController.mapView?.zoomLevel = 12

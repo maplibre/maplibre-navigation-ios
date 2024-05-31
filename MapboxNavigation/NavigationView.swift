@@ -152,7 +152,7 @@ open class NavigationView: UIView {
     
     override open func prepareForInterfaceBuilder() {
         super.prepareForInterfaceBuilder()
-        DayStyle().apply()
+        DayStyle(demoStyle: ()).apply()
         [self.mapView, self.instructionsBannerView, self.lanesView, self.bottomBannerView, self.nextBannerView].forEach { $0.prepareForInterfaceBuilder() }
         self.wayNameView.text = "Street Label"
     }

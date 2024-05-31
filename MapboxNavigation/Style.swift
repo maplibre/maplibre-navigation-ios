@@ -34,28 +34,52 @@ open class Style: NSObject {
     /**
      URL of the style to display on the map during turn-by-turn navigation.
      */
-    @objc open var mapStyleURL: URL = MLNStyle.navigationGuidanceDayStyleURL
-    
+    @objc open var mapStyleURL: URL = MLNStyle.defaultStyle().url
+
     #if canImport(CarPlay)
     /**
      URL of the style to display on the map when previewing a route, for example on CarPlay.
      */
-    @objc open var previewMapStyleURL = MLNStyle.navigationPreviewDayStyleURL
+    @objc open var previewMapStyleURL = MLNStyle.defaultStyle().url
     #else
     /**
      URL of the style to display on the map when previewing a route.
      
      This property is currently unused by default, but you can use it to present your own route preview map.
      */
-    @objc open var previewMapStyleURL = MLNStyle.navigationPreviewDayStyleURL
+    @objc open var previewMapStyleURL = MLNStyle.defaultStyle().url
     #endif
     
     /**
      Applies the style for all changed properties.
      */
     @objc open func apply() {}
-    
-    @objc override public required init() {}
+  
+    @available(*, deprecated, message: "Use `init(mapStyleURL:)` to specify your map style. If you want to try the demo maplibre tiles, use init(demoStyle: ()).")
+    @objc override public convenience init() {
+        self.init(demoStyle: ())
+    }
+
+    @objc public required init(mapStyleURL: URL) {
+        self.mapStyleURL = mapStyleURL
+    }
+
+    @objc public convenience init(demoStyle: ()) {
+        self.init(mapStyleURL: MLNStyle.defaultStyle().url)
+    }
+}
+
+extension Style: NSCopying {
+    public func copy(with zone: NSZone? = nil) -> Any {
+        let copy = Self(mapStyleURL: self.mapStyleURL)
+        copy.tintColor = self.tintColor
+        copy.statusBarStyle = self.statusBarStyle
+        copy.fontFamily = self.fontFamily
+        copy.styleType = self.styleType
+        copy.mapStyleURL = self.mapStyleURL
+        copy.previewMapStyleURL = self.previewMapStyleURL
+        return copy
+    }
 }
 
 /**

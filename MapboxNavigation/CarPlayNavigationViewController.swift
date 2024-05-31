@@ -85,8 +85,8 @@ public class CarPlayNavigationViewController: UIViewController, MLNMapViewDelega
         view.addSubview(mapView)
         
         self.styleManager = StyleManager(self)
-        self.styleManager.styles = [DayStyle(), NightStyle()]
-        
+        self.styleManager.styles = [DayStyle(demoStyle: ()), NightStyle(demoStyle: ())]
+
         self.resumeNotifications()
         self.routeController.resume()
         mapView.recenterMap()

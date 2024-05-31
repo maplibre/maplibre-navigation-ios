@@ -310,7 +310,23 @@ class RouteControllerTests: XCTestCase {
         XCTAssertTrue(self.delegate.recentMessages.contains("routeController(_:shouldPreventReroutesWhenArrivingAt:)"))
         
         // We should not reroute here because the user has arrived.
-        XCTAssertFalse(self.delegate.recentMessages.contains("routeController(_:didRerouteAlong:)"))
+        XCTAssertFalse(self.delegate.recentMessages.contains("routeController(_:didRerouteAlong:reason:)"))
+    }
+
+    func testReroutesWhenOffCourse() {
+        let routeController = self.dependencies.routeController
+        let firstLocation = self.dependencies.routeLocations.firstLocation
+
+        // Start the route
+        routeController.locationManager(routeController.locationManager, didUpdateLocations: [firstLocation])
+
+        // Go very far off route
+        let locationBeyondRoute = routeController.location!.coordinate.coordinate(at: 2000, facing: 0)
+        routeController.locationManager(routeController.locationManager, didUpdateLocations: [CLLocation(latitude: locationBeyondRoute.latitude, longitude: locationBeyondRoute.latitude)])
+
+        // We should reroute because the user was off course.
+        self.directionsClientSpy.fireLastCalculateCompletion(with: nil, routes: [self.alternateRoute], error: nil)
+        XCTAssertTrue(self.delegate.recentMessages.contains("routeController(_:didRerouteAlong:reason:)"))
     }
 
     func testRouteControllerDoesNotHaveRetainCycle() {

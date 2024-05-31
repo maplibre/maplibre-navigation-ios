@@ -45,9 +45,8 @@ private extension UIFont {
  */
 @objc(MBDayStyle)
 open class DayStyle: Style {
-    public required init() {
-        super.init()
-        mapStyleURL = MLNStyle.navigationGuidanceDayStyleURL
+    @objc public required init(mapStyleURL: URL) {
+        super.init(mapStyleURL: mapStyleURL)
         styleType = .day
         statusBarStyle = .default
     }
@@ -166,10 +165,8 @@ open class DayStyle: Style {
  */
 @objc(MBNightStyle)
 open class NightStyle: DayStyle {
-    public required init() {
-        super.init()
-        mapStyleURL = MLNStyle.navigationGuidanceNightStyleURL
-        previewMapStyleURL = MLNStyle.navigationPreviewNightStyleURL
+    public required init(mapStyleURL: URL) {
+        super.init(mapStyleURL: mapStyleURL)
         styleType = .night
         statusBarStyle = .lightContent
     }
