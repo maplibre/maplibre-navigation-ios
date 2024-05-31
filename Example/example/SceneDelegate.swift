@@ -16,6 +16,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var viewController: NavigationViewController!
     var route: Route!
     
+    let startButton = UIButton()
     let waypoints = [
         CLLocation(latitude: 52.032407, longitude: 5.580310),
         CLLocation(latitude: 52.04, longitude: 5.580310),
@@ -27,7 +28,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 		
         self.window = UIWindow(windowScene: windowScene)
         
-        // NOTE: You will need your own tile server, this uses a demo style that only shows country borders
+        // NOTE: You will need your own tile server, MapLibre doesn't provide the server infrastructure
+        // so this uses a demo style that only shows country borders
         // this is not useful to evaluate the navigation, please change accordingly
         self.viewController = NavigationViewController(dayStyle: DayStyle(demoStyle: ()), nightStyle: NightStyle(demoStyle: ()))
         self.viewController.mapView?.tracksUserCourse = false
@@ -39,22 +41,31 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         self.window?.rootViewController = self.viewController
         self.window?.makeKeyAndVisible()
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(3)) {
-            self.startNavigation(for: Array(self.waypoints[0 ... 1]))
-        }
-        
-        let button = UIButton()
-        button.translatesAutoresizingMaskIntoConstraints = false
-        button.setImage(UIImage(systemName: "globe"), for: .normal)
-        button.addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)
-        button.backgroundColor = .white
-        button.layer.cornerRadius = 8
-        self.viewController.view.addSubview(button)
+        let positionCameraRandomlyButton = UIButton()
+        positionCameraRandomlyButton.translatesAutoresizingMaskIntoConstraints = false
+        positionCameraRandomlyButton.setImage(UIImage(systemName: "globe"), for: .normal)
+        positionCameraRandomlyButton.addTarget(self, action: #selector(cameraButtonTapped), for: .touchUpInside)
+        positionCameraRandomlyButton.backgroundColor = .white
+        positionCameraRandomlyButton.layer.cornerRadius = 8
+        self.viewController.view.addSubview(positionCameraRandomlyButton)
         NSLayoutConstraint.activate([
-            button.trailingAnchor.constraint(equalTo: self.viewController.view.layoutMarginsGuide.trailingAnchor),
-            button.centerYAnchor.constraint(equalTo: self.viewController.view.centerYAnchor),
-            button.widthAnchor.constraint(equalTo: button.heightAnchor),
-            button.widthAnchor.constraint(equalToConstant: 44)
+            positionCameraRandomlyButton.trailingAnchor.constraint(equalTo: self.viewController.view.layoutMarginsGuide.trailingAnchor),
+            positionCameraRandomlyButton.centerYAnchor.constraint(equalTo: self.viewController.view.centerYAnchor),
+            positionCameraRandomlyButton.widthAnchor.constraint(equalTo: positionCameraRandomlyButton.heightAnchor),
+            positionCameraRandomlyButton.widthAnchor.constraint(equalToConstant: 44)
+        ])
+        
+        self.startButton.translatesAutoresizingMaskIntoConstraints = false
+        self.startButton.setImage(UIImage(systemName: "play.fill"), for: .normal)
+        self.startButton.addTarget(self, action: #selector(startButtonTapped), for: .touchUpInside)
+        self.startButton.backgroundColor = .white
+        self.startButton.layer.cornerRadius = 8
+        self.viewController.view.addSubview(self.startButton)
+        NSLayoutConstraint.activate([
+            self.startButton.trailingAnchor.constraint(equalTo: self.viewController.view.layoutMarginsGuide.trailingAnchor),
+            positionCameraRandomlyButton.bottomAnchor.constraint(equalTo: self.startButton.topAnchor, constant: -12),
+            self.startButton.widthAnchor.constraint(equalTo: self.startButton.heightAnchor),
+            self.startButton.widthAnchor.constraint(equalToConstant: 44)
         ])
     }
 }
@@ -62,10 +73,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 extension SceneDelegate: NavigationViewControllerDelegate {
     func navigationViewControllerDidFinish(_ navigationViewController: NavigationViewController) {
         navigationViewController.endNavigation()
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(5)) {
-            navigationViewController.startNavigation(with: self.route, locationManager: SimulatedLocationManager(route: self.route))
-        }
     }
 }
 
@@ -91,7 +98,7 @@ private extension SceneDelegate {
     }
     
     @objc
-    func buttonTapped() {
+    func cameraButtonTapped() {
         guard let waypoint = self.waypoints.randomElement() else { return }
         
         func randomCLLocationDistance(min: CLLocationDistance, max: CLLocationDistance) -> CLLocationDistance {
@@ -104,5 +111,16 @@ private extension SceneDelegate {
                                                     acrossDistance: distance,
                                                     pitch: 0,
                                                     heading: 0)
+    }
+    
+    @objc
+    func startButtonTapped() {
+        if self.viewController.route == nil {
+            self.startNavigation(for: Array(self.waypoints[0 ... 1]))
+            self.startButton.setImage(UIImage(systemName: "stop.fill"), for: .normal)
+        } else {
+            self.viewController.endNavigation()
+            self.startButton.setImage(UIImage(systemName: "play.fill"), for: .normal)
+        }
     }
 }
