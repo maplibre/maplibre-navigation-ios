@@ -187,7 +187,8 @@ open class StyleManager: NSObject {
     }
     
     func forceRefreshAppearance() {
-        for window in UIApplication.shared.windows {
+        // re-adding the keyboard window views can break layout. See https://github.com/maplibre/maplibre-navigation-ios/issues/50
+        for window in UIApplication.shared.applicationWindows {
             for view in window.subviews {
                 view.removeFromSuperview()
                 window.addSubview(view)
@@ -237,6 +238,17 @@ extension Solar {
             self.init(for: date, coordinate: coordinate)
         } else {
             self.init(coordinate: coordinate)
+        }
+    }
+}
+
+extension UIApplication {
+    var applicationWindows: [UIWindow] {
+        windows.filter { window in
+            let className = String(describing: type(of: window))
+            return !className.contains("UIRemoteKeyboardWindow") &&
+                !className.contains("UITextEffectsWindow") &&
+                !className.contains("UIAlertController")
         }
     }
 }

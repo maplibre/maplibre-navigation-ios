@@ -22,6 +22,8 @@
    - `NavigationViewController` now expects explicit style URLs with `NavigationViewController(route:dayStyleURL:nightStyleURL:...)` or NavigationViewController(route:dayStyle:nightStyle:...)` and the existing initializer, which allowed "default" styles, is deprecated and uses the MapLibre demo styles.
  - Fix: NavigationViewController was not re-routing when the user went off route.
    - Merged in <https://github.com/maplibre/maplibre-navigation-ios/pull/47>.
+ - Fix: Broken layout due to keyboard presentation after changing styles or presenting a second MapView
+   - Merged in <https://github.com/maplibre/maplibre-navigation-ios/pull/51>
 
 ## v2.0.0 (May 23, 2023)
  - Upgrade minimum iOS version from 11.0 to 12.0.
