@@ -15,6 +15,8 @@
     #endif
     ```
 * Custom location snapping in the `RouteController` via the delegate
+* Fix: Broken layout due to keyboard presentation after changing styles or presenting a second MapView
+  * Merged in <https://github.com/maplibre/maplibre-navigation-ios/pull/51>
 
 ## 3.0.0 (Jun 15, 2024)
 * The `speak` method in `RouteVoiceController` can be used without a given `RouteProgress` or the `RouteProgress` can explicitly ignored so that it will not be added to the voice instruction.
