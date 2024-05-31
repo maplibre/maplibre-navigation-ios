@@ -63,10 +63,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
 extension SceneDelegate: NavigationViewControllerDelegate {
     func navigationViewControllerDidFinish(_ navigationViewController: NavigationViewController) {
-        navigationViewController.endRoute()
+        navigationViewController.endNavigation()
         
         DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(5)) {
-            navigationViewController.start(with: self.route, locationManager: SimulatedLocationManager(route: self.route))
+            navigationViewController.startNavigation(with: self.route, locationManager: SimulatedLocationManager(route: self.route))
         }
     }
 }
@@ -88,7 +88,7 @@ private extension SceneDelegate {
             let simulatedLocationManager = SimulatedLocationManager(route: route)
             simulatedLocationManager.speedMultiplier = 2
             
-            self.viewController.start(with: route, locationManager: simulatedLocationManager)
+            self.viewController.startNavigation(with: route, locationManager: simulatedLocationManager)
         }
     }
     

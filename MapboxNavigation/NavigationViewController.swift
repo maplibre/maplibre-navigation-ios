@@ -409,12 +409,12 @@ open class NavigationViewController: UIViewController {
         }()
         assert(dayStyle.styleType == .day)
         assert(nightStyle.styleType == .night)
-		
+        
         self.directions = directions
         self.voiceController = voiceController
-		
+        
         super.init(nibName: nil, bundle: nil)
-		
+        
         let mapViewController = RouteMapViewController(routeController: self.routeController, delegate: self)
         self.mapViewController = mapViewController
         mapViewController.willMove(toParent: self)
@@ -424,10 +424,10 @@ open class NavigationViewController: UIViewController {
         mapSubview.translatesAutoresizingMaskIntoConstraints = false
         self.view.addSubview(mapSubview)
         mapSubview.pinInSuperview()
-		
+        
         self.styleManager = StyleManager(self)
         self.styleManager.styles = [dayStyle, nightStyle]
-		
+        
         self.mapViewController?.navigationView.hideUI(animated: false)
         self.mapView?.tracksUserCourse = false
     }
@@ -476,7 +476,7 @@ open class NavigationViewController: UIViewController {
     
     // MARK: - NavigationViewController
 	
-    public func start(with route: Route, routeController: RouteController? = nil, locationManager: NavigationLocationManager? = nil) {
+    public func startNavigation(with route: Route, routeController: RouteController? = nil, locationManager: NavigationLocationManager? = nil) {
         self.locationManager = locationManager
         self.route = route
 		
@@ -493,7 +493,7 @@ open class NavigationViewController: UIViewController {
         }
     }
 	
-    public func endRoute(animated: Bool = true) {
+    public func endNavigation(animated: Bool = true) {
         self.routeController?.endNavigation()
         self.mapView?.removeRoutes()
         self.mapView?.removeWaypoints()
@@ -532,7 +532,7 @@ open class NavigationViewController: UIViewController {
                 let directions = routeController.directions
                 let route = routeController.routeProgress.route
                 let navigationViewController = NavigationViewController(dayStyle: DayStyle(demoStyle: ()), nightStyle: NightStyle(demoStyle: ()), directions: directions)
-                navigationViewController.start(with: route, routeController: routeController, locationManager: locationManager)
+                navigationViewController.startNavigation(with: route, routeController: routeController, locationManager: locationManager)
                 
                 window.rootViewController?.topMostViewController()?.present(navigationViewController, animated: true, completion: {
                     navigationViewController.isUsedInConjunctionWithCarPlayWindow = true
@@ -597,7 +597,7 @@ extension NavigationViewController: RouteMapViewControllerDelegate {
     }
     
     func mapViewControllerDidFinish(_ mapViewController: RouteMapViewController, byCanceling canceled: Bool) {
-        self.endRoute()
+        self.endNavigation()
         self.delegate?.navigationViewControllerDidFinish?(self)
     }
     
