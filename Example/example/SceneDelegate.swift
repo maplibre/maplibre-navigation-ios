@@ -12,8 +12,6 @@ import MapLibre
 import UIKit
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
-    private let styleURL = Bundle.main.url(forResource: "Terrain", withExtension: "json")! // swiftlint:disable:this force_unwrapping
-	
     var window: UIWindow?
     var viewController: NavigationViewController!
     var route: Route!

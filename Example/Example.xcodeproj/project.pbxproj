@@ -9,11 +9,8 @@
 /* Begin PBXBuildFile section */
 		CD958B4B2BF6156100501F93 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD958B4A2BF6156100501F93 /* AppDelegate.swift */; };
 		CD958B4D2BF6156100501F93 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD958B4C2BF6156100501F93 /* SceneDelegate.swift */; };
-		CD958B4F2BF6156100501F93 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD958B4E2BF6156100501F93 /* ViewController.swift */; };
 		CD958B542BF6156200501F93 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CD958B532BF6156200501F93 /* Assets.xcassets */; };
 		CD958B572BF6156200501F93 /* Base in Resources */ = {isa = PBXBuildFile; fileRef = CD958B562BF6156200501F93 /* Base */; };
-		CD958B622BF615D200501F93 /* Terrain.json in Resources */ = {isa = PBXBuildFile; fileRef = CD958B612BF615D200501F93 /* Terrain.json */; };
-		CD958B642BF6184900501F93 /* Toursprung.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD958B632BF6184900501F93 /* Toursprung.swift */; };
 		CD958B682BF63B3500501F93 /* MapboxNavigation in Frameworks */ = {isa = PBXBuildFile; productRef = CD958B672BF63B3500501F93 /* MapboxNavigation */; };
 /* End PBXBuildFile section */
 
@@ -21,12 +18,9 @@
 		CD958B472BF6156100501F93 /* Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CD958B4A2BF6156100501F93 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		CD958B4C2BF6156100501F93 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
-		CD958B4E2BF6156100501F93 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		CD958B532BF6156200501F93 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		CD958B562BF6156200501F93 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		CD958B582BF6156200501F93 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		CD958B612BF615D200501F93 /* Terrain.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Terrain.json; sourceTree = "<group>"; };
-		CD958B632BF6184900501F93 /* Toursprung.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Toursprung.swift; sourceTree = "<group>"; };
 		CD958B652BF63A6700501F93 /* maplibre-navigation-ios */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = "maplibre-navigation-ios"; path = ..; sourceTree = "<group>"; };
 		CD958B692BF651F400501F93 /* Secrets.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Secrets.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -67,10 +61,7 @@
 			children = (
 				CD958B4A2BF6156100501F93 /* AppDelegate.swift */,
 				CD958B4C2BF6156100501F93 /* SceneDelegate.swift */,
-				CD958B4E2BF6156100501F93 /* ViewController.swift */,
 				CD958B692BF651F400501F93 /* Secrets.xcconfig */,
-				CD958B632BF6184900501F93 /* Toursprung.swift */,
-				CD958B612BF615D200501F93 /* Terrain.json */,
 				CD958B532BF6156200501F93 /* Assets.xcassets */,
 				CD958B552BF6156200501F93 /* LaunchScreen.storyboard */,
 				CD958B582BF6156200501F93 /* Info.plist */,
@@ -149,7 +140,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				CD958B542BF6156200501F93 /* Assets.xcassets in Resources */,
-				CD958B622BF615D200501F93 /* Terrain.json in Resources */,
 				CD958B572BF6156200501F93 /* Base in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -161,8 +151,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CD958B642BF6184900501F93 /* Toursprung.swift in Sources */,
-				CD958B4F2BF6156100501F93 /* ViewController.swift in Sources */,
 				CD958B4B2BF6156100501F93 /* AppDelegate.swift in Sources */,
 				CD958B4D2BF6156100501F93 /* SceneDelegate.swift in Sources */,
 			);
