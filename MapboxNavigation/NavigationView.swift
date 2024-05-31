@@ -209,22 +209,22 @@ private extension NavigationView {
         self.setupViews()
         self.setupConstraints()
     }
-	
+    
     func setupStackViews() {
         self.setupInformationStackView()
         self.floatingStackView.addArrangedSubviews([self.overviewButton, self.muteButton])
     }
-	
+    
     func setupInformationStackView() {
         let informationChildren: [UIView] = [self.instructionsBannerView, self.lanesView, self.nextBannerView, self.statusView]
         self.informationStackView.addArrangedSubviews(informationChildren)
-		
+        
         for informationChild in informationChildren {
             informationChild.leadingAnchor.constraint(equalTo: self.informationStackView.leadingAnchor).isActive = true
             informationChild.trailingAnchor.constraint(equalTo: self.informationStackView.trailingAnchor).isActive = true
         }
     }
-	
+    
     func setupContainers() {
         let containers: [(UIView, UIView)] = [
             (self.instructionsBannerContentView, self.instructionsBannerView),
@@ -232,7 +232,7 @@ private extension NavigationView {
         ]
         containers.forEach { $0.addSubview($1) }
     }
-	
+    
     func setupViews() {
         self.setupStackViews()
         self.setupContainers()
@@ -246,10 +246,10 @@ private extension NavigationView {
             self.bottomBannerContentView,
             self.instructionsBannerContentView
         ]
-		
+        
         subviews.forEach(addSubview(_:))
     }
-	
+    
     func updateDelegates() {
         self.mapView.delegate = self.delegate
         self.mapView.navigationMapDelegate = self.delegate
