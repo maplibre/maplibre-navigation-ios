@@ -2,6 +2,8 @@
 
 @interface MLNMapView (MLNNavigationAdditions)
 
-- (void)mapViewDidFinishRenderingFrameFullyRendered:(BOOL)fullyRendered;
+- (void)mapViewDidFinishRenderingFrameFullyRendered:(BOOL)fullyRendered
+                                  frameEncodingTime:(double)frameEncodingTime
+                                 frameRenderingTime:(double)frameRenderingTime;
 
 @end
