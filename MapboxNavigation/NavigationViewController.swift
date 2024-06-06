@@ -463,8 +463,8 @@ open class NavigationViewController: UIViewController {
             UIApplication.shared.isIdleTimerDisabled = true
         }
         
-        if self.routeController?.locationManager is SimulatedLocationManager {
-            let localized = String.Localized.simulationStatus(speed: 1)
+        if let simulatedLocationManager = self.routeController?.locationManager as? SimulatedLocationManager {
+            let localized = String.Localized.simulationStatus(speed: Int(simulatedLocationManager.speedMultiplier))
             self.mapViewController.statusView.show(localized, showSpinner: false, interactive: true)
         }
     }
