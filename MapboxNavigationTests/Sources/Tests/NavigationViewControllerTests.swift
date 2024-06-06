@@ -82,7 +82,7 @@ class NavigationViewControllerTests: XCTestCase {
         
         routeController.locationManager(routeController.locationManager, didUpdateLocations: [taylorStreetLocation])
         
-        let wayNameView = (navigationViewController.mapViewController?.navigationView.wayNameView)!
+        let wayNameView = navigationViewController.mapViewController.navigationView.wayNameView
         let currentRoadName = wayNameView.text
         XCTAssertEqual(currentRoadName, roadName, "Expected: \(roadName); Actual: \(String(describing: currentRoadName))")
         XCTAssertFalse(wayNameView.isHidden, "WayNameView should be visible.")
@@ -152,7 +152,7 @@ class NavigationViewControllerTests: XCTestCase {
         
         routeController.locationManager(routeController.locationManager, didUpdateLocations: [turkStreetLocation])
         
-        let wayNameView = (navigationViewController.mapViewController?.navigationView.wayNameView)!
+        let wayNameView = navigationViewController.mapViewController.navigationView.wayNameView
         let currentRoadName = wayNameView.text
         XCTAssertEqual(currentRoadName, roadName, "Expected: \(roadName); Actual: \(String(describing: currentRoadName))")
         XCTAssertTrue(wayNameView.isHidden, "WayNameView should be hidden.")
@@ -170,7 +170,7 @@ class NavigationViewControllerTests: XCTestCase {
         // Identify a location without a custom road name.
         let fultonStreetLocation = self.dependencies.poi[2]
         
-        navigationViewController.mapViewController!.labelRoadNameCompletionHandler = { defaultRaodNameAssigned in
+        navigationViewController.mapViewController.labelRoadNameCompletionHandler = { defaultRaodNameAssigned in
             XCTAssertTrue(defaultRaodNameAssigned, "label road name was not successfully set")
         }
         
@@ -187,10 +187,10 @@ class NavigationViewControllerTests: XCTestCase {
         navigationViewController.startNavigation(with: self.initialRoute, locationManager: SimulatedLocationManager(route: self.initialRoute))
 
         runUntil {
-            !(navigationViewController.mapView!.annotations?.isEmpty ?? true)
+            !(navigationViewController.mapView.annotations?.isEmpty ?? true)
         }
         
-        guard let annotations = navigationViewController.mapView?.annotations else { return XCTFail("Annotations not found.") }
+        guard let annotations = navigationViewController.mapView.annotations else { return XCTFail("Annotations not found.") }
 
         let firstDestination = self.initialRoute.routeOptions.waypoints.last!.coordinate
         let destinations = annotations.filter(self.annotationFilter(matching: firstDestination))
@@ -199,7 +199,7 @@ class NavigationViewControllerTests: XCTestCase {
         // lets set the second route
         navigationViewController.route = self.newRoute
         
-        guard let newAnnotations = navigationViewController.mapView?.annotations else { return XCTFail("New annotations not found.") }
+        guard let newAnnotations = navigationViewController.mapView.annotations else { return XCTFail("New annotations not found.") }
         let secondDestination = self.newRoute.routeOptions.waypoints.last!.coordinate
 
         // do we have a destination on the second route?
