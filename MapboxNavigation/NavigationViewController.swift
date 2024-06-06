@@ -200,7 +200,7 @@ public protocol NavigationViewControllerDelegate: VisualInstructionDelegate {
 @objcMembers
 @objc(MBNavigationViewController)
 open class NavigationViewController: UIViewController {
-    private var locationManager: NavigationLocationManager!
+    private var locationManager: NavigationLocationManager
 	
     var mapViewController: RouteMapViewController
     var styleManager: StyleManager!
@@ -329,6 +329,7 @@ open class NavigationViewController: UIViewController {
     public required init?(coder aDecoder: NSCoder) {
         self.directions = .shared
         self.mapViewController = RouteMapViewController(routeController: self.routeController)
+        self.locationManager = NavigationLocationManager()
         super.init(coder: aDecoder)
         self.mapView.delegate = self
     }
@@ -355,7 +356,7 @@ open class NavigationViewController: UIViewController {
                             directions: Directions = Directions.shared,
                             styles: [Style]? = [DayStyle(), NightStyle()],
                             routeController: RouteController? = nil,
-                            locationManager: NavigationLocationManager? = nil,
+                            locationManager: NavigationLocationManager = NavigationLocationManager(),
                             voiceController: RouteVoiceController = RouteVoiceController()) {
         let styles = styles ?? []
         assert(styles.count <= 2, "Having more than two styles is undefined.")
@@ -363,6 +364,7 @@ open class NavigationViewController: UIViewController {
         let nightStyle = styles.count > 1 ? styles[1] : NightStyle(mapStyleURL: dayStyle.mapStyleURL)
 
         self.init(dayStyle: dayStyle, nightStyle: nightStyle, directions: directions, voiceController: voiceController)
+        self.startNavigation(with: route, locationManager: locationManager)
     }
 
     /// Initializes a `NavigationViewController` that provides turn by turn navigation for the given route.
@@ -414,6 +416,7 @@ open class NavigationViewController: UIViewController {
         self.directions = directions
         self.voiceController = voiceController
         self.mapViewController = RouteMapViewController(routeController: self.routeController)
+        self.locationManager = NavigationLocationManager()
 		
         super.init(nibName: nil, bundle: nil)
 		
@@ -458,7 +461,7 @@ open class NavigationViewController: UIViewController {
     
     // MARK: - NavigationViewController
 	
-    public func startNavigation(with route: Route, routeController: RouteController? = nil, locationManager: NavigationLocationManager? = nil) {
+    public func startNavigation(with route: Route, routeController: RouteController? = nil, locationManager: NavigationLocationManager = NavigationLocationManager()) {
         self.locationManager = locationManager
         self.route = route
 		
