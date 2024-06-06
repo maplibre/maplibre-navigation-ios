@@ -24,8 +24,7 @@ public protocol NavigationViewControllerDelegate: VisualInstructionDelegate {
 	 
      - parameter navigationViewController: The navigation view controller that finished navigation.
      */
-    @objc
-    optional func navigationViewControllerDidFinish(_ navigationViewController: NavigationViewController)
+    @objc optional func navigationViewControllerDidFinish(_ navigationViewController: NavigationViewController)
     
     /**
      Called when the user arrives at the destination waypoint for a route leg.
@@ -203,13 +202,13 @@ public protocol NavigationViewControllerDelegate: VisualInstructionDelegate {
 open class NavigationViewController: UIViewController {
     private var locationManager: NavigationLocationManager!
 	
-    var mapViewController: RouteMapViewController?
+    var mapViewController: RouteMapViewController
     var styleManager: StyleManager!
 	
     var currentStatusBarStyle: UIStatusBarStyle = .default {
         didSet {
-            self.mapViewController?.instructionsBannerView.backgroundColor = InstructionsBannerView.appearance().backgroundColor
-            self.mapViewController?.instructionsBannerContentView.backgroundColor = InstructionsBannerContentView.appearance().backgroundColor
+            self.mapViewController.instructionsBannerView.backgroundColor = InstructionsBannerView.appearance().backgroundColor
+            self.mapViewController.instructionsBannerContentView.backgroundColor = InstructionsBannerContentView.appearance().backgroundColor
         }
     }
 	
@@ -231,7 +230,7 @@ open class NavigationViewController: UIViewController {
                     self.routeController?.routeProgress = RouteProgress(route: route)
                 }
                 NavigationSettings.shared.distanceUnit = route.routeOptions.locale.usesMetric ? .kilometer : .mile
-                self.mapViewController?.notifyDidReroute(route: route)
+                self.mapViewController.notifyDidReroute(route: route)
             } else {
                 self.routeController = nil
             }
@@ -272,7 +271,7 @@ open class NavigationViewController: UIViewController {
      */
     public var routeController: RouteController? {
         didSet {
-            self.mapViewController?.routeController = self.routeController
+            self.mapViewController.routeController = self.routeController
         }
     }
     
@@ -281,8 +280,8 @@ open class NavigationViewController: UIViewController {
      
      - note: Do not change this map view’s delegate.
      */
-    public var mapView: NavigationMapView? {
-        self.mapViewController?.mapView
+    public var mapView: NavigationMapView {
+        self.mapViewController.mapView
     }
     
     /**
@@ -316,7 +315,7 @@ open class NavigationViewController: UIViewController {
      */
     public var isUsedInConjunctionWithCarPlayWindow = false {
         didSet {
-            self.mapViewController?.isUsedInConjunctionWithCarPlayWindow = self.isUsedInConjunctionWithCarPlayWindow
+            self.mapViewController.isUsedInConjunctionWithCarPlayWindow = self.isUsedInConjunctionWithCarPlayWindow
         }
     }
     
@@ -329,7 +328,9 @@ open class NavigationViewController: UIViewController {
 	
     public required init?(coder aDecoder: NSCoder) {
         self.directions = .shared
+        self.mapViewController = RouteMapViewController(routeController: self.routeController)
         super.init(coder: aDecoder)
+        self.mapView.delegate = self
     }
     
     /// Initializes a `NavigationViewController` that provides turn by turn navigation for the given route.
@@ -412,15 +413,15 @@ open class NavigationViewController: UIViewController {
         
         self.directions = directions
         self.voiceController = voiceController
-        
+        self.mapViewController = RouteMapViewController(routeController: self.routeController)
+		
         super.init(nibName: nil, bundle: nil)
-        
-        let mapViewController = RouteMapViewController(routeController: self.routeController, delegate: self)
-        self.mapViewController = mapViewController
-        mapViewController.willMove(toParent: self)
-        self.addChild(mapViewController)
-        mapViewController.didMove(toParent: self)
-        let mapSubview: UIView = mapViewController.view
+		
+        self.mapViewController.delegate = self
+        self.mapViewController.willMove(toParent: self)
+        self.addChild(self.mapViewController)
+        self.mapViewController.didMove(toParent: self)
+        let mapSubview: UIView = self.mapViewController.view
         mapSubview.translatesAutoresizingMaskIntoConstraints = false
         self.view.addSubview(mapSubview)
         mapSubview.pinInSuperview()
@@ -428,10 +429,14 @@ open class NavigationViewController: UIViewController {
         self.styleManager = StyleManager(self)
         self.styleManager.styles = [dayStyle, nightStyle]
         
-        self.mapViewController?.navigationView.hideUI(animated: false)
-        self.mapView?.tracksUserCourse = false
+        self.mapViewController.navigationView.hideUI(animated: false)
+        self.mapView.tracksUserCourse = false
     }
     
+    convenience init() {
+        self.init(dayStyle: Style(demoStyle: ()))
+    }
+	
     deinit {
         self.suspendNotifications()
     }
@@ -460,7 +465,7 @@ open class NavigationViewController: UIViewController {
         
         if self.routeController?.locationManager is SimulatedLocationManager {
             let localized = String.Localized.simulationStatus(speed: 1)
-            self.mapViewController?.statusView.show(localized, showSpinner: false, interactive: true)
+            self.mapViewController.statusView.show(localized, showSpinner: false, interactive: true)
         }
     }
     
@@ -480,8 +485,8 @@ open class NavigationViewController: UIViewController {
         self.locationManager = locationManager
         self.route = route
 		
-        self.mapViewController?.navigationView.showUI(animated: true)
-        self.mapViewController?.destination = route.legs.last?.destination
+        self.mapViewController.navigationView.showUI(animated: true)
+        self.mapViewController.destination = route.legs.last?.destination
 
         self.routeController?.usesDefaultUserInterface = true
         self.routeController?.delegate = self
@@ -495,22 +500,21 @@ open class NavigationViewController: UIViewController {
 	
     public func endNavigation(animated: Bool = true) {
         self.routeController?.endNavigation()
-        self.mapView?.removeRoutes()
-        self.mapView?.removeWaypoints()
-        self.mapView?.removeArrow()
+        self.mapView.removeRoutes()
+        self.mapView.removeWaypoints()
+        self.mapView.removeArrow()
 
         self.voiceController = nil
         self.route = nil
 		
-        self.mapViewController?.navigationView.hideUI(animated: animated)
-        self.mapView?.tracksUserCourse = false
-        self.mapView?.userLocationForCourseTracking = nil
-        self.mapView?.showsUserLocation = true
+        self.mapViewController.navigationView.hideUI(animated: animated)
+        self.mapView.tracksUserCourse = false
+        self.mapView.userLocationForCourseTracking = nil
+        self.mapView.showsUserLocation = true
 		
-        if let camera = self.mapView?.camera {
-            camera.pitch = 0
-            self.mapView?.setCamera(camera, animated: false)
-        }
+        let camera = self.mapView.camera
+        camera.pitch = 0
+        self.mapView.setCamera(camera, animated: false)
     }
 	
     #if canImport(CarPlay)
@@ -634,7 +638,7 @@ extension NavigationViewController: RouteControllerDelegate {
     
     @objc
     public func routeController(_ routeController: RouteController, didRerouteAlong route: Route, reason: RouteController.RerouteReason) {
-        self.mapViewController?.notifyDidReroute(route: route)
+        self.mapViewController.notifyDidReroute(route: route)
         self.delegate?.navigationViewController?(self, didRerouteAlong: route)
     }
     
@@ -657,9 +661,9 @@ extension NavigationViewController: RouteControllerDelegate {
            let snappedLocation = routeController.location ?? locations.last,
            let rawLocation = locations.last,
            userHasArrivedAndShouldPreventRerouting {
-            self.mapViewController?.labelCurrentRoad(at: rawLocation, for: snappedLocation)
+            self.mapViewController.labelCurrentRoad(at: rawLocation, for: snappedLocation)
         } else if let rawlocation = locations.last {
-            self.mapViewController?.labelCurrentRoad(at: rawlocation)
+            self.mapViewController.labelCurrentRoad(at: rawlocation)
         }
     }
     
@@ -668,7 +672,7 @@ extension NavigationViewController: RouteControllerDelegate {
         
         if !self.isConnectedToCarPlay, // CarPlayManager shows rating on CarPlay if it's connected
            routeController.routeProgress.isFinalLeg, advancesToNextLeg {
-            self.mapViewController?.transitionToEndNavigation(with: 1)
+            self.mapViewController.transitionToEndNavigation(with: 1)
             self.delegate?.navigationViewControllerDidFinish?(self)
         }
         return advancesToNextLeg
@@ -703,9 +707,9 @@ extension NavigationViewController: StyleManagerDelegate {
     }
     
     public func styleManager(_ styleManager: StyleManager, didApply style: Style) {
-        if self.mapView?.styleURL != style.mapStyleURL {
-            self.mapView?.style?.transition = MLNTransition(duration: 0.5, delay: 0)
-            self.mapView?.styleURL = style.mapStyleURL
+        if self.mapView.styleURL != style.mapStyleURL {
+            self.mapView.style?.transition = MLNTransition(duration: 0.5, delay: 0)
+            self.mapView.styleURL = style.mapStyleURL
         }
         
         self.currentStatusBarStyle = style.statusBarStyle ?? .default
@@ -713,7 +717,7 @@ extension NavigationViewController: StyleManagerDelegate {
     }
     
     public func styleManagerDidRefreshAppearance(_ styleManager: StyleManager) {
-        self.mapView?.reloadStyle(self)
+        self.mapView.reloadStyle(self)
     }
 }
 
@@ -739,7 +743,7 @@ private extension NavigationViewController {
         let location = notification.userInfo![RouteControllerNotificationUserInfoKey.locationKey] as! CLLocation
         let secondsRemaining = routeProgress.currentLegProgress.currentStepProgress.durationRemaining
 
-        self.mapViewController?.notifyDidChange(routeProgress: routeProgress, location: location, secondsRemaining: secondsRemaining)
+        self.mapViewController.notifyDidChange(routeProgress: routeProgress, location: location, secondsRemaining: secondsRemaining)
         guard let routeController else { return }
 		
         // If the user has arrived, don't snap the user puck.
@@ -750,14 +754,14 @@ private extension NavigationViewController {
 		
         if self.snapsUserLocationAnnotationToRoute,
            userHasArrivedAndShouldPreventRerouting {
-            self.mapViewController?.mapView.updateCourseTracking(location: location, animated: true)
+            self.mapView.updateCourseTracking(location: location, animated: true)
         }
     }
 	
     @objc func didPassInstructionPoint(notification: NSNotification) {
         let routeProgress = notification.userInfo![RouteControllerNotificationUserInfoKey.routeProgressKey] as! RouteProgress
 		
-        self.mapViewController?.updateCameraAltitude(for: routeProgress)
+        self.mapViewController.updateCameraAltitude(for: routeProgress)
 		
         self.clearStaleNotifications()
 		
