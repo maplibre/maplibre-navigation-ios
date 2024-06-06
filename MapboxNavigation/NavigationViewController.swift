@@ -456,29 +456,6 @@ open class NavigationViewController: UIViewController {
         self.view.clipsToBounds = true
     }
     
-    override open func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-
-        if self.shouldManageApplicationIdleTimer {
-            UIApplication.shared.isIdleTimerDisabled = true
-        }
-        
-        if let simulatedLocationManager = self.routeController?.locationManager as? SimulatedLocationManager {
-            let localized = String.Localized.simulationStatus(speed: Int(simulatedLocationManager.speedMultiplier))
-            self.mapViewController.statusView.show(localized, showSpinner: false, interactive: true)
-        }
-    }
-    
-    override open func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-
-        if self.shouldManageApplicationIdleTimer {
-            UIApplication.shared.isIdleTimerDisabled = false
-        }
-        
-        self.routeController?.suspendLocationUpdates()
-    }
-    
     // MARK: - NavigationViewController
 	
     public func startNavigation(with route: Route, routeController: RouteController? = nil, locationManager: NavigationLocationManager? = nil) {
@@ -495,6 +472,15 @@ open class NavigationViewController: UIViewController {
 		
         if !(route.routeOptions is NavigationRouteOptions) {
             print("`Route` was created using `RouteOptions` and not `NavigationRouteOptions`. Although not required, this may lead to a suboptimal navigation experience. Without `NavigationRouteOptions`, it is not guaranteed you will get congestion along the route line, better ETAs and ETA label color dependent on congestion.")
+        }
+		
+        if self.shouldManageApplicationIdleTimer {
+            UIApplication.shared.isIdleTimerDisabled = true
+        }
+		
+        if let simulatedLocationManager = self.routeController?.locationManager as? SimulatedLocationManager {
+            let localized = String.Localized.simulationStatus(speed: Int(simulatedLocationManager.speedMultiplier))
+            self.mapViewController.statusView.show(localized, showSpinner: false, interactive: true)
         }
     }
 	
@@ -515,6 +501,10 @@ open class NavigationViewController: UIViewController {
         let camera = self.mapView.camera
         camera.pitch = 0
         self.mapView.setCamera(camera, animated: false)
+		
+        if self.shouldManageApplicationIdleTimer {
+            UIApplication.shared.isIdleTimerDisabled = false
+        }
     }
 	
     #if canImport(CarPlay)
