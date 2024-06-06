@@ -32,10 +32,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // so this uses a demo style that only shows country borders
         // this is not useful to evaluate the navigation, please change accordingly
         self.viewController = NavigationViewController(dayStyle: DayStyle(demoStyle: ()), nightStyle: NightStyle(demoStyle: ()))
-        self.viewController.mapView?.tracksUserCourse = false
-        self.viewController.mapView?.showsUserLocation = true
-        self.viewController.mapView?.zoomLevel = 12
-        self.viewController.mapView?.centerCoordinate = self.waypoints[0].coordinate
+        self.viewController.mapView.tracksUserCourse = false
+        self.viewController.mapView.showsUserLocation = true
+        self.viewController.mapView.zoomLevel = 12
+        self.viewController.mapView.centerCoordinate = self.waypoints[0].coordinate
         self.viewController.delegate = self
         
         self.window?.rootViewController = self.viewController
@@ -107,10 +107,10 @@ private extension SceneDelegate {
 
         let distance = randomCLLocationDistance(min: 10, max: 100_000)
         
-        self.viewController.mapView?.camera = .init(lookingAtCenter: waypoint.coordinate,
-                                                    acrossDistance: distance,
-                                                    pitch: 0,
-                                                    heading: 0)
+        self.viewController.mapView.camera = .init(lookingAtCenter: waypoint.coordinate,
+                                                   acrossDistance: distance,
+                                                   pitch: 0,
+                                                   heading: 0)
     }
     
     @objc
