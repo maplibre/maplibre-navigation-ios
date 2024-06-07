@@ -24,8 +24,8 @@ public protocol NavigationViewControllerDelegate: VisualInstructionDelegate {
 	 
      - parameter navigationViewController: The navigation view controller that finished navigation.
      */
-    @objc optional func navigationViewControllerDidFinish(_ navigationViewController: NavigationViewController)
-    
+    @objc optional func navigationViewControllerDidFinishRouting(_ navigationViewController: NavigationViewController)
+
     /**
      Called when the user arrives at the destination waypoint for a route leg.
      
@@ -472,6 +472,7 @@ open class NavigationViewController: UIViewController {
         self.routeController?.delegate = self
         self.routeController?.tunnelIntersectionManager.delegate = self
         self.routeController?.resume()
+        self.mapViewController.prepareForNavigation()
 		
         if !(route.routeOptions is NavigationRouteOptions) {
             print("`Route` was created using `RouteOptions` and not `NavigationRouteOptions`. Although not required, this may lead to a suboptimal navigation experience. Without `NavigationRouteOptions`, it is not guaranteed you will get congestion along the route line, better ETAs and ETA label color dependent on congestion.")
@@ -595,7 +596,7 @@ extension NavigationViewController: RouteMapViewControllerDelegate {
     
     func mapViewControllerDidFinish(_ mapViewController: RouteMapViewController, byCanceling canceled: Bool) {
         self.endNavigation()
-        self.delegate?.navigationViewControllerDidFinish?(self)
+        self.delegate?.navigationViewControllerDidFinishRouting?(self)
     }
     
     public func navigationMapViewUserAnchorPoint(_ mapView: NavigationMapView) -> CGPoint {
@@ -666,7 +667,7 @@ extension NavigationViewController: RouteControllerDelegate {
         if !self.isConnectedToCarPlay, // CarPlayManager shows rating on CarPlay if it's connected
            routeController.routeProgress.isFinalLeg, advancesToNextLeg {
             self.mapViewController.transitionToEndNavigation(with: 1)
-            self.delegate?.navigationViewControllerDidFinish?(self)
+            self.delegate?.navigationViewControllerDidFinishRouting?(self)
         }
         return advancesToNextLeg
     }

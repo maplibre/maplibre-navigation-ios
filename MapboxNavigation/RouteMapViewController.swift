@@ -172,34 +172,12 @@ class RouteMapViewController: UIViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-
-        self.resetETATimer()
-
-        self.navigationView.muteButton.isSelected = NavigationSettings.shared.voiceMuted
-        self.mapView.compassView.isHidden = true
-
-        self.mapView.tracksUserCourse = self.route != nil
-
-        if let camera = pendingCamera {
-            self.mapView.camera = camera
-        } else if let location = self.routeController?.location, location.course > 0 {
-            self.mapView.updateCourseTracking(location: location, animated: false)
-        } else if let coordinates = self.routeController?.routeProgress.currentLegProgress.currentStep.coordinates, let firstCoordinate = coordinates.first, coordinates.count > 1 {
-            let secondCoordinate = coordinates[1]
-            let course = firstCoordinate.direction(to: secondCoordinate)
-            let newLocation = CLLocation(coordinate: self.routeController?.location?.coordinate ?? firstCoordinate, altitude: 0, horizontalAccuracy: 0, verticalAccuracy: 0, course: course, speed: 0, timestamp: Date())
-            self.mapView.updateCourseTracking(location: newLocation, animated: false)
-        } else {
-            self.mapView.setCamera(self.tiltedCamera, animated: false)
-        }
+        self.prepareForNavigation()
     }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        self.annotatesSpokenInstructions = self.delegate?.mapViewControllerShouldAnnotateSpokenInstructions(self) ?? false
-        self.showRouteIfNeeded()
-        self.currentLegIndexMapped = self.routeController?.routeProgress.legIndex ?? 0
-        self.currentStepIndexMapped = self.routeController?.routeProgress.currentLegProgress.stepIndex ?? 0
+        self.prepareForMap()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -226,11 +204,55 @@ class RouteMapViewController: UIViewController {
 
     // MARK: - RouteMapViewController
 	
-    func notifyDidReroute(route: Route) {
-        self.updateETA()
-        self.currentStepIndexMapped = 0
+    func prepareForNavigation() {
+        self.resetETATimer()
+
+        self.navigationView.muteButton.isSelected = NavigationSettings.shared.voiceMuted
+        self.mapView.compassView.isHidden = true
+
+        self.mapView.tracksUserCourse = self.route != nil
+
+        if let camera = self.pendingCamera {
+            self.mapView.camera = camera
+            return
+        }
+		
         guard let routeController else { return }
 		
+        if let location = routeController.location,
+           location.course > 0 {
+            self.mapView.updateCourseTracking(location: location, animated: false)
+        } else if let coordinates = routeController.routeProgress.currentLegProgress.currentStep.coordinates,
+                  let firstCoordinate = coordinates.first,
+                  coordinates.count > 1 {
+            let secondCoordinate = coordinates[1]
+            let course = firstCoordinate.direction(to: secondCoordinate)
+            let newLocation = CLLocation(coordinate: routeController.location?.coordinate ?? firstCoordinate,
+                                         altitude: 0,
+                                         horizontalAccuracy: 0,
+                                         verticalAccuracy: 0,
+                                         course: course,
+                                         speed: 0,
+                                         timestamp: Date())
+            self.mapView.updateCourseTracking(location: newLocation, animated: false)
+        }
+    }
+	
+    func prepareForMap() {
+        self.annotatesSpokenInstructions = self.delegate?.mapViewControllerShouldAnnotateSpokenInstructions(self) ?? false
+        self.showRouteIfNeeded()
+        self.currentLegIndexMapped = self.routeController?.routeProgress.legIndex ?? 0
+        self.currentStepIndexMapped = self.routeController?.routeProgress.currentLegProgress.stepIndex ?? 0
+    }
+	
+    func notifyDidReroute(route: Route) {
+        guard let routeController else {
+            assertionFailure("routeController needs to be set before calling this method")
+            return
+        }
+		
+        self.updateETA()
+        self.currentStepIndexMapped = 0
         self.instructionsBannerView.updateDistance(for: routeController.routeProgress.currentLegProgress.currentStepProgress)
 
         self.mapView.addArrow(route: routeController.routeProgress.route, legIndex: routeController.routeProgress.legIndex, stepIndex: routeController.routeProgress.currentLegProgress.stepIndex + 1)
@@ -268,7 +290,10 @@ class RouteMapViewController: UIViewController {
     }
 
     func updateMapOverlays(for routeProgress: RouteProgress) {
-        guard let routeController else { return }
+        guard let routeController else {
+            assertionFailure("routeController needs to be set during navigation")
+            return
+        }
 		
         if routeProgress.currentLegProgress.followOnStep != nil {
             self.mapView.addArrow(route: routeController.routeProgress.route,
@@ -303,8 +328,13 @@ class RouteMapViewController: UIViewController {
     }
 
     func notifyDidChange(routeProgress: RouteProgress, location: CLLocation, secondsRemaining: TimeInterval) {
-        resetETATimer()
-        updateETA()
+        guard let routeController else {
+            assertionFailure("routeController needs to be set during navigation")
+            return
+        }
+		
+        self.resetETATimer()
+        self.updateETA()
 
         self.instructionsBannerView.updateDistance(for: routeProgress.currentLegProgress.currentStepProgress)
 
@@ -320,7 +350,7 @@ class RouteMapViewController: UIViewController {
             self.currentStepIndexMapped = routeProgress.currentLegProgress.stepIndex
         }
 
-        if self.annotatesSpokenInstructions, let routeController {
+        if self.annotatesSpokenInstructions {
             self.mapView.showVoiceInstructionsOnMap(route: routeController.routeProgress.route)
         }
     }
@@ -507,12 +537,18 @@ extension RouteMapViewController: NavigationViewDelegate {
     // MARK: NavigationMapViewCourseTrackingDelegate
 
     func navigationMapViewDidStartTrackingCourse(_ mapView: NavigationMapView) {
+        // Important, this look redundant but it needed.
+        // In NavigationView.showUI(animated:) we animate using alpha and then set isHidden
+        // To keep this in sync we also need to adjust alpha here as well.
         self.navigationView.resumeButton.isHidden = true
         self.navigationView.resumeButton.alpha = 0
         mapView.logoView.isHidden = false
     }
 
     func navigationMapViewDidStopTrackingCourse(_ mapView: NavigationMapView) {
+        // Important, this look redundant but it needed.
+        // In NavigationView.hideUI(animated:) we animate using alpha and then set isHidden
+        // To keep this in sync we also need to adjust alpha here as well.
         self.navigationView.resumeButton.isHidden = false
         self.navigationView.resumeButton.alpha = 1
         self.navigationView.wayNameView.isHidden = true
@@ -580,7 +616,10 @@ extension RouteMapViewController: NavigationViewDelegate {
 
 extension RouteMapViewController: StepsViewControllerDelegate {
     func stepsViewController(_ viewController: StepsViewController, didSelect legIndex: Int, stepIndex: Int, cell: StepTableViewCell) {
-        guard let routeController else { return }
+        guard let routeController else {
+            assertionFailure("routeController is needed during navigation")
+            return
+        }
 		
         let legProgress = RouteLegProgress(leg: routeController.routeProgress.route.legs[legIndex], stepIndex: stepIndex)
         let step = legProgress.currentStep

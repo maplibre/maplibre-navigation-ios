@@ -34,12 +34,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         self.viewController = NavigationViewController(dayStyle: DayStyle(demoStyle: ()), nightStyle: NightStyle(demoStyle: ()))
         self.viewController.mapView.tracksUserCourse = false
         self.viewController.mapView.showsUserLocation = true
-        self.viewController.mapView.zoomLevel = 12
         self.viewController.mapView.centerCoordinate = self.waypoints[0].coordinate
         self.viewController.delegate = self
         
         self.window?.rootViewController = self.viewController
         self.window?.makeKeyAndVisible()
+        
+        self.viewController.mapView.zoomLevel = 5
 
         let positionCameraRandomlyButton = UIButton()
         positionCameraRandomlyButton.translatesAutoresizingMaskIntoConstraints = false

@@ -183,7 +183,6 @@ class NavigationViewControllerTests: XCTestCase {
 
         // wait for the style to load -- routes won't show without it.
         wait(for: [styleLoaded], timeout: 5)
-//        navigationViewController.route = self.initialRoute
         navigationViewController.startNavigation(with: self.initialRoute, locationManager: SimulatedLocationManager(route: self.initialRoute))
 
         runUntil {
@@ -261,6 +260,7 @@ class NavigationViewControllerTestable: NavigationViewController {
                   styleLoaded: XCTestExpectation) {
         self.styleLoadedExpectation = styleLoaded
         super.init(dayStyle: dayStyle, directions: Directions(accessToken: "abc", host: ""), voiceController: FakeVoiceController())
+        self.startNavigation(with: route)
     }
     
     @objc(initWithRoute:dayStyle:nightStyle:directions:routeController:locationManager:voiceController:)

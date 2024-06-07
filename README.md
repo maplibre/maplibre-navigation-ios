@@ -42,114 +42,15 @@ Install this package using the [Swift Package Manager](https://www.swift.org/doc
 - **Have a bug to report?** [Open an issue](https://github.com/maplibre/maplibre-navigation-ios/issues). If possible, include the version of Maplibre Services, a full log, and a project that shows the issue.
 - **Have a feature request?** [Open an issue](https://github.com/maplibre/maplibre-navigation-ios/issues/new). Tell us what the feature should do and why you want the feature.
 
-## <a name="sample-code">Sample code
+## Sample code
 
-A demo app is currently not available. Please check the Mapbox repository or documentation for examples, especially on the forked version. You can try the provided demo app, which you need to first run `carthage update --platform iOS --use-xcframeworks` for in the root of this project.
+We do provide a limited example app but its not functional right out of the box. 
 
-In order to see the map or calculate a route you need your own Maptile and Direction services.
+1. Open Secrets.xcconfig and add a mapbox api token. This is needed to obtain a route. A free mapbox account is enough for evaluation.
+2. You need a maptile source. The example uses a demo source which only displays country borders.
+3. Tap the play button to start a navigation
 
-Use the following code as inspiration:
-
-```
-import MapLibre
-import MapboxDirections
-import MapboxCoreNavigation
-import MapboxNavigation
-
-class ViewController: UIViewController {
-    var navigationView: NavigationMapView?
-    
-    // Keep `RouteController` in memory (class scope),
-    // otherwise location updates won't be triggered
-    public var mapboxRouteController: RouteController?
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        
-        let navigationView = NavigationMapView(
-            frame: .zero,
-            // Tile loading can take a while
-            styleURL: URL(string: "your style URL here"),
-            config: MNConfig())
-        self.navigationView = navigationView
-        view.addSubview(navigationView)
-        navigationView.translatesAutoresizingMaskIntoConstraints = false
-        navigationView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
-        navigationView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
-        navigationView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
-        navigationView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
-        
-        let waypoints = [
-            CLLocation(latitude: 52.032407, longitude: 5.580310),
-            CLLocation(latitude: 51.768686, longitude: 4.6827956)
-        ].map { Waypoint(location: $0) }
-        
-        let options = NavigationRouteOptions(waypoints: waypoints, profileIdentifier: .automobileAvoidingTraffic)
-        options.shapeFormat = .polyline6
-        options.distanceMeasurementSystem = .metric
-        options.attributeOptions = []
-        
-        print("[\(type(of:self))] Calculating routes with URL: \(Directions.shared.url(forCalculating: options))")
-        
-        /// URL is based on the base URL in the Info.plist called `MGLMapboxAPIBaseURL`
-        /// - Note: Your routing provider could be strict about the user-agent of this app before allowing the call to work
-        Directions.shared.calculate(options) { (waypoints, routes, error) in
-            guard let route = routes?.first else { return }
-            
-            let simulatedLocationManager = SimulatedLocationManager(route: route)
-            simulatedLocationManager.speedMultiplier = 20
-            
-            let mapboxRouteController = RouteController(
-                along: route,
-                directions: Directions.shared,
-                locationManager: simulatedLocationManager)
-            self.mapboxRouteController = mapboxRouteController
-            mapboxRouteController.delegate = self
-            mapboxRouteController.resume()
-            
-            NotificationCenter.default.addObserver(self, selector: #selector(self.didPassVisualInstructionPoint(notification:)), name: .routeControllerDidPassVisualInstructionPoint, object: nil)
-            NotificationCenter.default.addObserver(self, selector: #selector(self.didPassSpokenInstructionPoint(notification:)), name: .routeControllerDidPassSpokenInstructionPoint, object: nil)
-            
-            navigationView.showRoutes([route], legIndex: 0)
-        }
-    }
-}
-
-// MARK: - RouteControllerDelegate
-
-extension ViewController: RouteControllerDelegate {
-    @objc public func routeController(_ routeController: RouteController, didUpdate locations: [CLLocation]) {
-        let camera = MLNMapCamera(
-            lookingAtCenter: locations.first!.coordinate,
-            acrossDistance: 500,
-            pitch: 0,
-            heading: 0
-        )
-        
-        navigationView?.setCamera(camera, animated: true)
-    }
-    
-    @objc func didPassVisualInstructionPoint(notification: NSNotification) {
-        guard let currentVisualInstruction = currentStepProgress(from: notification)?.currentVisualInstruction else { return }
-        
-        print(String(
-            format: "didPassVisualInstructionPoint primary text: %@ and secondary text: %@",
-            String(describing: currentVisualInstruction.primaryInstruction.text),
-            String(describing: currentVisualInstruction.secondaryInstruction?.text)))
-    }
-    
-    @objc func didPassSpokenInstructionPoint(notification: NSNotification) {
-        guard let currentSpokenInstruction = currentStepProgress(from: notification)?.currentSpokenInstruction else { return }
-        
-        print("didPassSpokenInstructionPoint text: \(currentSpokenInstruction.text)")
-    }
-    
-    private func currentStepProgress(from notification: NSNotification) -> RouteStepProgress? {
-        let routeProgress = notification.userInfo?[RouteControllerNotificationUserInfoKey.routeProgressKey] as? RouteProgress
-        return routeProgress?.currentLegProgress.currentStepProgress
-    }
-}
-```
+[![MapLibre Logo](.github/navigation.png)](https://maplibre.org)
 
 ## Community
 
@@ -162,3 +63,4 @@ Code is [licensed](LICENSE.md) under MIT and ISC.
 ISC is meant to be functionally equivalent to the MIT license.
 
 Copyright (c) 2022 MapLibre contributors
+®®®
