@@ -72,7 +72,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 }
 
 extension SceneDelegate: NavigationViewControllerDelegate {
-    func navigationViewControllerDidFinish(_ navigationViewController: NavigationViewController) {
+    func navigationViewControllerDidFinishRouting(_ navigationViewController: NavigationViewController) {
         navigationViewController.endNavigation()
     }
 }
@@ -101,13 +101,8 @@ private extension SceneDelegate {
     @objc
     func cameraButtonTapped() {
         guard let waypoint = self.waypoints.randomElement() else { return }
-        
-        func randomCLLocationDistance(min: CLLocationDistance, max: CLLocationDistance) -> CLLocationDistance {
-            CLLocationDistance(arc4random_uniform(UInt32(max - min)) + UInt32(min))
-        }
 
-        let distance = randomCLLocationDistance(min: 10, max: 100_000)
-        
+        let distance = CLLocationDistance.random(in: 10 ... 100_000)
         self.viewController.mapView.camera = .init(lookingAtCenter: waypoint.coordinate,
                                                    acrossDistance: distance,
                                                    pitch: 0,

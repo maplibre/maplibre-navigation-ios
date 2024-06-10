@@ -205,19 +205,17 @@ class RouteMapViewController: UIViewController {
     // MARK: - RouteMapViewController
 	
     func prepareForNavigation() {
+        guard let routeController else { return }
+		
         self.resetETATimer()
-
         self.navigationView.muteButton.isSelected = NavigationSettings.shared.voiceMuted
         self.mapView.compassView.isHidden = true
-
-        self.mapView.tracksUserCourse = self.route != nil
+        self.mapView.tracksUserCourse = true
 
         if let camera = self.pendingCamera {
             self.mapView.camera = camera
             return
         }
-		
-        guard let routeController else { return }
 		
         if let location = routeController.location,
            location.course > 0 {
