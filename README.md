@@ -18,6 +18,49 @@ All issues are covered with this SDK.
 - Transitioned from the [Mapbox SDK](https://github.com/mapbox/mapbox-gl-native-ios) (version 4.3) to [Maplibre Maps SDK](https://github.com/maplibre/maplibre-gl-native) (version 6.0.0)
 - Added optional config parameter in NavigationMapView constructor to customize certain properties like route line color
 
+# Migrating from v2 to v3
+
+Maplibre v3 allows you to start a navigation in an existing Map, so no modal ViewController needs to be presented over an existing map as before. This results in some breaking changes. 
+
+### Step 1:
+
+Replace your ViewController that hosts the mapView with a `NavigationViewController`. We suggest to create a subclass of `NavigationViewController` and override init & call `super.init(dayStyle:)` or `super.init(dayStyleURL:)`. NavigationViewController will not do anything on its own until you start a navigation.
+
+### Step 2:
+
+Start the navigation by calling `startNavigation(with: route)`. If you want to simulate your route, you need to pass in the optional locationManager parameter, otherwise the real location of the device will be used.
+
+```swift
+func locationManager(for route: Route) -> NavigationLocationManager {
+#if targetEnvironment(simulator)
+	let locationManager = SimulatedLocationManager(route: route)
+	locationManager.speedMultiplier = 2
+	return locationManager
+#else
+	return NavigationLocationManager()
+#endif
+}
+
+self.startNavigation(with: route, locationManager: locationManager(for : route))
+```
+
+### Step 3:
+
+Make your ViewController conform to `NavigationViewControllerDelegate` and implement `navigationViewControllerDidFinishRouting(_ navigationViewController: NavigationViewController)` to transition back to normal map mode. This delegate is called when the user arrives at the destination or cancels the navigation.
+
+```swift
+extension SceneDelegate: NavigationViewControllerDelegate {
+    func navigationViewControllerDidFinishRouting(_ navigationViewController: NavigationViewController) {
+        navigationViewController.endNavigation()
+    }
+}
+```
+
+### Backwards compatibility
+
+If for some reason, you want to keep the old way of presenting a navigation modally, you can still do that. Simply call `startNavigation(with: route)` right after creating the `NavigationViewController`.
+
+
 # Getting Started
 
 If you are looking to include this inside your project, you have to follow the the following steps:

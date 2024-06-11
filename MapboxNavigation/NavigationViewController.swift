@@ -298,7 +298,7 @@ open class NavigationViewController: UIViewController {
     }
 
     /**
-     If `true`, `UIApplication.isIdleTimerDisabled` is set to `true` in `viewWillAppear(_:)` and `false` in `viewWillDisappear(_:)`. If your application manages the idle timer itself, set this property to `false`.
+     If `true`, `UIApplication.isIdleTimerDisabled` is set to `true` while a navigation is running. If your application manages the idle timer itself, set this property to `false`.
      */
     public var shouldManageApplicationIdleTimer = true
     
@@ -321,42 +321,29 @@ open class NavigationViewController: UIViewController {
     
     // MARK: - Lifecycle
 	
-    public required init?(coder aDecoder: NSCoder) {
-        self.directions = .shared
-        self.mapViewController = RouteMapViewController(routeController: self.routeController)
-        self.locationManager = NavigationLocationManager()
-        super.init(coder: aDecoder)
-        self.mapView.delegate = self
-    }
-
-    /// Initializes a `NavigationViewController` that provides turn by turn navigation for the given route.
-    ///
+    /// Initializes a `NavigationViewController` that displays a map with a given style.
     /// - Parameters:
-    ///   - route: The route to follow.
     ///   - dayStyleURL: URL for the style rules used to render the map during daylight hours.
     ///   - nightStyleURL: URL for the style rules used to render the map during nighttime hours. If nil, `dayStyleURL` will be used at night as well.
     ///   - directions: Used when recomputing a new route, for example if the user takes a wrong turn and needs re-routing. If unspecified, a default will be used.
-    ///   - routeController: Used to monitor the route and notify of changes to the route. If nil, a default will be used.
-    ///   - locationManager: Tracks the users location along the route. If nil, a default will be used.
     ///   - voiceController: Produces voice instructions for route navigation. If nil, a default will be used.
-    ///
-    /// See [Mapbox Directions](https://mapbox.github.io/mapbox-navigation-ios/directions/) for further information.
     @objc(initWithDayStyleURL:nightStyleURL:directions:voiceController:)
     public convenience init(dayStyleURL: URL,
                             nightStyleURL: URL? = nil,
-                            directions: Directions = Directions.shared,
+                            directions: Directions = .shared,
                             voiceController: RouteVoiceController = RouteVoiceController()) {
         let dayStyle = DayStyle(mapStyleURL: dayStyleURL)
         let nightStyle = NightStyle(mapStyleURL: nightStyleURL ?? dayStyleURL)
         self.init(dayStyle: dayStyle, nightStyle: nightStyle, directions: directions, voiceController: voiceController)
     }
-	
-    /**
-     Initializes a `NavigationViewController` that provides turn by turn navigation for the given route. A optional `direction` object is needed for  potential rerouting.
 
-     See [Mapbox Directions](https://mapbox.github.io/mapbox-navigation-ios/directions/) for further information.
-     */
-    @objc(initWithStyleURL:directions:styles:voiceController:)
+    /// Initializes a `NavigationViewController` that displays a map with a given style.
+    /// - Parameters:
+    ///   - dayStyle: Style used to render the map during daylight hours.
+    ///   - nightStyle: Style used to render the map during nighttime hours. If nil, `dayStyle` will be used at night as well.
+    ///   - directions: Used when recomputing a new route, for example if the user takes a wrong turn and needs re-routing. If unspecified, a default will be used.
+    ///   - voiceController: Produces voice instructions for route navigation. If nil, a default will be used.
+    ///   @objc(initWithStyleURL:directions:styles:voiceController:)
     public required init(dayStyle: Style,
                          nightStyle: Style? = nil,
                          directions: Directions = Directions.shared,
@@ -395,9 +382,10 @@ open class NavigationViewController: UIViewController {
         self.mapViewController.navigationView.hideUI(animated: false)
         self.mapView.tracksUserCourse = false
     }
-    
-    convenience init() {
-        self.init(dayStyle: Style(demoStyle: ()))
+	
+    @available(*, unavailable)
+    public required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
 	
     deinit {
@@ -412,9 +400,7 @@ open class NavigationViewController: UIViewController {
 	
     override open func viewDidLoad() {
         super.viewDidLoad()
-        // Initialize voice controller if it hasn't been overridden.
-        // This is optional and lazy so it can be mutated by the developer after init.
-        _ = self.voiceController
+
         self.resumeNotifications()
         self.view.clipsToBounds = true
     }
