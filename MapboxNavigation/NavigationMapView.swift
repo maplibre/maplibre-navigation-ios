@@ -222,6 +222,11 @@ open class NavigationMapView: MLNMapView, UIGestureRecognizerDelegate {
         self.makeGestureRecognizersUpdateCourseView()
         
         self.resumeNotifications()
+
+        let gestures = gestureRecognizers ?? []
+        let mapTapGesture = mapTapGesture
+        mapTapGesture.requireFailure(of: gestures)
+        addGestureRecognizer(mapTapGesture)
     }
     
     deinit {
@@ -271,11 +276,6 @@ open class NavigationMapView: MLNMapView, UIGestureRecognizerDelegate {
     
     func resumeNotifications() {
         NotificationCenter.default.addObserver(self, selector: #selector(self.progressDidChange(_:)), name: .routeControllerProgressDidChange, object: nil)
-        
-        let gestures = gestureRecognizers ?? []
-        let mapTapGesture = mapTapGesture
-        mapTapGesture.requireFailure(of: gestures)
-        addGestureRecognizer(mapTapGesture)
     }
     
     func suspendNotifications() {
