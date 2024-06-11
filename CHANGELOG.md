@@ -25,6 +25,21 @@
    - Merged in <https://github.com/maplibre/maplibre-navigation-ios/pull/47>
  - Fix: NavigationViewController displayed incorrect `speedMultiplier` when using SimulatedLocationManager
    - Merged in <https://github.com/maplibre/maplibre-navigation-ios/pull/49>
+- Start & Stop Navigation in existing Map
+	- Removed: `NavigationViewController(for route: Route, dayStyle: Style, routeController: RouteController? = nil, locationManager: NavigationLocationManager? = nil, voiceController: RouteVoiceController? = nil)` use `NavigationViewController(dayStyleURL: URL, nightStyleURL: URL? = nil,directions: Directions = .shared, voiceController: RouteVoiceController = RouteVoiceController())` followed by `startNavigation(with route: Route)` instead.
+	- To simulate a route, pass a `SimulatedLocationManager` to `startNavigation()` function: 
+
+	```swift
+	let vc = NavigationViewController(dayStyleURL: AppConfig().tileserverStyleUrl)
+	
+	if Env.current.simulateLocationForTesting {
+	    let simulatedLocationManager = SimulatedLocationManager(route: route)
+        simulatedLocationManager.speedMultiplier = 5
+	    vc.startNavigation(with: route, locationManager: simulatedLocationManager)
+	} else {
+	    vc.startNavigation(with: route)
+	}
+	```
 
 ## v2.0.0 (May 23, 2023)
  - Upgrade minimum iOS version from 11.0 to 12.0.
