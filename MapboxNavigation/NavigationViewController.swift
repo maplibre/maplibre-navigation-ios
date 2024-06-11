@@ -343,7 +343,7 @@ open class NavigationViewController: UIViewController {
     ///   - nightStyle: Style used to render the map during nighttime hours. If nil, `dayStyle` will be used at night as well.
     ///   - directions: Used when recomputing a new route, for example if the user takes a wrong turn and needs re-routing. If unspecified, a default will be used.
     ///   - voiceController: Produces voice instructions for route navigation. If nil, a default will be used.
-    ///   @objc(initWithStyleURL:directions:styles:voiceController:)
+    @objc(initWithDayStyle:nightStyle:directions:voiceController:)
     public required init(dayStyle: Style,
                          nightStyle: Style? = nil,
                          directions: Directions = Directions.shared,

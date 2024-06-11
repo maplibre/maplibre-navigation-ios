@@ -271,13 +271,9 @@ class NavigationViewControllerTestable: NavigationViewController {
     func mapView(_ mapView: MLNMapView, didFinishLoading style: MLNStyle) {
         self.styleLoadedExpectation.fulfill()
     }
-    
-    @available(*, unavailable)
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("This initalizer is not supported in this testing subclass.")
-    }
 	
-    @objc(initWithStyleURL:directions:styles:voiceController:) required init(dayStyle: Style, nightStyle: Style? = nil, directions: Directions = Directions.shared, voiceController: RouteVoiceController = RouteVoiceController()) {
+    @objc(initWithDayStyle:nightStyle:directions:voiceController:)
+    required init(dayStyle: Style, nightStyle: Style? = nil, directions: Directions = Directions.shared, voiceController: RouteVoiceController = RouteVoiceController()) {
         fatalError("init(dayStyle:nightStyle:directions:voiceController:) has not been implemented")
     }
 }
