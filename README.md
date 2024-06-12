@@ -31,17 +31,13 @@ Replace your ViewController that hosts the mapView with a `NavigationViewControl
 Start the navigation by calling `startNavigation(with: route)`. If you want to simulate your route, you need to pass in the optional locationManager parameter, otherwise the real location of the device will be used.
 
 ```swift
-func locationManager(for route: Route) -> NavigationLocationManager {
-#if targetEnvironment(simulator)
-	let locationManager = SimulatedLocationManager(route: route)
-	locationManager.speedMultiplier = 2
-	return locationManager
+#if targetEnvironment(simulator) 
+    let locationManager = SimulatedLocationManager(route: route)
+    locationManager.speedMultiplier = 2
+    self.startNavigation(with: route, locationManager: locationManager)
 #else
-	return NavigationLocationManager()
+    self.startNavigation(with: route)
 #endif
-}
-
-self.startNavigation(with: route, locationManager: locationManager(for : route))
 ```
 
 ### Step 3:
