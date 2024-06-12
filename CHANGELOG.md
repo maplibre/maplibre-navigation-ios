@@ -30,15 +30,15 @@
 	- To simulate a route, pass a `SimulatedLocationManager` to `startNavigation()` function: 
 
 	```swift
-	let vc = NavigationViewController(dayStyleURL: AppConfig().tileserverStyleUrl)
-	
-	if Env.current.simulateLocationForTesting {
-	    let simulatedLocationManager = SimulatedLocationManager(route: route)
+    let vc = NavigationViewController(dayStyleURL: AppConfig().tileserverStyleUrl)
+
+    if Env.current.simulateLocationForTesting {
+        let simulatedLocationManager = SimulatedLocationManager(route: route)
         simulatedLocationManager.speedMultiplier = 5
-	    vc.startNavigation(with: route, locationManager: simulatedLocationManager)
-	} else {
-	    vc.startNavigation(with: route)
-	}
+        vc.startNavigation(with: route, locationManager: simulatedLocationManager)
+    } else {
+        vc.startNavigation(with: route)
+    }
 	```
 
 ## v2.0.0 (May 23, 2023)
