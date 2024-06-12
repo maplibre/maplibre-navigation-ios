@@ -102,4 +102,3 @@ Code is [licensed](LICENSE.md) under MIT and ISC.
 ISC is meant to be functionally equivalent to the MIT license.
 
 Copyright (c) 2022 MapLibre contributors
-®®®
