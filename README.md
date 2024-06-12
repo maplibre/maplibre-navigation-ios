@@ -24,7 +24,7 @@ MaplibreNavigation v3 allows you to start a navigation in an existing Map, so no
 
 ### Step 1:
 
-Replace your ViewController that hosts the mapView with a `NavigationViewController`. We suggest to create a subclass of `NavigationViewController` and override init & call `super.init(dayStyle:)` or `super.init(dayStyleURL:)`. NavigationViewController will not do anything on its own until you start a navigation.
+Replace your ViewController that hosts the mapView with a `NavigationViewController`. We suggest to create a subclass of `NavigationViewController` and override init & call `super.init(dayStyle:)` or `super.init(dayStyleURL:)`. With v3, NavigationViewController will not start navigation until you request it.
 
 ### Step 2:
 
