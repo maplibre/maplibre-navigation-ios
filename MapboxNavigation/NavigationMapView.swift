@@ -224,8 +224,8 @@ open class NavigationMapView: MLNMapView, UIGestureRecognizerDelegate {
         self.resumeNotifications()
 
         let gestures = gestureRecognizers ?? []
-        let mapTapGesture = mapTapGesture
         mapTapGesture.requireFailure(of: gestures)
+        mapTapGesture.delegate = self
         addGestureRecognizer(mapTapGesture)
     }
     
@@ -362,20 +362,61 @@ open class NavigationMapView: MLNMapView, UIGestureRecognizerDelegate {
     }
     
     // MARK: - Gesture Recognizers
-    
+
+    // If we aren't going to handle mapTapGesture, we should fail it, so that gesture recognizers
+    // added by the user can succeed.
+    //
+    // This logic needs to be kept in sync with `didRecieveTap(sender:)`
+    override open func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        guard gestureRecognizer == self.mapTapGesture else {
+            return super.gestureRecognizerShouldBegin(gestureRecognizer)
+        }
+
+        guard let routes,
+              let tapPoint = gestureRecognizer.point,
+              let navigationMapDelegate = self.navigationMapDelegate else {
+            return false
+        }
+
+        // `as` casting is needed to disambiguate the overloaded didSelect: methods
+        if (navigationMapDelegate.navigationMapView(_:didSelect:) as ((NavigationMapView, Waypoint) -> Void)?) != nil,
+           self.waypoints(on: routes, closeTo: tapPoint)?.first != nil {
+            return true
+            // `as` casting is needed to disambiguate the overloaded didSelect: methods
+        } else if (navigationMapDelegate.navigationMapView(_:didSelect:) as ((NavigationMapView, Route) -> Void)?) != nil,
+                  self.routes(closeTo: tapPoint)?.first != nil {
+            return true
+        } else {
+            return false
+        }
+    }
+
     /**
      Fired when NavigationMapView detects a tap not handled elsewhere by other gesture recognizers.
      */
     @objc func didRecieveTap(sender: UITapGestureRecognizer) {
-        guard let routes, let tapPoint = sender.point else { return }
-        
-        let waypointTest = self.waypoints(on: routes, closeTo: tapPoint) // are there waypoints near the tapped location?
-        if let selected = waypointTest?.first { // test passes
-            self.navigationMapDelegate?.navigationMapView?(self, didSelect: selected)
+        assert(sender == self.mapTapGesture)
+        guard let routes,
+              let tapPoint = sender.point,
+              let navigationMapDelegate = self.navigationMapDelegate else {
+            assertionFailure("Gesture shouldn't trigger for no-op. Does gestureRecognizerShouldBegin need to be updated?")
             return
-        } else if let routes = self.routes(closeTo: tapPoint) {
-            guard let selectedRoute = routes.first else { return }
-            self.navigationMapDelegate?.navigationMapView?(self, didSelect: selectedRoute)
+        }
+
+        if let tappedWaypoint = self.waypoints(on: routes, closeTo: tapPoint)?.first {
+            guard let didSelectWaypoint: (NavigationMapView, Waypoint) -> Void = navigationMapDelegate.navigationMapView(_:didSelect:) else {
+                assertionFailure("Gesture shouldn't trigger for no-op. Does gestureRecognizerShouldBegin need to be updated?")
+                return
+            }
+            didSelectWaypoint(self, tappedWaypoint)
+        } else if let tappedRoute = self.routes(closeTo: tapPoint)?.first {
+            guard let didSelectRoute: (NavigationMapView, Route) -> Void = navigationMapDelegate.navigationMapView(_:didSelect:) else {
+                assertionFailure("Gesture shouldn't trigger for no-op. Does gestureRecognizerShouldBegin need to be updated?")
+                return
+            }
+            didSelectRoute(self, tappedRoute)
+        } else {
+            assertionFailure("Gesture shouldn't trigger for no-op. Does gestureRecognizerShouldBegin need to be updated?")
         }
     }
     
