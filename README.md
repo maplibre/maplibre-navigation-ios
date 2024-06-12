@@ -20,7 +20,7 @@ All issues are covered with this SDK.
 
 # Migrating from v2 to v3
 
-Maplibre v3 allows you to start a navigation in an existing Map, so no modal ViewController needs to be presented over an existing map as before. This results in some breaking changes. 
+MaplibreNavigation v3 allows you to start a navigation in an existing Map, so no modal ViewController needs to be presented over an existing map as before. This results in some breaking changes. 
 
 ### Step 1:
 
