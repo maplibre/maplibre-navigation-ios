@@ -902,8 +902,6 @@ private extension RouteMapViewController {
         guard let duration = userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? Double else { return }
         guard let keyBoardRect = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect else { return }
 
-        let curve = UIView.AnimationCurve(rawValue: curveValue) ?? UIView.AnimationCurve.easeIn
-        let options = (duration: duration, curve: curve)
         let keyboardHeight = keyBoardRect.size.height
 
         if #available(iOS 11.0, *) {
@@ -912,25 +910,27 @@ private extension RouteMapViewController {
             self.navigationView.endOfRouteShowConstraint?.constant = -1 * keyboardHeight
         }
 
-        let opts = UIView.AnimationOptions(curve: options.curve)
-        UIView.animate(withDuration: options.duration, delay: 0, options: opts, animations: view.layoutIfNeeded, completion: nil)
+        let options = UIView.AnimationOptions(rawCurveValue: curveValue) ?? .curveEaseIn
+        UIView.animate(withDuration: duration, delay: 0, options: options, animations: view.layoutIfNeeded, completion: nil)
     }
 
     @objc func keyboardWillHide(notification: NSNotification) {
         guard self.navigationView.endOfRouteView != nil else { return }
         guard let userInfo = notification.userInfo else { return }
-        let curve = UIView.AnimationCurve(rawValue: userInfo[UIResponder.keyboardAnimationCurveUserInfoKey] as! Int)
-        let options = (duration: userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as! Double,
-                       curve: UIView.AnimationOptions(curve: curve!))
+        guard let curveValue = userInfo[UIResponder.keyboardAnimationCurveUserInfoKey] as? Int else { return }
+        guard let duration = userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? Double else { return }
 
+        let options = UIView.AnimationOptions(rawCurveValue: curveValue) ?? .curveEaseOut
         self.navigationView.endOfRouteShowConstraint?.constant = 0
-
-        UIView.animate(withDuration: options.duration, delay: 0, options: options.curve, animations: view.layoutIfNeeded, completion: nil)
+        UIView.animate(withDuration: duration, delay: 0, options: options, animations: view.layoutIfNeeded, completion: nil)
     }
 }
 
 private extension UIView.AnimationOptions {
-    init(curve: UIView.AnimationCurve) {
+    init?(rawCurveValue: Int) {
+        guard let curve = UIView.AnimationCurve(rawValue: rawCurveValue) else {
+            return nil
+        }
         switch curve {
         case .easeIn:
             self = .curveEaseIn
@@ -941,7 +941,7 @@ private extension UIView.AnimationOptions {
         case .linear:
             self = .curveLinear
         @unknown default:
-            fatalError("Unknown curve")
+            return nil
         }
     }
 }
