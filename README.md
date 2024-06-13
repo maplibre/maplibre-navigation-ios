@@ -54,7 +54,7 @@ extension SceneDelegate: NavigationViewControllerDelegate {
 
 ### Backwards compatibility
 
-If for some reason, you want to keep the old way of presenting a navigation modally, you can still do that. Simply call `startNavigation(with: route)` right after creating the `NavigationViewController`.
+If you want to keep the old way of presenting a navigation modally, you can still do that. Simply call `startNavigation(with: route)` right after creating the `NavigationViewController`.
 
 
 # Getting Started
