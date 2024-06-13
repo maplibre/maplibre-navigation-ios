@@ -257,9 +257,9 @@ open class NavigationMapView: MLNMapView, UIGestureRecognizerDelegate {
             super.anchorPoint(forGesture: gesture)
         }
     }
-    
-    override open func mapViewDidFinishRenderingFrameFullyRendered(_ fullyRendered: Bool) {
-        super.mapViewDidFinishRenderingFrameFullyRendered(fullyRendered)
+   
+    override open func mapViewDidFinishRenderingFrameFullyRendered(_ fullyRendered: Bool, frameEncodingTime: Double, frameRenderingTime: Double) {
+        super.mapViewDidFinishRenderingFrameFullyRendered(fullyRendered, frameEncodingTime: frameEncodingTime, frameRenderingTime: frameRenderingTime)
         
         guard self.shouldPositionCourseViewFrameByFrame else { return }
         guard let location = userLocationForCourseTracking else { return }
