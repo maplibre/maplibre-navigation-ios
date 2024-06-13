@@ -52,6 +52,12 @@ extension SceneDelegate: NavigationViewControllerDelegate {
 }
 ```
 
+NOTE: You've probably used this function previously, it was removed as we don't dismiss a ViewController anymore.
+
+```swift
+@objc optional func navigationViewControllerDidDismiss(_ navigationViewController: NavigationViewController, byCanceling canceled: Bool)
+```
+
 ### Backwards compatibility
 
 If you want to keep the old way of presenting a navigation modally, you can still do that. Simply call `startNavigation(with: route)` right after creating the `NavigationViewController`.
