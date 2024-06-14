@@ -275,16 +275,6 @@ open class NavigationViewController: UIViewController {
     @objc public var showsReportFeedback: Bool = true {
         didSet {
             self.mapViewController?.reportButton.isHidden = !self.showsReportFeedback
-            self.showsEndOfRouteFeedback = self.showsReportFeedback
-        }
-    }
-    
-    /**
-     Shows End of route Feedback UI when the route controller arrives at the final destination. Defaults to `true.`
-     */
-    @objc public var showsEndOfRouteFeedback: Bool = true {
-        didSet {
-            self.mapViewController?.showsEndOfRoute = self.showsEndOfRouteFeedback
         }
     }
     
@@ -729,7 +719,7 @@ extension NavigationViewController: RouteControllerDelegate {
         let advancesToNextLeg = self.delegate?.navigationViewController?(self, didArriveAt: waypoint) ?? true
         
         if !self.isConnectedToCarPlay, // CarPlayManager shows rating on CarPlay if it's connected
-           routeController.routeProgress.isFinalLeg, advancesToNextLeg, self.showsEndOfRouteFeedback {
+           routeController.routeProgress.isFinalLeg, advancesToNextLeg {
             self.mapViewController?.showEndOfRoute { _ in }
         }
         return advancesToNextLeg

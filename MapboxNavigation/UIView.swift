@@ -70,7 +70,10 @@ extension UIView {
     }
     
     func pinInSuperview(respectingMargins margins: Bool = false) {
-        guard let superview else { return }
+        guard let superview else {
+            assertionFailure("superview was unexpectedly nil")
+            return
+        }
         let guide: Anchorable = margins ? superview.layoutMarginsGuide : superview
         
         let constraints = [

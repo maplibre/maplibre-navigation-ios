@@ -18,11 +18,10 @@ class RouteMapViewController: UIViewController {
     var instructionsBannerView: InstructionsBannerView { self.navigationView.instructionsBannerView }
     var instructionsBannerContentView: InstructionsBannerContentView { self.navigationView.instructionsBannerContentView }
 
-    lazy var endOfRouteViewController: EndOfRouteViewController = {
-        let storyboard = UIStoryboard(name: "Navigation", bundle: .mapboxNavigation)
-        let viewController = storyboard.instantiateViewController(withIdentifier: "EndOfRouteViewController") as! EndOfRouteViewController
-        return viewController
-    }()
+    lazy var endOfRouteViewController: EndOfRouteViewController = .init(dismissHandler: { [weak self] in
+        self?.routeController.endNavigation()
+        self?.delegate?.mapViewControllerDidDismiss(self!, byCanceling: false)
+    })
 
     private enum Actions {
         static let overview: Selector = #selector(RouteMapViewController.toggleOverview(_:))
@@ -412,11 +411,6 @@ class RouteMapViewController: UIViewController {
         self.navigationView.endOfRouteView = endOfRoute.view
         self.navigationView.constrainEndOfRoute()
         endOfRoute.didMove(toParent: self)
-
-        endOfRoute.dismissHandler = { [weak self] _, _ in
-            self?.routeController.endNavigation()
-            self?.delegate?.mapViewControllerDidDismiss(self!, byCanceling: false)
-        }
     }
 
     func unembedEndOfRoute() {

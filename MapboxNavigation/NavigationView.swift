@@ -140,8 +140,10 @@ open class NavigationView: UIView {
             }
             
             oldValue?.removeFromSuperview()
-            if let eor = endOfRouteView { addSubview(eor) }
-            self.endOfRouteView?.translatesAutoresizingMaskIntoConstraints = false
+            if let endOfRouteView {
+                endOfRouteView.translatesAutoresizingMaskIntoConstraints = false
+                addSubview(endOfRouteView)
+            }
         }
     }
     
