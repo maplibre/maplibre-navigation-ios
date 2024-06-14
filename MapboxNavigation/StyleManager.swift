@@ -49,7 +49,7 @@ open class StyleManager: NSObject {
     /// Useful for testing
     var stubbedDate: Date?
 
-    var currentStyle: Style?
+    var currentStyleAndSize: (Style, UIContentSizeCategory)?
 
     /// The style used from sunrise to sunset.
     ///
@@ -119,7 +119,6 @@ open class StyleManager: NSObject {
         perform(#selector(self.timeOfDayChanged), with: nil, afterDelay: interval + 1)
     }
    
-    // FIXME: This won't have an effect since style changes are only applied if `styleType` changes.
     @objc func preferredContentSizeChanged(_ notification: Notification) {
         self.ensureAppropriateStyle()
     }
@@ -159,10 +158,12 @@ open class StyleManager: NSObject {
     }
 
     func ensureStyle(style: Style) {
-        guard self.currentStyle != style else {
+        let preferredContentSizeCategory = UIApplication.shared.preferredContentSizeCategory
+
+        if let currentStyleAndSize, currentStyleAndSize == (style, preferredContentSizeCategory) {
             return
         }
-        self.currentStyle = style
+        self.currentStyleAndSize = (style, preferredContentSizeCategory)
         style.apply()
         self.delegate?.styleManager?(self, didApply: style)
         self.refreshAppearance()
