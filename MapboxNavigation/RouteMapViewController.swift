@@ -124,11 +124,17 @@ class RouteMapViewController: UIViewController {
                      right: 20)
     }
     
-    lazy var endOfRouteViewController: EndOfRouteViewController = {
-        let storyboard = UIStoryboard(name: "Navigation", bundle: .mapboxNavigation)
-        let viewController = storyboard.instantiateViewController(withIdentifier: "EndOfRouteViewController") as! EndOfRouteViewController
-        return viewController
-    }()
+    lazy var endOfRouteViewController: EndOfRouteViewController = .init(dismissHandler: { [weak self] in
+        guard let self else {
+            return
+        }
+        guard let routeController else {
+            assertionFailure("routeController was unexpectedly nil")
+            return
+        }
+        routeController.endNavigation()
+        self.delegate?.mapViewControllerDidFinish(self, byCanceling: false)
+    })
 
     weak var delegate: RouteMapViewControllerDelegate?
 	
