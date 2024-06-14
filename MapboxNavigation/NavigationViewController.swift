@@ -391,9 +391,8 @@ open class NavigationViewController: UIViewController {
         self.view.addSubview(mapSubview)
         mapSubview.pinInSuperview()
         
-        self.styleManager = StyleManager(self)
-        self.styleManager.styles = [dayStyle, nightStyle]
-        
+        self.styleManager = StyleManager(self, dayStyle: dayStyle, nightStyle: nightStyle)
+
         self.mapViewController.navigationView.hideUI(animated: false)
         self.mapView.tracksUserCourse = false
     }
@@ -419,7 +418,12 @@ open class NavigationViewController: UIViewController {
         self.resumeNotifications()
         self.view.clipsToBounds = true
     }
-    
+
+    override open func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.styleManager.ensureAppropriateStyle()
+    }
+
     // MARK: - NavigationViewController
 	
     public func startNavigation(with route: Route, routeController: RouteController? = nil, locationManager: NavigationLocationManager? = nil) {
@@ -651,8 +655,13 @@ extension NavigationViewController: RouteControllerDelegate {
 
 extension NavigationViewController: TunnelIntersectionManagerDelegate {
     public func tunnelIntersectionManager(_ manager: TunnelIntersectionManager, willEnableAnimationAt location: CLLocation) {
-        self.routeController?.tunnelIntersectionManager(manager, willEnableAnimationAt: location)
-        self.styleManager.applyStyle(type: .night)
+        guard let routeController else {
+            return
+        }
+        routeController.tunnelIntersectionManager(manager, willEnableAnimationAt: location)
+        // If we're in a tunnel at sunrise, don't let the timeOfDay timer clobber night mode
+        self.styleManager.cancelTimeOfDayTimer()
+        self.styleManager.ensureStyle(type: .night)
     }
     
     public func tunnelIntersectionManager(_ manager: TunnelIntersectionManager, willDisableAnimationAt location: CLLocation) {
