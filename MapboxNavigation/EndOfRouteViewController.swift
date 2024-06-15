@@ -131,10 +131,10 @@ class EndOfRouteViewController: UIViewController {
     private func activateLayoutConstraints() {
         NSLayoutConstraint.activate([
             self.column.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
-            self.column.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            self.column.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -8),
             self.column.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
             self.column.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
-            self.endNavigationButton.heightAnchor.constraint(equalToConstant: 50),
+            self.endNavigationButton.heightAnchor.constraint(equalToConstant: 60),
             self.endNavigationButton.leadingAnchor.constraint(equalTo: self.column.leadingAnchor),
             self.endNavigationButton.trailingAnchor.constraint(equalTo: self.column.trailingAnchor)
         ])
