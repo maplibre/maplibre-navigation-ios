@@ -1,6 +1,8 @@
 # Changes to the Mapbox Navigation SDK for iOS
 
 ## Unreleased
+
+## 3.0.0 (Jun 15, 2024)
  - The `speak` method in `RouteVoiceController` can be used without a given `RouteProgress` or the `RouteProgress` can explicitly ignored so that it will not be added to the voice instruction.
  - `RouteProgress` is now optional in `willSpeak` method of `VoiceControllerDelegate` if the `RouteProgress` in the `speak` method of the `RouteVoiceController is `nil`.
  - Uses the `Locale` given in `RouteOptions` to create the corresponding `AVSpeechSynthesisVoice`.
