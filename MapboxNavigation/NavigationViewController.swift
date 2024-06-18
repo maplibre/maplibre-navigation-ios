@@ -17,6 +17,14 @@ public protocol NavigationViewControllerDelegate: VisualInstructionDelegate {
      - parameter navigationViewController: The navigation view controller that finished navigation.
      */
     @objc optional func navigationViewControllerDidFinishRouting(_ navigationViewController: NavigationViewController)
+	
+    /**
+     Called when the underlaying mapView finished loading the style.
+	 
+     - parameter navigationViewController: The navigation view controller that finished navigation.
+     - parameter style: The applied style
+     */
+    @objc optional func navigationViewController(_ navigationViewController: NavigationViewController, didFinishLoading style: MLNStyle)
 
     /**
      Called when the user arrives at the destination waypoint for a route leg.
@@ -135,6 +143,13 @@ public protocol NavigationViewControllerDelegate: VisualInstructionDelegate {
      */
     @objc(navigationViewController:didSelectRoute:)
     optional func navigationViewController(_ navigationViewController: NavigationViewController, didSelect route: Route)
+	
+    /**
+     Called when the user taps to select an annotation on the navigation view controller’s map view.
+     - parameter navigationViewController: The navigation view controller presenting the route that the user selected.
+     - parameter annotation: The annotation on the map that the user selected.
+     */
+    @objc optional func navigationViewController(_ navigationViewController: NavigationViewController, didSelect annotation: MLNAnnotation)
     
     /**
      Return an `MLNAnnotationImage` that represents the destination marker.
@@ -505,6 +520,14 @@ open class NavigationViewController: UIViewController {
 // MARK: - RouteMapViewControllerDelegate
 
 extension NavigationViewController: RouteMapViewControllerDelegate {
+    public func mapView(_ mapView: MLNMapView, didFinishLoading style: MLNStyle) {
+        self.delegate?.navigationViewController?(self, didFinishLoading: style)
+    }
+	
+    public func mapView(_ mapView: MLNMapView, didSelect annotation: any MLNAnnotation) {
+        self.delegate?.navigationViewController?(self, didSelect: annotation)
+    }
+	
     public func navigationMapView(_ mapView: NavigationMapView, routeCasingStyleLayerWithIdentifier identifier: String, source: MLNSource) -> MLNStyleLayer? {
         self.delegate?.navigationViewController?(self, routeCasingStyleLayerWithIdentifier: identifier, source: source)
     }
