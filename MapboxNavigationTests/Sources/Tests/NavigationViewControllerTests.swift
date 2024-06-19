@@ -268,7 +268,7 @@ class NavigationViewControllerTestable: NavigationViewController {
         fatalError("init(for:directions:dayStyle:nightStyle:routeController:locationManager:voiceController:) has not been implemented")
     }
 
-    func mapView(_ mapView: MLNMapView, didFinishLoading style: MLNStyle) {
+    override func mapView(_ mapView: MLNMapView, didFinishLoading style: MLNStyle) {
         self.styleLoadedExpectation.fulfill()
     }
 	
