@@ -16,12 +16,12 @@ class NavigationViewControllerTests: XCTestCase {
     
     lazy var dependencies: (navigationViewController: NavigationViewController, startLocation: CLLocation, poi: [CLLocation], endLocation: CLLocation, voice: RouteVoiceController) = {
         let voice = FakeVoiceController()
-        let nav = NavigationViewController(for: initialRoute,
-                                           dayStyle: DayStyle(demoStyle: ()),
+        let nav = NavigationViewController(dayStyle: DayStyle(demoStyle: ()),
                                            directions: Directions(accessToken: "garbage", host: nil),
                                            voiceController: voice)
         
         nav.delegate = self
+        nav.startNavigation(with: self.initialRoute, locationManager: SimulatedLocationManager(route: self.initialRoute))
         
         let routeController = nav.routeController!
         let firstCoord = routeController.routeProgress.currentLegProgress.nearbyCoordinates.first!
@@ -82,17 +82,17 @@ class NavigationViewControllerTests: XCTestCase {
         
         routeController.locationManager(routeController.locationManager, didUpdateLocations: [taylorStreetLocation])
         
-        let wayNameView = (navigationViewController.mapViewController?.navigationView.wayNameView)!
+        let wayNameView = navigationViewController.mapViewController.navigationView.wayNameView
         let currentRoadName = wayNameView.text
         XCTAssertEqual(currentRoadName, roadName, "Expected: \(roadName); Actual: \(String(describing: currentRoadName))")
         XCTAssertFalse(wayNameView.isHidden, "WayNameView should be visible.")
     }
     
     func testNavigationShouldNotCallStyleManagerDidRefreshAppearanceMoreThanOnceWithOneStyle() {
-        let navigationViewController = NavigationViewController(for: initialRoute,
-                                                                dayStyle: DayStyle(demoStyle: ()),
+        let navigationViewController = NavigationViewController(dayStyle: DayStyle(demoStyle: ()),
                                                                 directions: fakeDirections,
                                                                 voiceController: FakeVoiceController())
+        navigationViewController.startNavigation(with: self.initialRoute, locationManager: SimulatedLocationManager(route: self.initialRoute))
         let routeController = navigationViewController.routeController!
         navigationViewController.styleManager.delegate = self
         
@@ -108,7 +108,8 @@ class NavigationViewControllerTests: XCTestCase {
     
     // If tunnel flags are enabled and we need to switch styles, we should not force refresh the map style because we have only 1 style.
     func testNavigationShouldNotCallStyleManagerDidRefreshAppearanceWhenOnlyOneStyle() {
-        let navigationViewController = NavigationViewController(for: initialRoute, dayStyle: DayStyle(demoStyle: ()), directions: fakeDirections, voiceController: FakeVoiceController())
+        let navigationViewController = NavigationViewController(dayStyle: DayStyle(demoStyle: ()), directions: fakeDirections, voiceController: FakeVoiceController())
+        navigationViewController.startNavigation(with: self.initialRoute, locationManager: SimulatedLocationManager(route: self.initialRoute))
         let routeController = navigationViewController.routeController!
         navigationViewController.styleManager.delegate = self
         
@@ -123,7 +124,8 @@ class NavigationViewControllerTests: XCTestCase {
     }
     
     func testNavigationShouldNotCallStyleManagerDidRefreshAppearanceMoreThanOnceWithTwoStyles() {
-        let navigationViewController = NavigationViewController(for: initialRoute, dayStyle: DayStyle(demoStyle: ()), nightStyle: NightStyle(demoStyle: ()), directions: fakeDirections, voiceController: FakeVoiceController())
+        let navigationViewController = NavigationViewController(dayStyle: DayStyle(demoStyle: ()), nightStyle: NightStyle(demoStyle: ()), directions: fakeDirections, voiceController: FakeVoiceController())
+        navigationViewController.startNavigation(with: self.initialRoute, locationManager: SimulatedLocationManager(route: self.initialRoute))
         let routeController = navigationViewController.routeController!
         navigationViewController.styleManager.delegate = self
         
@@ -150,7 +152,7 @@ class NavigationViewControllerTests: XCTestCase {
         
         routeController.locationManager(routeController.locationManager, didUpdateLocations: [turkStreetLocation])
         
-        let wayNameView = (navigationViewController.mapViewController?.navigationView.wayNameView)!
+        let wayNameView = navigationViewController.mapViewController.navigationView.wayNameView
         let currentRoadName = wayNameView.text
         XCTAssertEqual(currentRoadName, roadName, "Expected: \(roadName); Actual: \(String(describing: currentRoadName))")
         XCTAssertTrue(wayNameView.isHidden, "WayNameView should be hidden.")
@@ -161,14 +163,14 @@ class NavigationViewControllerTests: XCTestCase {
         
         // We break the communication between CLLocation and MBRouteController
         // Intent: Prevent the routecontroller from being fed real location updates
-        navigationViewController.routeController.locationManager.delegate = nil
+        navigationViewController.routeController?.locationManager.delegate = nil
 
         let routeController = navigationViewController.routeController!
         
         // Identify a location without a custom road name.
         let fultonStreetLocation = self.dependencies.poi[2]
         
-        navigationViewController.mapViewController!.labelRoadNameCompletionHandler = { defaultRaodNameAssigned in
+        navigationViewController.mapViewController.labelRoadNameCompletionHandler = { defaultRaodNameAssigned in
             XCTAssertTrue(defaultRaodNameAssigned, "label road name was not successfully set")
         }
         
@@ -181,13 +183,13 @@ class NavigationViewControllerTests: XCTestCase {
 
         // wait for the style to load -- routes won't show without it.
         wait(for: [styleLoaded], timeout: 5)
-        navigationViewController.route = self.initialRoute
+        navigationViewController.startNavigation(with: self.initialRoute, locationManager: SimulatedLocationManager(route: self.initialRoute))
 
         runUntil {
-            !(navigationViewController.mapView!.annotations?.isEmpty ?? true)
+            !(navigationViewController.mapView.annotations?.isEmpty ?? true)
         }
         
-        guard let annotations = navigationViewController.mapView?.annotations else { return XCTFail("Annotations not found.") }
+        guard let annotations = navigationViewController.mapView.annotations else { return XCTFail("Annotations not found.") }
 
         let firstDestination = self.initialRoute.routeOptions.waypoints.last!.coordinate
         let destinations = annotations.filter(self.annotationFilter(matching: firstDestination))
@@ -196,7 +198,7 @@ class NavigationViewControllerTests: XCTestCase {
         // lets set the second route
         navigationViewController.route = self.newRoute
         
-        guard let newAnnotations = navigationViewController.mapView?.annotations else { return XCTFail("New annotations not found.") }
+        guard let newAnnotations = navigationViewController.mapView.annotations else { return XCTFail("New annotations not found.") }
         let secondDestination = self.newRoute.routeOptions.waypoints.last!.coordinate
 
         // do we have a destination on the second route?
@@ -257,7 +259,8 @@ class NavigationViewControllerTestable: NavigationViewController {
                   dayStyle: Style,
                   styleLoaded: XCTestExpectation) {
         self.styleLoadedExpectation = styleLoaded
-        super.init(for: route, dayStyle: dayStyle, directions: Directions(accessToken: "abc", host: ""), voiceController: FakeVoiceController())
+        super.init(dayStyle: dayStyle, directions: Directions(accessToken: "abc", host: ""), voiceController: FakeVoiceController())
+        self.startNavigation(with: route)
     }
     
     @objc(initWithRoute:dayStyle:nightStyle:directions:routeController:locationManager:voiceController:)
@@ -265,13 +268,13 @@ class NavigationViewControllerTestable: NavigationViewController {
         fatalError("init(for:directions:dayStyle:nightStyle:routeController:locationManager:voiceController:) has not been implemented")
     }
 
-    func mapView(_ mapView: MLNMapView, didFinishLoading style: MLNStyle) {
+    override func mapView(_ mapView: MLNMapView, didFinishLoading style: MLNStyle) {
         self.styleLoadedExpectation.fulfill()
     }
-    
-    @available(*, unavailable)
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("This initalizer is not supported in this testing subclass.")
+	
+    @objc(initWithDayStyle:nightStyle:directions:voiceController:)
+    required init(dayStyle: Style, nightStyle: Style? = nil, directions: Directions = Directions.shared, voiceController: RouteVoiceController = RouteVoiceController()) {
+        fatalError("init(dayStyle:nightStyle:directions:voiceController:) has not been implemented")
     }
 }
 

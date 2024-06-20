@@ -89,53 +89,6 @@ extension UIView {
         return view
     }
     
-    var safeArea: UIEdgeInsets {
-        guard #available(iOS 11.0, *) else { return .zero }
-        return safeAreaInsets
-    }
-    
-    var safeTopAnchor: NSLayoutYAxisAnchor {
-        if #available(iOS 11.0, *) {
-            return safeAreaLayoutGuide.topAnchor
-        }
-        return topAnchor
-    }
-    
-    var safeLeftAnchor: NSLayoutXAxisAnchor {
-        if #available(iOS 11.0, *) {
-            return safeAreaLayoutGuide.leftAnchor
-        }
-        return leftAnchor
-    }
-    
-    var safeLeadingAnchor: NSLayoutXAxisAnchor {
-        if #available(iOS 11.0, *) {
-            return safeAreaLayoutGuide.leadingAnchor
-        }
-        return leadingAnchor
-    }
-    
-    var safeBottomAnchor: NSLayoutYAxisAnchor {
-        if #available(iOS 11.0, *) {
-            return safeAreaLayoutGuide.bottomAnchor
-        }
-        return bottomAnchor
-    }
-    
-    var safeRightAnchor: NSLayoutXAxisAnchor {
-        if #available(iOS 11.0, *) {
-            return safeAreaLayoutGuide.rightAnchor
-        }
-        return rightAnchor
-    }
-    
-    var safeTrailingAnchor: NSLayoutXAxisAnchor {
-        if #available(iOS 11.0, *) {
-            return safeAreaLayoutGuide.trailingAnchor
-        }
-        return trailingAnchor
-    }
-    
     var imageRepresentation: UIImage? {
         let size = CGSize(width: frame.size.width, height: frame.size.height)
         UIGraphicsBeginImageContextWithOptions(size, false, UIScreen.main.scale)

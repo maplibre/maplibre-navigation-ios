@@ -148,14 +148,14 @@ open class RouteController: NSObject, Router {
         self.locationManager.delegate = self
         self.resumeNotifications()
 
-        checkForUpdates()
-        checkForLocationUsageDescription()
+        self.checkForUpdates()
+        self.checkForLocationUsageDescription()
         
         self.tunnelIntersectionManager.delegate = self
     }
 
     deinit {
-        endNavigation()
+        self.endNavigation()
         
         guard let shouldDisable = delegate?.routeControllerShouldDisableBatteryMonitoring?(self) else {
             UIDevice.current.isBatteryMonitoringEnabled = false

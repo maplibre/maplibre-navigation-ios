@@ -2,6 +2,10 @@ import MapboxDirections
 import MapLibre
 import UIKit
 
+protocol NavigationViewDelegate: NavigationMapViewDelegate, MLNMapViewDelegate, StatusViewDelegate, InstructionsBannerViewDelegate, NavigationMapViewCourseTrackingDelegate, VisualInstructionDelegate {
+    func navigationView(_ view: NavigationView, didTapCancelButton: CancelButton)
+}
+
 /**
  A view that represents the root view of the MapboxNavigation drop-in UI.
  
@@ -46,7 +50,7 @@ open class NavigationView: UIView {
     }
     
     lazy var bannerShowConstraints: [NSLayoutConstraint] = [
-        self.instructionsBannerView.topAnchor.constraint(equalTo: self.safeTopAnchor),
+        self.instructionsBannerView.topAnchor.constraint(equalTo: self.safeAreaLayoutGuide.topAnchor),
         self.instructionsBannerContentView.topAnchor.constraint(equalTo: self.topAnchor)
     ]
     
@@ -54,12 +58,6 @@ open class NavigationView: UIView {
         self.informationStackView.bottomAnchor.constraint(equalTo: self.topAnchor),
         self.instructionsBannerContentView.topAnchor.constraint(equalTo: self.instructionsBannerView.topAnchor)
     ]
-    
-    lazy var endOfRouteShowConstraint: NSLayoutConstraint? = self.endOfRouteView?.bottomAnchor.constraint(equalTo: self.safeBottomAnchor)
-    
-    lazy var endOfRouteHideConstraint: NSLayoutConstraint? = self.endOfRouteView?.topAnchor.constraint(equalTo: self.bottomAnchor)
-    
-    lazy var endOfRouteHeightConstraint: NSLayoutConstraint? = self.endOfRouteView?.heightAnchor.constraint(equalToConstant: Constants.endOfRouteHeight)
     
     private enum Images {
         static let overview = UIImage(named: "overview", in: .mapboxNavigation, compatibleWith: nil)!.withRenderingMode(.alwaysTemplate)
@@ -100,7 +98,6 @@ open class NavigationView: UIView {
     
     lazy var overviewButton = FloatingButton.rounded(image: Images.overview)
     lazy var muteButton = FloatingButton.rounded(image: Images.volumeUp, selectedImage: Images.volumeOff)
-    lazy var reportButton = FloatingButton.rounded(image: Images.feedback)
     
     lazy var lanesView: LanesView = .forAutoLayout(hidden: true)
     lazy var nextBannerView: NextBannerView = .forAutoLayout(hidden: true)
@@ -133,19 +130,7 @@ open class NavigationView: UIView {
         }
     }
     
-    var endOfRouteView: UIView? {
-        didSet {
-            if let active: [NSLayoutConstraint] = constraints(affecting: oldValue) {
-                NSLayoutConstraint.deactivate(active)
-            }
-            
-            oldValue?.removeFromSuperview()
-            if let eor = endOfRouteView { addSubview(eor) }
-            self.endOfRouteView?.translatesAutoresizingMaskIntoConstraints = false
-        }
-    }
-    
-    // MARK: - Initializers
+    // MARK: - Lifecycle
     
     convenience init(delegate: NavigationViewDelegate) {
         self.init(frame: .zero)
@@ -163,18 +148,75 @@ open class NavigationView: UIView {
         self.commonInit()
     }
     
+    // MARK: - NavigationView
+    
+    override open func prepareForInterfaceBuilder() {
+        super.prepareForInterfaceBuilder()
+        DayStyle(demoStyle: ()).apply()
+        [self.mapView, self.instructionsBannerView, self.lanesView, self.bottomBannerView, self.nextBannerView].forEach { $0.prepareForInterfaceBuilder() }
+        self.wayNameView.text = "Street Label"
+    }
+	
+    func showUI(animated: Bool = true) {
+        let views: [UIView] = [
+            self.instructionsBannerContentView,
+            self.lanesView,
+            self.bottomBannerContentView,
+            self.floatingStackView
+        ]
+		
+        NSLayoutConstraint.activate(self.bannerShowConstraints)
+        NSLayoutConstraint.deactivate(self.bannerHideConstraints)
+		
+        UIView.animate(withDuration: animated ? CATransaction.animationDuration() : 0) {
+            views.forEach { $0.alpha = 1 }
+        } completion: { _ in
+            views.forEach { $0.isHidden = false }
+            self.bottomBannerView.traitCollectionDidChange(self.traitCollection)
+        }
+    }
+	
+    func hideUI(animated: Bool = true) {
+        let views: [UIView] = [
+            self.instructionsBannerContentView,
+            self.lanesView,
+            self.bottomBannerContentView,
+            self.floatingStackView,
+            self.resumeButton
+        ]
+		
+        NSLayoutConstraint.deactivate(self.bannerShowConstraints)
+        NSLayoutConstraint.activate(self.bannerHideConstraints)
+		
+        UIView.animate(withDuration: animated ? CATransaction.animationDuration() : 0) {
+            views.forEach { $0.alpha = 0 }
+        } completion: { _ in
+            views.forEach { $0.isHidden = true }
+            self.bottomBannerView.traitCollectionDidChange(self.traitCollection)
+        }
+    }
+}
+
+// MARK: - Private
+
+private extension NavigationView {
+    @objc
+    func cancelButtonTapped(_ sender: CancelButton) {
+        self.delegate?.navigationView(self, didTapCancelButton: self.bottomBannerView.cancelButton)
+    }
+	
     func commonInit() {
         self.setupViews()
-        setupConstraints()
+        self.setupConstraints()
     }
     
     func setupStackViews() {
         self.setupInformationStackView()
-        self.floatingStackView.addArrangedSubviews([self.overviewButton, self.muteButton, self.reportButton])
+        self.floatingStackView.addArrangedSubviews([self.overviewButton, self.muteButton])
     }
     
     func setupInformationStackView() {
-        let informationChildren: [UIView] = [instructionsBannerView, lanesView, nextBannerView, statusView]
+        let informationChildren: [UIView] = [self.instructionsBannerView, self.lanesView, self.nextBannerView, self.statusView]
         self.informationStackView.addArrangedSubviews(informationChildren)
         
         for informationChild in informationChildren {
@@ -185,8 +227,8 @@ open class NavigationView: UIView {
     
     func setupContainers() {
         let containers: [(UIView, UIView)] = [
-            (instructionsBannerContentView, instructionsBannerView),
-            (bottomBannerContentView, bottomBannerView)
+            (self.instructionsBannerContentView, self.instructionsBannerView),
+            (self.bottomBannerContentView, self.bottomBannerView)
         ]
         containers.forEach { $0.addSubview($1) }
     }
@@ -194,32 +236,21 @@ open class NavigationView: UIView {
     func setupViews() {
         self.setupStackViews()
         self.setupContainers()
-        
+		
         let subviews: [UIView] = [
-            mapView,
-            informationStackView,
-            floatingStackView,
-            resumeButton,
-            wayNameView,
-            bottomBannerContentView,
-            instructionsBannerContentView
+            self.mapView,
+            self.informationStackView,
+            self.floatingStackView,
+            self.resumeButton,
+            self.wayNameView,
+            self.bottomBannerContentView,
+            self.instructionsBannerContentView
         ]
         
         subviews.forEach(addSubview(_:))
     }
     
-    override open func prepareForInterfaceBuilder() {
-        super.prepareForInterfaceBuilder()
-        DayStyle(demoStyle: ()).apply()
-        [self.mapView, self.instructionsBannerView, self.lanesView, self.bottomBannerView, self.nextBannerView].forEach { $0.prepareForInterfaceBuilder() }
-        self.wayNameView.text = "Street Label"
-    }
-    
-    @objc func cancelButtonTapped(_ sender: CancelButton) {
-        self.delegate?.navigationView(self, didTapCancelButton: self.bottomBannerView.cancelButton)
-    }
-    
-    private func updateDelegates() {
+    func updateDelegates() {
         self.mapView.delegate = self.delegate
         self.mapView.navigationMapDelegate = self.delegate
         self.mapView.courseTrackingDelegate = self.delegate
@@ -228,8 +259,4 @@ open class NavigationView: UIView {
         self.nextBannerView.instructionDelegate = self.delegate
         self.statusView.delegate = self.delegate
     }
-}
-
-protocol NavigationViewDelegate: NavigationMapViewDelegate, MLNMapViewDelegate, StatusViewDelegate, InstructionsBannerViewDelegate, NavigationMapViewCourseTrackingDelegate, VisualInstructionDelegate {
-    func navigationView(_ view: NavigationView, didTapCancelButton: CancelButton)
 }

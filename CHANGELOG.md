@@ -1,43 +1,58 @@
 # Changes to the Mapbox Navigation SDK for iOS
 
 ## Unreleased
+* Start & Stop Navigation in existing Map
+    - Removed: `NavigationViewController(for route: Route, dayStyle: Style, routeController: RouteController? = nil, locationManager: NavigationLocationManager? = nil, voiceController: RouteVoiceController? = nil)` use `NavigationViewController(dayStyleURL: URL, nightStyleURL: URL? = nil,directions: Directions = .shared, voiceController: RouteVoiceController = RouteVoiceController())` followed by `startNavigation(with route: Route)` instead.
+    - To simulate a route, pass a `SimulatedLocationManager` to `startNavigation()` function: 
+
+    ```swift
+    let vc = NavigationViewController(dayStyleURL: AppConfig().tileserverStyleUrl)
+
+    if Env.current.simulateLocationForTesting {
+        let simulatedLocationManager = SimulatedLocationManager(route: route)
+        simulatedLocationManager.speedMultiplier = 5
+        vc.startNavigation(with: route, locationManager: simulatedLocationManager)
+    } else {
+        vc.startNavigation(with: route)
+    }
+    ```
 
 ## 3.0.0 (Jun 15, 2024)
- - The `speak` method in `RouteVoiceController` can be used without a given `RouteProgress` or the `RouteProgress` can explicitly ignored so that it will not be added to the voice instruction.
- - `RouteProgress` is now optional in `willSpeak` method of `VoiceControllerDelegate` if the `RouteProgress` in the `speak` method of the `RouteVoiceController is `nil`.
- - Uses the `Locale` given in `RouteOptions` to create the corresponding `AVSpeechSynthesisVoice`.
- - Removed setCamera() from updateCourseTracking()
- - Added setCamera() to progressDidChange()
- - Allow to customize rerouting logic by implementing RouteControllerDelegate#routeControllerGetDirections 
- - Add option to overwrite camera update via NavigationMapViewCourseTrackingDelegate#updateCamera
- - Remove MapboxVoiceController and Mapbox Speech dependency. If you would like to use MapboxSpeech, you can copy the deleted MapboxVoiceController into your project.
- - Updated MapLibre Native dependency to ios-v6.0.0 (https://github.com/maplibre/maplibre-native/releases/tag/ios-v6.0.0). Implementers need to change the prefix MGL to MLN for all MapLibre Native classes that are referenced.
- - Only snap location to route if the location is within the `RouteControllerUserLocationSnappingDistance`
- - Add support for Swift Package Manager while dropping Carthage and Cocoapods.
- - Initialization no longer tries to add mapbox://mapbox.mapbox-streets-v7 to all mapstyles.
- - Removed implicit default dependencies on MapBox tileservers by requiring explicit styles URLs in more places.
-   - Merged in <https://github.com/maplibre/maplibre-navigation-ios/pull/45>.
-   - BREAKING: Removed `MLNStyle` extensions referencing non-functioning MapBox styles, e.g. `MLNStyle.navigationGuidanceDayStyleURL`.
-   - Added `Day/NightStyle(styleURL:)` which takes an explicit URL to a hosting tileserver style.
-   - Added `Day/NightStyle(demoStyle: ())` as an explicit alternative when the user doesn't have a tileserver handy. This uses MapLibre's demo style and is intended for testing and demonstration use only.
-   - Deprecated `DayStyle()`/`NightStyle()` initializers because they were backed by an implicit tile service. If these default styles *are* still used, they'll now use the MapLibre demo style.
-   - `NavigationViewController` now expects explicit style URLs with `NavigationViewController(route:dayStyleURL:nightStyleURL:...)` or NavigationViewController(route:dayStyle:nightStyle:...)` and the existing initializer, which allowed "default" styles, is deprecated and uses the MapLibre demo styles.
- - Fix: NavigationViewController was not re-routing when the user went off route.
-   - Merged in <https://github.com/maplibre/maplibre-navigation-ios/pull/47>
- - Fix: NavigationViewController displayed incorrect `speedMultiplier` when using SimulatedLocationManager
-   - Merged in <https://github.com/maplibre/maplibre-navigation-ios/pull/49>
+* The `speak` method in `RouteVoiceController` can be used without a given `RouteProgress` or the `RouteProgress` can explicitly ignored so that it will not be added to the voice instruction.
+* `RouteProgress` is now optional in `willSpeak` method of `VoiceControllerDelegate` if the `RouteProgress` in the `speak` method of the `RouteVoiceController is `nil`.
+* Uses the `Locale` given in `RouteOptions` to create the corresponding `AVSpeechSynthesisVoice`.
+* Removed setCamera() from updateCourseTracking()
+* Added setCamera() to progressDidChange()
+* Allow to customize rerouting logic by implementing RouteControllerDelegate#routeControllerGetDirections 
+* Add option to overwrite camera update via NavigationMapViewCourseTrackingDelegate#updateCamera
+* Remove MapboxVoiceController and Mapbox Speech dependency. If you would like to use MapboxSpeech, you can copy the deleted MapboxVoiceController into your project.
+* Updated MapLibre Native dependency to ios-v6.0.0 (https://github.com/maplibre/maplibre-native/releases/tag/ios-v6.0.0). Implementers need to change the prefix MGL to MLN for all MapLibre Native classes that are referenced.
+* Only snap location to route if the location is within the `RouteControllerUserLocationSnappingDistance`
+* Add support for Swift Package Manager while dropping Carthage and Cocoapods.
+* Initialization no longer tries to add mapbox://mapbox.mapbox-streets-v7 to all mapstyles.
+* Removed implicit default dependencies on MapBox tileservers by requiring explicit styles URLs in more places.
+    - Merged in <https://github.com/maplibre/maplibre-navigation-ios/pull/45>.
+    - BREAKING: Removed `MLNStyle` extensions referencing non-functioning MapBox styles, e.g. `MLNStyle.navigationGuidanceDayStyleURL`.
+    - Added `Day/NightStyle(styleURL:)` which takes an explicit URL to a hosting tileserver style.
+    - Added `Day/NightStyle(demoStyle: ())` as an explicit alternative when the user doesn't have a tileserver handy. This uses MapLibre's demo style and is intended for testing and demonstration use only.
+    - Deprecated `DayStyle()`/`NightStyle()` initializers because they were backed by an implicit tile service. If these default styles *are* still used, they'll now use the MapLibre demo style.
+    - `NavigationViewController` now expects explicit style URLs with `NavigationViewController(route:dayStyleURL:nightStyleURL:...)` or NavigationViewController(route:dayStyle:nightStyle:...)` and the existing initializer, which allowed "default" styles, is deprecated and uses the MapLibre demo styles.
+* Fix: NavigationViewController was not re-routing when the user went off route.
+    - Merged in <https://github.com/maplibre/maplibre-navigation-ios/pull/47>
+* Fix: NavigationViewController displayed incorrect `speedMultiplier` when using SimulatedLocationManager
+    - Merged in <https://github.com/maplibre/maplibre-navigation-ios/pull/49>
 
 ## v2.0.0 (May 23, 2023)
- - Upgrade minimum iOS version from 11.0 to 12.0.
- - Upgraded dependencies to support iOS 12.0
+* Upgrade minimum iOS version from 11.0 to 12.0.
+* Upgraded dependencies to support iOS 12.0
 
 ## v1.0.7 (November 1, 2022)
-- Rerouting logic changed
+* Rerouting logic changed
     - Routes that are found when requesting a new route that are slower but more than 90% the same geometry will get applied. This is done to account for traffic on the route that could change the ETA dramatically
     - Added `rerouteReason` parameter in `didRerouteAlong` `RouteControllerDelegate` so the client can react accordingly
     - Added option to skip check for rerouting in `RouteController` where route should have 10+mins left before fetching a new route, called `shouldCheckForRerouteInLastMinutes`
-- Moved & renamed `RouteControllerProactiveReroutingInterval` to be an instance property of `RouteController` so the client can easily set this per route controller
-- Added `shouldReturnTestingETAUpdateReroutes` property to `RouteController` as an easy way to test an ETA update client-side. It uses two of the same test-routes between `52.02224357,5.78149084` and `52.03924958,5.55054131` with different ETA's to easily see the ETA change happen in the client's UI
+* Moved & renamed `RouteControllerProactiveReroutingInterval` to be an instance property of `RouteController` so the client can easily set this per route controller
+* Added `shouldReturnTestingETAUpdateReroutes` property to `RouteController` as an easy way to test an ETA update client-side. It uses two of the same test-routes between `52.02224357,5.78149084` and `52.03924958,5.55054131` with different ETA's to easily see the ETA change happen in the client's UI
 
 ## v1.0.6 (October 5, 2022)
 
