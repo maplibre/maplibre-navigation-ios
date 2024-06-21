@@ -51,7 +51,6 @@ class RouteMapViewController: UIViewController {
     var lastTimeUserRerouted: Date?
     var stepsViewController: StepsViewController?
     var destination: Waypoint?
-    var showsEndOfRoute: Bool = true
     var arrowCurrentStep: RouteStep?
 	
     var contentInsets: UIEdgeInsets {
@@ -124,18 +123,7 @@ class RouteMapViewController: UIViewController {
                      right: 20)
     }
     
-    lazy var endOfRouteViewController: EndOfRouteViewController = .init(dismissHandler: { [weak self] in
-        guard let self else {
-            return
-        }
-        guard let routeController else {
-            assertionFailure("routeController was unexpectedly nil")
-            return
-        }
-        routeController.endNavigation()
-        self.delegate?.mapViewControllerDidFinish(self, byCanceling: false)
-    })
-
+    let endOfRouteViewController = EndOfRouteViewController()
     weak var delegate: RouteMapViewControllerDelegate?
 	
     // MARK: - Lifecycle
@@ -454,8 +442,60 @@ class RouteMapViewController: UIViewController {
     }
 	
     // MARK: End Of Route
-	
-    func transitionToEndNavigation(with duration: TimeInterval, completion: ((Bool) -> Void)? = nil) {
+
+    func completeRoute(showArrivalUI: Bool, presentationDuration: TimeInterval = 1.0, presentationCompletion: ((Bool) -> Void)? = nil, onDismiss: @escaping () -> Void) {
+        if showArrivalUI {
+            self.showEndOfRoute(duration: presentationDuration, onDismiss: onDismiss, presentationCompletion: presentationCompletion)
+        } else {
+            self.transitionToEndNavigation(duration: presentationDuration, completion: { completed in
+                onDismiss()
+                presentationCompletion?(completed)
+            })
+        }
+    }
+
+    func embedEndOfRoute() {
+        let endOfRoute = self.endOfRouteViewController
+        addChild(endOfRoute)
+        self.navigationView.endOfRouteView = endOfRoute.view
+        self.navigationView.constrainEndOfRoute()
+        endOfRoute.didMove(toParent: self)
+    }
+
+    func unembedEndOfRoute() {
+        let endOfRoute = self.endOfRouteViewController
+        endOfRoute.willMove(toParent: nil)
+        endOfRoute.removeFromParent()
+    }
+
+    func showEndOfRoute(duration: TimeInterval = 1.0, onDismiss: @escaping () -> Void, presentationCompletion: ((Bool) -> Void)? = nil) {
+        self.embedEndOfRoute()
+        self.endOfRouteViewController.dismissHandler = onDismiss
+        self.endOfRouteViewController.destination = self.destination
+        self.navigationView.endOfRouteView?.isHidden = false
+
+        self.view.layoutIfNeeded() // flush layout queue
+        self.navigationView.endOfRouteHideConstraint?.isActive = false
+        self.navigationView.endOfRouteShowConstraint?.isActive = true
+
+        self.transitionToEndNavigation(duration: duration, completion: presentationCompletion)
+
+        guard let height = navigationView.endOfRouteHeightConstraint?.constant else { return }
+        let insets = UIEdgeInsets(top: navigationView.instructionsBannerView.bounds.height, left: 20, bottom: height + 20, right: 20)
+
+        // zoom in a bit to focus on the arrived destination
+        if let coordinates = routeController?.routeProgress.route.coordinates, let userLocation = routeController?.locationManager.location?.coordinate {
+            let slicedLine = Polyline(coordinates).sliced(from: userLocation).coordinates
+            let line = MLNPolyline(coordinates: slicedLine, count: UInt(slicedLine.count))
+
+            let camera = self.navigationView.mapView.cameraThatFitsShape(line, direction: self.navigationView.mapView.camera.heading, edgePadding: insets)
+            camera.pitch = 0
+            camera.altitude = self.navigationView.mapView.camera.altitude
+            self.navigationView.mapView.setCamera(camera, animated: true)
+        }
+    }
+
+    func transitionToEndNavigation(duration: TimeInterval = 1.0, completion: ((Bool) -> Void)? = nil) {
         self.view.layoutIfNeeded() // flush layout queue
         NSLayoutConstraint.deactivate(self.navigationView.bannerShowConstraints)
         NSLayoutConstraint.activate(self.navigationView.bannerHideConstraints)
@@ -478,6 +518,8 @@ class RouteMapViewController: UIViewController {
 
     func hideEndOfRoute(duration: TimeInterval = 0.3, completion: ((Bool) -> Void)? = nil) {
         self.view.layoutIfNeeded() // flush layout queue
+        self.navigationView.endOfRouteHideConstraint?.isActive = true
+        self.navigationView.endOfRouteShowConstraint?.isActive = false
         self.view.clipsToBounds = true
 
         self.mapView.enableFrameByFrameCourseViewTracking(for: duration)
@@ -488,14 +530,19 @@ class RouteMapViewController: UIViewController {
             self.navigationView.floatingStackView.alpha = 1.0
         }
 
+        let complete: (Bool) -> Void = {
+            self.navigationView.endOfRouteView?.isHidden = true
+            self.unembedEndOfRoute()
+            completion?($0)
+        }
+
         let noAnimation = {
             animate()
-            completion?(true)
+            complete(true)
         }
 
         guard duration > 0.0 else { return noAnimation() }
-		
-        UIView.animate(withDuration: duration, delay: 0.0, options: [.curveLinear], animations: animate, completion: completion)
+        UIView.animate(withDuration: duration, delay: 0.0, options: [.curveLinear], animations: animate, completion: complete)
     }
 }
 

@@ -66,9 +66,9 @@ class EndOfRouteViewController: UIViewController {
     lazy var endOfRouteArrivedText: String = NSLocalizedString("END_OF_ROUTE_ARRIVED", bundle: .mapboxNavigation, value: "You have arrived", comment: "Title used for arrival")
     lazy var endNavigationText: String = NSLocalizedString("END_NAVIGATION", bundle: .mapboxNavigation, value: "End Navigation", comment: "End Navigation Button Text")
 
-    let dismissHandler: () -> Void
-    init(dismissHandler: @escaping () -> Void) {
-        self.dismissHandler = dismissHandler
+    var dismissHandler: (() -> Void)?
+
+    init() {
         super.init(nibName: nil, bundle: nil)
     }
   
@@ -107,7 +107,8 @@ class EndOfRouteViewController: UIViewController {
     // MARK: - Actions
 
     @objc func endNavigationPressed(_ sender: Any) {
-        self.dismissHandler()
+        assert(self.dismissHandler != nil)
+        self.dismissHandler?()
     }
     
     // MARK: - Private Functions

@@ -58,7 +58,13 @@ open class NavigationView: UIView {
         self.informationStackView.bottomAnchor.constraint(equalTo: self.topAnchor),
         self.instructionsBannerContentView.topAnchor.constraint(equalTo: self.instructionsBannerView.topAnchor)
     ]
-    
+
+    lazy var endOfRouteShowConstraint: NSLayoutConstraint? = self.endOfRouteView?.bottomAnchor.constraint(equalTo: self.bottomAnchor)
+
+    lazy var endOfRouteHideConstraint: NSLayoutConstraint? = self.endOfRouteView?.topAnchor.constraint(equalTo: self.bottomAnchor)
+
+    lazy var endOfRouteHeightConstraint: NSLayoutConstraint? = self.endOfRouteView?.heightAnchor.constraint(equalToConstant: Constants.endOfRouteHeight)
+
     private enum Images {
         static let overview = UIImage(named: "overview", in: .mapboxNavigation, compatibleWith: nil)!.withRenderingMode(.alwaysTemplate)
         static let volumeUp = UIImage(named: "volume_up", in: .mapboxNavigation, compatibleWith: nil)!.withRenderingMode(.alwaysTemplate)
@@ -123,7 +129,21 @@ open class NavigationView: UIView {
         view.cancelButton.addTarget(self, action: Actions.cancelButton, for: .touchUpInside)
         return view
     }()
-    
+
+    var endOfRouteView: UIView? {
+        didSet {
+            if let active: [NSLayoutConstraint] = constraints(affecting: oldValue) {
+                NSLayoutConstraint.deactivate(active)
+            }
+
+            oldValue?.removeFromSuperview()
+            if let endOfRouteView {
+                endOfRouteView.translatesAutoresizingMaskIntoConstraints = false
+                addSubview(endOfRouteView)
+            }
+        }
+    }
+
     weak var delegate: NavigationViewDelegate? {
         didSet {
             self.updateDelegates()
