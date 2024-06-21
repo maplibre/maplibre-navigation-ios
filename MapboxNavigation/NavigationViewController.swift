@@ -258,7 +258,12 @@ open class NavigationViewController: UIViewController {
      An instance of `MLNAnnotation` representing the origin of your route.
      */
     public var origin: MLNAnnotation?
-    
+
+    /**
+     Shows End of route Feedback UI when the route controller arrives at the final destination. Defaults to `true.`
+     */
+    public var showsEndOfRouteFeedback: Bool = true
+
     /**
      The receiver’s delegate.
      */
@@ -640,8 +645,12 @@ extension NavigationViewController: RouteControllerDelegate {
         
         if !self.isConnectedToCarPlay, // CarPlayManager shows rating on CarPlay if it's connected
            routeController.routeProgress.isFinalLeg, advancesToNextLeg {
-            self.mapViewController.transitionToEndNavigation(with: 1)
-            self.delegate?.navigationViewControllerDidFinishRouting?(self)
+            self.mapViewController.completeRoute(showArrivalUI: self.showsEndOfRouteFeedback, onDismiss: { [weak self] in
+                guard let self else {
+                    return
+                }
+                self.delegate?.navigationViewControllerDidFinishRouting?(self)
+            })
         }
         return advancesToNextLeg
     }
