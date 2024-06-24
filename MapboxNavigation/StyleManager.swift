@@ -47,7 +47,7 @@ open class StyleManager: NSObject {
     }
    
     /// Useful for testing
-    var date: Date?
+    var stubbedDate: Date?
 
     var currentStyle: Style?
 
@@ -105,7 +105,7 @@ open class StyleManager: NSObject {
         guard self.automaticallyAdjustsStyleForTimeOfDay, self.nightStyle != nil else { return }
         guard let location = delegate?.locationFor(styleManager: self) else { return }
         
-        guard let solar = Solar(date: date, coordinate: location.coordinate),
+        guard let solar = Solar(date: stubbedDate, coordinate: location.coordinate),
               let sunrise = solar.sunrise,
               let sunset = solar.sunset else {
             return
@@ -169,7 +169,7 @@ open class StyleManager: NSObject {
     }
 
     func styleType(for location: CLLocation) -> StyleType {
-        guard let solar = Solar(date: date, coordinate: location.coordinate),
+        guard let solar = Solar(date: stubbedDate, coordinate: location.coordinate),
               let sunrise = solar.sunrise,
               let sunset = solar.sunset else {
             return .day

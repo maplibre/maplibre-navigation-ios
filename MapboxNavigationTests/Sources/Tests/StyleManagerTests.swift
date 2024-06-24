@@ -32,17 +32,17 @@ class StyleManagerTests: XCTestCase {
         let afterSunset = dateFormatter.date(from: "21:00")!
         let midnight = dateFormatter.date(from: "00:00")!
         
-        self.styleManager.date = beforeSunrise
+        self.styleManager.stubbedDate = beforeSunrise
         XCTAssert(self.styleManager.styleType(for: self.location) == .night)
-        self.styleManager.date = afterSunrise
+        self.styleManager.stubbedDate = afterSunrise
         XCTAssert(self.styleManager.styleType(for: self.location) == .day)
-        self.styleManager.date = noonDate
+        self.styleManager.stubbedDate = noonDate
         XCTAssert(self.styleManager.styleType(for: self.location) == .day)
-        self.styleManager.date = beforeSunset
+        self.styleManager.stubbedDate = beforeSunset
         XCTAssert(self.styleManager.styleType(for: self.location) == .day)
-        self.styleManager.date = afterSunset
+        self.styleManager.stubbedDate = afterSunset
         XCTAssert(self.styleManager.styleType(for: self.location) == .night)
-        self.styleManager.date = midnight
+        self.styleManager.stubbedDate = midnight
         XCTAssert(self.styleManager.styleType(for: self.location) == .night)
     }
 
@@ -61,17 +61,17 @@ class StyleManagerTests: XCTestCase {
         let justAfterSunset = dateFormatter.date(from: "17:04:30")!
         let midnight = dateFormatter.date(from: "00:00:00")!
 
-        self.styleManager.date = justBeforeSunrise
+        self.styleManager.stubbedDate = justBeforeSunrise
         XCTAssert(self.styleManager.styleType(for: self.location) == .night)
-        self.styleManager.date = justAfterSunrise
+        self.styleManager.stubbedDate = justAfterSunrise
         XCTAssert(self.styleManager.styleType(for: self.location) == .day)
-        self.styleManager.date = noonDate
+        self.styleManager.stubbedDate = noonDate
         XCTAssert(self.styleManager.styleType(for: self.location) == .day)
-        self.styleManager.date = juetBeforeSunset
+        self.styleManager.stubbedDate = juetBeforeSunset
         XCTAssert(self.styleManager.styleType(for: self.location) == .day)
-        self.styleManager.date = justAfterSunset
+        self.styleManager.stubbedDate = justAfterSunset
         XCTAssert(self.styleManager.styleType(for: self.location) == .night)
-        self.styleManager.date = midnight
+        self.styleManager.stubbedDate = midnight
         XCTAssert(self.styleManager.styleType(for: self.location) == .night)
     }
     
@@ -91,17 +91,17 @@ class StyleManagerTests: XCTestCase {
         let afterSunset = dateFormatter.date(from: "09:00 PM")!
         let midnight = dateFormatter.date(from: "00:00 AM")!
         
-        self.styleManager.date = beforeSunrise
+        self.styleManager.stubbedDate = beforeSunrise
         XCTAssert(self.styleManager.styleType(for: self.location) == .night)
-        self.styleManager.date = afterSunrise
+        self.styleManager.stubbedDate = afterSunrise
         XCTAssert(self.styleManager.styleType(for: self.location) == .day)
-        self.styleManager.date = noonDate
+        self.styleManager.stubbedDate = noonDate
         XCTAssert(self.styleManager.styleType(for: self.location) == .day)
-        self.styleManager.date = beforeSunset
+        self.styleManager.stubbedDate = beforeSunset
         XCTAssert(self.styleManager.styleType(for: self.location) == .day)
-        self.styleManager.date = afterSunset
+        self.styleManager.stubbedDate = afterSunset
         XCTAssert(self.styleManager.styleType(for: self.location) == .night)
-        self.styleManager.date = midnight
+        self.styleManager.stubbedDate = midnight
         XCTAssert(self.styleManager.styleType(for: self.location) == .night)
     }
 
