@@ -422,7 +422,7 @@ open class NavigationViewController: UIViewController {
     
     // MARK: - NavigationViewController
 	
-    public func startNavigation(with route: Route, routeController: RouteController? = nil, locationManager: NavigationLocationManager? = nil) {
+    public func startNavigation(with route: Route, animated: Bool, routeController: RouteController? = nil, locationManager: NavigationLocationManager? = nil) {
         if let locationManager {
             self.locationManager = locationManager
         }
@@ -431,7 +431,7 @@ open class NavigationViewController: UIViewController {
         }
         self.route = route
 		
-        self.mapViewController.navigationView.showUI(animated: true)
+        self.mapViewController.navigationView.showUI(animated: animated)
         self.mapViewController.destination = route.legs.last?.destination
 
         self.routeController?.usesDefaultUserInterface = true
@@ -496,8 +496,8 @@ open class NavigationViewController: UIViewController {
                 let directions = routeController.directions
                 let route = routeController.routeProgress.route
                 let navigationViewController = NavigationViewController(dayStyle: DayStyle(demoStyle: ()), nightStyle: NightStyle(demoStyle: ()), directions: directions)
-                navigationViewController.startNavigation(with: route, routeController: routeController, locationManager: locationManager)
-                
+                navigationViewController.startNavigation(with: route, animated: true, routeController: routeController, locationManager: locationManager)
+
                 window.rootViewController?.topMostViewController()?.present(navigationViewController, animated: true, completion: {
                     navigationViewController.isUsedInConjunctionWithCarPlayWindow = true
                 })

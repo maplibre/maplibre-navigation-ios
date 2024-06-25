@@ -2,19 +2,14 @@
 
 ## Unreleased
 * Start & Stop Navigation in existing Map
-    - Removed: `NavigationViewController(for route: Route, dayStyle: Style, routeController: RouteController? = nil, locationManager: NavigationLocationManager? = nil, voiceController: RouteVoiceController? = nil)` use `NavigationViewController(dayStyleURL: URL, nightStyleURL: URL? = nil,directions: Directions = .shared, voiceController: RouteVoiceController = RouteVoiceController())` followed by `startNavigation(with route: Route)` instead.
-    - To simulate a route, pass a `SimulatedLocationManager` to `startNavigation()` function: 
+    - Removed: `NavigationViewController(for route: Route, dayStyle: Style, routeController: RouteController? = nil, locationManager: NavigationLocationManager? = nil, voiceController: RouteVoiceController? = nil)` use `NavigationViewController(dayStyleURL: URL, nightStyleURL: URL? = nil,directions: Directions = .shared, voiceController: RouteVoiceController = RouteVoiceController())` followed by `startNavigation(with route: Route, animated: Bool)` instead.
+    - To simulate a route, pass a `SimulatedLocationManager` to `startNavigation()` function:
 
     ```swift
     let vc = NavigationViewController(dayStyleURL: AppConfig().tileserverStyleUrl)
-
-    if Env.current.simulateLocationForTesting {
-        let simulatedLocationManager = SimulatedLocationManager(route: route)
-        simulatedLocationManager.speedMultiplier = 5
-        vc.startNavigation(with: route, locationManager: simulatedLocationManager)
-    } else {
-        vc.startNavigation(with: route)
-    }
+    let simulatedLocationManager = SimulatedLocationManager(route: route)
+    simulatedLocationManager.speedMultiplier = 5
+    vc.startNavigation(with: route, animated: false, locationManager: simulatedLocationManager)
     ```
 
 ## 3.0.0 (Jun 15, 2024)
