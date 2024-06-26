@@ -34,9 +34,9 @@ Start the navigation by calling `startNavigation(with: route)`. If you want to s
 #if targetEnvironment(simulator) 
     let locationManager = SimulatedLocationManager(route: route)
     locationManager.speedMultiplier = 2
-    self.startNavigation(with: route, locationManager: locationManager)
+    self.startNavigation(with: route, animated: false, locationManager: locationManager)
 #else
-    self.startNavigation(with: route)
+    self.startNavigation(with: route, animated: false)
 #endif
 ```
 
