@@ -89,7 +89,9 @@ class RouteMapViewController: UIViewController {
             self.navigationView.statusView.canChangeValue = self.routeController?.locationManager is SimulatedLocationManager
             guard let destination = self.route?.legs.last?.destination else { return }
 			
-            self.populateName(for: destination, populated: { self.destination = $0 })
+            self.populateName(for: destination, populated: { [weak self] waypoint in
+                self?.destination = waypoint
+            })
         }
     }
     
