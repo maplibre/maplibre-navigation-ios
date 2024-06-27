@@ -671,8 +671,6 @@ extension RouteMapViewController: StepsViewControllerDelegate {
     }
 }
 
-// MARK: - Keyboard Handling
-
 private extension RouteMapViewController {
     @objc
     func recenter(_ sender: AnyObject) {
@@ -908,23 +906,6 @@ private extension RouteMapViewController {
 
         if self.annotatesSpokenInstructions {
             self.mapView.showVoiceInstructionsOnMap(route: routeController.routeProgress.route)
-        }
-    }
-}
-
-private extension UIView.AnimationOptions {
-    init(curve: UIView.AnimationCurve) {
-        switch curve {
-        case .easeIn:
-            self = .curveEaseIn
-        case .easeOut:
-            self = .curveEaseOut
-        case .easeInOut:
-            self = .curveEaseInOut
-        case .linear:
-            self = .curveLinear
-        @unknown default:
-            fatalError("Unknown curve")
         }
     }
 }
