@@ -891,7 +891,9 @@ private extension RouteMapViewController {
 
     func resetETATimer() {
         self.removeTimer()
-        self.updateETATimer = Timer.scheduledTimer(timeInterval: 30, target: self, selector: #selector(self.updateETA), userInfo: nil, repeats: true)
+        self.updateETATimer = Timer.scheduledTimer(withTimeInterval: 30, repeats: true) { [weak self] _ in
+            self?.updateETA()
+        }
     }
 
     func showRouteIfNeeded() {
