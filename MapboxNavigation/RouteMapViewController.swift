@@ -88,7 +88,9 @@ class RouteMapViewController: UIViewController {
             self.navigationView.statusView.canChangeValue = self.routeController?.locationManager is SimulatedLocationManager
             guard let destination = self.route?.legs.last?.destination else { return }
 			
-            self.populateName(for: destination, populated: { self.destination = $0 })
+            self.populateName(for: destination, populated: { [weak self] waypoint in
+                self?.destination = waypoint
+            })
         }
     }
     
@@ -942,7 +944,9 @@ private extension RouteMapViewController {
 
     func resetETATimer() {
         self.removeTimer()
-        self.updateETATimer = Timer.scheduledTimer(timeInterval: 30, target: self, selector: #selector(self.updateETA), userInfo: nil, repeats: true)
+        self.updateETATimer = Timer.scheduledTimer(withTimeInterval: 30, repeats: true) { [weak self] _ in
+            self?.updateETA()
+        }
     }
 
     func showRouteIfNeeded() {
