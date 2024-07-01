@@ -658,7 +658,9 @@ extension NavigationViewController: RouteControllerDelegate {
                 guard let self else {
                     return
                 }
-                self.delegate?.navigationViewControllerDidFinishRouting?(self)
+                self.mapViewController.hideEndOfRoute { _ in
+                    self.delegate?.navigationViewControllerDidFinishRouting?(self)
+                }
             })
         }
         return advancesToNextLeg
