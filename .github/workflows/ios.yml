@@ -40,3 +40,6 @@ jobs:
 
       - name: Test
         run: set -o pipefail && xcodebuild test -scheme maplibre-navigation-ios -destination 'platform=iOS Simulator,OS=17.0.1,name=iPhone 15 Pro' | xcbeautify --renderer github-actions
+
+      - name: Build Example Project
+        run: set -o pipefail && xcodebuild build -project Example/Example.xcodeproj -scheme Example -destination 'platform=iOS Simulator,OS=17.0.1,name=iPhone 15 Pro' CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" | xcbeautify --renderer github-actions
