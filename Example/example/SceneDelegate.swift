@@ -94,7 +94,7 @@ private extension SceneDelegate {
             let simulatedLocationManager = SimulatedLocationManager(route: route)
             simulatedLocationManager.speedMultiplier = 2
             
-            self.viewController.startNavigation(with: route, locationManager: simulatedLocationManager)
+            self.viewController.startNavigation(with: route, animated: true, locationManager: simulatedLocationManager)
         }
     }
     
