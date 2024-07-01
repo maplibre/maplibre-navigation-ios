@@ -475,6 +475,7 @@ open class NavigationViewController: UIViewController {
 
         self.voiceController = nil
         self.route = nil
+        self.locationManager = NavigationLocationManager()
 		
         self.mapViewController.navigationView.hideUI(animated: animated)
         self.mapView.tracksUserCourse = false
