@@ -84,14 +84,18 @@ public class CarPlayNavigationViewController: UIViewController, MLNMapViewDelega
         self.mapView = mapView
         view.addSubview(mapView)
         
-        self.styleManager = StyleManager(self)
-        self.styleManager.styles = [DayStyle(demoStyle: ()), NightStyle(demoStyle: ())]
+        self.styleManager = StyleManager(self, dayStyle: DayStyle(demoStyle: ()), nightStyle: NightStyle(demoStyle: ()))
 
         self.resumeNotifications()
         self.routeController.resume()
         mapView.recenterMap()
     }
-    
+
+    override open func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.styleManager.ensureAppropriateStyle()
+    }
+
     override public func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         self.suspendNotifications()

@@ -49,13 +49,17 @@ class CarPlayMapViewController: UIViewController, MLNMapViewDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        self.styleManager = StyleManager(self)
-        self.styleManager.styles = [DayStyle(demoStyle: ()), NightStyle(demoStyle: ())]
+        self.styleManager = StyleManager(self, dayStyle: DayStyle(demoStyle: ()), nightStyle: NightStyle(demoStyle: ()))
 
         self.resetCamera(animated: false, altitude: CarPlayMapViewController.defaultAltitude)
         self.mapView.setUserTrackingMode(.followWithCourse, animated: true, completionHandler: nil)
     }
-    
+
+    override open func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.styleManager.ensureAppropriateStyle()
+    }
+
     public func zoomInButton() -> CPMapButton {
         let zoomInButton = CPMapButton { [weak self] _ in
             guard let strongSelf = self else {
