@@ -15,6 +15,8 @@
     #endif
     ```
 * Custom location snapping in the `RouteController` via the delegate
+* Fix: If the directions API endpoint doesn't include audio instructions, `didArrive:` would never be called.
+  * Merged in <https://github.com/maplibre/maplibre-navigation-ios/pull/72>
 
 ## 3.0.0 (Jun 15, 2024)
 * The `speak` method in `RouteVoiceController` can be used without a given `RouteProgress` or the `RouteProgress` can explicitly ignored so that it will not be added to the voice instruction.
