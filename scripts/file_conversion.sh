@@ -1,4 +1,4 @@
-#!/usr/bin/env/bash
+#!/usr/bin/env bash
 
 function convertIfNeeded {
     # Convert from UTF-16LE to UTF-8

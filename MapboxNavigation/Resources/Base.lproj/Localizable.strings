@@ -13,17 +13,11 @@
 /* Name of the waypoint associated with the current location */
 "CARPLAY_CURRENT_LOCATION" = "Current Location";
 
-/* Title for dismiss button */
-"CARPLAY_DISMISS" = "Dismiss";
-
 /* Title for end navigation button */
 "CARPLAY_END" = "End";
 
 /* Title on the exit button in the arrival form */
 "CARPLAY_EXIT_NAVIGATION" = "Exit navigation";
-
-/* Title for feedback template in CarPlay */
-"CARPLAY_FEEDBACK" = "Feedback";
 
 /* Title for start button in CPTripPreviewTextConfiguration */
 "CARPLAY_GO" = "Go";
@@ -52,9 +46,6 @@
 /* Title in search template when search is unimplemented */
 "CARPLAY_SEARCH_NOT_IMPLEMENTED" = "Search not implemented";
 
-/* Alert title that shows when feedback has been submitted */
-"CARPLAY_SUBMITTED_FEEDBACK" = "Submitted";
-
 /* Title for unmute button */
 "CARPLAY_UNMUTE" = "Unmute";
 
@@ -72,9 +63,6 @@
 
 /* Comment Placeholder Text */
 "END_OF_ROUTE_TITLE" = "How can we improve?";
-
-/* Error message when the SDK is unable to read a spoken instruction. */
-"FAILED_INSTRUCTION" = "Unable to read instruction aloud.";
 
 /* Indicates a faster route was found */
 "FASTER_ROUTE_FOUND" = "Faster Route Found";
@@ -105,9 +93,6 @@
 
 /* Message confirming that the user has successfully sent feedback */
 "FEEDBACK_THANK_YOU" = "Thank you for your report!";
-
-/* Title of view controller for sending feedback */
-"FEEDBACK_TITLE" = "Report Problem";
 
 /* Format for displaying the first two major ways */
 "LEG_MAJOR_WAYS_FORMAT" = "%1$@ and %2$@";
