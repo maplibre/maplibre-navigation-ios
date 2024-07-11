@@ -18,13 +18,13 @@ All issues are covered with this SDK.
 - Transitioned from the [Mapbox SDK](https://github.com/mapbox/mapbox-gl-native-ios) (version 4.3) to [Maplibre Maps SDK](https://github.com/maplibre/maplibre-gl-native) (version 6.0.0)
 - Added optional config parameter in NavigationMapView constructor to customize certain properties like route line color
 
-# Migrating from v2 to v3
+# Migrating from version 3 to version 4
 
-MaplibreNavigation v3 allows you to start a navigation in an existing Map, so no modal ViewController needs to be presented over an existing map as before. This results in some breaking changes. 
+MaplibreNavigation version 4 allows you to start a navigation in an existing Map, so no modal ViewController needs to be presented over an existing map as before. This results in some breaking changes. 
 
 ### Step 1:
 
-Replace your ViewController that hosts the mapView with a `NavigationViewController`. We suggest to create a subclass of `NavigationViewController` and override init & call `super.init(dayStyle:)` or `super.init(dayStyleURL:)`. With v3, NavigationViewController will not start navigation until you request it.
+Replace your ViewController that hosts the mapView with a `NavigationViewController`. We suggest to create a subclass of `NavigationViewController` and override init & call `super.init(dayStyle:)` or `super.init(dayStyleURL:)`. With version 3, NavigationViewController will not start navigation until you request it.
 
 ### Step 2:
 
