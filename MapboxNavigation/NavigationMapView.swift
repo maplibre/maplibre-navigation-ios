@@ -132,7 +132,7 @@ open class NavigationMapView: MLNMapView, UIGestureRecognizerDelegate {
             return anchorPoint
         }
         
-        let contentFrame = bounds.inset(by: safeAreaInsets)
+        let contentFrame = self.bounds.inset(by: self.safeAreaInsets)
         let courseViewWidth = self.userCourseView?.frame.width ?? 0
         let courseViewHeight = self.userCourseView?.frame.height ?? 0
         let edgePadding = UIEdgeInsets(top: 50 + courseViewHeight / 2,
@@ -293,7 +293,15 @@ open class NavigationMapView: MLNMapView, UIGestureRecognizerDelegate {
             if !cameraUpdated {
                 let newCamera = MLNMapCamera(lookingAtCenter: location.coordinate, acrossDistance: self.altitude, pitch: 45, heading: location.course)
                 let function = CAMediaTimingFunction(name: CAMediaTimingFunctionName.linear)
-                setCamera(newCamera, withDuration: 1, animationTimingFunction: function, edgePadding: UIEdgeInsets.zero, completionHandler: nil)
+                
+                let userAnchorPoint = self.userAnchorPoint
+                let padding = UIEdgeInsets(top: floor(userAnchorPoint.y),
+                                           left: floor(userAnchorPoint.x),
+                                           bottom: floor(self.frame.height - userAnchorPoint.y),
+                                           right: floor(self.frame.width - userAnchorPoint.x))
+                
+                // NOTE: When Camera is set without edge padding, user puck location can be out of sync
+                self.setCamera(newCamera, withDuration: 1, animationTimingFunction: function, edgePadding: padding, completionHandler: nil)
             }
         }
         
@@ -347,20 +355,18 @@ open class NavigationMapView: MLNMapView, UIGestureRecognizerDelegate {
             return
         }
         
-        if !self.tracksUserCourse || self.userAnchorPoint != userCourseView?.center ?? self.userAnchorPoint {
-            UIView.animate(withDuration: duration, delay: 0, options: [.curveLinear, .beginFromCurrentState], animations: {
-                self.userCourseView?.center = self.convert(location.coordinate, toPointTo: self)
-            })
-        }
+        UIView.animate(withDuration: duration, delay: 0, options: [.curveLinear, .beginFromCurrentState], animations: {
+            self.userCourseView?.center = self.convert(location.coordinate, toPointTo: self)
+        })
         
-        if let userCourseView = userCourseView as? UserCourseView {
+        if let userCourseView = self.userCourseView as? UserCourseView {
             if let customTransformation = userCourseView.update?(location: location, pitch: self.camera.pitch, direction: direction, animated: animated, tracksUserCourse: tracksUserCourse) {
                 customTransformation
             } else {
                 self.userCourseView?.applyDefaultUserPuckTransformation(location: location, pitch: self.camera.pitch, direction: direction, animated: animated, tracksUserCourse: self.tracksUserCourse)
             }
         } else {
-            userCourseView?.applyDefaultUserPuckTransformation(location: location, pitch: self.camera.pitch, direction: direction, animated: animated, tracksUserCourse: self.tracksUserCourse)
+            self.userCourseView?.applyDefaultUserPuckTransformation(location: location, pitch: self.camera.pitch, direction: direction, animated: animated, tracksUserCourse: self.tracksUserCourse)
         }
     }
     
@@ -443,7 +449,7 @@ open class NavigationMapView: MLNMapView, UIGestureRecognizerDelegate {
         let line = MLNPolyline(coordinates: coords, count: UInt(coords.count))
         let camera = cameraThatFitsShape(line, direction: direction, edgePadding: padding)
         
-        setCamera(camera, animated: false)
+        self.setCamera(camera, animated: false)
     }
     
     /**
@@ -1084,7 +1090,7 @@ open class NavigationMapView: MLNMapView, UIGestureRecognizerDelegate {
             camera.heading = 0
             camera.centerCoordinate = userLocation
             camera.altitude = self.defaultAltitude
-            setCamera(camera, withDuration: 1, animationTimingFunction: nil) { [weak self] in
+            self.setCamera(camera, withDuration: 1, animationTimingFunction: nil) { [weak self] in
                 self?.isAnimatingToOverheadMode = false
             }
             return
@@ -1095,7 +1101,7 @@ open class NavigationMapView: MLNMapView, UIGestureRecognizerDelegate {
         cam.heading = 0
         
         let cameraForLine = camera(cam, fitting: line, edgePadding: bounds)
-        setCamera(cameraForLine, withDuration: 1, animationTimingFunction: nil) { [weak self] in
+        self.setCamera(cameraForLine, withDuration: 1, animationTimingFunction: nil) { [weak self] in
             self?.isAnimatingToOverheadMode = false
         }
     }

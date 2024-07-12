@@ -207,6 +207,7 @@ class RouteMapViewController: UIViewController {
         self.navigationView.muteButton.isSelected = NavigationSettings.shared.voiceMuted
         self.mapView.compassView.isHidden = true
         self.mapView.tracksUserCourse = true
+        self.mapView.userTrackingMode = .followWithHeading
 
         if let camera = self.pendingCamera {
             self.mapView.camera = camera
@@ -567,6 +568,7 @@ extension RouteMapViewController: NavigationViewDelegate {
         if userTrackingMode == .none, !self.isInOverviewMode {
             self.navigationView.wayNameView.isHidden = true
         }
+        mapView.userTrackingMode = userTrackingMode
     }
 
     func mapView(_ mapView: MLNMapView, didFinishLoading style: MLNStyle) {
