@@ -214,6 +214,8 @@ open class NavigationViewController: UIViewController {
 	
     var currentStatusBarStyle: UIStatusBarStyle = .default {
         didSet {
+            guard oldValue != self.currentStatusBarStyle else { return }
+
             self.mapViewController.instructionsBannerView.backgroundColor = InstructionsBannerView.appearance().backgroundColor
             self.mapViewController.instructionsBannerContentView.backgroundColor = InstructionsBannerContentView.appearance().backgroundColor
         }
@@ -228,6 +230,8 @@ open class NavigationViewController: UIViewController {
      */
     public var route: Route? {
         didSet {
+            guard oldValue != self.route else { return }
+			
             if let route {
                 if self.routeController == nil {
                     let routeController = RouteController(along: route, directions: self.directions, locationManager: self.locationManager)
@@ -283,6 +287,8 @@ open class NavigationViewController: UIViewController {
      */
     public var routeController: RouteController? {
         didSet {
+            guard oldValue != self.routeController else { return }
+			
             self.mapViewController.routeController = self.routeController
         }
     }
@@ -313,6 +319,8 @@ open class NavigationViewController: UIViewController {
      */
     public var automaticallyAdjustsStyleForTimeOfDay = true {
         didSet {
+            guard oldValue != self.automaticallyAdjustsStyleForTimeOfDay else { return }
+			
             self.styleManager.automaticallyAdjustsStyleForTimeOfDay = self.automaticallyAdjustsStyleForTimeOfDay
         }
     }
@@ -427,10 +435,8 @@ open class NavigationViewController: UIViewController {
     
     // MARK: - NavigationViewController
 	
-    public func startNavigation(with route: Route, animated: Bool, routeController: RouteController? = nil, locationManager: NavigationLocationManager? = nil) {
-        if let locationManager {
-            self.locationManager = locationManager
-        }
+    public func startNavigation(with route: Route, animated: Bool, routeController: RouteController? = nil, locationManager: NavigationLocationManager = NavigationLocationManager()) {
+        self.locationManager = locationManager
         if let routeController {
             self.routeController = routeController
         }
@@ -467,6 +473,7 @@ open class NavigationViewController: UIViewController {
 
         self.voiceController = nil
         self.route = nil
+        self.locationManager = NavigationLocationManager()
 		
         self.mapViewController.navigationView.hideUI(animated: animated)
         self.mapView.tracksUserCourse = false
@@ -649,7 +656,9 @@ extension NavigationViewController: RouteControllerDelegate {
                 guard let self else {
                     return
                 }
-                self.delegate?.navigationViewControllerDidFinishRouting?(self)
+                self.mapViewController.hideEndOfRoute { _ in
+                    self.delegate?.navigationViewControllerDidFinishRouting?(self)
+                }
             })
         }
         return advancesToNextLeg
