@@ -435,10 +435,8 @@ open class NavigationViewController: UIViewController {
     
     // MARK: - NavigationViewController
 	
-    public func startNavigation(with route: Route, animated: Bool, routeController: RouteController? = nil, locationManager: NavigationLocationManager? = nil) {
-        if let locationManager {
-            self.locationManager = locationManager
-        }
+    public func startNavigation(with route: Route, animated: Bool, routeController: RouteController? = nil, locationManager: NavigationLocationManager = NavigationLocationManager()) {
+        self.locationManager = locationManager
         if let routeController {
             self.routeController = routeController
         }
