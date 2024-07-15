@@ -223,9 +223,9 @@ open class DistanceFormatter: LengthFormatter {
     @available(iOS 10.0, *)
     @objc(measurementOfDistance:)
     public func measurement(of distance: CLLocationDistance) -> Measurement<UnitLength> {
-        let threshold = threshold(for: distance)
-        numberFormatter.maximumFractionDigits = threshold.maximumFractionDigits
-        numberFormatter.roundingIncrement = threshold.roundingIncrement as NSNumber
+        let threshold = self.threshold(for: distance)
+        self.numberFormatter.maximumFractionDigits = threshold.maximumFractionDigits
+        self.numberFormatter.roundingIncrement = threshold.roundingIncrement as NSNumber
         self.unit = threshold.unit
         return threshold.measurement(for: distance)
     }
