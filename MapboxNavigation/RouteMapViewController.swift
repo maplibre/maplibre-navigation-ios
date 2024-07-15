@@ -260,7 +260,7 @@ class RouteMapViewController: UIViewController {
 
         if self.isInOverviewMode {
             if let coordinates = routeController.routeProgress.route.coordinates, let userLocation = routeController.locationManager.location?.coordinate {
-                self.mapView.setOverheadCameraView(from: userLocation, along: coordinates, for: self.overheadInsets)
+                self.mapView.setOverheadCameraView(from: userLocation, along: coordinates, insets: self.overheadInsets)
             }
         } else {
             self.mapView.tracksUserCourse = true
@@ -756,7 +756,7 @@ private extension RouteMapViewController {
         self.mapView.enableFrameByFrameCourseViewTracking(for: 3)
         if let coordinates = self.routeController?.routeProgress.route.coordinates,
            let userLocation = self.routeController?.locationManager.location?.coordinate {
-            self.mapView.setOverheadCameraView(from: userLocation, along: coordinates, for: self.overheadInsets)
+            self.mapView.setOverheadCameraView(from: userLocation, along: coordinates, insets: self.overheadInsets)
         }
         self.isInOverviewMode = true
     }
