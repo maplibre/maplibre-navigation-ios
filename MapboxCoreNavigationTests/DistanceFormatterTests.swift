@@ -44,8 +44,6 @@ class DistanceFormatterTests: XCTestCase {
     func testDistanceFormatters_US() {
         NavigationSettings.shared.distanceUnit = .mile
         self.distanceFormatter.locale = Locale(identifier: "en-US")
-//        self.distanceFormatter.numberFormatter.locale = Locale(identifier: "en-US")
-        //		self.distanceFormatter.nonFractionalLengthFormatter.numberFormatter.locale = Locale(identifier: "en-US")
         
         self.assertDistance(0, displayed: "0 ft", quantity: "0")
         self.assertDistance(oneFeet * 50, displayed: "50 ft", quantity: "50")
@@ -66,8 +64,6 @@ class DistanceFormatterTests: XCTestCase {
     func testDistanceFormatters_DE() {
         NavigationSettings.shared.distanceUnit = .kilometer
         self.distanceFormatter.locale = Locale(identifier: "de-DE")
-//        self.distanceFormatter.numberFormatter.locale = Locale(identifier: "de-DE")
-        //		self.distanceFormatter.nonFractionalLengthFormatter.numberFormatter.locale = Locale(identifier: "de-DE")
         
         self.assertDistance(0, displayed: "0 m", quantity: "0")
         self.assertDistance(4, displayed: "5 m", quantity: "5")
@@ -92,8 +88,6 @@ class DistanceFormatterTests: XCTestCase {
     func testDistanceFormatters_GB() {
         NavigationSettings.shared.distanceUnit = .mile
         self.distanceFormatter.locale = Locale(identifier: "en-GB")
-//        self.distanceFormatter.numberFormatter.locale = Locale(identifier: "en-GB")
-        //		self.distanceFormatter.nonFractionalLengthFormatter.numberFormatter.locale = Locale(identifier: "en-GB")
         
         self.assertDistance(0, displayed: "0 yd", quantity: "0")
         self.assertDistance(oneYard * 4, displayed: "0 yd", quantity: "0")
