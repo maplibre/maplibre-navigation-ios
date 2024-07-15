@@ -13,37 +13,39 @@ class DistanceFormatterTests: XCTestCase {
         super.setUp()
     }
     
-    func assertDistance(_ distance: CLLocationDistance, displayed: String, quantity: String) {
+    func assertDistance(_ distance: CLLocationDistance, displayed: String, quantity: String, file: StaticString = #file, line: UInt = #line) {
         let displayedString = self.distanceFormatter.string(from: distance)
-        XCTAssertEqual(displayedString, displayed, "Displayed: '\(displayedString)' should be equal to \(displayed)")
+        XCTAssertEqual(displayedString, displayed, "Displayed: '\(displayedString)' should be equal to \(displayed)", file: file, line: line)
         
         let attributedString = self.distanceFormatter.attributedString(for: distance as NSNumber)
-        XCTAssertEqual(attributedString?.string, displayed, "Displayed: '\(attributedString?.string ?? "")' should be equal to \(displayed)")
+        XCTAssertEqual(attributedString?.string, displayed, "Displayed: '\(attributedString?.string ?? "")' should be equal to \(displayed)", file: file, line: line)
         guard let checkedAttributedString = attributedString else {
             return
         }
         
         let quantityRange = checkedAttributedString.string.range(of: quantity)
-        XCTAssertNotNil(quantityRange, "Displayed: '\(checkedAttributedString.string)' should contain \(quantity)")
+        XCTAssertNotNil(quantityRange, "Displayed: '\(checkedAttributedString.string)' should contain \(quantity)", file: file, line: line)
         guard let checkedQuantityRange = quantityRange else {
             return
         }
         
         var effectiveQuantityRange = NSRange(location: NSNotFound, length: 0)
         let quantityAttrs = checkedAttributedString.attributes(at: checkedQuantityRange.lowerBound.utf16Offset(in: checkedAttributedString.string), effectiveRange: &effectiveQuantityRange)
-        XCTAssertEqual(quantityAttrs[NSAttributedString.Key.quantity] as? NSNumber, distance as NSNumber, "'\(quantity)' should have quantity \(distance)")
-        XCTAssertEqual(effectiveQuantityRange.length, quantity.count)
+        XCTAssertEqual(quantityAttrs[NSAttributedString.Key.quantity] as? NSNumber, distance as NSNumber, "'\(quantity)' should have quantity \(distance)", file: file, line: line)
+        XCTAssertEqual(effectiveQuantityRange.length, quantity.count, file: file, line: line)
         
         guard checkedQuantityRange.upperBound.utf16Offset(in: checkedAttributedString.string) < checkedAttributedString.length else {
             return
         }
         let unitAttrs = checkedAttributedString.attributes(at: checkedQuantityRange.upperBound.utf16Offset(in: checkedAttributedString.string), effectiveRange: nil)
-        XCTAssertNil(unitAttrs[NSAttributedString.Key.quantity], "Unit should not be emphasized like a quantity")
+        XCTAssertNil(unitAttrs[NSAttributedString.Key.quantity], "Unit should not be emphasized like a quantity", file: file, line: line)
     }
     
     func testDistanceFormatters_US() {
         NavigationSettings.shared.distanceUnit = .mile
-        self.distanceFormatter.numberFormatter.locale = Locale(identifier: "en-US")
+        self.distanceFormatter.locale = Locale(identifier: "en-US")
+//        self.distanceFormatter.numberFormatter.locale = Locale(identifier: "en-US")
+        //		self.distanceFormatter.nonFractionalLengthFormatter.numberFormatter.locale = Locale(identifier: "en-US")
         
         self.assertDistance(0, displayed: "0 ft", quantity: "0")
         self.assertDistance(oneFeet * 50, displayed: "50 ft", quantity: "50")
@@ -63,7 +65,9 @@ class DistanceFormatterTests: XCTestCase {
     
     func testDistanceFormatters_DE() {
         NavigationSettings.shared.distanceUnit = .kilometer
-        self.distanceFormatter.numberFormatter.locale = Locale(identifier: "de-DE")
+        self.distanceFormatter.locale = Locale(identifier: "de-DE")
+//        self.distanceFormatter.numberFormatter.locale = Locale(identifier: "de-DE")
+        //		self.distanceFormatter.nonFractionalLengthFormatter.numberFormatter.locale = Locale(identifier: "de-DE")
         
         self.assertDistance(0, displayed: "0 m", quantity: "0")
         self.assertDistance(4, displayed: "5 m", quantity: "5")
@@ -79,15 +83,17 @@ class DistanceFormatterTests: XCTestCase {
         self.assertDistance(999, displayed: "1 km", quantity: "1")
         self.assertDistance(1000, displayed: "1 km", quantity: "1")
         self.assertDistance(1001, displayed: "1 km", quantity: "1")
-        self.assertDistance(2500, displayed: "2.5 km", quantity: "2.5")
-        self.assertDistance(2900, displayed: "2.9 km", quantity: "2.9")
+        self.assertDistance(2500, displayed: "2,5 km", quantity: "2,5")
+        self.assertDistance(2900, displayed: "2,9 km", quantity: "2,9")
         self.assertDistance(3000, displayed: "3 km", quantity: "3")
         self.assertDistance(3500, displayed: "4 km", quantity: "4")
     }
     
     func testDistanceFormatters_GB() {
         NavigationSettings.shared.distanceUnit = .mile
-        self.distanceFormatter.numberFormatter.locale = Locale(identifier: "en-GB")
+        self.distanceFormatter.locale = Locale(identifier: "en-GB")
+//        self.distanceFormatter.numberFormatter.locale = Locale(identifier: "en-GB")
+        //		self.distanceFormatter.nonFractionalLengthFormatter.numberFormatter.locale = Locale(identifier: "en-GB")
         
         self.assertDistance(0, displayed: "0 yd", quantity: "0")
         self.assertDistance(oneYard * 4, displayed: "0 yd", quantity: "0")
