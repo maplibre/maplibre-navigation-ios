@@ -125,4 +125,13 @@ public protocol RouteControllerDelegate: AnyObject {
       */
     @objc(routeControllerGetDirections:along:completion:)
     optional func routeControllerGetDirections(from location: CLLocation, along progress: RouteProgress, completion: @escaping (_ mostSimilarRoute: Route?, _ routes: [Route]?, _ error: Error?) -> Void) -> Bool
+
+    /**
+     Allows to customize the snapping of raw and pre-snapped location. If no implementation is provided, the default snapping will be used.
+
+        - parameter rawLocation: The raw location from the controller
+        - returns: The snapped location or nil if snapping were impossible.
+     */
+    @objc(routeControllerSnapLocation:snappedByDefaultTo:)
+    optional func routeControllerSnap(rawLocation: CLLocation, snappedByDefaultTo snappedLocation: CLLocation?) -> CLLocation?
 }

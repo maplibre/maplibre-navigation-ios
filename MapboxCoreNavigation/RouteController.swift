@@ -230,7 +230,13 @@ open class RouteController: NSObject, Router {
      - important: If the rawLocation is outside of the route snapping tolerances, this value is nil.
      */
     var snappedLocation: CLLocation? {
-        self.rawLocation?.snapped(to: self.routeProgress.currentLegProgress)
+        let snappedDefault = self.rawLocation?.snapped(to: self.routeProgress.currentLegProgress)
+        guard let raw = self.rawLocation else { return snappedDefault }
+
+        let snappedCustom = self.delegate?.routeControllerSnap?(
+            rawLocation: raw,
+            snappedByDefaultTo: snappedDefault)
+        return snappedCustom  ?? snappedDefault
     }
 
     var heading: CLHeading?
