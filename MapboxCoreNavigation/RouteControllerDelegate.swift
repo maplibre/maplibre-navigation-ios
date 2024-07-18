@@ -132,6 +132,6 @@ public protocol RouteControllerDelegate: AnyObject {
         - parameter rawLocation: The raw location from the controller
         - returns: The snapped location or nil if snapping were impossible.
      */
-    @objc(routeControllerSnapLocation:snappedByDefaultTo:)
-    optional func routeControllerSnap(rawLocation: CLLocation, snappedByDefaultTo snappedLocation: CLLocation?) -> CLLocation?
+    @objc(routeControllerSnapLocation:)
+    optional func routeControllerSnap(rawLocation: CLLocation) -> CLLocation?
 }
