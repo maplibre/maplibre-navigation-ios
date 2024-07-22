@@ -1,6 +1,6 @@
 # Changes to the Mapbox Navigation SDK for iOS
 
-## Unreleased
+## 4.0.0-beta.1
 * Start & Stop Navigation in existing Map
     - Removed: `NavigationViewController(for route: Route, dayStyle: Style, routeController: RouteController? = nil, locationManager: NavigationLocationManager? = nil, voiceController: RouteVoiceController? = nil)` use `NavigationViewController(dayStyleURL: URL, nightStyleURL: URL? = nil,directions: Directions = .shared, voiceController: RouteVoiceController = RouteVoiceController())` followed by `startNavigation(with route: Route, animated: Bool)` instead.
     - To simulate a route, pass a `SimulatedLocationManager` to `startNavigation()` function:
@@ -14,7 +14,18 @@
         self.startNavigation(with: route, animated: false)
     #endif
     ```
-* Custom location snapping in the `RouteController` via the delegate
+* Only require background audio when using speech synthesis by @michaelkirk in https://github.com/maplibre/maplibre-navigation-ios/pull/64
+* Restore the ability to init NavVC without animations. by @michaelkirk in https://github.com/maplibre/maplibre-navigation-ios/pull/73
+* Remove unnecessary keyboard tracking.  by @michaelkirk in https://github.com/maplibre/maplibre-navigation-ios/pull/69
+* Fix crash in EndOfRouteViewController and restore its presentation by @michaelkirk in https://github.com/maplibre/maplibre-navigation-ios/pull/71
+* Fix retain cycles in RouteMapViewController by @michaelkirk in https://github.com/maplibre/maplibre-navigation-ios/pull/74
+* Add "Build Example Project" to CI by @michaelkirk in https://github.com/maplibre/maplibre-navigation-ios/pull/77
+* Fix version 3 documentation by @hactar in https://github.com/maplibre/maplibre-navigation-ios/pull/81
+* fix and re-run extract_localizable.sh by @michaelkirk in https://github.com/maplibre/maplibre-navigation-ios/pull/70
+* SwiftUI Optimisation by @Patrick-Kladek in https://github.com/maplibre/maplibre-navigation-ios/pull/76
+* Fix tests on german machine by @Patrick-Kladek in https://github.com/maplibre/maplibre-navigation-ios/pull/83
+* Open RouteController to custom location snapping by @sotomski in https://github.com/maplibre/maplibre-navigation-ios/pull/85
+* Clean up StyleManager and respect dynamic type by @michaelkirk in https://github.com/maplibre/maplibre-navigation-ios/pull/65
 
 ## 3.0.0 (Jun 15, 2024)
 * The `speak` method in `RouteVoiceController` can be used without a given `RouteProgress` or the `RouteProgress` can explicitly ignored so that it will not be added to the voice instruction.
