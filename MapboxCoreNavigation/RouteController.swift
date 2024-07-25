@@ -429,23 +429,22 @@ extension RouteController: CLLocationManagerDelegate {
 
     func updateRouteLegProgress(for location: CLLocation) {
         let currentDestination = self.routeProgress.currentLeg.destination
-        guard self.routeProgress.currentLegProgress.remainingSteps.count == 0 else { return }
-
-        if let remainingSpokenInstructions = routeProgress.currentLegProgress.currentStepProgress.remainingSpokenInstructions {
-            guard remainingSpokenInstructions.count == 0 else { return }
+        var hasRemainingVoiceInstructions = false
+        if let remainingVoiceInstructions = routeProgress.currentLegProgress.currentStepProgress.remainingSpokenInstructions, remainingVoiceInstructions.count > 0 {
+            hasRemainingVoiceInstructions = true
         }
 
-        guard currentDestination != self.previousArrivalWaypoint else { return }
+        if self.routeProgress.currentLegProgress.remainingSteps.count <= 1, !hasRemainingVoiceInstructions, currentDestination != self.previousArrivalWaypoint {
+            self.previousArrivalWaypoint = currentDestination
 
-        self.previousArrivalWaypoint = currentDestination
+            self.routeProgress.currentLegProgress.userHasArrivedAtWaypoint = true
 
-        self.routeProgress.currentLegProgress.userHasArrivedAtWaypoint = true
+            let advancesToNextLeg = self.delegate?.routeController?(self, didArriveAt: currentDestination) ?? true
 
-        let advancesToNextLeg = self.delegate?.routeController?(self, didArriveAt: currentDestination) ?? true
-
-        if !self.routeProgress.isFinalLeg, advancesToNextLeg {
-            self.routeProgress.legIndex += 1
-            self.updateDistanceToManeuver()
+            if !self.routeProgress.isFinalLeg, advancesToNextLeg {
+                self.routeProgress.legIndex += 1
+                self.updateDistanceToManeuver()
+            }
         }
     }
 
