@@ -69,7 +69,6 @@ open class LanesView: UIView {
     /**
      Updates the tertiary instructions banner info with a given `VisualInstructionBanner`.
      */
-    @objc(updateForVisualInstructionBanner:)
     public func update(for visualInstruction: VisualInstructionBanner?) {
         self.clearLaneViews()
         
@@ -79,9 +78,16 @@ open class LanesView: UIView {
             return
         }
         
-        let laneIndications: [LaneIndicationComponent]? = tertiaryInstruction.components.compactMap { $0 as? LaneIndicationComponent }
-        
-        guard let lanes = laneIndications, !lanes.isEmpty else {
+        let lanes = tertiaryInstruction.components.compactMap {
+            switch $0 {
+            case let .lane(indications, isUsable, preferredDirection):
+                self
+            default:
+                nil
+            }
+        }
+
+        guard !lanes.isEmpty else {
             self.hide()
             return
         }

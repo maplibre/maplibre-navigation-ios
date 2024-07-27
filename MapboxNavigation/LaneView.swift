@@ -2,13 +2,12 @@ import MapboxDirections
 import UIKit
 
 /// :nodoc:
-@objc(MBLaneView)
 open class LaneView: UIView {
     @IBInspectable
     var scale: CGFloat = 1
     let invalidAlpha: CGFloat = 0.4
     
-    var lane: Lane?
+    var lane: LaneIndication?
     var maneuverDirection: ManeuverDirection?
     var isValid: Bool = false
     
@@ -16,13 +15,13 @@ open class LaneView: UIView {
         bounds.size
     }
     
-    @objc public dynamic var primaryColor: UIColor = .defaultLaneArrowPrimary {
+    public dynamic var primaryColor: UIColor = .defaultLaneArrowPrimary {
         didSet {
             setNeedsDisplay()
         }
     }
     
-    @objc public dynamic var secondaryColor: UIColor = .defaultLaneArrowSecondary {
+    public dynamic var secondaryColor: UIColor = .defaultLaneArrowSecondary {
         didSet {
             setNeedsDisplay()
         }

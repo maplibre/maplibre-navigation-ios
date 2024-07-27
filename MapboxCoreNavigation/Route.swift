@@ -10,12 +10,19 @@ import CoreLocation
 import MapboxDirections
 
 extension Route {
-    convenience init(jsonFileName: String, waypoints: [CLLocationCoordinate2D], polylineShapeFormat: RouteShapeFormat = .polyline6, bundle: Bundle = .main, accessToken: String) {
+    static func from(jsonFileName: String, waypoints: [CLLocationCoordinate2D], polylineShapeFormat: RouteShapeFormat = .polyline6, bundle: Bundle = .main, accessToken: String) throws -> Route {
         let convertedWaypoints = waypoints.compactMap { waypoint in
             Waypoint(coordinate: waypoint)
         }
         let routeOptions = NavigationRouteOptions(waypoints: convertedWaypoints)
         routeOptions.shapeFormat = polylineShapeFormat
-        self.init(json: Fixture.JSONFromFileNamed(name: jsonFileName, bundle: bundle), waypoints: convertedWaypoints, options: routeOptions)
+		
+        let path = bundle.url(forResource: jsonFileName, withExtension: "json") ?? bundle.url(forResource: jsonFileName, withExtension: "geojson")!
+        let data = try Data(contentsOf: path)
+		
+        let decoder = JSONDecoder()
+        let result = try decoder.decode(RouteResponse.self, from: data)
+		
+        return result.routes!.first!
     }
 }

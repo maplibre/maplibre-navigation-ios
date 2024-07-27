@@ -1,11 +1,10 @@
 import CoreLocation
 import MapboxDirections
-import MapboxDirectionsObjc
 
 extension RouteOptions {
     var activityType: CLActivityType {
         switch profileIdentifier {
-        case MBDirectionsProfileIdentifier.cycling, MBDirectionsProfileIdentifier.walking:
+        case ProfileIdentifier.cycling, ProfileIdentifier.walking:
             .fitness
         default:
             .automotiveNavigation
@@ -20,9 +19,16 @@ extension RouteOptions {
      */
     public func without(waypoint: Waypoint) -> RouteOptions {
         let waypointsWithoutSpecified = waypoints.filter { $0 != waypoint }
-        let copy = copy() as! RouteOptions
+        let copy = try! self.copy()
         copy.waypoints = waypointsWithoutSpecified
         
         return copy
+    }
+}
+
+extension Encodable where Self: Decodable {
+    func copy() throws -> Self {
+        let data = try JSONEncoder().encode(self)
+        return try JSONDecoder().decode(Self.self, from: data)
     }
 }

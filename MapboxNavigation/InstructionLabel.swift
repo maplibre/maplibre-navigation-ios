@@ -3,7 +3,6 @@ import MapboxDirections
 import UIKit
 
 /// :nodoc:
-@objc(MBInstructionLabel)
 open class InstructionLabel: StylableLabel, InstructionPresenterDataSource {
     typealias AvailableBoundsHandler = () -> (CGRect)
     var availableBounds: AvailableBoundsHandler!
@@ -29,7 +28,7 @@ open class InstructionLabel: StylableLabel, InstructionPresenterDataSource {
             let presenter = InstructionPresenter(instruction, dataSource: self, imageRepository: imageRepository, downloadCompletion: update)
             
             let attributed = presenter.attributedText()
-            attributedText = self.instructionDelegate?.label?(self, willPresent: instruction, as: attributed) ?? attributed
+            attributedText = self.instructionDelegate?.label(self, willPresent: instruction, as: attributed) ?? attributed
             self.instructionPresenter = presenter
         }
     }
@@ -40,7 +39,6 @@ open class InstructionLabel: StylableLabel, InstructionPresenterDataSource {
 /**
  The `VoiceControllerDelegate` protocol defines a method that allows an object to customize presented visual instructions.
  */
-@objc(MBVisualInstructionDelegate)
 public protocol VisualInstructionDelegate: AnyObject {
     /**
      Called when an InstructionLabel will present a visual instruction.
@@ -50,6 +48,11 @@ public protocol VisualInstructionDelegate: AnyObject {
      - parameter presented: the formatted string that is provided by the instruction presenter
      - returns: optionally, a customized NSAttributedString that will be presented instead of the default, or if nil, the default behavior will be used.
      */
-    @objc(label:willPresentVisualInstruction:asAttributedString:)
-    optional func label(_ label: InstructionLabel, willPresent instruction: VisualInstruction, as presented: NSAttributedString) -> NSAttributedString?
+    func label(_ label: InstructionLabel, willPresent instruction: VisualInstruction, as presented: NSAttributedString) -> NSAttributedString?
+}
+
+extension VisualInstructionDelegate {
+    func label(_ label: InstructionLabel, willPresent instruction: VisualInstruction, as presented: NSAttributedString) -> NSAttributedString? {
+        nil
+    }
 }

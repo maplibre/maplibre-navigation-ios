@@ -122,7 +122,6 @@ public extension NSAttributedString.Key {
 }
 
 /// Provides appropriately formatted, localized descriptions of linear distances.
-@objc(MBDistanceFormatter)
 open class DistanceFormatter: LengthFormatter {
     /// True to favor brevity over precision.
     var approx: Bool
@@ -164,7 +163,7 @@ open class DistanceFormatter: LengthFormatter {
      
      - parameter approximate: approximates the distances.
      */
-    @objc public init(approximate: Bool = false) {
+    public init(approximate: Bool = false) {
         self.approx = approximate
         super.init()
         self.locale = .nationalizedCurrent
@@ -199,7 +198,7 @@ open class DistanceFormatter: LengthFormatter {
      
       The user’s `Locale` is used here to set the units.
      */
-    @objc public func string(from distance: CLLocationDistance) -> String {
+    public func string(from distance: CLLocationDistance) -> String {
         numberFormatter.positivePrefix = ""
         numberFormatter.positiveSuffix = ""
         numberFormatter.decimalSeparator = self.nonFractionalLengthFormatter.numberFormatter.decimalSeparator
@@ -208,7 +207,7 @@ open class DistanceFormatter: LengthFormatter {
         return self.formattedDistance(distance)
     }
     
-    @objc override open func string(fromMeters numberInMeters: Double) -> String {
+    override open func string(fromMeters numberInMeters: Double) -> String {
         self.string(from: numberInMeters)
     }
     
@@ -235,7 +234,7 @@ open class DistanceFormatter: LengthFormatter {
      
      `NSAttributedStringKey.quantity` is applied to the numeric quantity.
      */
-    @objc override open func attributedString(for obj: Any, withDefaultAttributes attrs: [NSAttributedString.Key: Any]? = nil) -> NSAttributedString? {
+    override open func attributedString(for obj: Any, withDefaultAttributes attrs: [NSAttributedString.Key: Any]? = nil) -> NSAttributedString? {
         guard let distance = obj as? CLLocationDistance else {
             return nil
         }
