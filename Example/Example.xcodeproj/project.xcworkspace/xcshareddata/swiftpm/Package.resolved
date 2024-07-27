@@ -3,10 +3,10 @@
     {
       "identity" : "mapbox-directions-swift",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/flitsmeister/mapbox-directions-swift",
+      "location" : "https://github.com/mapbox/mapbox-directions-swift",
       "state" : {
-        "revision" : "6c19ecc4e1324887ae3250802b8d13d8d8b3ff2d",
-        "version" : "0.23.3"
+        "revision" : "6512320ee7f0091a4c55abe2bc6414f078da88c8",
+        "version" : "2.14.0"
       }
     },
     {
@@ -37,6 +37,15 @@
       }
     },
     {
+      "identity" : "swift-argument-parser",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-argument-parser",
+      "state" : {
+        "revision" : "41982a3656a71c768319979febd796c6fd111d5c",
+        "version" : "1.5.0"
+      }
+    },
+    {
       "identity" : "swiftformat",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/nicklockwood/SwiftFormat.git",
@@ -48,10 +57,10 @@
     {
       "identity" : "turf-swift",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/flitsmeister/turf-swift",
+      "location" : "https://github.com/mapbox/turf-swift.git",
       "state" : {
-        "revision" : "b05b4658d1b48eac4127a0d9ebbb5a6f965a8251",
-        "version" : "0.2.2"
+        "revision" : "213050191cfcb3d5aa76e1fa90c6ff1e182a42ca",
+        "version" : "2.8.0"
       }
     }
   ],

@@ -15,8 +15,8 @@ let package = Package(
         )
     ],
     dependencies: [
-        .package(url: "https://github.com/flitsmeister/mapbox-directions-swift", exact: "0.23.3"),
-        .package(url: "https://github.com/flitsmeister/turf-swift", exact: "0.2.2"),
+        .package(url: "https://github.com/mapbox/mapbox-directions-swift", exact: "2.14.0"),
+        .package(url: "https://github.com/mapbox/turf-swift.git", "2.8.0" ..< "2.9.0"),
         .package(url: "https://github.com/maplibre/maplibre-gl-native-distribution.git", from: "6.0.0"),
         .package(url: "https://github.com/ceeK/Solar.git", exact: "3.0.1"),
         .package(url: "https://github.com/nicklockwood/SwiftFormat.git", from: "0.53.6")

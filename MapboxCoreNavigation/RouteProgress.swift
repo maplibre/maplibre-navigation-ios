@@ -8,19 +8,18 @@ import CarPlay
 /**
  `RouteProgress` stores the user’s progress along a route.
  */
-@objc(MBRouteProgress)
 open class RouteProgress: NSObject {
     private static let reroutingAccuracy: CLLocationAccuracy = 90
 
     /**
      Returns the current `Route`.
      */
-    @objc public let route: Route
+    public let route: Route
 
     /**
      Index representing current `RouteLeg`.
      */
-    @objc public var legIndex: Int {
+    public var legIndex: Int {
         didSet {
             assert(self.legIndex >= 0 && self.legIndex < self.route.legs.endIndex)
             // TODO: Set stepIndex to 0 or last index based on whether leg index was incremented or decremented.
@@ -31,7 +30,7 @@ open class RouteProgress: NSObject {
     /**
      If waypoints are provided in the `Route`, this will contain which leg the user is on.
      */
-    @objc public var currentLeg: RouteLeg {
+    public var currentLeg: RouteLeg {
         self.route.legs[self.legIndex]
     }
 
@@ -46,42 +45,42 @@ open class RouteProgress: NSObject {
     /**
      Total distance traveled by user along all legs.
      */
-    @objc public var distanceTraveled: CLLocationDistance {
+    public var distanceTraveled: CLLocationDistance {
         self.route.legs.prefix(upTo: self.legIndex).map(\.distance).reduce(0, +) + self.currentLegProgress.distanceTraveled
     }
 
     /**
      Total seconds remaining on all legs.
      */
-    @objc public var durationRemaining: TimeInterval {
+    public var durationRemaining: TimeInterval {
         self.route.legs.suffix(from: self.legIndex + 1).map(\.expectedTravelTime).reduce(0, +) + self.currentLegProgress.durationRemaining
     }
 
     /**
      Number between 0 and 1 representing how far along the `Route` the user has traveled.
      */
-    @objc public var fractionTraveled: Double {
+    public var fractionTraveled: Double {
         self.distanceTraveled / self.route.distance
     }
 
     /**
      Total distance remaining in meters along route.
      */
-    @objc public var distanceRemaining: CLLocationDistance {
+    public var distanceRemaining: CLLocationDistance {
         self.route.distance - self.distanceTraveled
     }
 
     /**
      Number of waypoints remaining on the current route.
      */
-    @objc public var remainingWaypoints: [Waypoint] {
-        self.route.legs.suffix(from: self.legIndex).map(\.destination)
+    public var remainingWaypoints: [Waypoint] {
+        self.route.legs.suffix(from: self.legIndex).compactMap(\.destination)
     }
 
     /**
      Returns the progress along the current `RouteLeg`.
      */
-    @objc public var currentLegProgress: RouteLegProgress
+    public var currentLegProgress: RouteLegProgress
 
     /**
      Tuple containing a `CongestionLevel` and a corresponding `TimeInterval` representing the expected travel time for this segment.
@@ -104,7 +103,7 @@ open class RouteProgress: NSObject {
      - parameter route: The route to follow.
      - parameter legIndex: Zero-based index indicating the current leg the user is on.
      */
-    @objc public init(route: Route, legIndex: Int = 0, spokenInstructionIndex: Int = 0) {
+    public init(route: Route, legIndex: Int = 0, spokenInstructionIndex: Int = 0) {
         self.route = route
         self.legIndex = legIndex
         self.currentLegProgress = RouteLegProgress(leg: route.legs[legIndex], stepIndex: 0, spokenInstructionIndex: spokenInstructionIndex)
@@ -120,8 +119,8 @@ open class RouteProgress: NSObject {
 
             if let segmentCongestionLevels = leg.segmentCongestionLevels, let expectedSegmentTravelTimes = leg.expectedSegmentTravelTimes {
                 for step in leg.steps {
-                    guard let coordinates = step.coordinates else { continue }
-                    let stepCoordinateCount = step.maneuverType == .arrive ? Int(step.coordinateCount) : coordinates.dropLast().count
+                    guard let coordinates = step.shape?.coordinates else { continue }
+                    let stepCoordinateCount = step.maneuverType == .arrive ? coordinates.count : coordinates.dropLast().count
                     let nextManeuverCoordinateIndex = maneuverCoordinateIndex + stepCoordinateCount - 1
 
                     guard nextManeuverCoordinateIndex < segmentCongestionLevels.count else { continue }
@@ -147,7 +146,9 @@ open class RouteProgress: NSObject {
     }
 
     public var averageCongestionLevelRemainingOnLeg: CongestionLevel? {
-        let coordinatesLeftOnStepCount = Int(floor(Double(currentLegProgress.currentStepProgress.step.coordinateCount) * self.currentLegProgress.currentStepProgress.fractionTraveled))
+        guard let coordinates = self.currentLegProgress.currentStep.shape?.coordinates else { return nil }
+		
+        let coordinatesLeftOnStepCount = Int(floor(Double(coordinates.count) * self.currentLegProgress.currentStepProgress.fractionTraveled))
 
         guard coordinatesLeftOnStepCount >= 0 else { return .unknown }
 
@@ -181,21 +182,6 @@ open class RouteProgress: NSObject {
             }
         }
     }
-
-    func reroutingOptions(with current: CLLocation) -> RouteOptions {
-        let oldOptions = self.route.routeOptions
-        let user = Waypoint(coordinate: current.coordinate)
-
-        if current.course >= 0 {
-            user.heading = current.course
-            user.headingAccuracy = RouteProgress.reroutingAccuracy
-        }
-        let newWaypoints = [user] + self.remainingWaypoints
-        let newOptions = oldOptions.copy() as! RouteOptions
-        newOptions.waypoints = newWaypoints
-
-        return newOptions
-    }
 }
 
 /**
@@ -206,12 +192,12 @@ open class RouteLegProgress: NSObject {
     /**
      Returns the current `RouteLeg`.
      */
-    @objc public let leg: RouteLeg
+    public let leg: RouteLeg
 
     /**
      Index representing the current step.
      */
-    @objc public var stepIndex: Int {
+    public var stepIndex: Int {
         didSet {
             assert(self.stepIndex >= 0 && self.stepIndex < self.leg.steps.endIndex)
             self.currentStepProgress = RouteStepProgress(step: self.currentStep)
@@ -221,44 +207,44 @@ open class RouteLegProgress: NSObject {
     /**
      The remaining steps for user to complete.
      */
-    @objc public var remainingSteps: [RouteStep] {
+    public var remainingSteps: [RouteStep] {
         Array(self.leg.steps.suffix(from: self.stepIndex + 1))
     }
 
     /**
      Total distance traveled in meters along current leg.
      */
-    @objc public var distanceTraveled: CLLocationDistance {
+    public var distanceTraveled: CLLocationDistance {
         self.leg.steps.prefix(upTo: self.stepIndex).map(\.distance).reduce(0, +) + self.currentStepProgress.distanceTraveled
     }
 
     /**
      Duration remaining in seconds on current leg.
      */
-    @objc public var durationRemaining: TimeInterval {
+    public var durationRemaining: TimeInterval {
         self.remainingSteps.map(\.expectedTravelTime).reduce(0, +) + self.currentStepProgress.durationRemaining
     }
 
     /**
      Distance remaining on the current leg.
      */
-    @objc public var distanceRemaining: CLLocationDistance {
+    public var distanceRemaining: CLLocationDistance {
         self.remainingSteps.map(\.distance).reduce(0, +) + self.currentStepProgress.distanceRemaining
     }
 
     /**
      Number between 0 and 1 representing how far along the current leg the user has traveled.
      */
-    @objc public var fractionTraveled: Double {
+    public var fractionTraveled: Double {
         self.distanceTraveled / self.leg.distance
     }
 
-    @objc public var userHasArrivedAtWaypoint = false
+    public var userHasArrivedAtWaypoint = false
 
     /**
      Returns the `RouteStep` before a given step. Returns `nil` if there is no step prior.
      */
-    @objc public func stepBefore(_ step: RouteStep) -> RouteStep? {
+    public func stepBefore(_ step: RouteStep) -> RouteStep? {
         guard let index = leg.steps.firstIndex(of: step) else {
             return nil
         }
@@ -271,7 +257,7 @@ open class RouteLegProgress: NSObject {
     /**
      Returns the `RouteStep` after a given step. Returns `nil` if there is not a step after.
      */
-    @objc public func stepAfter(_ step: RouteStep) -> RouteStep? {
+    public func stepAfter(_ step: RouteStep) -> RouteStep? {
         guard let index = leg.steps.firstIndex(of: step) else {
             return nil
         }
@@ -286,7 +272,7 @@ open class RouteLegProgress: NSObject {
 
      If there is no `priorStep`, nil is returned.
      */
-    @objc public var priorStep: RouteStep? {
+    public var priorStep: RouteStep? {
         guard self.stepIndex - 1 >= 0 else {
             return nil
         }
@@ -296,7 +282,7 @@ open class RouteLegProgress: NSObject {
     /**
      Returns the current `RouteStep` for the leg the user is on.
      */
-    @objc public var currentStep: RouteStep {
+    public var currentStep: RouteStep {
         self.leg.steps[self.stepIndex]
     }
 
@@ -305,7 +291,7 @@ open class RouteLegProgress: NSObject {
 
      If there is no `upcomingStep`, nil is returned.
      */
-    @objc public var upComingStep: RouteStep? {
+    public var upComingStep: RouteStep? {
         guard self.stepIndex + 1 < self.leg.steps.endIndex else {
             return nil
         }
@@ -317,7 +303,7 @@ open class RouteLegProgress: NSObject {
 
      If there is no `followOnStep`, nil is returned.
      */
-    @objc public var followOnStep: RouteStep? {
+    public var followOnStep: RouteStep? {
         guard self.stepIndex + 2 < self.leg.steps.endIndex else {
             return nil
         }
@@ -327,14 +313,14 @@ open class RouteLegProgress: NSObject {
     /**
      Return bool whether step provided is the current `RouteStep` the user is on.
      */
-    @objc public func isCurrentStep(_ step: RouteStep) -> Bool {
+    public func isCurrentStep(_ step: RouteStep) -> Bool {
         step == self.currentStep
     }
 
     /**
      Returns the progress along the current `RouteStep`.
      */
-    @objc public var currentStepProgress: RouteStepProgress
+    public var currentStepProgress: RouteStepProgress
 
     /**
      Intializes a new `RouteLegProgress`.
@@ -342,7 +328,7 @@ open class RouteLegProgress: NSObject {
      - parameter leg: Leg on a `Route`.
      - parameter stepIndex: Current step the user is on.
      */
-    @objc public init(leg: RouteLeg, stepIndex: Int = 0, spokenInstructionIndex: Int = 0) {
+    public init(leg: RouteLeg, stepIndex: Int = 0, spokenInstructionIndex: Int = 0) {
         self.leg = leg
         self.stepIndex = stepIndex
         self.currentStepProgress = RouteStepProgress(step: leg.steps[stepIndex], spokenInstructionIndex: spokenInstructionIndex)
@@ -351,10 +337,10 @@ open class RouteLegProgress: NSObject {
     /**
      Returns an array of `CLLocationCoordinate2D` of the prior, current and upcoming step geometry.
      */
-    @objc public var nearbyCoordinates: [CLLocationCoordinate2D] {
-        let priorCoords = self.priorStep?.coordinates ?? []
-        let upcomingCoords = self.upComingStep?.coordinates ?? []
-        let currentCoords = self.currentStep.coordinates ?? []
+    public var nearbyCoordinates: [CLLocationCoordinate2D] {
+        let priorCoords = self.priorStep?.shape?.coordinates ?? []
+        let upcomingCoords = self.upComingStep?.shape?.coordinates ?? []
+        let currentCoords = self.currentStep.shape?.coordinates ?? []
         let nearby = priorCoords + currentCoords + upcomingCoords
         assert(!nearby.isEmpty, "Step must have coordinates")
         return nearby
@@ -367,8 +353,8 @@ open class RouteLegProgress: NSObject {
         let remainingSteps = self.leg.steps.suffix(from: self.stepIndex)
 
         for (currentStepIndex, step) in remainingSteps.enumerated() {
-            guard let coords = step.coordinates else { continue }
-            guard let closestCoordOnStep = Polyline(coords).closestCoordinate(to: coordinate) else { continue }
+            guard let coords = step.shape?.coordinates else { continue }
+            guard let closestCoordOnStep = LineString(coords).closestCoordinate(to: coordinate) else { continue }
             let foundIndex = currentStepIndex + self.stepIndex
 
             // First time around, currentClosest will be `nil`.
@@ -394,29 +380,29 @@ open class RouteStepProgress: NSObject {
     /**
      Returns the current `RouteStep`.
      */
-    @objc public let step: RouteStep
+    public let step: RouteStep
 
     /**
      Returns distance user has traveled along current step.
      */
-    @objc public var distanceTraveled: CLLocationDistance = 0
+    public var distanceTraveled: CLLocationDistance = 0
 
     /**
      Returns distance from user to end of step.
      */
-    @objc public var userDistanceToManeuverLocation: CLLocationDistance = Double.infinity
+    public var userDistanceToManeuverLocation: CLLocationDistance = Double.infinity
 
     /**
      Total distance in meters remaining on current step.
      */
-    @objc public var distanceRemaining: CLLocationDistance {
+    public var distanceRemaining: CLLocationDistance {
         self.step.distance - self.distanceTraveled
     }
 
     /**
      Number between 0 and 1 representing fraction of current step traveled.
      */
-    @objc public var fractionTraveled: Double {
+    public var fractionTraveled: Double {
         guard self.step.distance > 0 else { return 1 }
         return self.distanceTraveled / self.step.distance
     }
@@ -424,7 +410,7 @@ open class RouteStepProgress: NSObject {
     /**
      Number of seconds remaining on current step.
      */
-    @objc public var durationRemaining: TimeInterval {
+    public var durationRemaining: TimeInterval {
         (1 - self.fractionTraveled) * self.step.expectedTravelTime
     }
     
@@ -433,7 +419,7 @@ open class RouteStepProgress: NSObject {
 
      - parameter step: Step on a `RouteLeg`.
      */
-    @objc public init(step: RouteStep, spokenInstructionIndex: Int = 0) {
+    public init(step: RouteStep, spokenInstructionIndex: Int = 0) {
         self.step = step
         self.intersectionIndex = 0
         self.spokenInstructionIndex = spokenInstructionIndex
@@ -444,14 +430,14 @@ open class RouteStepProgress: NSObject {
 
      The upcoming `RouteStep` first `Intersection` is added because it is omitted from the current step.
      */
-    @objc public var intersectionsIncludingUpcomingManeuverIntersection: [Intersection]?
+    public var intersectionsIncludingUpcomingManeuverIntersection: [Intersection]?
 
     /**
      The next intersection the user will travel through.
 
      The step must contain `intersectionsIncludingUpcomingManeuverIntersection` otherwise this property will be `nil`.
      */
-    @objc public var upcomingIntersection: Intersection? {
+    public var upcomingIntersection: Intersection? {
         guard let intersections = intersectionsIncludingUpcomingManeuverIntersection, intersections.startIndex ..< intersections.endIndex - 1 ~= intersectionIndex else {
             return nil
         }
@@ -462,14 +448,14 @@ open class RouteStepProgress: NSObject {
     /**
      Index representing the current intersection.
      */
-    @objc public var intersectionIndex: Int = 0
+    public var intersectionIndex: Int = 0
 
     /**
      The current intersection the user will travel through.
 
      The step must contain `intersectionsIncludingUpcomingManeuverIntersection` otherwise this property will be `nil`.
      */
-    @objc public var currentIntersection: Intersection? {
+    public var currentIntersection: Intersection? {
         guard let intersections = intersectionsIncludingUpcomingManeuverIntersection, intersections.startIndex ..< intersections.endIndex ~= intersectionIndex else {
             return nil
         }
@@ -480,7 +466,7 @@ open class RouteStepProgress: NSObject {
     /**
      Returns an array of the calculated distances from the current intersection to the next intersection on the current step.
      */
-    @objc public var intersectionDistances: [CLLocationDistance]?
+    public var intersectionDistances: [CLLocationDistance]?
 
     /**
      The distance in meters the user is to the next intersection they will pass through.
@@ -490,12 +476,12 @@ open class RouteStepProgress: NSObject {
     /**
      Index into `step.instructionsDisplayedAlongStep` representing the current visual instruction for the step.
      */
-    @objc public var visualInstructionIndex: Int = 0
+    public var visualInstructionIndex: Int = 0
 
     /**
      An `Array` of remaining `VisualInstruction` for a step.
      */
-    @objc public var remainingVisualInstructions: [VisualInstructionBanner]? {
+    public var remainingVisualInstructions: [VisualInstructionBanner]? {
         guard let visualInstructions = step.instructionsDisplayedAlongStep else { return nil }
         return Array(visualInstructions.suffix(from: self.visualInstructionIndex))
     }
@@ -503,12 +489,12 @@ open class RouteStepProgress: NSObject {
     /**
      Index into `step.instructionsSpokenAlongStep` representing the current spoken instruction.
      */
-    @objc public var spokenInstructionIndex: Int = 0
+    public var spokenInstructionIndex: Int = 0
 
     /**
      An `Array` of remaining `SpokenInstruction` for a step.
      */
-    @objc public var remainingSpokenInstructions: [SpokenInstruction]? {
+    public var remainingSpokenInstructions: [SpokenInstruction]? {
         guard
             let instructions = step.instructionsSpokenAlongStep,
             spokenInstructionIndex <= instructions.endIndex
@@ -519,7 +505,7 @@ open class RouteStepProgress: NSObject {
     /**
      Current spoken instruction for the user's progress along a step.
      */
-    @objc public var currentSpokenInstruction: SpokenInstruction? {
+    public var currentSpokenInstruction: SpokenInstruction? {
         guard let instructionsSpokenAlongStep = step.instructionsSpokenAlongStep else { return nil }
         guard self.spokenInstructionIndex < instructionsSpokenAlongStep.count else { return nil }
         return instructionsSpokenAlongStep[self.spokenInstructionIndex]
@@ -528,7 +514,7 @@ open class RouteStepProgress: NSObject {
     /**
      Current visual instruction for the user's progress along a step.
      */
-    @objc public var currentVisualInstruction: VisualInstructionBanner? {
+    public var currentVisualInstruction: VisualInstructionBanner? {
         guard let instructionsDisplayedAlongStep = step.instructionsDisplayedAlongStep else { return nil }
         guard self.visualInstructionIndex < instructionsDisplayedAlongStep.count else { return nil }
         return instructionsDisplayedAlongStep[self.visualInstructionIndex]
