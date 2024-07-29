@@ -1,6 +1,5 @@
 import AVFoundation
 import MapboxDirections
-import Polyline
 import UIKit
 
 let SecondsBeforeCollectionAfterFeedbackEvent: TimeInterval = 20
