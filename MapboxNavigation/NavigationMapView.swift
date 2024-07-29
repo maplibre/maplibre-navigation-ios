@@ -601,15 +601,18 @@ open class NavigationMapView: MLNMapView, UIGestureRecognizerDelegate {
         
         let shaftLength = max(min(30 * metersPerPoint(atLatitude: maneuverCoordinate.latitude), 30), 10)
         let polyline = LineString(routeCoordinates)
-        let shaftCoordinates = Array(polyline.trimmed(from: maneuverCoordinate, distance: -shaftLength).coordinates.reversed()
-            + polyline.trimmed(from: maneuverCoordinate, distance: shaftLength).coordinates.suffix(from: 1))
+        guard let beforeTrimmedPolyline = polyline.trimmed(from: maneuverCoordinate, distance: -shaftLength),
+              let afterTrimmedPolyline = polyline.trimmed(from: maneuverCoordinate, distance: shaftLength) else {
+            return
+        }
+        let shaftCoordinates = Array(beforeTrimmedPolyline.coordinates.reversed() + afterTrimmedPolyline.coordinates.suffix(from: 1))
         if shaftCoordinates.count > 1 {
             var shaftStrokeCoordinates = shaftCoordinates
             let shaftStrokePolyline = ArrowStrokePolyline(coordinates: &shaftStrokeCoordinates, count: UInt(shaftStrokeCoordinates.count))
             let shaftDirection = shaftStrokeCoordinates[shaftStrokeCoordinates.count - 2].direction(to: shaftStrokeCoordinates.last!)
             let maneuverArrowStrokePolylines = [shaftStrokePolyline]
             let shaftPolyline = ArrowFillPolyline(coordinates: shaftCoordinates, count: UInt(shaftCoordinates.count))
-            
+
             let arrowShape = MLNShapeCollection(shapes: [shaftPolyline])
             let arrowStrokeShape = MLNShapeCollection(shapes: maneuverArrowStrokePolylines)
             
@@ -1076,7 +1079,9 @@ open class NavigationMapView: MLNMapView, UIGestureRecognizerDelegate {
      */
     @objc public func setOverheadCameraView(from userLocation: CLLocationCoordinate2D, along coordinates: [CLLocationCoordinate2D], for bounds: UIEdgeInsets) {
         self.isAnimatingToOverheadMode = true
-        let slicedLine = LineString(coordinates).sliced(from: userLocation).coordinates
+        guard let slicedLine = LineString(coordinates).sliced(from: userLocation)?.coordinates else {
+            return
+        }
         let line = MLNPolyline(coordinates: slicedLine, count: UInt(slicedLine.count))
         
         self.tracksUserCourse = false

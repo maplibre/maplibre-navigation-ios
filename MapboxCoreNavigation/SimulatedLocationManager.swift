@@ -177,8 +177,8 @@ open class SimulatedLocationManager: NavigationLocationManager {
         let distanceToClosest = closestLocation.distance(from: CLLocation(newCoordinate))
         
         let distance = min(max(distanceToClosest, 10), safeDistance)
-        let coordinatesNearby = polyline.trimmed(from: newCoordinate, distance: 100).coordinates
-        
+        guard let coordinatesNearby = polyline.trimmed(from: newCoordinate, distance: 100)?.coordinates else { return }
+
         // Simulate speed based on expected segment travel time
         if let expectedSegmentTravelTimes = routeProgress?.currentLeg.expectedSegmentTravelTimes,
            let coordinates = routeProgress?.route.coordinates,

@@ -406,9 +406,9 @@ class RouteMapViewController: UIViewController {
                 let slicedLine = LineString(stepCoordinates).sliced(from: closestCoordinate)
 
                 let lookAheadDistance: CLLocationDistance = 10
-                guard let pointAheadFeature = featurePolyline.sliced(from: closestCoordinate).coordinateFromStart(distance: lookAheadDistance) else { continue }
-                guard let pointAheadUser = slicedLine.coordinateFromStart(distance: lookAheadDistance) else { continue }
-                guard let reversedPoint = LineString(featureCoordinates.reversed()).sliced(from: closestCoordinate).coordinateFromStart(distance: lookAheadDistance) else { continue }
+                guard let pointAheadFeature = featurePolyline.sliced(from: closestCoordinate)?.coordinateFromStart(distance: lookAheadDistance) else { continue }
+                guard let pointAheadUser = slicedLine?.coordinateFromStart(distance: lookAheadDistance) else { continue }
+                guard let reversedPoint = LineString(featureCoordinates.reversed()).sliced(from: closestCoordinate)?.coordinateFromStart(distance: lookAheadDistance) else { continue }
 
                 let distanceBetweenPointsAhead = pointAheadFeature.distance(to: pointAheadUser)
                 let distanceBetweenReversedPoint = reversedPoint.distance(to: pointAheadUser)
@@ -486,8 +486,9 @@ class RouteMapViewController: UIViewController {
         let insets = UIEdgeInsets(top: navigationView.instructionsBannerView.bounds.height, left: 20, bottom: height + 20, right: 20)
 
         // zoom in a bit to focus on the arrived destination
-        if let coordinates = routeController?.routeProgress.route.coordinates, let userLocation = routeController?.locationManager.location?.coordinate {
-            let slicedLine = LineString(coordinates).sliced(from: userLocation).coordinates
+        if let coordinates = routeController?.routeProgress.route.coordinates,
+           let userLocation = routeController?.locationManager.location?.coordinate,
+           let slicedLine = LineString(coordinates).sliced(from: userLocation)?.coordinates {
             let line = MLNPolyline(coordinates: slicedLine, count: UInt(slicedLine.count))
 
             let camera = self.navigationView.mapView.cameraThatFitsShape(line, direction: self.navigationView.mapView.camera.heading, edgePadding: insets)
