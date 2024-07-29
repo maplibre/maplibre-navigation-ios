@@ -125,8 +125,8 @@ extension CLLocation {
 
         guard let closest = nearByPolyline.closestCoordinate(to: coordinate) else { return nil }
         
-        let slicedLineBehind = LineString(coordinates.reversed()).sliced(from: closest.coordinate, to: coordinates.reversed().last)
-        let slicedLineInFront = nearByPolyline.sliced(from: closest.coordinate, to: coordinates.last)
+        guard let slicedLineBehind = LineString(coordinates.reversed()).sliced(from: closest.coordinate, to: coordinates.reversed().last) else { return nil }
+        guard let slicedLineInFront = nearByPolyline.sliced(from: closest.coordinate, to: coordinates.last) else { return nil }
         let userDistanceBuffer: CLLocationDistance = max(speed * RouteControllerDeadReckoningTimeInterval / 2, RouteControllerUserLocationSnappingDistance / 2)
         
         guard let pointBehind = slicedLineBehind.coordinateFromStart(distance: userDistanceBuffer) else { return nil }
