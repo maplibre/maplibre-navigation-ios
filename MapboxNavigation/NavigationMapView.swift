@@ -600,7 +600,7 @@ open class NavigationMapView: MLNMapView, UIGestureRecognizerDelegate {
         let minimumZoomLevel: Float = 14.5
         
         let shaftLength = max(min(30 * metersPerPoint(atLatitude: maneuverCoordinate.latitude), 30), 10)
-        let polyline = Polyline(routeCoordinates)
+        let polyline = LineString(routeCoordinates)
         let shaftCoordinates = Array(polyline.trimmed(from: maneuverCoordinate, distance: -shaftLength).coordinates.reversed()
             + polyline.trimmed(from: maneuverCoordinate, distance: shaftLength).coordinates.suffix(from: 1))
         if shaftCoordinates.count > 1 {
@@ -781,8 +781,8 @@ open class NavigationMapView: MLNMapView, UIGestureRecognizerDelegate {
         let closest = routes.sorted { left, right -> Bool in
             
             // existance has been assured through use of filter.
-            let leftLine = Polyline(left.coordinates!)
-            let rightLine = Polyline(right.coordinates!)
+            let leftLine = LineString(left.coordinates!)
+            let rightLine = LineString(right.coordinates!)
             let leftDistance = leftLine.closestCoordinate(to: tapCoordinate)!.distance
             let rightDistance = rightLine.closestCoordinate(to: tapCoordinate)!.distance
             
@@ -791,7 +791,7 @@ open class NavigationMapView: MLNMapView, UIGestureRecognizerDelegate {
         
         // filter closest coordinates by which ones are under threshold.
         let candidates = closest.filter {
-            let closestCoordinate = Polyline($0.coordinates!).closestCoordinate(to: tapCoordinate)!.coordinate
+            let closestCoordinate = LineString($0.coordinates!).closestCoordinate(to: tapCoordinate)!.coordinate
             let closestPoint = self.convert(closestCoordinate, toPointTo: self)
             
             return closestPoint.distance(to: point) < self.tapGestureDistanceThreshold
@@ -1037,7 +1037,7 @@ open class NavigationMapView: MLNMapView, UIGestureRecognizerDelegate {
             for (stepIndex, step) in leg.steps.enumerated() {
                 for instruction in step.instructionsSpokenAlongStep! {
                     let feature = MLNPointFeature()
-                    feature.coordinate = Polyline(route.legs[legIndex].steps[stepIndex].coordinates!.reversed()).coordinateFromStart(distance: instruction.distanceAlongStep)!
+                    feature.coordinate = LineString(route.legs[legIndex].steps[stepIndex].coordinates!.reversed()).coordinateFromStart(distance: instruction.distanceAlongStep)!
                     feature.attributes = ["instruction": instruction.text]
                     features.append(feature)
                 }
@@ -1076,7 +1076,7 @@ open class NavigationMapView: MLNMapView, UIGestureRecognizerDelegate {
      */
     @objc public func setOverheadCameraView(from userLocation: CLLocationCoordinate2D, along coordinates: [CLLocationCoordinate2D], for bounds: UIEdgeInsets) {
         self.isAnimatingToOverheadMode = true
-        let slicedLine = Polyline(coordinates).sliced(from: userLocation).coordinates
+        let slicedLine = LineString(coordinates).sliced(from: userLocation).coordinates
         let line = MLNPolyline(coordinates: slicedLine, count: UInt(slicedLine.count))
         
         self.tracksUserCourse = false
