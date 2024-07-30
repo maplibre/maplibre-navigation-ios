@@ -64,7 +64,8 @@ extension CLLocation {
         guard let closestCoordinate = LineString(routeStep.coordinates!).closestCoordinate(to: coordinate) else {
             return false
         }
-        return closestCoordinate.distance < maximumDistance
+        let distance = closestCoordinate.coordinate.distance(to: self.coordinate)
+        return distance < maximumDistance
     }
     
     // MARK: - Route Snapping
@@ -80,8 +81,9 @@ extension CLLocation {
         guard let firstCoordinate = legProgress.leg.steps.first?.coordinates?.first else { return nil }
         
         guard self.shouldSnapCourse(toRouteWith: calculatedCourseForLocationOnStep, distanceToFirstCoordinateOnLeg: coordinate.distance(to: firstCoordinate)) else { return nil }
-        
-        guard closest.distance <= (RouteControllerUserLocationSnappingDistance + horizontalAccuracy) else {
+       
+        let distanceFromLeg = closest.coordinate.distance(to: self.coordinate)
+        guard distanceFromLeg <= (RouteControllerUserLocationSnappingDistance + horizontalAccuracy) else {
             return nil
         }
         
@@ -145,10 +147,11 @@ extension CLLocation {
         
         let averageRelativeAngle: Double
             // User is at the beginning of the route, there is no closest point behind the user.
-            = if pointBehindClosest.distance <= 0, pointAheadClosest.distance > 0 {
+            = if pointBehindClosest.coordinate.distance(to: pointBehind) <= 0, pointAheadClosest.coordinate.distance(to: pointAhead) > 0 {
             relativeAnglepointAhead
             // User is at the end of the route, there is no closest point in front of the user.
-        } else if pointAheadClosest.distance <= 0, pointBehindClosest.distance > 0 {
+        } else if pointAheadClosest.coordinate.distance(to: pointAhead) <= 0,
+                  pointBehindClosest.coordinate.distance(to: pointBehind) > 0 {
             relativeAnglepointBehind
         } else {
             (relativeAnglepointBehind + relativeAnglepointAhead) / 2
