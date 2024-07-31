@@ -48,10 +48,10 @@
     {
       "identity" : "turf-swift",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/flitsmeister/turf-swift",
+      "location" : "https://github.com/mapbox/turf-swift.git",
       "state" : {
-        "revision" : "b05b4658d1b48eac4127a0d9ebbb5a6f965a8251",
-        "version" : "0.2.2"
+        "revision" : "213050191cfcb3d5aa76e1fa90c6ff1e182a42ca",
+        "version" : "2.8.0"
       }
     }
   ],
