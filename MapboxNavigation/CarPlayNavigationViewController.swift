@@ -173,7 +173,7 @@ public class CarPlayNavigationViewController: UIViewController, MLNMapViewDelega
                     return
                 }
                 self.mapView?.enableFrameByFrameCourseViewTracking(for: 3)
-                self.mapView?.setOverheadCameraView(from: userLocation, along: self.routeController.routeProgress.route.coordinates!, for: self.edgePadding)
+                self.mapView?.setOverheadCameraView(from: userLocation, along: self.routeController.routeProgress.route.coordinates!, insets: self.edgePadding)
             }
         }
     }
