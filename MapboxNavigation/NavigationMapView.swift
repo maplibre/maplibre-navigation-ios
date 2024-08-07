@@ -293,7 +293,12 @@ open class NavigationMapView: MLNMapView, UIGestureRecognizerDelegate {
             if !cameraUpdated {
                 let newCamera = MLNMapCamera(lookingAtCenter: location.coordinate, acrossDistance: self.altitude, pitch: 45, heading: location.course)
                 let function = CAMediaTimingFunction(name: CAMediaTimingFunctionName.linear)
-                setCamera(newCamera, withDuration: 1, animationTimingFunction: function, edgePadding: UIEdgeInsets.zero, completionHandler: nil)
+
+                // Because it's more useful to show what's ahead than what's behind, we bias the camera to put
+                // the user location puck in the lower portion of the visible map, showing more of what's ahead.
+                let edgePadding = UIEdgeInsets(top: bounds.height * 0.4 - safeAreaInsets.bottom, left: 0, bottom: 0, right: 0)
+
+                setCamera(newCamera, withDuration: 1, animationTimingFunction: function, edgePadding: edgePadding, completionHandler: nil)
             }
         }
         
