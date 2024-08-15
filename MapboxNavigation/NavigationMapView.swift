@@ -1078,6 +1078,8 @@ open class NavigationMapView: MLNMapView, UIGestureRecognizerDelegate {
      Sets the camera directly over a series of coordinates.
      */
     @objc public func setOverheadCameraView(from userLocation: CLLocationCoordinate2D, along coordinates: [CLLocationCoordinate2D], for bounds: UIEdgeInsets) {
+        assert(!coordinates.isEmpty, "must specify coordinates when setting overhead camera view")
+
         self.isAnimatingToOverheadMode = true
         guard let slicedLine = LineString(coordinates).sliced(from: userLocation)?.coordinates else {
             return
