@@ -372,6 +372,7 @@ open class RouteLegProgress: NSObject {
             let foundIndex = currentStepIndex + self.stepIndex
 
             let distanceFromLine = closestCoordOnStep.coordinate.distance(to: coordinate)
+            // First time around, currentClosest will be `nil`.
             guard let currentClosestDistance = currentClosest?.distance else {
                 currentClosest = (index: foundIndex, distance: distanceFromLine)
                 continue
