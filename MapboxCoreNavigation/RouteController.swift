@@ -254,7 +254,7 @@ open class RouteController: NSObject, Router {
             self.userSnapToStepDistanceFromManeuver = nil
             return
         }
-        self.userSnapToStepDistanceFromManeuver = Polyline(coordinates).distance(from: coordinate)
+        self.userSnapToStepDistanceFromManeuver = LineString(coordinates).distance(from: coordinate)
     }
 
     /**
@@ -303,7 +303,7 @@ extension RouteController: CLLocationManagerDelegate {
     @objc func interpolateLocation() {
         guard let location = locationManager.lastKnownLocation else { return }
         guard let coordinates = routeProgress.route.coordinates else { return }
-        let polyline = Polyline(coordinates)
+        let polyline = LineString(coordinates)
 
         let distance = location.speed as CLLocationDistance
 
@@ -380,9 +380,9 @@ extension RouteController: CLLocationManagerDelegate {
 
         self.updateIntersectionIndex(for: currentStepProgress)
         // Notify observers if the step’s remaining distance has changed.
-        let polyline = Polyline(routeProgress.currentLegProgress.currentStep.coordinates!)
-        if let closestCoordinate = polyline.closestCoordinate(to: location.coordinate) {
-            let remainingDistance = polyline.distance(from: closestCoordinate.coordinate)
+        let polyline = LineString(routeProgress.currentLegProgress.currentStep.coordinates!)
+        if let closestCoordinate = polyline.closestCoordinate(to: location.coordinate),
+           let remainingDistance = polyline.distance(from: closestCoordinate.coordinate) {
             let distanceTraveled = currentStep.distance - remainingDistance
             currentStepProgress.distanceTraveled = distanceTraveled
             NotificationCenter.default.post(name: .routeControllerProgressDidChange, object: self, userInfo: [
@@ -727,7 +727,7 @@ extension RouteController: CLLocationManagerDelegate {
         self.routeProgress.currentLegProgress.currentStepProgress.intersectionsIncludingUpcomingManeuverIntersection = intersections
 
         if let upcomingIntersection = routeProgress.currentLegProgress.currentStepProgress.upcomingIntersection {
-            self.routeProgress.currentLegProgress.currentStepProgress.userDistanceToUpcomingIntersection = Polyline(currentStepProgress.step.coordinates!).distance(from: location.coordinate, to: upcomingIntersection.location)
+            self.routeProgress.currentLegProgress.currentStepProgress.userDistanceToUpcomingIntersection = LineString(currentStepProgress.step.coordinates!).distance(from: location.coordinate, to: upcomingIntersection.location)
         }
         
         if self.routeProgress.currentLegProgress.currentStepProgress.intersectionDistances == nil {
@@ -828,8 +828,8 @@ extension RouteController: CLLocationManagerDelegate {
 
     func updateIntersectionDistances() {
         if let coordinates = routeProgress.currentLegProgress.currentStep.coordinates, let intersections = routeProgress.currentLegProgress.currentStep.intersections {
-            let polyline = Polyline(coordinates)
-            let distances: [CLLocationDistance] = intersections.map { polyline.distance(from: coordinates.first, to: $0.location) }
+            let polyline = LineString(coordinates)
+            let distances: [CLLocationDistance] = intersections.compactMap { polyline.distance(from: coordinates.first, to: $0.location) }
             self.routeProgress.currentLegProgress.currentStepProgress.intersectionDistances = distances
         }
     }
