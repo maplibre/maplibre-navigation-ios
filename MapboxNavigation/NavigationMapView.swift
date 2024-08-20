@@ -258,9 +258,7 @@ open class NavigationMapView: MLNMapView, UIGestureRecognizerDelegate {
         }
     }
    
-    override open func mapViewDidFinishRenderingFrameFullyRendered(_ fullyRendered: Bool, frameEncodingTime: Double, frameRenderingTime: Double) {
-        super.mapViewDidFinishRenderingFrameFullyRendered(fullyRendered, frameEncodingTime: frameEncodingTime, frameRenderingTime: frameRenderingTime)
-        
+    func updateCourseTrackingAfterDidFinishRenderingFrame() {
         guard self.shouldPositionCourseViewFrameByFrame else { return }
         guard let location = userLocationForCourseTracking else { return }
         

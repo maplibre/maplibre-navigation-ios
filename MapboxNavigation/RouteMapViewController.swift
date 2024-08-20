@@ -582,6 +582,10 @@ extension RouteMapViewController: NavigationViewDelegate {
         self.delegate?.mapViewDidFinishLoadingMap?(mapView)
     }
 
+    func mapViewDidFinishRenderingFrame(_ mapView: MLNMapView, fullyRendered: Bool) {
+        self.mapView.updateCourseTrackingAfterDidFinishRenderingFrame()
+    }
+
     // MARK: - VisualInstructionDelegate
 	
     func label(_ label: InstructionLabel, willPresent instruction: VisualInstruction, as presented: NSAttributedString) -> NSAttributedString? {
