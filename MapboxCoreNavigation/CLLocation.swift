@@ -61,10 +61,11 @@ extension CLLocation {
      Returns a Boolean value indicating whether the receiver is within a given distance of a route step.
      */
     func isWithin(_ maximumDistance: CLLocationDistance, of routeStep: RouteStep) -> Bool {
-        guard let closestCoordinate = Polyline(routeStep.coordinates!).closestCoordinate(to: coordinate) else {
+        guard let closestCoordinate = LineString(routeStep.coordinates!).closestCoordinate(to: coordinate) else {
             return false
         }
-        return closestCoordinate.distance < maximumDistance
+        let distance = closestCoordinate.coordinate.distance(to: self.coordinate)
+        return distance < maximumDistance
     }
     
     // MARK: - Route Snapping
@@ -72,7 +73,7 @@ extension CLLocation {
     func snapped(to legProgress: RouteLegProgress) -> CLLocation? {
         let coords = self.coordinates(for: legProgress)
         
-        guard let closest = Polyline(coords).closestCoordinate(to: coordinate) else { return nil }
+        guard let closest = LineString(coords).closestCoordinate(to: coordinate) else { return nil }
         guard let calculatedCourseForLocationOnStep = interpolatedCourse(along: coords) else { return nil }
         
         let userCourse = calculatedCourseForLocationOnStep
@@ -80,8 +81,9 @@ extension CLLocation {
         guard let firstCoordinate = legProgress.leg.steps.first?.coordinates?.first else { return nil }
         
         guard self.shouldSnapCourse(toRouteWith: calculatedCourseForLocationOnStep, distanceToFirstCoordinateOnLeg: coordinate.distance(to: firstCoordinate)) else { return nil }
-        
-        guard closest.distance <= (RouteControllerUserLocationSnappingDistance + horizontalAccuracy) else {
+       
+        let distanceFromLeg = closest.coordinate.distance(to: self.coordinate)
+        guard distanceFromLeg <= (RouteControllerUserLocationSnappingDistance + horizontalAccuracy) else {
             return nil
         }
         
@@ -121,12 +123,12 @@ extension CLLocation {
      Given a location and a series of coordinates, compute what the course should be for a the location.
      */
     func interpolatedCourse(along coordinates: [CLLocationCoordinate2D]) -> CLLocationDirection? {
-        let nearByPolyline = Polyline(coordinates)
-        
+        let nearByPolyline = LineString(coordinates)
+
         guard let closest = nearByPolyline.closestCoordinate(to: coordinate) else { return nil }
         
-        let slicedLineBehind = Polyline(coordinates.reversed()).sliced(from: closest.coordinate, to: coordinates.reversed().last)
-        let slicedLineInFront = nearByPolyline.sliced(from: closest.coordinate, to: coordinates.last)
+        guard let slicedLineBehind = LineString(coordinates.reversed()).sliced(from: closest.coordinate, to: coordinates.reversed().last) else { return nil }
+        guard let slicedLineInFront = nearByPolyline.sliced(from: closest.coordinate, to: coordinates.last) else { return nil }
         let userDistanceBuffer: CLLocationDistance = max(speed * RouteControllerDeadReckoningTimeInterval / 2, RouteControllerUserLocationSnappingDistance / 2)
         
         guard let pointBehind = slicedLineBehind.coordinateFromStart(distance: userDistanceBuffer) else { return nil }
@@ -145,10 +147,11 @@ extension CLLocation {
         
         let averageRelativeAngle: Double
             // User is at the beginning of the route, there is no closest point behind the user.
-            = if pointBehindClosest.distance <= 0, pointAheadClosest.distance > 0 {
+            = if pointBehindClosest.coordinate.distance(to: pointBehind) <= 0, pointAheadClosest.coordinate.distance(to: pointAhead) > 0 {
             relativeAnglepointAhead
             // User is at the end of the route, there is no closest point in front of the user.
-        } else if pointAheadClosest.distance <= 0, pointBehindClosest.distance > 0 {
+        } else if pointAheadClosest.coordinate.distance(to: pointAhead) <= 0,
+                  pointBehindClosest.coordinate.distance(to: pointBehind) > 0 {
             relativeAnglepointBehind
         } else {
             (relativeAnglepointBehind + relativeAnglepointAhead) / 2

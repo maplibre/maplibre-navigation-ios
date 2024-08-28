@@ -37,40 +37,48 @@ open class StyleManager: NSObject {
     /**
      Determines whether the style manager should apply a new style given the time of day.
      
-     - precondition: Two styles must be provided for this property to have any effect.
+     - precondition: `nightStyle` must be provided for this property to have any effect.
      */
     @objc public var automaticallyAdjustsStyleForTimeOfDay = true {
         didSet {
+            assert(!self.automaticallyAdjustsStyleForTimeOfDay || self.nightStyle != nil, "`nightStyle` must be specified in order to adjust style for time of day")
             self.resetTimeOfDayTimer()
         }
     }
-    
-    /**
-     The styles that are in circulation. Active style is set based on
-     the sunrise and sunset at your current location. A change of
-     preferred content size by the user will also trigger an update.
-     
-     - precondition: Two styles must be provided for
-     `StyleManager.automaticallyAdjustsStyleForTimeOfDay` to have any effect.
-     */
-    @objc public var styles = [Style]() {
+   
+    /// Useful for testing
+    var stubbedDate: Date?
+
+    var currentStyleAndSize: (Style, UIContentSizeCategory)?
+
+    /// The style used from sunrise to sunset.
+    ///
+    /// If `nightStyle` is nil, `dayStyle` will be used for all times.
+    @objc public var dayStyle: Style {
         didSet {
-            self.applyStyle()
-            self.resetTimeOfDayTimer()
+            self.ensureAppropriateStyle()
         }
     }
-    
-    var date: Date?
-    
-    var currentStyleType: StyleType?
-    
+
+    /// The style used from sunset to sunrise.
+    ///
+    /// If `nightStyle` is nil, `dayStyle` will be used for all times.
+    @objc public var nightStyle: Style? {
+        didSet {
+            self.resetTimeOfDayTimer()
+            self.ensureAppropriateStyle()
+        }
+    }
+
     /**
      Initializes a new `StyleManager`.
      
      - parameter delegate: The receiver’s delegate
      */
-    public required init(_ delegate: StyleManagerDelegate) {
+    public required init(_ delegate: StyleManagerDelegate, dayStyle: Style, nightStyle: Style? = nil) {
         self.delegate = delegate
+        self.dayStyle = dayStyle
+        self.nightStyle = nightStyle
         super.init()
         self.resumeNotifications()
         self.resetTimeOfDayTimer()
@@ -94,10 +102,10 @@ open class StyleManager: NSObject {
     func resetTimeOfDayTimer() {
         NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(self.timeOfDayChanged), object: nil)
         
-        guard self.automaticallyAdjustsStyleForTimeOfDay, self.styles.count > 1 else { return }
+        guard self.automaticallyAdjustsStyleForTimeOfDay, self.nightStyle != nil else { return }
         guard let location = delegate?.locationFor(styleManager: self) else { return }
         
-        guard let solar = Solar(date: date, coordinate: location.coordinate),
+        guard let solar = Solar(date: stubbedDate, coordinate: location.coordinate),
               let sunrise = solar.sunrise,
               let sunset = solar.sunset else {
             return
@@ -110,57 +118,59 @@ open class StyleManager: NSObject {
         
         perform(#selector(self.timeOfDayChanged), with: nil, afterDelay: interval + 1)
     }
-    
+   
     @objc func preferredContentSizeChanged(_ notification: Notification) {
-        self.applyStyle()
+        self.ensureAppropriateStyle()
     }
-    
+  
+    /// Useful when you don't want the time of day to change the style. For example if you're in a tunnel.
+    @objc func cancelTimeOfDayTimer() {
+        NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(self.timeOfDayChanged), object: nil)
+    }
+
     @objc func timeOfDayChanged() {
-        self.forceRefreshAppearanceIfNeeded()
+        self.ensureAppropriateStyle()
         self.resetTimeOfDayTimer()
     }
     
-    func applyStyle(type styleType: StyleType) {
-        guard self.currentStyleType != styleType else { return }
-        
-        NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(self.timeOfDayChanged), object: nil)
-        
-        for style in self.styles where style.styleType == styleType {
-            style.apply()
-            currentStyleType = styleType
-            delegate?.styleManager?(self, didApply: style)
+    func ensureAppropriateStyle() {
+        guard self.nightStyle != nil else {
+            self.ensureStyle(style: self.dayStyle)
+            return
         }
-        
-        self.forceRefreshAppearance()
-    }
-    
-    func applyStyle() {
+
         guard let location = delegate?.locationFor(styleManager: self) else {
             // We can't calculate sunset or sunrise w/o a location so just apply the first style
-            if let style = styles.first, currentStyleType != style.styleType {
-                self.currentStyleType = style.styleType
-                style.apply()
-                self.delegate?.styleManager?(self, didApply: style)
-            }
+            self.ensureStyle(style: self.dayStyle)
             return
         }
-        
-        // Single style usage
-        guard self.styles.count > 1 else {
-            if let style = styles.first, currentStyleType != style.styleType {
-                self.currentStyleType = style.styleType
-                style.apply()
-                self.delegate?.styleManager?(self, didApply: style)
-            }
-            return
-        }
-        
-        let styleTypeForTimeOfDay = self.styleType(for: location)
-        self.applyStyle(type: styleTypeForTimeOfDay)
+
+        self.ensureStyle(type: self.styleType(for: location))
     }
-    
+
+    func ensureStyle(type: StyleType) {
+        switch type {
+        case .day:
+            self.ensureStyle(style: self.dayStyle)
+        case .night:
+            self.ensureStyle(style: self.nightStyle ?? self.dayStyle)
+        }
+    }
+
+    func ensureStyle(style: Style) {
+        let preferredContentSizeCategory = UIApplication.shared.preferredContentSizeCategory
+
+        if let currentStyleAndSize, currentStyleAndSize == (style, preferredContentSizeCategory) {
+            return
+        }
+        self.currentStyleAndSize = (style, preferredContentSizeCategory)
+        style.apply()
+        self.delegate?.styleManager?(self, didApply: style)
+        self.refreshAppearance()
+    }
+
     func styleType(for location: CLLocation) -> StyleType {
-        guard let solar = Solar(date: date, coordinate: location.coordinate),
+        guard let solar = Solar(date: stubbedDate, coordinate: location.coordinate),
               let sunrise = solar.sunrise,
               let sunset = solar.sunset else {
             return .day
@@ -169,24 +179,7 @@ open class StyleManager: NSObject {
         return solar.date.isNighttime(sunrise: sunrise, sunset: sunset) ? .night : .day
     }
     
-    func forceRefreshAppearanceIfNeeded() {
-        guard let location = delegate?.locationFor(styleManager: self) else { return }
-        
-        let styleTypeForLocation = self.styleType(for: location)
-        
-        // If `styles` does not contain at least one style for the selected location, don't try and apply it.
-        let availableStyleTypesForLocation = self.styles.filter { $0.styleType == styleTypeForLocation }
-        guard availableStyleTypesForLocation.count > 0 else { return }
-        
-        guard self.currentStyleType != styleTypeForLocation else {
-            return
-        }
-        
-        self.applyStyle()
-        self.forceRefreshAppearance()
-    }
-    
-    func forceRefreshAppearance() {
+    func refreshAppearance() {
         for window in UIApplication.shared.windows {
             for view in window.subviews {
                 view.removeFromSuperview()
