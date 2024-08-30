@@ -6,7 +6,7 @@
     - To simulate a route, pass a `SimulatedLocationManager` to `startNavigation()` function:
 
     ```swift
-    #if targetEnvironment(simulator) 
+    #if targetEnvironment(simulator)
         let locationManager = SimulatedLocationManager(route: route)
         locationManager.speedMultiplier = 2
         self.startNavigation(with: route, animated: false, locationManager: locationManager)
@@ -19,6 +19,10 @@
   * Merged in <https://github.com/maplibre/maplibre-navigation-ios/pull/72>
 * Updated "turf" geometry library from 0.2.2 to 2.8.0
     * Merged in https://github.com/maplibre/maplibre-navigation-ios/pull/91
+* Only require background audio when using speech synthesis in https://github.com/maplibre/maplibre-navigation-ios/pull/64
+* Fix: Respond to changes in dynamic type without having to restart the app in https://github.com/maplibre/maplibre-navigation-ios/pull/65
+* Fix: crash in EndOfRouteViewController and restore its presentation by in https://github.com/maplibre/maplibre-navigation-ios/pull/71
+* Fix: retain cycles in RouteMapViewController
 
 ## 3.0.0 (Jun 15, 2024)
 * The `speak` method in `RouteVoiceController` can be used without a given `RouteProgress` or the `RouteProgress` can explicitly ignored so that it will not be added to the voice instruction.
