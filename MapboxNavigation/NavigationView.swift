@@ -180,7 +180,6 @@ open class NavigationView: UIView {
     func showUI(animated: Bool = true) {
         let views: [UIView] = [
             self.instructionsBannerContentView,
-            self.lanesView,
             self.bottomBannerContentView,
             self.floatingStackView
         ]
@@ -199,7 +198,6 @@ open class NavigationView: UIView {
     func hideUI(animated: Bool = true) {
         let views: [UIView] = [
             self.instructionsBannerContentView,
-            self.lanesView,
             self.bottomBannerContentView,
             self.floatingStackView,
             self.resumeButton
