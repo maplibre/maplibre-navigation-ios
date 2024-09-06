@@ -16,7 +16,7 @@ public let MBRouteLineWidthByZoomLevel: [Int: NSExpression] = [
     22: NSExpression(forConstantValue: 28)
 ]
 
-public let MLNRouteLineWidthByZoomLevel: [Int: Double] = [
+public var MLNRouteLineWidthByZoomLevel: [Int: Double] = [
     10: 8,
     13: 9,
     16: 11,
