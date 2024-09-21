@@ -132,7 +132,7 @@ open class NavigationMapView: MLNMapView, UIGestureRecognizerDelegate {
             return anchorPoint
         }
         
-        let contentFrame = bounds.inset(by: safeAreaInsets)
+        let contentFrame = self.bounds.inset(by: self.safeAreaInsets)
         let courseViewWidth = self.userCourseView?.frame.width ?? 0
         let courseViewHeight = self.userCourseView?.frame.height ?? 0
         let edgePadding = UIEdgeInsets(top: 50 + courseViewHeight / 2,
@@ -291,12 +291,15 @@ open class NavigationMapView: MLNMapView, UIGestureRecognizerDelegate {
             if !cameraUpdated {
                 let newCamera = MLNMapCamera(lookingAtCenter: location.coordinate, acrossDistance: self.altitude, pitch: 45, heading: location.course)
                 let function = CAMediaTimingFunction(name: CAMediaTimingFunctionName.linear)
-
-                // Because it's more useful to show what's ahead than what's behind, we bias the camera to put
-                // the user location puck in the lower portion of the visible map, showing more of what's ahead.
-                let edgePadding = UIEdgeInsets(top: bounds.height * 0.4 - safeAreaInsets.bottom, left: 0, bottom: 0, right: 0)
-
-                setCamera(newCamera, withDuration: 1, animationTimingFunction: function, edgePadding: edgePadding, completionHandler: nil)
+                
+                let userAnchorPoint = self.userAnchorPoint
+                let padding = UIEdgeInsets(top: floor(userAnchorPoint.y),
+                                           left: floor(userAnchorPoint.x),
+                                           bottom: floor(self.frame.height - userAnchorPoint.y),
+                                           right: floor(self.frame.width - userAnchorPoint.x))
+                
+                // NOTE: When Camera is set without edge padding, user puck location can be out of sync
+                self.setCamera(newCamera, withDuration: 1, animationTimingFunction: function, edgePadding: padding, completionHandler: nil)
             }
         }
         
@@ -350,20 +353,18 @@ open class NavigationMapView: MLNMapView, UIGestureRecognizerDelegate {
             return
         }
         
-        if !self.tracksUserCourse || self.userAnchorPoint != userCourseView?.center ?? self.userAnchorPoint {
-            UIView.animate(withDuration: duration, delay: 0, options: [.curveLinear, .beginFromCurrentState], animations: {
-                self.userCourseView?.center = self.convert(location.coordinate, toPointTo: self)
-            })
-        }
+        UIView.animate(withDuration: duration, delay: 0, options: [.curveLinear, .beginFromCurrentState], animations: {
+            self.userCourseView?.center = self.convert(location.coordinate, toPointTo: self)
+        })
         
-        if let userCourseView = userCourseView as? UserCourseView {
+        if let userCourseView = self.userCourseView as? UserCourseView {
             if let customTransformation = userCourseView.update?(location: location, pitch: self.camera.pitch, direction: direction, animated: animated, tracksUserCourse: tracksUserCourse) {
                 customTransformation
             } else {
                 self.userCourseView?.applyDefaultUserPuckTransformation(location: location, pitch: self.camera.pitch, direction: direction, animated: animated, tracksUserCourse: self.tracksUserCourse)
             }
         } else {
-            userCourseView?.applyDefaultUserPuckTransformation(location: location, pitch: self.camera.pitch, direction: direction, animated: animated, tracksUserCourse: self.tracksUserCourse)
+            self.userCourseView?.applyDefaultUserPuckTransformation(location: location, pitch: self.camera.pitch, direction: direction, animated: animated, tracksUserCourse: self.tracksUserCourse)
         }
     }
     
@@ -446,7 +447,7 @@ open class NavigationMapView: MLNMapView, UIGestureRecognizerDelegate {
         let line = MLNPolyline(coordinates: coords, count: UInt(coords.count))
         let camera = cameraThatFitsShape(line, direction: direction, edgePadding: padding)
         
-        setCamera(camera, animated: false)
+        self.setCamera(camera, animated: false)
     }
     
     /**
@@ -1075,7 +1076,7 @@ open class NavigationMapView: MLNMapView, UIGestureRecognizerDelegate {
     /**
      Sets the camera directly over a series of coordinates.
      */
-    @objc public func setOverheadCameraView(from userLocation: CLLocationCoordinate2D, along coordinates: [CLLocationCoordinate2D], for bounds: UIEdgeInsets) {
+    @objc public func setOverheadCameraView(from userLocation: CLLocationCoordinate2D, along coordinates: [CLLocationCoordinate2D], insets: UIEdgeInsets) {
         assert(!coordinates.isEmpty, "must specify coordinates when setting overhead camera view")
 
         self.isAnimatingToOverheadMode = true
@@ -1094,7 +1095,7 @@ open class NavigationMapView: MLNMapView, UIGestureRecognizerDelegate {
             camera.heading = 0
             camera.centerCoordinate = userLocation
             camera.altitude = self.defaultAltitude
-            setCamera(camera, withDuration: 1, animationTimingFunction: nil) { [weak self] in
+            self.setCamera(camera, withDuration: 1, animationTimingFunction: nil) { [weak self] in
                 self?.isAnimatingToOverheadMode = false
             }
             return
@@ -1104,8 +1105,8 @@ open class NavigationMapView: MLNMapView, UIGestureRecognizerDelegate {
         cam.pitch = 0
         cam.heading = 0
         
-        let cameraForLine = camera(cam, fitting: line, edgePadding: bounds)
-        setCamera(cameraForLine, withDuration: 1, animationTimingFunction: nil) { [weak self] in
+        let cameraForLine = camera(cam, fitting: line, edgePadding: insets)
+        self.setCamera(cameraForLine, withDuration: 1, animationTimingFunction: nil) { [weak self] in
             self?.isAnimatingToOverheadMode = false
         }
     }

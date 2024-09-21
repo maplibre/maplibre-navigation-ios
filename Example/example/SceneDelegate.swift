@@ -101,12 +101,24 @@ private extension SceneDelegate {
     @objc
     func cameraButtonTapped() {
         guard let waypoint = self.waypoints.randomElement() else { return }
-
+        
         let distance = CLLocationDistance.random(in: 10 ... 100_000)
-        self.viewController.mapView.camera = .init(lookingAtCenter: waypoint.coordinate,
-                                                   acrossDistance: distance,
-                                                   pitch: 0,
-                                                   heading: 0)
+        
+        let userAnchorPoint = self.viewController.mapView.userCourseView!.center
+        let padding = UIEdgeInsets(top: floor(userAnchorPoint.y),
+                                   left: floor(userAnchorPoint.x),
+                                   bottom: floor(self.viewController.mapView.frame.height - userAnchorPoint.y),
+                                   right: floor(self.viewController.mapView.frame.width - userAnchorPoint.x))
+        
+        let camera = MLNMapCamera(lookingAtCenter: waypoint.coordinate,
+                                  acrossDistance: distance,
+                                  pitch: 0,
+                                  heading: 0)
+        
+        self.viewController.mapView.setCamera(camera,
+                                              withDuration: 1,
+                                              animationTimingFunction: CAMediaTimingFunction(name: CAMediaTimingFunctionName.linear),
+                                              edgePadding: padding)
     }
     
     @objc

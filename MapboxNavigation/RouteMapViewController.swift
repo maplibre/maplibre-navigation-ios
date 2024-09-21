@@ -207,6 +207,7 @@ class RouteMapViewController: UIViewController {
         self.navigationView.muteButton.isSelected = NavigationSettings.shared.voiceMuted
         self.mapView.compassView.isHidden = true
         self.mapView.tracksUserCourse = true
+        self.mapView.userTrackingMode = .followWithHeading
 
         if let camera = self.pendingCamera {
             self.mapView.camera = camera
@@ -259,7 +260,7 @@ class RouteMapViewController: UIViewController {
 
         if self.isInOverviewMode {
             if let coordinates = routeController.routeProgress.route.coordinates, let userLocation = routeController.locationManager.location?.coordinate {
-                self.mapView.setOverheadCameraView(from: userLocation, along: coordinates, for: self.overheadInsets)
+                self.mapView.setOverheadCameraView(from: userLocation, along: coordinates, insets: self.overheadInsets)
             }
         } else {
             self.mapView.tracksUserCourse = true
@@ -568,6 +569,7 @@ extension RouteMapViewController: NavigationViewDelegate {
         if userTrackingMode == .none, !self.isInOverviewMode {
             self.navigationView.wayNameView.isHidden = true
         }
+        mapView.userTrackingMode = userTrackingMode
     }
 
     func mapView(_ mapView: MLNMapView, didFinishLoading style: MLNStyle) {
@@ -759,7 +761,7 @@ private extension RouteMapViewController {
         self.mapView.enableFrameByFrameCourseViewTracking(for: 3)
         if let coordinates = self.routeController?.routeProgress.route.coordinates,
            let userLocation = self.routeController?.locationManager.location?.coordinate {
-            self.mapView.setOverheadCameraView(from: userLocation, along: coordinates, for: self.overheadInsets)
+            self.mapView.setOverheadCameraView(from: userLocation, along: coordinates, insets: self.overheadInsets)
         }
         self.isInOverviewMode = true
     }
