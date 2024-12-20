@@ -1,6 +1,7 @@
 # Changes to the Mapbox Navigation SDK for iOS
 
 ## Unreleased
+* Updated MapLibre Native dependency to ios-v6.9.0 (https://github.com/maplibre/maplibre-native/releases/tag/ios-v6.9.0).
 * Start & Stop Navigation in existing Map
     - Removed: `NavigationViewController(for route: Route, dayStyle: Style, routeController: RouteController? = nil, locationManager: NavigationLocationManager? = nil, voiceController: RouteVoiceController? = nil)` use `NavigationViewController(dayStyleURL: URL, nightStyleURL: URL? = nil,directions: Directions = .shared, voiceController: RouteVoiceController = RouteVoiceController())` followed by `startNavigation(with route: Route, animated: Bool)` instead.
     - To simulate a route, pass a `SimulatedLocationManager` to `startNavigation()` function:
