@@ -1,6 +1,6 @@
 import Foundation
 
-class DummyURLSessionDataTask: URLSessionDataTask {
+class DummyURLSessionDataTask: URLSessionDataTask, @unchecked Sendable {
     override func resume() {
         //
     }

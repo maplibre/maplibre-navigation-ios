@@ -12,7 +12,7 @@ protocol ImageDownload: URLSessionDataDelegate {
     var isFinished: Bool { get }
 }
 
-class ImageDownloadOperation: Operation, ImageDownload {
+class ImageDownloadOperation: Operation, ImageDownload, @unchecked Sendable {
     override var isConcurrent: Bool {
         true
     }
