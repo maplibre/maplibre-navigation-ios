@@ -597,7 +597,7 @@ open class NavigationMapView: MLNMapView, UIGestureRecognizerDelegate {
         
         let minimumZoomLevel: Float = 14.5
         
-        let shaftLength = max(min(30 * metersPerPoint(atLatitude: maneuverCoordinate.latitude), 30), 10)
+        let shaftLength = 30
         let polyline = LineString(routeCoordinates)
         guard let beforeTrimmedPolyline = polyline.trimmed(from: maneuverCoordinate, distance: -shaftLength),
               let afterTrimmedPolyline = polyline.trimmed(from: maneuverCoordinate, distance: shaftLength) else {
