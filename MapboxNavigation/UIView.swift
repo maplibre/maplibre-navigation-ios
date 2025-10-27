@@ -70,7 +70,10 @@ extension UIView {
     }
     
     func pinInSuperview(respectingMargins margins: Bool = false) {
-        guard let superview else { return }
+        guard let superview else {
+            assertionFailure("superview was unexpectedly nil")
+            return
+        }
         let guide: Anchorable = margins ? superview.layoutMarginsGuide : superview
         
         let constraints = [
@@ -87,53 +90,6 @@ extension UIView {
         view.isHidden = hidden
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
-    }
-    
-    var safeArea: UIEdgeInsets {
-        guard #available(iOS 11.0, *) else { return .zero }
-        return safeAreaInsets
-    }
-    
-    var safeTopAnchor: NSLayoutYAxisAnchor {
-        if #available(iOS 11.0, *) {
-            return safeAreaLayoutGuide.topAnchor
-        }
-        return topAnchor
-    }
-    
-    var safeLeftAnchor: NSLayoutXAxisAnchor {
-        if #available(iOS 11.0, *) {
-            return safeAreaLayoutGuide.leftAnchor
-        }
-        return leftAnchor
-    }
-    
-    var safeLeadingAnchor: NSLayoutXAxisAnchor {
-        if #available(iOS 11.0, *) {
-            return safeAreaLayoutGuide.leadingAnchor
-        }
-        return leadingAnchor
-    }
-    
-    var safeBottomAnchor: NSLayoutYAxisAnchor {
-        if #available(iOS 11.0, *) {
-            return safeAreaLayoutGuide.bottomAnchor
-        }
-        return bottomAnchor
-    }
-    
-    var safeRightAnchor: NSLayoutXAxisAnchor {
-        if #available(iOS 11.0, *) {
-            return safeAreaLayoutGuide.rightAnchor
-        }
-        return rightAnchor
-    }
-    
-    var safeTrailingAnchor: NSLayoutXAxisAnchor {
-        if #available(iOS 11.0, *) {
-            return safeAreaLayoutGuide.trailingAnchor
-        }
-        return trailingAnchor
     }
     
     var imageRepresentation: UIImage? {

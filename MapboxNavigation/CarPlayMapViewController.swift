@@ -37,7 +37,7 @@ class CarPlayMapViewController: UIViewController, MLNMapViewDelegate {
     }()
     
     override func loadView() {
-        let mapView = NavigationMapView()
+        let mapView = NavigationMapView(frame: UIScreen.main.bounds)
         mapView.delegate = self
 //        mapView.navigationMapDelegate = self
         mapView.logoView.isHidden = true
@@ -49,13 +49,17 @@ class CarPlayMapViewController: UIViewController, MLNMapViewDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        self.styleManager = StyleManager(self)
-        self.styleManager.styles = [DayStyle(demoStyle: ()), NightStyle(demoStyle: ())]
+        self.styleManager = StyleManager(self, dayStyle: DayStyle(demoStyle: ()), nightStyle: NightStyle(demoStyle: ()))
 
         self.resetCamera(animated: false, altitude: CarPlayMapViewController.defaultAltitude)
         self.mapView.setUserTrackingMode(.followWithCourse, animated: true, completionHandler: nil)
     }
-    
+
+    override open func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.styleManager.ensureAppropriateStyle()
+    }
+
     public func zoomInButton() -> CPMapButton {
         let zoomInButton = CPMapButton { [weak self] _ in
             guard let strongSelf = self else {
@@ -98,7 +102,7 @@ class CarPlayMapViewController: UIViewController, MLNMapViewDelegate {
     }
     
     override func viewSafeAreaInsetsDidChange() {
-        self.mapView.setContentInset(self.mapView.safeArea, animated: false, completionHandler: nil)
+        self.mapView.setContentInset(self.mapView.safeAreaInsets, animated: false, completionHandler: nil)
         
         guard self.isOverviewingRoutes else {
             super.viewSafeAreaInsetsDidChange()

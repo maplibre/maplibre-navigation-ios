@@ -84,14 +84,18 @@ public class CarPlayNavigationViewController: UIViewController, MLNMapViewDelega
         self.mapView = mapView
         view.addSubview(mapView)
         
-        self.styleManager = StyleManager(self)
-        self.styleManager.styles = [DayStyle(demoStyle: ()), NightStyle(demoStyle: ())]
+        self.styleManager = StyleManager(self, dayStyle: DayStyle(demoStyle: ()), nightStyle: NightStyle(demoStyle: ()))
 
         self.resumeNotifications()
         self.routeController.resume()
         mapView.recenterMap()
     }
-    
+
+    override open func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.styleManager.ensureAppropriateStyle()
+    }
+
     override public func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         self.suspendNotifications()
@@ -246,7 +250,7 @@ public class CarPlayNavigationViewController: UIViewController, MLNMapViewDelega
         
         // Estimating the width of Apple's maneuver view
         let bounds: () -> (CGRect) = {
-            let widthOfManeuverView = min(self.view.bounds.width - self.view.safeArea.left, self.view.bounds.width - self.view.safeArea.right)
+            let widthOfManeuverView = min(self.view.bounds.width - self.view.safeAreaInsets.left, self.view.bounds.width - self.view.safeAreaInsets.right)
             return CGRect(x: 0, y: 0, width: widthOfManeuverView, height: 30)
         }
         

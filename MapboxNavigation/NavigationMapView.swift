@@ -132,7 +132,7 @@ open class NavigationMapView: MLNMapView, UIGestureRecognizerDelegate {
             return anchorPoint
         }
         
-        let contentFrame = bounds.inset(by: safeArea)
+        let contentFrame = bounds.inset(by: safeAreaInsets)
         let courseViewWidth = self.userCourseView?.frame.width ?? 0
         let courseViewHeight = self.userCourseView?.frame.height ?? 0
         let edgePadding = UIEdgeInsets(top: 50 + courseViewHeight / 2,
@@ -258,9 +258,7 @@ open class NavigationMapView: MLNMapView, UIGestureRecognizerDelegate {
         }
     }
    
-    override open func mapViewDidFinishRenderingFrameFullyRendered(_ fullyRendered: Bool, frameEncodingTime: Double, frameRenderingTime: Double) {
-        super.mapViewDidFinishRenderingFrameFullyRendered(fullyRendered, frameEncodingTime: frameEncodingTime, frameRenderingTime: frameRenderingTime)
-        
+    func updateCourseTrackingAfterDidFinishRenderingFrame() {
         guard self.shouldPositionCourseViewFrameByFrame else { return }
         guard let location = userLocationForCourseTracking else { return }
         
@@ -293,7 +291,12 @@ open class NavigationMapView: MLNMapView, UIGestureRecognizerDelegate {
             if !cameraUpdated {
                 let newCamera = MLNMapCamera(lookingAtCenter: location.coordinate, acrossDistance: self.altitude, pitch: 45, heading: location.course)
                 let function = CAMediaTimingFunction(name: CAMediaTimingFunctionName.linear)
-                setCamera(newCamera, withDuration: 1, animationTimingFunction: function, edgePadding: UIEdgeInsets.zero, completionHandler: nil)
+
+                // Because it's more useful to show what's ahead than what's behind, we bias the camera to put
+                // the user location puck in the lower portion of the visible map, showing more of what's ahead.
+                let edgePadding = UIEdgeInsets(top: bounds.height * 0.4 - safeAreaInsets.bottom, left: 0, bottom: 0, right: 0)
+
+                setCamera(newCamera, withDuration: 1, animationTimingFunction: function, edgePadding: edgePadding, completionHandler: nil)
             }
         }
         

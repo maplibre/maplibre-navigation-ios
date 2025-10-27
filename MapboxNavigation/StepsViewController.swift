@@ -112,26 +112,26 @@ public class StepsViewController: UIViewController {
     }
 
     func setupViews() {
-        view.translatesAutoresizingMaskIntoConstraints = false
+        self.view.translatesAutoresizingMaskIntoConstraints = false
 
         let backgroundView = StepsBackgroundView()
         backgroundView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(backgroundView)
+        self.view.addSubview(backgroundView)
         self.backgroundView = backgroundView
 
-        backgroundView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
-        backgroundView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
-        backgroundView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
-        backgroundView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        backgroundView.topAnchor.constraint(equalTo: self.view.topAnchor).isActive = true
+        backgroundView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor).isActive = true
+        backgroundView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true
+        backgroundView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor).isActive = true
 
-        let tableView = UITableView(frame: view.bounds, style: .plain)
+        let tableView = UITableView(frame: self.view.bounds, style: .plain)
         tableView.separatorColor = .clear
         tableView.backgroundColor = .clear
         tableView.backgroundView = nil
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.delegate = self
         tableView.dataSource = self
-        view.addSubview(tableView)
+        self.view.addSubview(tableView)
         self.tableView = tableView
 
         let dismissButton = DismissButton(type: .custom)
@@ -139,13 +139,13 @@ public class StepsViewController: UIViewController {
         let title = NSLocalizedString("DISMISS_STEPS_TITLE", bundle: .mapboxNavigation, value: "Close", comment: "Dismiss button title on the steps view")
         dismissButton.setTitle(title, for: .normal)
         dismissButton.addTarget(self, action: #selector(StepsViewController.tappedDismiss(_:)), for: .touchUpInside)
-        view.addSubview(dismissButton)
+        self.view.addSubview(dismissButton)
         self.dismissButton = dismissButton
 
         let bottomView = UIView()
         bottomView.translatesAutoresizingMaskIntoConstraints = false
         bottomView.backgroundColor = DismissButton.appearance().backgroundColor
-        view.addSubview(bottomView)
+        self.view.addSubview(bottomView)
         self.bottomView = bottomView
 
         let separatorBottomView = SeparatorView()
@@ -154,24 +154,24 @@ public class StepsViewController: UIViewController {
         self.separatorBottomView = separatorBottomView
 
         dismissButton.heightAnchor.constraint(equalToConstant: 54).isActive = true
-        dismissButton.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
-        dismissButton.bottomAnchor.constraint(equalTo: view.safeBottomAnchor).isActive = true
-        dismissButton.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        dismissButton.leadingAnchor.constraint(equalTo: self.view.leadingAnchor).isActive = true
+        dismissButton.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor).isActive = true
+        dismissButton.trailingAnchor.constraint(equalTo: self.view.trailingAnchor).isActive = true
 
         bottomView.topAnchor.constraint(equalTo: dismissButton.bottomAnchor).isActive = true
-        bottomView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
-        bottomView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
-        bottomView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        bottomView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor).isActive = true
+        bottomView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true
+        bottomView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor).isActive = true
 
         separatorBottomView.topAnchor.constraint(equalTo: dismissButton.topAnchor).isActive = true
         separatorBottomView.leadingAnchor.constraint(equalTo: dismissButton.leadingAnchor).isActive = true
         separatorBottomView.trailingAnchor.constraint(equalTo: dismissButton.trailingAnchor).isActive = true
         separatorBottomView.heightAnchor.constraint(equalToConstant: 1 / UIScreen.main.scale).isActive = true
 
-        tableView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
-        tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+        tableView.topAnchor.constraint(equalTo: self.view.topAnchor).isActive = true
+        tableView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor).isActive = true
         tableView.bottomAnchor.constraint(equalTo: dismissButton.topAnchor).isActive = true
-        tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        tableView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor).isActive = true
 
         tableView.register(StepTableViewCell.self, forCellReuseIdentifier: self.cellId)
     }

@@ -59,11 +59,11 @@ public class StatusView: UIView {
         let heightConstraint = heightAnchor.constraint(equalToConstant: 30)
         heightConstraint.priority = UILayoutPriority(rawValue: 999)
         heightConstraint.isActive = true
-        textLabel.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
-        textLabel.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
+        textLabel.centerXAnchor.constraint(equalTo: self.centerXAnchor).isActive = true
+        textLabel.centerYAnchor.constraint(equalTo: self.centerYAnchor).isActive = true
         
-        activityIndicatorView.rightAnchor.constraint(equalTo: safeRightAnchor, constant: -10).isActive = true
-        activityIndicatorView.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
+        activityIndicatorView.rightAnchor.constraint(equalTo: self.safeAreaLayoutGuide.rightAnchor, constant: -10).isActive = true
+        activityIndicatorView.centerYAnchor.constraint(equalTo: self.centerYAnchor).isActive = true
         
         let recognizer = UIPanGestureRecognizer(target: self, action: #selector(StatusView.pan(_:)))
         addGestureRecognizer(recognizer)

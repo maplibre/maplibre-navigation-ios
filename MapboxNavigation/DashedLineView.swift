@@ -4,8 +4,8 @@ import UIKit
 @IBDesignable
 @objc(MBDashedLineView)
 public class DashedLineView: LineView {
-    @IBInspectable public var dashedLength: CGFloat = 4 { didSet { self.updateProperties() } }
-    @IBInspectable public var dashedGap: CGFloat = 4 { didSet { self.updateProperties() } }
+    @IBInspectable public var dashedLength: CGFloat = 4 { didSet { self.updateDashedLineProperties() } }
+    @IBInspectable public var dashedGap: CGFloat = 4 { didSet { self.updateDashedLineProperties() } }
 
     let dashedLineLayer = CAShapeLayer()
 
@@ -13,10 +13,10 @@ public class DashedLineView: LineView {
         if self.dashedLineLayer.superlayer == nil {
             layer.addSublayer(self.dashedLineLayer)
         }
-        self.updateProperties()
+        self.updateDashedLineProperties()
     }
 
-    func updateProperties() {
+    private func updateDashedLineProperties() {
         let path = UIBezierPath()
         path.move(to: CGPoint(x: 0, y: bounds.height / 2))
         path.addLine(to: CGPoint(x: bounds.width, y: bounds.height / 2))

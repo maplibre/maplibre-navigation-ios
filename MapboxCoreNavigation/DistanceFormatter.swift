@@ -131,6 +131,16 @@ open class DistanceFormatter: LengthFormatter {
     
     /// Indicates the most recently used unit
     public private(set) var unit: LengthFormatter.Unit = .millimeter
+	
+    public var locale: Locale {
+        set {
+            self.numberFormatter.locale = newValue
+            self.nonFractionalLengthFormatter.numberFormatter.locale = newValue
+        }
+        get {
+            self.numberFormatter.locale
+        }
+    }
 
     // Rounding tables for metric, imperial, and UK measurement systems. The last threshold is used as a default.
     lazy var roundingTableMetric: RoundingTable = .init(thresholds: [.init(maximumDistance: 25, roundingIncrement: 5, unit: .meter, maximumFractionDigits: 0),
@@ -157,17 +167,21 @@ open class DistanceFormatter: LengthFormatter {
     @objc public init(approximate: Bool = false) {
         self.approx = approximate
         super.init()
-        numberFormatter.locale = .nationalizedCurrent
+        self.locale = .nationalizedCurrent
     }
     
     public required init?(coder decoder: NSCoder) {
         self.approx = decoder.decodeBool(forKey: "approximate")
         super.init(coder: decoder)
+		
+        let localeIdentifier = (decoder.decodeObject(of: NSString.self, forKey: "locale") as? String)!
+        self.locale = Locale(identifier: localeIdentifier)
     }
     
     override open func encode(with aCoder: NSCoder) {
         super.encode(with: aCoder)
         aCoder.encode(self.approx, forKey: "approximate")
+        aCoder.encode(self.locale.identifier, forKey: "locale")
     }
     
     func threshold(for distance: CLLocationDistance) -> RoundingTable.Threshold {
@@ -209,9 +223,9 @@ open class DistanceFormatter: LengthFormatter {
     @available(iOS 10.0, *)
     @objc(measurementOfDistance:)
     public func measurement(of distance: CLLocationDistance) -> Measurement<UnitLength> {
-        let threshold = threshold(for: distance)
-        numberFormatter.maximumFractionDigits = threshold.maximumFractionDigits
-        numberFormatter.roundingIncrement = threshold.roundingIncrement as NSNumber
+        let threshold = self.threshold(for: distance)
+        self.numberFormatter.maximumFractionDigits = threshold.maximumFractionDigits
+        self.numberFormatter.roundingIncrement = threshold.roundingIncrement as NSNumber
         self.unit = threshold.unit
         return threshold.measurement(for: distance)
     }

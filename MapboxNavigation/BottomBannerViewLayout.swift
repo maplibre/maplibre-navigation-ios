@@ -5,34 +5,34 @@ extension BottomBannerView {
         let timeRemainingLabel = TimeRemainingLabel()
         timeRemainingLabel.translatesAutoresizingMaskIntoConstraints = false
         timeRemainingLabel.font = .systemFont(ofSize: 28, weight: .medium)
-        addSubview(timeRemainingLabel)
+        self.addSubview(timeRemainingLabel)
         self.timeRemainingLabel = timeRemainingLabel
         
         let distanceRemainingLabel = DistanceRemainingLabel()
         distanceRemainingLabel.translatesAutoresizingMaskIntoConstraints = false
         distanceRemainingLabel.font = .systemFont(ofSize: 18, weight: .medium)
-        addSubview(distanceRemainingLabel)
+        self.addSubview(distanceRemainingLabel)
         self.distanceRemainingLabel = distanceRemainingLabel
         
         let arrivalTimeLabel = ArrivalTimeLabel()
         arrivalTimeLabel.translatesAutoresizingMaskIntoConstraints = false
-        addSubview(arrivalTimeLabel)
+        self.addSubview(arrivalTimeLabel)
         self.arrivalTimeLabel = arrivalTimeLabel
         
         let cancelButton = CancelButton(type: .custom)
         cancelButton.translatesAutoresizingMaskIntoConstraints = false
         cancelButton.setImage(UIImage(named: "close", in: .mapboxNavigation, compatibleWith: nil), for: .normal)
-        addSubview(cancelButton)
+        self.addSubview(cancelButton)
         self.cancelButton = cancelButton
         
         let verticalDivider = SeparatorView()
         verticalDivider.translatesAutoresizingMaskIntoConstraints = false
-        addSubview(verticalDivider)
+        self.addSubview(verticalDivider)
         verticalDividerView = verticalDivider
         
         let horizontalDividerView = SeparatorView()
         horizontalDividerView.translatesAutoresizingMaskIntoConstraints = false
-        addSubview(horizontalDividerView)
+        self.addSubview(horizontalDividerView)
         self.horizontalDividerView = horizontalDividerView
         
         self.setupConstraints()

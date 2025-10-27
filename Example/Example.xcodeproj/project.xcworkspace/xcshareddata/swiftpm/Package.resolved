@@ -1,0 +1,59 @@
+{
+  "pins" : [
+    {
+      "identity" : "mapbox-directions-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/flitsmeister/mapbox-directions-swift",
+      "state" : {
+        "revision" : "6c19ecc4e1324887ae3250802b8d13d8d8b3ff2d",
+        "version" : "0.23.3"
+      }
+    },
+    {
+      "identity" : "maplibre-gl-native-distribution",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/maplibre/maplibre-gl-native-distribution.git",
+      "state" : {
+        "revision" : "6579f48fe126ce2916f7b5d0c84c1869d790c4e4",
+        "version" : "6.4.1"
+      }
+    },
+    {
+      "identity" : "polyline",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/raphaelmor/Polyline",
+      "state" : {
+        "revision" : "353f80378dcd8f17eefe8550090c6b1ae3c9da23",
+        "version" : "5.1.0"
+      }
+    },
+    {
+      "identity" : "solar",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/ceeK/Solar.git",
+      "state" : {
+        "revision" : "c2b96f2d5fb7f835b91cefac5e83101f54643901",
+        "version" : "3.0.1"
+      }
+    },
+    {
+      "identity" : "swiftformat",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/nicklockwood/SwiftFormat.git",
+      "state" : {
+        "revision" : "05cb325003a673b3d177c711b3bc909cfee07622",
+        "version" : "0.53.9"
+      }
+    },
+    {
+      "identity" : "turf-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/flitsmeister/turf-swift",
+      "state" : {
+        "revision" : "b05b4658d1b48eac4127a0d9ebbb5a6f965a8251",
+        "version" : "0.2.2"
+      }
+    }
+  ],
+  "version" : 2
+}

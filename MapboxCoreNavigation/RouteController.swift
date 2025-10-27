@@ -1,7 +1,6 @@
 import CoreLocation
 import Foundation
 import MapboxDirections
-import Polyline
 import Turf
 import UIKit
 
@@ -148,14 +147,14 @@ open class RouteController: NSObject, Router {
         self.locationManager.delegate = self
         self.resumeNotifications()
 
-        checkForUpdates()
-        checkForLocationUsageDescription()
+        self.checkForUpdates()
+        self.checkForLocationUsageDescription()
         
         self.tunnelIntersectionManager.delegate = self
     }
 
     deinit {
-        endNavigation()
+        self.endNavigation()
         
         guard let shouldDisable = delegate?.routeControllerShouldDisableBatteryMonitoring?(self) else {
             UIDevice.current.isBatteryMonitoringEnabled = false
@@ -230,7 +229,12 @@ open class RouteController: NSObject, Router {
      - important: If the rawLocation is outside of the route snapping tolerances, this value is nil.
      */
     var snappedLocation: CLLocation? {
-        self.rawLocation?.snapped(to: self.routeProgress.currentLegProgress)
+        guard let raw = self.rawLocation else {
+            return nil
+        }
+
+        let customSnap = self.delegate?.routeControllerSnap?(rawLocation: raw)
+        return customSnap ?? raw.snapped(to: self.routeProgress.currentLegProgress)
     }
 
     var heading: CLHeading?
@@ -424,9 +428,12 @@ extension RouteController: CLLocationManagerDelegate {
 
     func updateRouteLegProgress(for location: CLLocation) {
         let currentDestination = self.routeProgress.currentLeg.destination
-        guard let remainingVoiceInstructions = routeProgress.currentLegProgress.currentStepProgress.remainingSpokenInstructions else { return }
+        var hasRemainingVoiceInstructions = false
+        if let remainingVoiceInstructions = routeProgress.currentLegProgress.currentStepProgress.remainingSpokenInstructions, remainingVoiceInstructions.count > 0 {
+            hasRemainingVoiceInstructions = true
+        }
 
-        if self.routeProgress.currentLegProgress.remainingSteps.count <= 1, remainingVoiceInstructions.count == 0, currentDestination != self.previousArrivalWaypoint {
+        if self.routeProgress.currentLegProgress.remainingSteps.count <= 1, !hasRemainingVoiceInstructions, currentDestination != self.previousArrivalWaypoint {
             self.previousArrivalWaypoint = currentDestination
 
             self.routeProgress.currentLegProgress.userHasArrivedAtWaypoint = true

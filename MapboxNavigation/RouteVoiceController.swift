@@ -86,8 +86,6 @@ open class RouteVoiceController: NSObject, AVSpeechSynthesizerDelegate {
     override public init() {
         super.init()
 
-        self.verifyBackgroundAudio()
-
         self.speechSynth.delegate = self
         
         self.resumeNotifications()
@@ -193,6 +191,9 @@ open class RouteVoiceController: NSObject, AVSpeechSynthesizerDelegate {
      - parameter ignoreProgress: A `Bool` that indicates if the routeProgress is added to the instruction.
      */
     open func speak(_ instruction: SpokenInstruction, with locale: Locale?, ignoreProgress: Bool = false) {
+        // Don't require background audio unless the implementer is actually using speech APIs
+        self.verifyBackgroundAudio()
+
         if self.speechSynth.isSpeaking, let lastSpokenInstruction {
             self.voiceControllerDelegate?.voiceController?(self, didInterrupt: lastSpokenInstruction, with: instruction)
         }
@@ -212,7 +213,7 @@ open class RouteVoiceController: NSObject, AVSpeechSynthesizerDelegate {
             utterance = AVSpeechUtterance(string: modifiedInstruction.text)
             utterance.voice = AVSpeechSynthesisVoice(identifier: AVSpeechSynthesisVoiceIdentifierAlex)
         } else {
-            if #available(iOS 10.0, *), !ignoreProgress, let routeProgress {
+            if !ignoreProgress, let routeProgress {
                 utterance = AVSpeechUtterance(attributedString: modifiedInstruction.attributedText(for: routeProgress.currentLegProgress))
             } else {
                 utterance = AVSpeechUtterance(string: modifiedInstruction.text)
