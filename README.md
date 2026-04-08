@@ -1,9 +1,13 @@
-[![MapLibre Logo](https://github.com/maplibre/maplibre-navigation-ios/blob/main/.github/splash-image-ios.png?raw=true)](https://maplibre.org)
 
-The Maplibre Navigation SDK for iOS is built on a fork of the [Mapbox Navigation SDK v0.21](https://github.com/maplibre/maplibre-navigation-ios/tree/v0.21.0) which is build on top of the [Mapbox Directions API](https://www.mapbox.com/directions) (v0.23.0) and contains logic needed to get timed navigation instructions.
 
-With this SDK you can implement turn by turn navigation in your own iOS app while hosting your own Map tiles and Directions API.
+ <img width="1956" height="978" alt="splash-image-ios" src="https://github.com/user-attachments/assets/dcabab94-af2c-41d4-89c3-edc82ca49808" />
 
+The MapLibre Navigation SDK for iOS is built
+on a fork of the [Mapbox Navigation SDK v0.21](https://github.com/maplibre/maplibre-navigation-ios/tree/v0.21.0) which is build on top of the [Mapbox Directions API](https://www.mapbox.com/directions) (v0.23.0) and contains logic needed to get timed navigation instructions. With this SDK you can implement turn by turn navigation in your own iOS app while hosting your own Map tiles and Directions API.
+
+> [!NOTE]  
+> For new projects, you may want to check out [Ferrostar](https://github.com/stadiamaps/ferrostar). This was written to more easily integrate with open source route planning software like [Valhalla](https://github.com/valhalla/valhalla) and [Graphhopper](https://www.graphhopper.com/). It also has better support for SwiftUI.
+ 
 # Why have we forked
 
 1. Mapbox decided to put a closed source component to their navigation SDK and introduced a non open source license. Maplibre wants an open source solution.
