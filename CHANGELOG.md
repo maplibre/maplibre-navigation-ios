@@ -24,6 +24,7 @@
 * Fix: hide lanesView on navigation start
 * Fix: avoid iOS 26 name conflict
 * Fix: add missing `frame` argument to `NavigationMapView` initializer
+* Bump `mapbox-directions-swift` to 0.23.4 for route leg notifications support
 
 ## 3.0.0 (Jun 15, 2024)
 * The `speak` method in `RouteVoiceController` can be used without a given `RouteProgress` or the `RouteProgress` can explicitly ignored so that it will not be added to the voice instruction.
