@@ -5,8 +5,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/flitsmeister/mapbox-directions-swift",
       "state" : {
-        "revision" : "8c5b9a55a00c9ba34526bd97795d413403a602d1",
-        "version" : "0.23.4"
+        "revision" : "96a58cf55e15811b43a73c2b36d1e93bca410023",
+        "version" : "0.23.5"
       }
     },
     {
